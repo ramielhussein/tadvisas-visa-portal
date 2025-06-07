@@ -23,11 +23,12 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">T</span>
-            </div>
-            <span className="font-bold text-xl text-primary">TADVISAS</span>
+          <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" 
+              alt="TADMAIDS" 
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}

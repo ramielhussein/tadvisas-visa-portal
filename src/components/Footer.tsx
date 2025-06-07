@@ -9,13 +9,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-primary font-bold text-lg">T</span>
-              </div>
-              <span className="font-bold text-xl">TADVISAS</span>
-            </div>
-            <p className="text-primary-100">
+            <img 
+              src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" 
+              alt="TADMAIDS" 
+              className="h-8 w-auto brightness-0 invert"
+            />
+            <p className="text-blue-100">
               Your trusted partner for 2-year maid visa services in UAE. 
               100% Tadbeer licensed with zero monthly admin fees.
             </p>
@@ -25,17 +24,17 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><Link to="/how-it-works" className="text-primary-100 hover:text-white transition-colors">How It Works</Link></li>
-              <li><Link to="/pricing" className="text-primary-100 hover:text-white transition-colors">Pricing</Link></li>
-              <li><Link to="/why-us" className="text-primary-100 hover:text-white transition-colors">Why Choose Us</Link></li>
-              <li><Link to="/faq" className="text-primary-100 hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link to="/how-it-works" className="text-blue-100 hover:text-white transition-colors">How It Works</Link></li>
+              <li><Link to="/pricing" className="text-blue-100 hover:text-white transition-colors">Pricing</Link></li>
+              <li><Link to="/why-us" className="text-blue-100 hover:text-white transition-colors">Why Choose Us</Link></li>
+              <li><Link to="/faq" className="text-blue-100 hover:text-white transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
           {/* Services */}
           <div>
             <h3 className="font-semibold text-lg mb-4">Services</h3>
-            <ul className="space-y-2 text-primary-100">
+            <ul className="space-y-2 text-blue-100">
               <li>2-Year Maid Visa</li>
               <li>Visa Transfer</li>
               <li>Medical & Emirates ID</li>
@@ -48,16 +47,16 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Contact Info</h3>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-accent" />
-                <span className="text-primary-100">+971 50 123 4567</span>
+                <Phone className="w-5 h-5 text-gray-300" />
+                <span className="text-blue-100">+971 50 123 4567</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-accent" />
-                <span className="text-primary-100">info@tadvisas.com</span>
+                <Mail className="w-5 h-5 text-gray-300" />
+                <span className="text-blue-100">info@tadvisas.com</span>
               </div>
               <div className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-accent mt-1" />
-                <span className="text-primary-100">
+                <MapPin className="w-5 h-5 text-gray-300 mt-1" />
+                <span className="text-blue-100">
                   Tadmaids Center, Dubai, UAE
                 </span>
               </div>
@@ -65,8 +64,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-primary-600 mt-8 pt-8 text-center">
-          <p className="text-primary-100">
+        <div className="border-t border-blue-600 mt-8 pt-8 text-center">
+          <p className="text-blue-100">
             © 2025 TADVISAS.com - Tadmaids Domestic Workers Services Center. All rights reserved.
           </p>
         </div>
