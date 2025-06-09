@@ -18,6 +18,10 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  const handleCallClick = () => {
+    window.location.href = "tel:+971565822258";
+  };
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,7 +46,7 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Button className="bg-primary hover:bg-primary-700 text-white">
+            <Button onClick={handleCallClick} className="bg-primary hover:bg-primary-700 text-white">
               <Phone className="w-4 h-4 mr-2" />
               Call Now
             </Button>
@@ -74,7 +78,7 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                <Button className="w-full bg-primary hover:bg-primary-700 text-white">
+                <Button onClick={handleCallClick} className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Phone className="w-4 h-4 mr-2" />
                   Call Now
                 </Button>

@@ -4,12 +4,12 @@ import { Phone, MessageCircle, CheckCircle } from "lucide-react";
 
 const Hero = () => {
   const handleCallClick = () => {
-    window.location.href = "tel:+971501234567";
+    window.location.href = "tel:+971565822258";
   };
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    const url = `https://wa.me/971501234567?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 

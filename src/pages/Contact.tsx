@@ -40,6 +40,15 @@ const Contact = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleWhatsAppClick = () => {
+    const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
+    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = "tel:+971565822258";
+  };
+
   return (
     <Layout>
       <div className="py-20">
@@ -79,7 +88,7 @@ const Contact = () => {
                     <Input
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+971 50 123 4567"
+                      placeholder="+971 56 582 2258"
                       required
                     />
                   </div>
@@ -161,10 +170,7 @@ const Contact = () => {
                 <div className="space-y-4">
                   <Button 
                     className="w-full bg-green-500 hover:bg-green-600 text-white py-3"
-                    onClick={() => {
-                      const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-                      window.open(`https://wa.me/971501234567?text=${encodeURIComponent(message)}`, '_blank');
-                    }}
+                    onClick={handleWhatsAppClick}
                   >
                     <MessageCircle className="w-5 h-5 mr-3" />
                     WhatsApp Us Now
@@ -172,7 +178,7 @@ const Contact = () => {
                   <Button 
                     variant="outline" 
                     className="w-full border-white text-white hover:bg-white hover:text-primary py-3"
-                    onClick={() => window.location.href = "tel:+971501234567"}
+                    onClick={handleCallClick}
                   >
                     <Phone className="w-5 h-5 mr-3" />
                     Call Now
@@ -190,7 +196,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">Phone</div>
-                      <div className="text-gray-600">+971 50 123 4567</div>
+                      <div className="text-gray-600">+971 56 582 2258</div>
                     </div>
                   </div>
                   
@@ -200,7 +206,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">WhatsApp</div>
-                      <div className="text-gray-600">+971 50 123 4567</div>
+                      <div className="text-gray-600">+971 56 582 2258</div>
                     </div>
                   </div>
 
@@ -250,7 +256,7 @@ const Contact = () => {
                 <p className="text-gray-700 mb-4">
                   For urgent visa-related matters outside business hours:
                 </p>
-                <Button className="bg-red-600 hover:bg-red-700 text-white">
+                <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleWhatsAppClick}>
                   Emergency WhatsApp
                 </Button>
               </div>
