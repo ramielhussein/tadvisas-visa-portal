@@ -101,7 +101,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-orange-600">2</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Day 2-3</h4>
-                <p className="text-gray-600">Processing & Medical</p>
+                <p className="text-gray-600">Apply initial approval and entry permit</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
