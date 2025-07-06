@@ -68,7 +68,7 @@ const WhyUs = () => {
               Why Choose TADVISAS?
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Because we are not here to hook you up for 2 years. We have no intention of taking your maid under the pretense helping you. We do a service get paid once and will not blackmail you with monthly payments forever.
+              Because we are not here to hook you up for 2 years. We have no intention of taking your maid under the pretense of helping you. We do a service get paid once and will not blackmail you with monthly payments forever.
             </p>
           </div>
 
