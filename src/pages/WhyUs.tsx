@@ -180,7 +180,7 @@ const WhyUs = () => {
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Only 125 centers are licensed in UAE</span>
+                    <span>Only 150 centers are licensed in UAE</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
