@@ -15,7 +15,7 @@ const HowItWorks = () => {
       icon: FileText,
       title: "2. Documentation Collection",
       description: "We collect all necessary documents from you and your domestic worker in 2 minutes. Email or WhatsApp them and off we go.",
-      details: ["Passport copies", "Entry permit or cancellation", "Medical certificates", "Photos and forms"]
+      details: ["Passport copies", "Entry permit or cancellation", "A clear passport quality photo", "Photos and forms"]
     },
     {
       icon: Cog,
