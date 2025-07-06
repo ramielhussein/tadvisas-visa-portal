@@ -114,7 +114,7 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-green-600">✓</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 21+</h4>
+                <h4 className="font-semibold text-primary mb-2">Day 6-10</h4>
                 <p className="text-gray-600">Approval & Handover</p>
               </div>
             </div>
