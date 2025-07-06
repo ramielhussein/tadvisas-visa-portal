@@ -23,8 +23,8 @@ const ValueProposition = () => {
     },
     {
       icon: Users,
-      title: "1400+ Happy Clients",
-      description: "Trusted by over 1400 families across UAE. Join our satisfied customer base.",
+      title: "1700+ Happy Clients",
+      description: "Trusted by over 1700 families across UAE. Join our satisfied customer base.",
       color: "text-purple-500"
     }
   ];

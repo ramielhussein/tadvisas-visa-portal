@@ -20,7 +20,7 @@ const CTA = () => {
           Ready to Get Your Maid Visa?
         </h2>
         <p className="text-xl text-primary-100 mb-8 leading-relaxed">
-          Join over 1400 satisfied families who chose TADVISAS for their domestic worker visa needs. 
+          Join over 1700 satisfied families who chose TADVISAS for their domestic worker visa needs. 
           Get started today with zero monthly admin fees and complete transparency.
         </p>
         

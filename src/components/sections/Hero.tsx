@@ -79,7 +79,7 @@ const Hero = () => {
                 </h3>
                 <p className="text-gray-600 mb-6">
                   One of only 150 Tadbeer licensed centers in UAE. 
-                  Over 1400+ happy families trust us with their visa needs.
+                  Over 1700+ happy families trust us with their visa needs.
                 </p>
                 <div className="bg-gradient-gold text-white rounded-lg p-4">
                   <div className="text-3xl font-bold">0 AED</div>
