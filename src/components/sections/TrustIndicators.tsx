@@ -17,8 +17,8 @@ const TrustIndicators = () => {
     },
     {
       icon: Clock,
-      number: "5+ Years",
-      label: "Experience",
+      number: "22",
+      label: "Years Experience",
       color: "text-orange-500"
     },
     {

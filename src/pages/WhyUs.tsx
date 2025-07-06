@@ -86,7 +86,7 @@ const WhyUs = () => {
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">
               <Clock className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-primary">5+</div>
+              <div className="text-3xl font-bold text-primary">22</div>
               <div className="text-gray-600">Years Experience</div>
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">
