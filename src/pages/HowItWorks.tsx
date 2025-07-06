@@ -122,7 +122,7 @@ const HowItWorks = () => {
 
           {/* CTA Section */}
           <div className="text-center bg-gradient-primary rounded-2xl p-8 text-white">
-            <h2 className="text-3xl font-bold mb-4">We are ready, are you ready to start</h2>
+            <h2 className="text-3xl font-bold mb-4">We are ready, are you ready to start?</h2>
             <p className="text-xl text-primary-100 mb-6">
               Contact us today and let's begin your hassle-free visa process.
             </p>
