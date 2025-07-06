@@ -8,7 +8,7 @@ const HowItWorksPreview = () => {
     {
       icon: FileText,
       title: "Share Details",
-      description: "Share your maid's details or choose one through our extensive network.",
+      description: "Share your maid's Passport copy and Visa/Cancellation and your Emirates ID.",
       color: "text-blue-500"
     },
     {
