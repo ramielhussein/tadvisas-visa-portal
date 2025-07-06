@@ -20,7 +20,7 @@ const HowItWorksPreview = () => {
     {
       icon: CheckCircle,
       title: "You Receive",
-      description: "Get your domestic worker legally with 100% compliance and zero hassles.",
+      description: "Get your domestic worker legally with 100% compliance and zero hassles in as fast as 8 days.",
       color: "text-green-500"
     }
   ];
