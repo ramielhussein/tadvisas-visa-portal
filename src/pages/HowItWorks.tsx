@@ -107,7 +107,7 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-purple-600">3</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 11-20</h4>
+                <h4 className="font-semibold text-primary mb-2">Day 4-5</h4>
                 <p className="text-gray-600">Government Review</p>
               </div>
               <div className="text-center">
