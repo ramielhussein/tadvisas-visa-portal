@@ -12,7 +12,7 @@ const ValueProposition = () => {
     {
       icon: Shield,
       title: "100% Legal & Licensed",
-      description: "Fully licensed domestic workers services center. Legal compliance guaranteed.",
+      description: "Powered by TADMAIDS, fully licensed domestic workers services center. Legal compliance guaranteed.",
       color: "text-blue-500"
     },
     {
