@@ -19,7 +19,7 @@ const Navbar = () => {
   ];
 
   const handleCallClick = () => {
-    window.location.href = "tel:+971565822258";
+    window.location.href = "tel:+97143551186";
   };
 
   return (

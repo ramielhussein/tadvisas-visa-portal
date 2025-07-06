@@ -42,11 +42,11 @@ const Contact = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/97143551186?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCallClick = () => {
-    window.location.href = "tel:+971565822258";
+    window.location.href = "tel:+97143551186";
   };
 
   return (
@@ -88,7 +88,7 @@ const Contact = () => {
                     <Input
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
-                      placeholder="+971 56 582 2258"
+                      placeholder="+97143551186"
                       required
                     />
                   </div>
@@ -196,7 +196,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">Phone</div>
-                      <div className="text-gray-600">+971 56 582 2258</div>
+                      <div className="text-gray-600">+97143551186</div>
                     </div>
                   </div>
                   
@@ -206,7 +206,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">WhatsApp</div>
-                      <div className="text-gray-600">+971 56 582 2258</div>
+                      <div className="text-gray-600">+97143551186</div>
                     </div>
                   </div>
 
