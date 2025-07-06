@@ -76,7 +76,7 @@ const WhyUs = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">
               <Users className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-              <div className="text-3xl font-bold text-primary">1400+</div>
+              <div className="text-3xl font-bold text-primary">1700+</div>
               <div className="text-gray-600">Happy Families</div>
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">

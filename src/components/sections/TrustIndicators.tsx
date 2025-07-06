@@ -5,7 +5,7 @@ const TrustIndicators = () => {
   const stats = [
     {
       icon: Users,
-      number: "1400+",
+      number: "1700+",
       label: "Happy Families",
       color: "text-blue-500"
     },
