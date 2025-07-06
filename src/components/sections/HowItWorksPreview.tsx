@@ -14,7 +14,7 @@ const HowItWorksPreview = () => {
     {
       icon: Cog,
       title: "We Process",
-      description: "We handle all documentation, medical tests, and visa processing paperwork.",
+      description: "We handle all documentation, medical tests, and visa processing paperwork. We even send her a car to do all the needed steps. You relax.",
       color: "text-orange-500"
     },
     {
