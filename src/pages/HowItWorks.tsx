@@ -59,10 +59,10 @@ const HowItWorks = () => {
                       <h3 className="text-2xl font-bold text-primary">{step.title}</h3>
                     </div>
                     <p className="text-gray-600 text-lg mb-6">{step.description}</p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-center">
-                          <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                        <li key={idx} className="flex items-start">
+                          <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">{detail}</span>
                         </li>
                       ))}
