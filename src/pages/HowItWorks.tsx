@@ -93,7 +93,7 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-blue-600">1</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 1-2</h4>
+                <h4 className="font-semibold text-primary mb-2">day 1</h4>
                 <p className="text-gray-600">Consultation & Documentation</p>
               </div>
               <div className="text-center">
