@@ -21,7 +21,7 @@ const HowItWorks = () => {
       icon: Cog,
       title: "3. Visa Processing",
       description: "Our team handles all government procedures, medical tests, and paperwork.",
-      details: ["Government submissions", "Medical appointments", "Emirates ID processing", "Status updates"]
+      details: ["Government submissions (pre approval, visa, vpa, EID, medical)", "Medical appointments", "Emirates ID processing", "Status updates"]
     },
     {
       icon: FileCheck,
