@@ -115,7 +115,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-green-600">✓</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Day 6-10</h4>
-                <p className="text-gray-600">Approval & Handover</p>
+                <p className="text-gray-600">Take the worker to do Medical, Biometric & Tawjeeh. Get Emirates ID at completion.</p>
               </div>
             </div>
           </div>
