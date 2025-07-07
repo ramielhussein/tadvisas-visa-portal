@@ -241,9 +241,7 @@ const Contact = () => {
                     <div>
                       <div className="font-semibold text-primary">Working Hours</div>
                       <div className="text-gray-600">
-                        Sunday - Thursday: 9:00 AM - 6:00 PM<br />
-                        Saturday: 9:00 AM - 2:00 PM<br />
-                        Friday: Closed
+                        Open daily from 10 AM to 8 PM
                       </div>
                     </div>
                   </div>
