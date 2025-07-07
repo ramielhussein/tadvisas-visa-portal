@@ -51,13 +51,22 @@ const StartHere = () => {
       });
 
       // Call Supabase edge function
+      console.log('Submitting form data...');
       const response = await fetch('https://a7195519-dd5d-4962-9e4b-b0baeb42f481.supabase.co/functions/v1/send-application-email', {
         method: 'POST',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImE3MTk1NTE5LWRkNWQtNDk2Mi05ZTRiLWIwYmFlYjQyZjQ4MSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM2MjgxNzUyLCJleHAiOjIwNTE4NTc3NTJ9.VL_FhsHYvCJaJNMGNNY-NN2hDhPVJF0eDxWZWQCIGNo',
+        },
         body: submitData,
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
       if (!response.ok) {
-        throw new Error('Failed to submit application');
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to submit application: ${errorText}`);
       }
 
       // Show success page
