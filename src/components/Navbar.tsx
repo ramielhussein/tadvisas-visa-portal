@@ -16,6 +16,7 @@ const Navbar = () => {
     { name: "Why Us", path: "/why-us" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
+    { name: "START HERE & NOW", path: "/start-here" },
   ];
 
   const handleCallClick = () => {

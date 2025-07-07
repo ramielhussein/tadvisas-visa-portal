@@ -10,6 +10,7 @@ import Pricing from "./pages/Pricing";
 import WhyUs from "./pages/WhyUs";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import StartHere from "./pages/StartHere";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/why-us" element={<WhyUs />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/start-here" element={<StartHere />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
