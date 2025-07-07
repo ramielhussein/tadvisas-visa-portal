@@ -25,6 +25,12 @@ serve(async (req) => {
     const maidVisa = formData.get('maidVisa') as File
     const maidPhoto = formData.get('maidPhoto') as File
 
+    // Get Resend API key from environment
+    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    if (!resendApiKey) {
+      throw new Error('RESEND_API_KEY not found in environment variables')
+    }
+
     // Create email content
     const emailContent = `
       New Application Submission:
@@ -41,9 +47,25 @@ serve(async (req) => {
       - Maid Photo: ${maidPhoto ? maidPhoto.name : 'Not provided'}
     `
 
-    // For now, we'll return success - you'll need to integrate with an email service
-    // Popular options: Resend, SendGrid, or SMTP
-    console.log('Email would be sent to info@tadvisas.com with content:', emailContent)
+    // Send email using Resend
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'TAD Visas <noreply@tadvisas.com>',
+        to: ['info@tadvisas.com'],
+        subject: 'New Application Submission',
+        html: emailContent.replace(/\n/g, '<br>'),
+      }),
+    })
+
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.text()
+      throw new Error(`Failed to send email: ${errorData}`)
+    }
     
     return new Response(
       JSON.stringify({ success: true, message: 'Application submitted successfully' }),
