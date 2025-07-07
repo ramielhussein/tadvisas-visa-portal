@@ -206,7 +206,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">WhatsApp</div>
-                      <div className="text-gray-600">+97143551186</div>
+                      <div className="text-gray-600">+971565822258</div>
                     </div>
                   </div>
 
