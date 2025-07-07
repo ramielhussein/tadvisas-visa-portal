@@ -104,6 +104,10 @@
   .bg-gradient-light {
     background: linear-gradient(135deg, #F8F9FA 0%, #E3F2FD 100%);
   }
+
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  }
 }
 
 @layer utilities {
