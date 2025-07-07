@@ -229,7 +229,7 @@ const Contact = () => {
                       <div className="text-gray-600">
                         Tadmaids Domestic Workers<br />
                         Services Center<br />
-                        Dubai, UAE
+                        Croesus Retail 1, Majan, Dubai, UAE
                       </div>
                     </div>
                   </div>
