@@ -51,7 +51,7 @@ const StartHere = () => {
       });
 
       // Call Supabase edge function
-      const response = await fetch('/functions/v1/send-application-email', {
+      const response = await fetch('https://a7195519-dd5d-4962-9e4b-b0baeb42f481.supabase.co/functions/v1/send-application-email', {
         method: 'POST',
         body: submitData,
       });
