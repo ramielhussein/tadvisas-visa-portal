@@ -50,6 +50,16 @@ const StartHere = () => {
         }
       });
 
+      // Call Supabase edge function
+      const response = await fetch('/functions/v1/send-application-email', {
+        method: 'POST',
+        body: submitData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit application');
+      }
+
       // Show success page
       setIsSubmitted(true);
 
