@@ -70,7 +70,7 @@ const Pricing = () => {
 
           {/* Zero Monthly Fees Callout */}
           <div className="bg-gradient-gold text-white rounded-2xl p-8 text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">🎉 ZERO Monthly Admin Fees</h2>
+            <h2 className="text-3xl font-bold mb-4">ZERO Monthly Admin Fees</h2>
             <p className="text-xl">
               Unlike other providers who charge 200-500 AED monthly, we charge absolutely nothing after your visa is processed!
             </p>
