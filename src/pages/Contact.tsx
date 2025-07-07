@@ -42,7 +42,7 @@ const Contact = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    window.open(`https://wa.me/97143551186?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCallClick = () => {
@@ -254,7 +254,10 @@ const Contact = () => {
                 <p className="text-gray-700 mb-4">
                   For urgent visa-related matters outside business hours:
                 </p>
-                <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleWhatsAppClick}>
+                <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={() => {
+                  const emergencyMessage = "Emergency visa support needed!";
+                  window.open(`https://wa.me/00971588878256?text=${encodeURIComponent(emergencyMessage)}`, '_blank');
+                }}>
                   Emergency WhatsApp
                 </Button>
               </div>
