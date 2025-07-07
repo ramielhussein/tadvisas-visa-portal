@@ -50,8 +50,11 @@ const StartHere = () => {
         }
       });
 
-      // Call Supabase edge function
       console.log('Submitting form data...');
+      console.log('Form data:', { name: formData.name, number: formData.number, email: formData.email });
+      console.log('Files:', Object.entries(files).map(([key, file]) => ({ [key]: file ? file.name : 'None' })));
+      
+      // Call Supabase edge function
       const response = await fetch('https://a7195519-dd5d-4962-9e4b-b0baeb42f481.supabase.co/functions/v1/send-application-email', {
         method: 'POST',
         headers: {
@@ -69,6 +72,9 @@ const StartHere = () => {
         throw new Error(`Failed to submit application: ${errorText}`);
       }
 
+      const result = await response.json();
+      console.log('Success response:', result);
+
       // Show success page
       setIsSubmitted(true);
 
@@ -82,10 +88,16 @@ const StartHere = () => {
         maidPhoto: null
       });
 
+      toast({
+        title: "Success!",
+        description: "Your application has been submitted successfully.",
+      });
+
     } catch (error) {
+      console.error('Full error:', error);
       toast({
         title: "Error",
-        description: "Failed to submit application. Please try again.",
+        description: `Failed to submit application: ${error.message}`,
         variant: "destructive"
       });
     } finally {
