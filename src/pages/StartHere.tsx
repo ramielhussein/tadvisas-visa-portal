@@ -22,6 +22,7 @@ const StartHere = () => {
     maidPhoto: null as File | null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,11 +50,8 @@ const StartHere = () => {
         }
       });
 
-      // For now, show success message - you'll need to implement the actual email sending
-      toast({
-        title: "ABRA CADABRA! ✨",
-        description: "Your application has been submitted successfully! We'll contact you soon.",
-      });
+      // Show success page
+      setIsSubmitted(true);
 
       // Reset form
       setFormData({ name: "", number: "", email: "" });
@@ -115,6 +113,32 @@ const StartHere = () => {
       </CardContent>
     </Card>
   );
+
+  if (isSubmitted) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-light py-12 flex items-center justify-center">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="text-6xl mb-6">✨</div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
+                ABRA CADABRA!
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                Your application has been submitted successfully! We'll contact you soon.
+              </p>
+              <Button 
+                onClick={() => setIsSubmitted(false)}
+                className="bg-gradient-primary text-white px-8 py-3 text-lg font-semibold rounded-lg"
+              >
+                Submit Another Application
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
