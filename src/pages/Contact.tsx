@@ -42,7 +42,7 @@ const Contact = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/971585622258?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCallClick = () => {
@@ -206,7 +206,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">WhatsApp</div>
-                      <div className="text-gray-600">+971565822258</div>
+                      <div className="text-gray-600">+971585622258</div>
                     </div>
                   </div>
 
