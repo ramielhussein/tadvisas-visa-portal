@@ -150,7 +150,7 @@ const Pricing = () => {
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">750 Dhs Per Year</p>
               </div>
-              <div className="text-center p-6 border-2 border-accent rounded-xl">
+              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
                 <p className="text-gray-600">800 Dhs Split your payment into 4 easy installments.</p>
               </div>
