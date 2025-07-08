@@ -8,31 +8,37 @@ const WhyUs = () => {
     {
       feature: "MOHRE Licensed",
       us: true,
+      personalSponsorship: false,
       others: "Some"
     },
     {
       feature: "Monthly Admin Fees",
       us: "ZERO",
+      personalSponsorship: "ZERO",
       others: "200-500 AED"
     },
     {
       feature: "Transparent Pricing",
       us: true,
+      personalSponsorship: true,
       others: false
     },
     {
       feature: "Complete Documentation Support",
       us: true,
+      personalSponsorship: false,
       others: "Limited"
     },
     {
       feature: "Customer Support",
       us: "24/7",
+      personalSponsorship: "None",
       others: "Business Hours"
     },
     {
       feature: "Processing Time",
       us: "15-21 Days",
+      personalSponsorship: "30+ Days",
       others: "30+ Days"
     }
   ];
@@ -107,6 +113,7 @@ const WhyUs = () => {
                   <tr>
                     <th className="px-6 py-4 text-left text-lg font-semibold text-primary">Feature</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS</th>
+                    <th className="px-6 py-4 text-center text-lg font-semibold text-blue-600">Personal Sponsorship</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-gray-600">Others</th>
                   </tr>
                 </thead>
@@ -123,6 +130,17 @@ const WhyUs = () => {
                           )
                         ) : (
                           <span className="text-green-600 font-semibold">{row.us}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {typeof row.personalSponsorship === 'boolean' ? (
+                          row.personalSponsorship ? (
+                            <CheckCircle className="w-6 h-6 text-green-500 mx-auto" />
+                          ) : (
+                            <X className="w-6 h-6 text-red-500 mx-auto" />
+                          )
+                        ) : (
+                          <span className="text-blue-600 font-semibold">{row.personalSponsorship}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
