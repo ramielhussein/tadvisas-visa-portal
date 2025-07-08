@@ -163,7 +163,7 @@ const Pricing = () => {
           {/* CTA Section */}
           <div className="text-center bg-gradient-primary rounded-2xl p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Ready to start?</h2>
-            <p className="text-xl text-primary-100 mb-6 underline">
+            <p className="text-xl text-primary-100 mb-6">
               Make sure you have your Emirates ID photo, your Utility Bill, your worker's Passport Copy, your worker's Photo, your workers Entry Permit or Cancellation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
