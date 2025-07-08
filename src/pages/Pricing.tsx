@@ -50,7 +50,8 @@ const Pricing = () => {
     "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "Medical Insurance. (Buy it)",
-    "Additional processing costs"
+    "End Of service (pay your worker direct)",
+    "Return Home Ticket"
   ];
 
   return (
