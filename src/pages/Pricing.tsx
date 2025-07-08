@@ -142,7 +142,7 @@ const Pricing = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
-                <p className="text-gray-600">Pay the complete amount upfront and save on processing fees.</p>
+                <p className="text-gray-600">750 Dhs Per Year</p>
               </div>
               <div className="text-center p-6 border-2 border-accent rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Tabby (4 Payments)</h4>
