@@ -9,7 +9,7 @@ const Hero = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    const url = `https://wa.me/971585622258?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 

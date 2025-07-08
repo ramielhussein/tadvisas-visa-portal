@@ -129,7 +129,7 @@ const HowItWorks = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3" onClick={() => {
                 const message = "Hi! I'm ready to start my 2-year maid visa process. Can you help me?";
-                window.open(`https://wa.me/971585622258?text=${encodeURIComponent(message)}`, '_blank');
+                window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
               }}>
                 WhatsApp Us Now
               </Button>
