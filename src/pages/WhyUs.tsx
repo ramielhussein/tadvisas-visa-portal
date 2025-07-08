@@ -27,7 +27,7 @@ const WhyUs = () => {
       feature: "Complete Documentation Support",
       us: true,
       personalSponsorship: false,
-      others: "Limited"
+      others: true
     },
     {
       feature: "Customer Support",
