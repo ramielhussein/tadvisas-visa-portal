@@ -42,7 +42,11 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-gray-700 hover:text-primary font-medium transition-colors duration-200"
+                className={`font-medium transition-colors duration-200 ${
+                  item.name === "START HERE & NOW" 
+                    ? "bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-500 font-bold" 
+                    : "text-gray-700 hover:text-primary"
+                }`}
               >
                 {item.name}
               </Link>
@@ -72,7 +76,11 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="block px-3 py-2 text-gray-700 hover:text-primary font-medium"
+                  className={`block px-3 py-2 font-medium ${
+                    item.name === "START HERE & NOW"
+                      ? "bg-yellow-400 text-black rounded-lg mx-2 hover:bg-yellow-500 font-bold"
+                      : "text-gray-700 hover:text-primary"
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
