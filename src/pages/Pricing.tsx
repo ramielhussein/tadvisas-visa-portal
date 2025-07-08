@@ -76,34 +76,25 @@ const Pricing = () => {
             </p>
           </div>
 
-          {/* Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {pricingData.map((item, index) => (
-              <div 
-                key={index} 
-                className={`relative bg-white rounded-2xl p-6 shadow-lg hover-lift border-2 ${
-                  item.popular ? 'border-accent' : 'border-gray-200'
-                }`}
-              >
-                {item.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-primary mb-4">{item.nationality}</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold text-primary">{item.price}</span>
-                    <span className="text-gray-600"> AED</span>
-                  </div>
-                  <Button className="w-full bg-primary hover:bg-primary-700 text-white">
-                    Choose This Option
-                  </Button>
-                </div>
+          {/* Pricing Box */}
+          <div className="flex justify-center mb-16">
+            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-accent max-w-md w-full">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  VIP Service
+                </span>
               </div>
-            ))}
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa VIP Service</h3>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-primary">8,925</span>
+                  <span className="text-gray-600"> AED</span>
+                </div>
+                <Button className="w-full bg-primary hover:bg-primary-700 text-white">
+                  Choose This Option
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* What's Included/Not Included */}
