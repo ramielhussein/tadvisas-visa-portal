@@ -15,7 +15,7 @@ const StartHere = () => {
     name: "",
     number: "",
     email: "",
-    package: "",
+    package: "2-year-limited",
     addOns: {
       medicalInsurance1Year: false,
       medicalInsurance2Year: false,
@@ -93,7 +93,7 @@ const StartHere = () => {
         name: "", 
         number: "", 
         email: "", 
-        package: "",
+        package: "2-year-limited",
         addOns: {
           medicalInsurance1Year: false,
           medicalInsurance2Year: false,
