@@ -171,7 +171,7 @@ const Pricing = () => {
                 const message = "Hi! I'd like to get a quote for your 2-year maid visa service. Can you help me?";
                 window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
               }}>
-                Get Quote on WhatsApp
+                Start Here & Now
               </Button>
               <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-3">
                 Call for Quote
