@@ -9,7 +9,7 @@ const WhyUs = () => {
       feature: "MOHRE Licensed",
       us: true,
       personalSponsorship: false,
-      others: "Some"
+      others: true
     },
     {
       feature: "Monthly Admin Fees",
