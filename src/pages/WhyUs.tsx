@@ -31,7 +31,7 @@ const WhyUs = () => {
     },
     {
       feature: "Customer Support",
-      us: "24/7",
+      us: "10 AM to 10 PM Daily",
       personalSponsorship: "None",
       others: "Business Hours"
     },
