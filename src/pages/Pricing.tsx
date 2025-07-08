@@ -171,7 +171,9 @@ const Pricing = () => {
               <Button asChild className="bg-green-500 hover:bg-green-600 text-white px-8 py-3">
                 <Link to="/start-here">Start Here & Now</Link>
               </Button>
-              <Button variant="outline" className="border-white text-green-500 hover:bg-white hover:text-primary px-8 py-3">
+              <Button variant="outline" className="border-white text-green-500 hover:bg-white hover:text-primary px-8 py-3" onClick={() => {
+                window.location.href = "tel:+971565822258";
+              }}>
                 Call 0565822258 for help
               </Button>
             </div>
