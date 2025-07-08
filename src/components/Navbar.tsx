@@ -16,7 +16,7 @@ const Navbar = () => {
     { name: "Why Us", path: "/why-us" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
-    { name: "START HERE & NOW", path: "/start-here" },
+    { name: "Start Here & Now", path: "/start-here" },
   ];
 
   const handleCallClick = () => {
@@ -43,7 +43,7 @@ const Navbar = () => {
                 key={item.name}
                 to={item.path}
                 className={`font-medium transition-colors duration-200 ${
-                  item.name === "START HERE & NOW" 
+                  item.name === "Start Here & Now" 
                     ? "bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-500 font-bold" 
                     : "text-gray-700 hover:text-primary"
                 }`}
@@ -77,7 +77,7 @@ const Navbar = () => {
                   key={item.name}
                   to={item.path}
                   className={`block px-3 py-2 font-medium ${
-                    item.name === "START HERE & NOW"
+                    item.name === "Start Here & Now"
                       ? "bg-yellow-400 text-black rounded-lg mx-2 hover:bg-yellow-500 font-bold"
                       : "text-gray-700 hover:text-primary"
                   }`}
