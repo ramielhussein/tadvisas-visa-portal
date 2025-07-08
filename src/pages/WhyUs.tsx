@@ -40,6 +40,12 @@ const WhyUs = () => {
       us: "7-12 Business Days",
       personalSponsorship: "Varies",
       others: "Varies"
+    },
+    {
+      feature: "Free Transportation",
+      us: true,
+      personalSponsorship: false,
+      others: false
     }
   ];
 
