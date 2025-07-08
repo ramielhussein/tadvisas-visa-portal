@@ -15,7 +15,7 @@ const WhyUs = () => {
       feature: "Monthly Admin Fees",
       us: "ZERO",
       personalSponsorship: "ZERO",
-      others: "200-500 AED"
+      others: "140-250 AED"
     },
     {
       feature: "Transparent Pricing",
