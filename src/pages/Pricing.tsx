@@ -162,7 +162,7 @@ const Pricing = () => {
 
           {/* CTA Section */}
           <div className="text-center bg-gradient-primary rounded-2xl p-8 text-white">
-            <h2 className="text-3xl font-bold mb-4">Get Your Custom Quote</h2>
+            <h2 className="text-3xl font-bold mb-4">Ready to start?</h2>
             <p className="text-xl text-primary-100 mb-6">
               Contact us now to get a personalized quote based on your specific requirements.
             </p>
