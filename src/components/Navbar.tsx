@@ -44,7 +44,7 @@ const Navbar = () => {
                 to={item.path}
                 className={`font-medium transition-colors duration-200 ${
                   item.name === "Start Here & Now" 
-                    ? "bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-500 font-bold" 
+                    ? "bg-yellow-500 text-black px-4 py-2 rounded-full hover:bg-yellow-600 font-bold" 
                     : "text-gray-700 hover:text-primary"
                 }`}
               >
@@ -78,7 +78,7 @@ const Navbar = () => {
                   to={item.path}
                   className={`block px-3 py-2 font-medium ${
                     item.name === "Start Here & Now"
-                      ? "bg-yellow-400 text-black rounded-lg mx-2 hover:bg-yellow-500 font-bold"
+                      ? "bg-yellow-500 text-black rounded-lg mx-2 hover:bg-yellow-600 font-bold"
                       : "text-gray-700 hover:text-primary"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
