@@ -105,7 +105,7 @@ const WhyUs = () => {
           {/* Comparison Table */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
             <div className="bg-primary text-white p-6">
-              <h2 className="text-3xl font-bold text-center">TADVISAS vs Other Centers</h2>
+              <h2 className="text-3xl font-bold text-center">How does TADVISAS compare?</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
