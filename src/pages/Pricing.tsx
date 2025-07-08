@@ -91,7 +91,7 @@ const Pricing = () => {
                   <span className="text-gray-600"> AED</span>
                 </div>
                 <Button className="w-full bg-primary hover:bg-primary-700 text-white">
-                  Choose This Option
+                  UAE
                 </Button>
               </div>
             </div>
