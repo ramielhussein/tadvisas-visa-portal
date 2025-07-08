@@ -164,7 +164,7 @@ const Pricing = () => {
           <div className="text-center bg-gradient-primary rounded-2xl p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Ready to start?</h2>
             <p className="text-xl text-primary-100 mb-6">
-              Contact us now to get a personalized quote based on your specific requirements.
+              Make sure you have your Emirates ID photo, your Utility Bill, your worker's Passport Copy, your worker's Photo, your workers Entry Permit or Cancellation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3" onClick={() => {
