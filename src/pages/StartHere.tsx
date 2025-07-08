@@ -292,7 +292,11 @@ const StartHere = () => {
                     onCheckedChange={(checked) => 
                       setFormData({
                         ...formData, 
-                        addOns: { ...formData.addOns, medicalInsurance1Year: checked as boolean }
+                        addOns: { 
+                          ...formData.addOns, 
+                          medicalInsurance1Year: checked as boolean,
+                          medicalInsurance2Year: checked ? false : formData.addOns.medicalInsurance2Year
+                        }
                       })
                     }
                   />
@@ -307,7 +311,11 @@ const StartHere = () => {
                     onCheckedChange={(checked) => 
                       setFormData({
                         ...formData, 
-                        addOns: { ...formData.addOns, medicalInsurance2Year: checked as boolean }
+                        addOns: { 
+                          ...formData.addOns, 
+                          medicalInsurance2Year: checked as boolean,
+                          medicalInsurance1Year: checked ? false : formData.addOns.medicalInsurance1Year
+                        }
                       })
                     }
                   />
