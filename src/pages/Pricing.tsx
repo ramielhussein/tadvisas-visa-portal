@@ -49,7 +49,7 @@ const Pricing = () => {
   const notIncluded = [
     "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
-    "Renewal fees for 2 years",
+    "Medical Insurance. (Buy it)",
     "Additional processing costs"
   ];
 
