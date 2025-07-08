@@ -145,7 +145,7 @@ const Pricing = () => {
                 <p className="text-gray-600">750 Dhs Per Year</p>
               </div>
               <div className="text-center p-6 border-2 border-accent rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Tabby (4 Payments)</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
                 <p className="text-gray-600">Split your payment into 4 easy installments with Tabby.</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
