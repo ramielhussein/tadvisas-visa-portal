@@ -33,7 +33,7 @@ const WhyUs = () => {
       feature: "Customer Support",
       us: "10 AM to 10 PM Daily",
       personalSponsorship: "None",
-      others: "Business Hours"
+      others: "Varies"
     },
     {
       feature: "Processing Time",
