@@ -39,7 +39,7 @@ const WhyUs = () => {
       feature: "Processing Time",
       us: "7-12 Business Days",
       personalSponsorship: "30+ Days",
-      others: "30+ Days"
+      others: "Varies"
     }
   ];
 
