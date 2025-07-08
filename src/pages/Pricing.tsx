@@ -42,7 +42,7 @@ const Pricing = () => {
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
-    "Documentation support",
+    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Legal compliance guarantee"
   ];
 
