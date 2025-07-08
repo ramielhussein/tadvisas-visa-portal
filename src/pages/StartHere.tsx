@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText, CreditCard, User, Home, BookOpen } from "lucide-react";
+import { Upload, FileText, CreditCard, User, Home, BookOpen, Package } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,7 +13,8 @@ const StartHere = () => {
   const [formData, setFormData] = useState({
     name: "",
     number: "",
-    email: ""
+    email: "",
+    package: ""
   });
   const [files, setFiles] = useState({
     emiratesId: null as File | null,
@@ -42,6 +44,7 @@ const StartHere = () => {
       submitData.append('name', formData.name);
       submitData.append('number', formData.number);
       submitData.append('email', formData.email);
+      submitData.append('package', formData.package);
       
       // Add files to FormData
       Object.entries(files).forEach(([key, file]) => {
@@ -51,7 +54,7 @@ const StartHere = () => {
       });
 
       console.log('Submitting form data...');
-      console.log('Form data:', { name: formData.name, number: formData.number, email: formData.email });
+      console.log('Form data:', { name: formData.name, number: formData.number, email: formData.email, package: formData.package });
       console.log('Files:', Object.entries(files).map(([key, file]) => ({ [key]: file ? file.name : 'None' })));
       
       // Call Supabase edge function
@@ -79,7 +82,7 @@ const StartHere = () => {
       setIsSubmitted(true);
 
       // Reset form
-      setFormData({ name: "", number: "", email: "" });
+      setFormData({ name: "", number: "", email: "", package: "" });
       setFiles({
         emiratesId: null,
         dewaBill: null,
@@ -227,6 +230,30 @@ const StartHere = () => {
                     onChange={handleInputChange}
                     placeholder="Enter your email address"
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Package Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-primary" />
+                  Select Package
+                </CardTitle>
+                <CardDescription>Choose your visa package</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Label htmlFor="package">Package</Label>
+                  <Select value={formData.package} onValueChange={(value) => setFormData({...formData, package: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a package" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2-year-limited">2 Years Maid Visa - Limited Offer 8925 AED</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
