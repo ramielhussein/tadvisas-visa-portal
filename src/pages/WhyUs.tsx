@@ -6,7 +6,7 @@ import { CheckCircle, X, Star, Award, Users, Clock } from "lucide-react";
 const WhyUs = () => {
   const comparison = [
     {
-      feature: "Tadbeer Licensed",
+      feature: "MOHRE Licensed",
       us: true,
       others: "Some"
     },
@@ -82,7 +82,7 @@ const WhyUs = () => {
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">
               <Award className="w-12 h-12 text-green-500 mx-auto mb-4" />
               <div className="text-3xl font-bold text-primary">100%</div>
-              <div className="text-gray-600">Tadbeer Licensed</div>
+              <div className="text-gray-600">MOHRE Licensed</div>
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-lg">
               <Clock className="w-12 h-12 text-orange-500 mx-auto mb-4" />
@@ -199,7 +199,7 @@ const WhyUs = () => {
                 <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <Award className="w-16 h-16 text-primary" />
                 </div>
-                <p className="text-primary font-semibold">100% Tadbeer Licensed</p>
+                <p className="text-primary font-semibold">100% MOHRE Licensed</p>
               </div>
             </div>
           </div>
