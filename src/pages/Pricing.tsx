@@ -151,7 +151,7 @@ const Pricing = () => {
                 <p className="text-gray-600">750 One Year Medical Insurance</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Tamara (3 Payments)</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">Pay in 3 convenient installments using Tamara.</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
