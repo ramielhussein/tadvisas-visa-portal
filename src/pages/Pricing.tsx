@@ -51,7 +51,8 @@ const Pricing = () => {
     "Hidden charges",
     "Medical Insurance. (Buy it)",
     "End Of service (pay your worker direct)",
-    "Return Home Ticket"
+    "Return Home Ticket",
+    "Fake Promises to keep you hooked"
   ];
 
   return (
