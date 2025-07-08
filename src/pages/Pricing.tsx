@@ -98,8 +98,8 @@ const Pricing = () => {
                   <span className="text-5xl font-bold text-primary">8,925</span>
                   <span className="text-gray-600"> AED</span>
                 </div>
-                <Button className="w-full bg-primary hover:bg-primary-700 text-white">
-                  UAE's Best Value Package
+                <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
+                  <Link to="/start-here">UAE's Best Value Package</Link>
                 </Button>
               </div>
             </div>
