@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, FileText, CreditCard, User, Home, BookOpen, Package } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,7 +15,12 @@ const StartHere = () => {
     name: "",
     number: "",
     email: "",
-    package: ""
+    package: "",
+    addOns: {
+      medicalInsurance1Year: false,
+      medicalInsurance2Year: false,
+      installmentPlan: false
+    }
   });
   const [files, setFiles] = useState({
     emiratesId: null as File | null,
@@ -45,6 +51,7 @@ const StartHere = () => {
       submitData.append('number', formData.number);
       submitData.append('email', formData.email);
       submitData.append('package', formData.package);
+      submitData.append('addOns', JSON.stringify(formData.addOns));
       
       // Add files to FormData
       Object.entries(files).forEach(([key, file]) => {
@@ -54,7 +61,7 @@ const StartHere = () => {
       });
 
       console.log('Submitting form data...');
-      console.log('Form data:', { name: formData.name, number: formData.number, email: formData.email, package: formData.package });
+      console.log('Form data:', { name: formData.name, number: formData.number, email: formData.email, package: formData.package, addOns: formData.addOns });
       console.log('Files:', Object.entries(files).map(([key, file]) => ({ [key]: file ? file.name : 'None' })));
       
       // Call Supabase edge function
@@ -82,7 +89,17 @@ const StartHere = () => {
       setIsSubmitted(true);
 
       // Reset form
-      setFormData({ name: "", number: "", email: "", package: "" });
+      setFormData({ 
+        name: "", 
+        number: "", 
+        email: "", 
+        package: "",
+        addOns: {
+          medicalInsurance1Year: false,
+          medicalInsurance2Year: false,
+          installmentPlan: false
+        }
+      });
       setFiles({
         emiratesId: null,
         dewaBill: null,
@@ -254,6 +271,64 @@ const StartHere = () => {
                       <SelectItem value="2-year-limited">2 Years Maid Visa - Limited Offer 8925 AED</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Add-Ons Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-primary" />
+                  Select Add-Ons
+                </CardTitle>
+                <CardDescription>Choose optional add-ons for your package</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="medicalInsurance1Year"
+                    checked={formData.addOns.medicalInsurance1Year}
+                    onCheckedChange={(checked) => 
+                      setFormData({
+                        ...formData, 
+                        addOns: { ...formData.addOns, medicalInsurance1Year: checked as boolean }
+                      })
+                    }
+                  />
+                  <Label htmlFor="medicalInsurance1Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    1 Year Medical Insurance 750 AED
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="medicalInsurance2Year"
+                    checked={formData.addOns.medicalInsurance2Year}
+                    onCheckedChange={(checked) => 
+                      setFormData({
+                        ...formData, 
+                        addOns: { ...formData.addOns, medicalInsurance2Year: checked as boolean }
+                      })
+                    }
+                  />
+                  <Label htmlFor="medicalInsurance2Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    2 Year Medical Insurance 1500 AED
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="installmentPlan"
+                    checked={formData.addOns.installmentPlan}
+                    onCheckedChange={(checked) => 
+                      setFormData({
+                        ...formData, 
+                        addOns: { ...formData.addOns, installmentPlan: checked as boolean }
+                      })
+                    }
+                  />
+                  <Label htmlFor="installmentPlan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Installment Plan 800 AED
+                  </Label>
                 </div>
               </CardContent>
             </Card>
