@@ -85,7 +85,7 @@ const Pricing = () => {
                 </span>
               </div>
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa VIP Service</h3>
+                <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa</h3>
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-primary">8,925</span>
                   <span className="text-gray-600"> AED</span>
