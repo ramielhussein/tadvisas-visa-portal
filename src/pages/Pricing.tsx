@@ -173,7 +173,7 @@ const Pricing = () => {
               }}>
                 Start Here & Now
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-3">
+              <Button variant="outline" className="border-white text-green-500 hover:bg-white hover:text-primary px-8 py-3">
                 Call for Quote
               </Button>
             </div>
