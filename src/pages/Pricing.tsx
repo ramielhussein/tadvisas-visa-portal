@@ -2,6 +2,7 @@
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Pricing = () => {
   const pricingData = [
@@ -167,11 +168,8 @@ const Pricing = () => {
               Make sure you have your <u>Emirates ID photo, your Utility Bill, your worker's Passport Copy, your worker's Photo, your workers Entry Permit or Cancellation</u>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3" onClick={() => {
-                const message = "Hi! I'd like to get a quote for your 2-year maid visa service. Can you help me?";
-                window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
-              }}>
-                Start Here & Now
+              <Button asChild className="bg-green-500 hover:bg-green-600 text-white px-8 py-3">
+                <Link to="/start-here">Start Here & Now</Link>
               </Button>
               <Button variant="outline" className="border-white text-green-500 hover:bg-white hover:text-primary px-8 py-3">
                 Call 0565822258 for help
