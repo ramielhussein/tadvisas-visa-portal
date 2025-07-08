@@ -105,7 +105,7 @@ const WhyUs = () => {
           {/* Comparison Table */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-16">
             <div className="bg-primary text-white p-6">
-              <h2 className="text-3xl font-bold text-center">TADVISAS vs Others</h2>
+              <h2 className="text-3xl font-bold text-center">TADVISAS vs Other Centers</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -114,7 +114,7 @@ const WhyUs = () => {
                     <th className="px-6 py-4 text-left text-lg font-semibold text-primary">Feature</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-blue-600">Personal Sponsorship</th>
-                    <th className="px-6 py-4 text-center text-lg font-semibold text-gray-600">Others</th>
+                    <th className="px-6 py-4 text-center text-lg font-semibold text-gray-600">Other Centers</th>
                   </tr>
                 </thead>
                 <tbody>
