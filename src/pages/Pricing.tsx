@@ -137,7 +137,7 @@ const Pricing = () => {
           {/* Payment Options */}
           <div className="bg-white rounded-2xl p-8 shadow-lg mb-16">
             <h2 className="text-3xl font-bold text-primary text-center mb-8">
-              Flexible Payment Options
+              Addons you can buy IF YOU WISH
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
