@@ -119,7 +119,7 @@ const Pricing = () => {
             <div className="bg-red-50 rounded-2xl p-8">
               <h3 className="text-2xl font-bold text-primary mb-6 flex items-center">
                 <X className="w-8 h-8 text-red-500 mr-3" />
-                What We DON'T Charge
+                What is NOT included
               </h3>
               <ul className="space-y-3">
                 {notIncluded.map((item, index) => (
