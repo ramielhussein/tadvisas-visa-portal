@@ -165,7 +165,7 @@ const Pricing = () => {
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Absconding Report</h4>
-                <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge.</p>
+                <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge</p>
               </div>
             </div>
           </div>
