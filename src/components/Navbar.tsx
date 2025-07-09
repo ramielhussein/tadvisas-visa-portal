@@ -20,7 +20,7 @@ const Navbar = () => {
   ];
 
   const handleCallClick = () => {
-    window.location.href = "tel:+97143551186";
+    window.location.href = "tel:+971565822258";
   };
 
   return (
@@ -53,7 +53,7 @@ const Navbar = () => {
             ))}
             <Button onClick={handleCallClick} className="bg-primary hover:bg-primary-700 text-white">
               <Phone className="w-4 h-4 mr-2" />
-              Call Now
+              Call 0565822258 for help
             </Button>
           </div>
 
@@ -89,7 +89,7 @@ const Navbar = () => {
               <div className="px-3 py-2">
                 <Button onClick={handleCallClick} className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Now
+                  Call 0565822258 for help
                 </Button>
               </div>
             </div>
