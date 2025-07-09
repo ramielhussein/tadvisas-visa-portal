@@ -70,6 +70,12 @@ const WhyUs = () => {
       us: true,
       personalSponsorship: "Not required",
       others: "150 to 500 Per permit"
+    },
+    {
+      feature: "Medical Insurance",
+      us: "735 one time",
+      personalSponsorship: false,
+      others: "170 per month"
     }
   ];
 
