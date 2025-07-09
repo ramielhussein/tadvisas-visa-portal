@@ -238,8 +238,12 @@ const WhyUs = () => {
               <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3">
                 Choose TADVISAS Today
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary px-8 py-3">
-                Learn More
+              <Button 
+                variant="outline-white" 
+                className="px-8 py-3"
+                onClick={() => window.location.href = "tel:+971565822258"}
+              >
+                Call 0565822258 for help
               </Button>
             </div>
           </div>
