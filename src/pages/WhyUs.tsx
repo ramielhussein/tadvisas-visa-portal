@@ -6,6 +6,12 @@ import { CheckCircle, X, Star, Award, Users, Clock, Phone } from "lucide-react";
 const WhyUs = () => {
   const comparison = [
     {
+      feature: "Cost 1 Year Visa",
+      us: "8925",
+      personalSponsorship: "9000",
+      others: "8400"
+    },
+    {
       feature: "MOHRE Licensed",
       us: true,
       personalSponsorship: false,
