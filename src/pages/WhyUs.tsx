@@ -12,6 +12,12 @@ const WhyUs = () => {
       others: "8400"
     },
     {
+      feature: "Cost 2 Year Visa",
+      us: "8925",
+      personalSponsorship: "16000",
+      others: "8400"
+    },
+    {
       feature: "MOHRE Licensed",
       us: true,
       personalSponsorship: false,
