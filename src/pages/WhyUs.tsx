@@ -24,6 +24,12 @@ const WhyUs = () => {
       others: "140-250 AED"
     },
     {
+      feature: "Free Transportation",
+      us: true,
+      personalSponsorship: false,
+      others: false
+    },
+    {
       feature: "MOHRE Licensed",
       us: true,
       personalSponsorship: false,
@@ -52,12 +58,6 @@ const WhyUs = () => {
       us: "7-12 Business Days",
       personalSponsorship: "Varies",
       others: "Varies"
-    },
-    {
-      feature: "Free Transportation",
-      us: true,
-      personalSponsorship: false,
-      others: false
     }
   ];
 
