@@ -168,7 +168,7 @@ const Pricing = () => {
                 <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Out of Dubai Transportation</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">Abscond/Fine Support</h4>
                 <p className="text-gray-600">300 AED to take the worker for her Medical, Biometric & Tawjeeh</p>
               </div>
             </div>
