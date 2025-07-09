@@ -44,7 +44,8 @@ const Pricing = () => {
     "Emirates ID processing",
     "All government fees",
     "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
-    "Legal compliance guarantee"
+    "Legal compliance guarantee",
+    "NOC to travel with you."
   ];
 
   const notIncluded = [
