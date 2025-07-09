@@ -144,9 +144,9 @@ const Pricing = () => {
           {/* Payment Options */}
           <div className="bg-white rounded-2xl p-8 shadow-lg mb-16">
             <h2 className="text-3xl font-bold text-primary text-center mb-8">
-              Addons you can buy, only IF YOU WISH or need
+              Addons you can buy, only IF YOU WISH
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">750 One Year Medical Insurance</p>
@@ -158,6 +158,14 @@ const Pricing = () => {
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
                 <p className="text-gray-600">800 Dhs Split your payment into 4 easy installments.</p>
+              </div>
+              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
+                <h4 className="text-xl font-semibold text-primary mb-3">Early Visa Cancellation</h4>
+                <p className="text-gray-600">300 AED if you wish us to cancel the visa of the worker for any reason</p>
+              </div>
+              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
+                <h4 className="text-xl font-semibold text-primary mb-3">Absconding Report</h4>
+                <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge.</p>
               </div>
             </div>
           </div>
