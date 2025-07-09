@@ -58,6 +58,12 @@ const WhyUs = () => {
       us: "7-12 Business Days",
       personalSponsorship: "Varies",
       others: "Varies"
+    },
+    {
+      feature: "Absocond/Fines Removal",
+      us: true,
+      personalSponsorship: false,
+      others: true
     }
   ];
 
