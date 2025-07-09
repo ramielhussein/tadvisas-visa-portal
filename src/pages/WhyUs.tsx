@@ -18,16 +18,16 @@ const WhyUs = () => {
       others: "8400"
     },
     {
-      feature: "MOHRE Licensed",
-      us: true,
-      personalSponsorship: false,
-      others: true
-    },
-    {
       feature: "Monthly Admin Fees",
       us: "ZERO",
       personalSponsorship: "ZERO",
       others: "140-250 AED"
+    },
+    {
+      feature: "MOHRE Licensed",
+      us: true,
+      personalSponsorship: false,
+      others: true
     },
     {
       feature: "Transparent Pricing",
