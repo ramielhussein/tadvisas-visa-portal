@@ -169,7 +169,7 @@ const Pricing = () => {
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Abscond/Fine Support</h4>
-                <p className="text-gray-600">300 AED to take the worker for her Medical, Biometric & Tawjeeh</p>
+                <p className="text-gray-600">If your worker have an issue with regards to fines or absconding, we can help, call for fees</p>
               </div>
             </div>
           </div>
