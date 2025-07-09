@@ -168,7 +168,7 @@ const Pricing = () => {
                 <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Abscond/Fine Support</h4>
+                <h4 className="text-xl font-semibold text-primary mb-3">Legal/Fines Support</h4>
                 <p className="text-gray-600">If your worker have an issue with regards to fines or absconding, we can help, call for fees</p>
               </div>
             </div>
