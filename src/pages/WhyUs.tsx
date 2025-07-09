@@ -64,6 +64,12 @@ const WhyUs = () => {
       us: true,
       personalSponsorship: false,
       others: true
+    },
+    {
+      feature: "NOC to travel with you",
+      us: true,
+      personalSponsorship: "Not required",
+      others: "150 to 500 Per permit"
     }
   ];
 
