@@ -177,7 +177,7 @@ const Contact = () => {
                   </Button>
                   <Button 
                     variant="outline-white" 
-                    className="w-full py-3"
+                    className="w-full px-8 py-4 text-lg font-semibold transition-all duration-300"
                     onClick={handleCallClick}
                   >
                     <Phone className="w-5 h-5 mr-3" />

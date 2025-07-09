@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, X, Star, Award, Users, Clock } from "lucide-react";
+import { CheckCircle, X, Star, Award, Users, Clock, Phone } from "lucide-react";
 
 const WhyUs = () => {
   const comparison = [
@@ -240,9 +240,10 @@ const WhyUs = () => {
               </Button>
               <Button 
                 variant="outline-white" 
-                className="px-8 py-3"
+                className="px-8 py-4 text-lg font-semibold transition-all duration-300"
                 onClick={() => window.location.href = "tel:+971565822258"}
               >
+                <Phone className="w-5 h-5 mr-3" />
                 Call 0565822258 for help
               </Button>
             </div>
