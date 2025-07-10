@@ -12,7 +12,7 @@ const TrustIndicators = () => {
     {
       icon: Award,
       number: "100%",
-      label: "Tadbeer Licensed",
+      label: "MOHRE Licensed",
       color: "text-green-500"
     },
     {
