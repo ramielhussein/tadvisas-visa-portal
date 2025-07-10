@@ -107,7 +107,7 @@ const WhyUs = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-              Why Choose TADVISAS?
+              Compare
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Because we are not here to hook you up for 2 years. We have no intention of taking your maid under the pretense of helping you. We do a service get paid once and will not blackmail you with monthly payments forever.
