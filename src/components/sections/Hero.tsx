@@ -28,7 +28,7 @@ const Hero = () => {
             </h1>
             
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Get your 2-year maid visa processed by UAE's most trusted Tadbeer licensed center. 
+              Get your 2-year maid visa processed by UAE's most trusted MOHRE licensed center. 
               Transparent pricing, zero monthly admin fees, and 100% legal compliance guaranteed.
             </p>
 
@@ -36,7 +36,7 @@ const Hero = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
               {[
                 "No Monthly Admin Fees",
-                "100% Tadbeer Licensed",
+                "100% MOHRE Licensed",
                 "Fast & Legal Processing",
                 "Transparent Pricing"
               ].map((benefit, index) => (
@@ -78,7 +78,7 @@ const Hero = () => {
                   Licensed & Trusted
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  One of only 150 Tadbeer licensed centers in UAE. 
+                  One of only 150 MOHRE licensed centers in UAE. 
                   Over 1700+ happy families trust us with their visa needs.
                 </p>
                 <div className="bg-gradient-gold text-white rounded-lg p-4">
