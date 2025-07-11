@@ -8,78 +8,91 @@ const WhyUs = () => {
     {
       feature: "Cost 1 Year Visa",
       us: "8925",
+      tadvisasPlus: "8400",
       personalSponsorship: "9000",
       others: "8400"
     },
     {
       feature: "Cost 2 Year Visa",
       us: "8925",
+      tadvisasPlus: "8400",
       personalSponsorship: "16000",
       others: "8400"
     },
     {
       feature: "Monthly Admin Fees",
       us: "ZERO",
+      tadvisasPlus: "150",
       personalSponsorship: "ZERO",
       others: "140-250 AED"
     },
     {
       feature: "Free Transportation",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: false,
       others: false
     },
     {
       feature: "MOHRE Licensed",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: false,
       others: true
     },
     {
       feature: "Transparent Pricing",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: true,
       others: false
     },
     {
       feature: "Complete Documentation Support",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: false,
       others: true
     },
     {
       feature: "Customer Support",
       us: "10 AM to 10 PM Daily",
+      tadvisasPlus: "10 AM to 10 PM Daily",
       personalSponsorship: "None",
       others: "Varies"
     },
     {
       feature: "Processing Time",
       us: "7-12 Business Days",
+      tadvisasPlus: "7-12 Business Days",
       personalSponsorship: "Varies",
       others: "Varies"
     },
     {
       feature: "Absocond/Fines Removal",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: false,
       others: true
     },
     {
       feature: "NOC to travel with you",
       us: true,
+      tadvisasPlus: true,
       personalSponsorship: "Not required",
       others: "150 to 500 Per permit"
     },
     {
       feature: "Medical Insurance",
       us: "735 one time",
+      tadvisasPlus: "Free",
       personalSponsorship: false,
       others: "170 per month"
     },
     {
       feature: "WPS Salary Process Fee",
       us: "Free",
+      tadvisasPlus: "Free",
       personalSponsorship: false,
       others: "140-250 AED"
     }
@@ -155,6 +168,7 @@ const WhyUs = () => {
                   <tr>
                     <th className="px-6 py-4 text-left text-lg font-semibold text-primary">Feature</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS</th>
+                    <th className="px-6 py-4 text-center text-lg font-semibold text-purple-600">TADVISAS+</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-blue-600">Personal Sponsorship</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-gray-600">Other Centers</th>
                   </tr>
@@ -172,6 +186,17 @@ const WhyUs = () => {
                           )
                         ) : (
                           <span className="text-green-600 font-semibold">{row.us}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {typeof row.tadvisasPlus === 'boolean' ? (
+                          row.tadvisasPlus ? (
+                            <CheckCircle className="w-6 h-6 text-green-500 mx-auto" />
+                          ) : (
+                            <X className="w-6 h-6 text-red-500 mx-auto" />
+                          )
+                        ) : (
+                          <span className="text-purple-600 font-semibold">{row.tadvisasPlus}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
