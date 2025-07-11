@@ -168,7 +168,7 @@ const WhyUs = () => {
                   <tr>
                     <th className="px-6 py-4 text-left text-lg font-semibold text-primary">Feature</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS</th>
-                    <th className="px-6 py-4 text-center text-lg font-semibold text-purple-600">TADVISAS+</th>
+                    <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS+</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-blue-600">Personal Sponsorship</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-gray-600">Other Centers</th>
                   </tr>
@@ -196,7 +196,7 @@ const WhyUs = () => {
                             <X className="w-6 h-6 text-red-500 mx-auto" />
                           )
                         ) : (
-                          <span className="text-purple-600 font-semibold">{row.tadvisasPlus}</span>
+                          <span className="text-green-600 font-semibold">{row.tadvisasPlus}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
