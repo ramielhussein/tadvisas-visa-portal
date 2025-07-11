@@ -81,7 +81,7 @@ const WhyUs = () => {
       feature: "WPS Salary Process Fee",
       us: "Free",
       personalSponsorship: false,
-      others: "140-250"
+      others: "140-250 AED"
     }
   ];
 
