@@ -84,7 +84,7 @@ const WhyUs = () => {
     },
     {
       feature: "Medical Insurance",
-      us: "735 one time",
+      us: "735 Per Year",
       tadvisasPlus: "Free",
       personalSponsorship: false,
       others: "170 per month"
