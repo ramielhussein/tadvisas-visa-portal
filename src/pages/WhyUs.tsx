@@ -76,6 +76,12 @@ const WhyUs = () => {
       us: "735 one time",
       personalSponsorship: false,
       others: "170 per month"
+    },
+    {
+      feature: "WPS Salary Process Fee",
+      us: "Free",
+      personalSponsorship: false,
+      others: "140-250"
     }
   ];
 
