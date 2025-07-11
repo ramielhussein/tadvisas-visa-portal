@@ -95,6 +95,13 @@ const WhyUs = () => {
       tadvisasPlus: "Free",
       personalSponsorship: false,
       others: "140-250 AED"
+    },
+    {
+      feature: "END OF SERVICE",
+      us: false,
+      tadvisasPlus: true,
+      personalSponsorship: false,
+      others: true
     }
   ];
 
