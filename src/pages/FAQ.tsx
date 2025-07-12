@@ -32,7 +32,7 @@ const FAQ = () => {
     },
     {
       question: "Can I choose my domestic worker through TADVISAS?",
-      answer: "Yes, we have an extensive network of qualified domestic workers from various nationalities. We can help you find the right person based on your requirements, or process the visa for someone you've already chosen."
+      answer: "Of course, we are first and foremost a domestic workers services center and we have workers of all nationalities. Please contact us on the what's app form and request for your preferred nationality."
     },
     {
       question: "What are the costs involved and are there any hidden fees?",
