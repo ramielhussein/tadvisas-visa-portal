@@ -8,7 +8,7 @@ const FAQ = () => {
   const faqs = [
     {
       question: "What documents are required for the 2-year maid visa?",
-      answer: "You'll need your passport copy, current visa status, domestic worker's passport, photos, medical certificates, and employment contract. We'll provide you with a complete checklist and help you gather all required documents."
+      answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
     {
       question: "Can I transfer my current maid's visa through TADVISAS?",
