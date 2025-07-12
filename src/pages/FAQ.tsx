@@ -36,7 +36,7 @@ const FAQ = () => {
     },
     {
       question: "What are the costs involved and are there any hidden fees?",
-      answer: "Our pricing is completely transparent and varies by nationality (3,200-3,800 AED). This includes ALL government fees, medical tests, Emirates ID, and our service fee. We charge ZERO monthly admin fees unlike others."
+      answer: "In the unlikely event a center closes down, any center, MOHRE would have a contingency plan to make sure workers do not get affected. Also every center have a bank guarantee to make sure no workers left stranded or unattended for. Always remember these centers operate under very strict guidance from MOHRE and are monitored and almost daily."
     },
     {
       question: "What happens after the 2-year visa expires?",
