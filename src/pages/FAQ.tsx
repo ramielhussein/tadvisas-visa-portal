@@ -12,7 +12,7 @@ const FAQ = () => {
     },
     {
       question: "Can I transfer my current maid's visa through TADVISAS?",
-      answer: "Yes, we handle visa transfers. If your domestic worker is already in UAE on another visa, we can process the transfer to a 2-year maid visa. The process varies depending on their current status."
+      answer: "Yes you can, but it's not a transfer, you need to cancel whatever visa you have with another provider, and provide us the required documents as above."
     },
     {
       question: "How long does the entire process take?",
