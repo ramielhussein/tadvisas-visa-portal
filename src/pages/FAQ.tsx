@@ -28,7 +28,7 @@ const FAQ = () => {
     },
     {
       question: "Is there a guarantee if the visa gets rejected?",
-      answer: "We have a 99.9% approval rate due to our thorough documentation process. In the rare case of rejection due to our error, we offer a full refund. Rejections due to false information provided by clients are not covered."
+      answer: "In the very unlikely event of visa rejection form the system of GDRFA, we offer a refund with a deduction of 600 Dhs."
     },
     {
       question: "Can I choose my domestic worker through TADVISAS?",
