@@ -16,7 +16,7 @@ const FAQ = () => {
     },
     {
       question: "How long does the entire process take?",
-      answer: "Typically 15-21 working days from the time we receive all required documents. This includes medical tests, government processing, and Emirates ID. We keep you updated throughout the process."
+      answer: "Typically, 7 to 12 working days from the time we receive all required documents. This includes medical tests, government processing, and Emirates ID. We keep you updated throughout the process. In some cases, if the system rejects the application for some requirements, you will be notified of the issue and the suggested remedies."
     },
     {
       question: "Do you handle medical examinations and Emirates ID?",
