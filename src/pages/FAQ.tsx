@@ -20,7 +20,7 @@ const FAQ = () => {
     },
     {
       question: "Do you handle medical examinations and Emirates ID?",
-      answer: "Yes, we coordinate all medical examinations at approved centers and handle the Emirates ID application process. This is included in our service fee with no additional charges."
+      answer: "We will take your worker to do the medical test and the Emirates ID biometric. There will always be a medical test, but if she has a recent Emirates ID, she may be exempted from biometric stamping. Either way, you can relax as we will take care of it."
     },
     {
       question: "What makes TADVISAS different from other providers?",
