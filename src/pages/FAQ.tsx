@@ -24,7 +24,7 @@ const FAQ = () => {
     },
     {
       question: "What makes TADVISAS different from other providers?",
-      answer: "We charge ZERO monthly admin fees, are 100% Tadbeer licensed, offer transparent pricing, and provide complete support. Many others charge 200-500 AED monthly which adds up to thousands over 2 years."
+      answer: "The service itself is very standard as it is a governmental service with very small room for innovation, however, removing the extra cost, adding some value added service like chauffeuring the worker is something small but can differentiate the service. Please refer to a full list of comparison https://tadvisas.com/why-us"
     },
     {
       question: "Is there a guarantee if the visa gets rejected?",
