@@ -38,7 +38,9 @@ const Hero = () => {
                 "No Monthly Admin Fees",
                 "100% MOHRE Licensed",
                 "Fast & Legal Processing",
-                "Transparent Pricing"
+                "Transparent Pricing",
+                "No Office visits required",
+                "Cancel Any Time"
               ].map((benefit, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-primary" />
