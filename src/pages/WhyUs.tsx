@@ -116,13 +116,6 @@ const WhyUs = () => {
       tadvisasPlus: true,
       personalSponsorship: false,
       others: true
-    },
-    {
-      feature: "Ticket Back Home",
-      us: false,
-      tadvisasPlus: true,
-      personalSponsorship: false,
-      others: "Varies"
     }
   ];
 
