@@ -45,7 +45,8 @@ const Pricing = () => {
     "All government fees",
     "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Legal compliance guarantee",
-    "NOC to travel with you"
+    "NOC to travel with you",
+    "Medical Insurance (1 year only)"
   ];
 
   const notIncluded = [
