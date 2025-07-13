@@ -45,6 +45,10 @@ const FAQ = () => {
     {
       question: "Do you provide support after the visa is issued?",
       answer: "Yes, we provide ongoing support for any visa-related queries, renewals, and administrative needs. Our customer service team is available to help even after your visa is processed."
+    },
+    {
+      question: "Can I cancel my Visa ANY TIME? Do I get a refund",
+      answer: "Yes you can cancel your visa any time, and stop paying the monthly admin fees if any. You will not be charged exit fees. As the visa consist mainly of government fees, these are not refundable after processing the visa."
     }
   ];
 
