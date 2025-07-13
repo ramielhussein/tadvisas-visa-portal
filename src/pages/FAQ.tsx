@@ -35,7 +35,7 @@ const FAQ = () => {
       answer: "Of course, we are first and foremost a domestic workers services center and we have workers of all nationalities. Please contact us on the what's app form and request for your preferred nationality."
     },
     {
-      question: "What are the costs involved and are there any hidden fees?",
+      question: "What happens if a Domestic Worker Center Closes down?",
       answer: "In the unlikely event a center closes down, any center, MOHRE would have a contingency plan to make sure workers do not get affected. Also every center have a bank guarantee to make sure no workers left stranded or unattended for. Always remember these centers operate under very strict guidance from MOHRE and are monitored and almost daily."
     },
     {
