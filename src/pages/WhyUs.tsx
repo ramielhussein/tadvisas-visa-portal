@@ -27,6 +27,13 @@ const WhyUs = () => {
       others: "140-250 AED"
     },
     {
+      feature: "WPS ATM card & Payroll processing",
+      us: true,
+      tadvisasPlus: true,
+      personalSponsorship: false,
+      others: true
+    },
+    {
       feature: "Free Transportation",
       us: true,
       tadvisasPlus: true,
