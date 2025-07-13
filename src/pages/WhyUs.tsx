@@ -34,6 +34,13 @@ const WhyUs = () => {
       others: true
     },
     {
+      feature: "Deposit",
+      us: false,
+      tadvisasPlus: false,
+      personalSponsorship: "2000",
+      others: "Up to 5000"
+    },
+    {
       feature: "Free Transportation",
       us: true,
       tadvisasPlus: true,
