@@ -34,6 +34,13 @@ const WhyUs = () => {
       others: true
     },
     {
+      feature: "Salary & Banking APP",
+      us: "Yes/C3 CARD",
+      tadvisasPlus: "YES C3 Card",
+      personalSponsorship: false,
+      others: "Varies"
+    },
+    {
       feature: "Deposit",
       us: false,
       tadvisasPlus: false,
