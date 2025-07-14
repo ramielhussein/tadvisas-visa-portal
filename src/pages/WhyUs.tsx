@@ -118,6 +118,13 @@ const WhyUs = () => {
       others: "140-250 AED"
     },
     {
+      feature: "Cancellation",
+      us: "300",
+      tadvisasPlus: "300",
+      personalSponsorship: "300",
+      others: "Varies"
+    },
+    {
       feature: "ILOE Insurance",
       us: "Free",
       tadvisasPlus: "Free",
