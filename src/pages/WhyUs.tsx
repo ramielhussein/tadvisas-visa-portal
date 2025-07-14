@@ -136,7 +136,7 @@ const WhyUs = () => {
       us: false,
       tadvisasPlus: true,
       personalSponsorship: false,
-      others: true
+      others: false
     }
   ];
 
