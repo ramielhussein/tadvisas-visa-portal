@@ -47,6 +47,10 @@ const FAQ = () => {
       answer: "Yes, we provide ongoing support for any visa-related queries, renewals, and administrative needs. Our customer service team is available to help even after your visa is processed."
     },
     {
+      question: "How does my maid get paid her salary?",
+      answer: "We setup a direct debit through directdebit.ae a central bank licensed provider. Every agreed day of the month you send us the salary, and we pay the worker on the agreed pay day. usually all are processed before end of month. She has an ATM card with link to her account she can withdraw funds FREE from a RAKBANK ATM machine. Other machines may charge her small fees."
+    },
+    {
       question: "Can I cancel my Visa ANY TIME? Do I get a refund",
       answer: "Yes you can cancel your visa any time, and stop paying the monthly admin fees if any. You will not be charged exit fees. As the visa consist mainly of government fees, these are not refundable after processing the visa."
     }
