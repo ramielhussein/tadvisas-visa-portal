@@ -90,7 +90,7 @@ const WhyUs = () => {
       others: "Varies"
     },
     {
-      feature: "Absocond/Fines Removal",
+      feature: "Absocond/Fines Removal Support",
       us: true,
       tadvisasPlus: true,
       personalSponsorship: false,
