@@ -77,7 +77,7 @@ const Hero = () => {
                   <span className="text-white text-3xl font-bold">✓</span>
                 </div>
                 <h3 className="text-2xl font-bold text-primary mb-4">
-                  Licensed & Trusted
+                  Licensed, Trusted & Listening
                 </h3>
                 <p className="text-gray-600 mb-6">
                   One of only 125 MOHRE licensed centers in UAE. 
