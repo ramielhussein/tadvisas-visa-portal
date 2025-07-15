@@ -61,6 +61,10 @@ const FAQ = () => {
     {
       question: "Can I cancel my Visa ANY TIME? Do I get a refund",
       answer: "Yes you can cancel your visa any time, and stop paying the monthly admin fees if any. You will not be charged exit fees. As the visa consist mainly of government fees, these are not refundable after processing the visa."
+    },
+    {
+      question: "Do you have installments plan?",
+      answer: "You bet! We have access to payments via Tabby and Tamara. Some fees may apply, please ask your visa expert from Tadvisas."
     }
   ];
 
