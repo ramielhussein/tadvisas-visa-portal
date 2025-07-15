@@ -132,7 +132,7 @@ const FAQ = () => {
                 <span className="text-blue-600 text-xl">📞</span>
               </div>
               <h3 className="font-semibold text-primary mb-2">Phone</h3>
-              <p className="text-gray-600">+971 50 123 4567</p>
+              <p className="text-gray-600">043551186</p>
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-md">
               <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
