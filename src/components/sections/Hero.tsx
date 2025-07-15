@@ -82,6 +82,7 @@ const Hero = () => {
                 <p className="text-gray-600 mb-6">
                   One of only 125 MOHRE licensed centers in UAE. 
                   Over 1700+ happy families trusted us with their visa needs.
+                  we are here to answer your questions and concerns. WE DO NOT USE CHATBOTS. Lets
                 </p>
                 <div className="bg-gradient-gold text-white rounded-lg p-4">
                   <div className="text-3xl font-bold">0 AED</div>
