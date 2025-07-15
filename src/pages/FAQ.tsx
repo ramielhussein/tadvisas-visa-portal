@@ -8,7 +8,7 @@ const FAQ = () => {
   const faqs = [
     {
       question: "Hey TADMAIDS why all the other centers hate you!!!",
-      answer: "Do our competitors hate us? Maybe because we are revolutionizing the market, we are telling you don't let them tie you down with ridiculous fees. We are saying NO IT'S MANDATPRY TO OVERCHARGE YOU."
+      answer: "Do our competitors hate us? Maybe because we are revolutionizing the market, we are telling you don't let them tie you down with ridiculous fees. We are saying NO IT'S NOT MANDATPRY TO OVERCHARGE YOU."
     },
     {
       question: "What documents are required for the 2-year maid visa?",
