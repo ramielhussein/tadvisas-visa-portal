@@ -7,10 +7,6 @@ import { Phone } from "lucide-react";
 const FAQ = () => {
   const faqs = [
     {
-      question: "Hey TADMAIDS why all the other centers hate you!!!",
-      answer: "Do our competitors hate us? Maybe because we are revolutionizing the market, we are telling you don't let them tie you down with ridiculous fees. We are saying NO IT'S NOT MANDATORY TO OVERCHARGE YOU."
-    },
-    {
       question: "What documents are required for the 2-year maid visa?",
       answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
