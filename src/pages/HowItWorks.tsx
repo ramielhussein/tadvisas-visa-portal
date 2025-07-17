@@ -33,7 +33,12 @@ const HowItWorks = () => {
 
   return (
     <Layout>
-      <div className="py-20">
+      <div 
+        className="py-20 relative bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9)), url('/lovable-uploads/9dbbf6cf-8d1c-497c-91ec-2f44d3288d76.png')`
+        }}
+      >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-16">
