@@ -168,7 +168,12 @@ const StartHere = () => {
   if (isSubmitted) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-light py-12 flex items-center justify-center">
+        <div 
+          className="min-h-screen py-12 flex items-center justify-center relative bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9)), url('/lovable-uploads/3962a19b-276c-469f-8cd3-98e326391740.png')`
+          }}
+        >
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="bg-white rounded-lg shadow-lg p-8">
               <div className="text-6xl mb-6">✨</div>
@@ -193,7 +198,12 @@ const StartHere = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-light py-12">
+      <div 
+        className="min-h-screen py-12 relative bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9)), url('/lovable-uploads/3962a19b-276c-469f-8cd3-98e326391740.png')`
+        }}
+      >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-4">
