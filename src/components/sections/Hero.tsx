@@ -17,7 +17,7 @@ const Hero = () => {
     <section 
       className="py-20 lg:py-32 relative bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85)), url('/lovable-uploads/d6769e1c-16cd-4161-ba27-7732b8108940.png')`
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85)), url('/lovable-uploads/dfeb696e-08c4-47c6-88df-27b878416945.png')`
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
