@@ -14,12 +14,7 @@ const Hero = () => {
   };
 
   return (
-    <section 
-      className="py-20 lg:py-32 relative bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85)), url('/lovable-uploads/3962a19b-276c-469f-8cd3-98e326391740.png')`
-      }}
-    >
+    <section className="py-20 lg:py-32 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Content */}
