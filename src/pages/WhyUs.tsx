@@ -14,10 +14,10 @@ const WhyUs = () => {
     },
     {
       feature: "Cost 2 Year Visa",
-      us: "8925",
-      tadvisasPlus: "8400",
-      personalSponsorship: "16000",
-      others: "8400"
+      us: "Zero",
+      tadvisasPlus: "Zero",
+      personalSponsorship: "7000",
+      others: "Zero"
     },
     {
       feature: "Monthly Admin Fees",
