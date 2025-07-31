@@ -69,31 +69,21 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Column - Video */}
+          {/* Right Column - Image/Visual */}
           <div className="animate-slide-in">
             <div className="bg-white rounded-2xl p-8 shadow-2xl hover-lift">
-              <div className="text-center mb-6">
+              <div className="text-center">
+                <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-white text-3xl font-bold">✓</span>
+                </div>
                 <h3 className="text-2xl font-bold text-primary mb-4">
-                  See How Easy It Is!
+                  Licensed, Trusted & Listening
                 </h3>
                 <p className="text-gray-600 mb-6">
-                  Watch our quick video to understand our simple process
+                  One of only 125 MOHRE licensed centers in UAE. 
+                  Over 1700+ happy families trusted us with their visa needs.
+                  we are here to answer your questions and concerns. <span className="bg-yellow-500 px-1 rounded font-semibold text-black">WE DO NOT USE CHATBOTS</span>. Click on the chat button and ask away.
                 </p>
-              </div>
-              
-              {/* YouTube Video Embed */}
-              <div className="relative w-full h-0 pb-[177.78%] mb-6 rounded-lg overflow-hidden">
-                <iframe
-                  className="absolute top-0 left-0 w-full h-full"
-                  src="https://www.youtube.com/embed/iMPIl-4Mrdg"
-                  title="Maid Visa Process Video"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-
-              <div className="text-center">
                 <div className="bg-gradient-gold text-white rounded-lg p-4">
                   <div className="text-3xl font-bold">0 AED</div>
                   <div className="text-sm opacity-90">Monthly Admin Fees</div>
