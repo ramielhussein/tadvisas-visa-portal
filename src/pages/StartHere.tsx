@@ -68,7 +68,7 @@ const StartHere = () => {
       const response = await fetch('https://anffzihqpbcfmrubdnon.supabase.co/functions/v1/send-application-email', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImE3MTk1NTE5LWRkNWQtNDk2Mi05ZTRiLWIwYmFlYjQyZjQ4MSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM2MjgxNzUyLCJleHAiOjIwNTE4NTc3NTJ9.VL_FhsHYvCJaJNMGNNY-NN2hDhPVJF0eDxWZWQCIGNo',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuZmZ6aWhxcGJjZm1ydWJkbm9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE5MDk2MjIsImV4cCI6MjA2NzQ4NTYyMn0.Z1BQD6rtO9Tj_dRk1Bh7HnlO156BH5aCUVTAG6Y-P6k',
         },
         body: submitData,
       });
