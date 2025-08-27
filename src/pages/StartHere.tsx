@@ -65,7 +65,7 @@ const StartHere = () => {
       console.log('Files:', Object.entries(files).map(([key, file]) => ({ [key]: file ? file.name : 'None' })));
       
       // Call Supabase edge function
-      const response = await fetch('https://a7195519-dd5d-4962-9e4b-b0baeb42f481.supabase.co/functions/v1/send-application-email', {
+      const response = await fetch('https://anffzihqpbcfmrubdnon.supabase.co/functions/v1/send-application-email', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImE3MTk1NTE5LWRkNWQtNDk2Mi05ZTRiLWIwYmFlYjQyZjQ4MSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzM2MjgxNzUyLCJleHAiOjIwNTE4NTc3NTJ9.VL_FhsHYvCJaJNMGNNY-NN2hDhPVJF0eDxWZWQCIGNo',
