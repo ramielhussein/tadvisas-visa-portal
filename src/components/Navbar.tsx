@@ -22,6 +22,8 @@ const Navbar = () => {
   const handleWhatsAppClick = () => {
     window.open("https://wa.me/971565822258", "_blank");
   };
+  // Backward compat: ensure any leftover call handler points to WhatsApp
+  const handleCallClick = handleWhatsAppClick;
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -51,9 +53,11 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Button onClick={handleWhatsAppClick} className="bg-green-500 hover:bg-green-600 text-white">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              WhatsApp Now
+            <Button asChild className="bg-green-500 hover:bg-green-600 text-white">
+              <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                WhatsApp Now
+              </a>
             </Button>
           </div>
 
@@ -87,9 +91,11 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                <Button onClick={handleWhatsAppClick} className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  WhatsApp Now
+                <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
+                  <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    WhatsApp Now
+                  </a>
                 </Button>
               </div>
             </div>
