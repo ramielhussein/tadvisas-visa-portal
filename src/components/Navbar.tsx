@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
@@ -19,8 +19,8 @@ const Navbar = () => {
     { name: "Start Here & Now", path: "/start-here" },
   ];
 
-  const handleCallClick = () => {
-    window.location.href = "tel:+971565822258";
+  const handleWhatsAppClick = () => {
+    window.open("https://wa.me/971565822258", "_blank");
   };
 
   return (
@@ -51,9 +51,9 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Button onClick={handleCallClick} className="bg-primary hover:bg-primary-700 text-white">
-              <Phone className="w-4 h-4 mr-2" />
-              Call 0565822258 for help
+            <Button onClick={handleWhatsAppClick} className="bg-green-500 hover:bg-green-600 text-white">
+              <MessageCircle className="w-4 h-4 mr-2" />
+              WhatsApp Now
             </Button>
           </div>
 
@@ -87,9 +87,9 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="px-3 py-2">
-                <Button onClick={handleCallClick} className="w-full bg-primary hover:bg-primary-700 text-white">
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call 0565822258 for help
+                <Button onClick={handleWhatsAppClick} className="w-full bg-green-500 hover:bg-green-600 text-white">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp Now
                 </Button>
               </div>
             </div>
