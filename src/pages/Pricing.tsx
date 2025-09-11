@@ -1,10 +1,13 @@
 
+import { useState } from "react";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Pricing = () => {
+  const [selectedService, setSelectedService] = useState<'standard' | 'vip'>('standard');
+
   const pricingData = [
     {
       nationality: "Philippines",
@@ -38,7 +41,25 @@ const Pricing = () => {
     }
   ];
 
-  const included = [
+  const standardIncluded = [
+    "Complete visa processing",
+    "Medical examination",
+    "Emirates ID processing",
+    "All government fees",
+    "Legal compliance guarantee",
+    "NOC to travel with you"
+  ];
+
+  const standardNotIncluded = [
+    "Medical Insurance",
+    "VIP Chauffeur Service",
+    "Monthly admin fees (We charge ZERO!)",
+    "Hidden charges",
+    "End Of service (pay your worker direct)",
+    "Return Home Ticket"
+  ];
+
+  const vipIncluded = [
     "Complete visa processing",
     "Medical examination",
     "Emirates ID processing",
@@ -46,16 +67,19 @@ const Pricing = () => {
     "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Legal compliance guarantee",
     "NOC to travel with you",
-    "Medical Insurance (1 year only)"
+    "Medical Insurance (2 years)"
   ];
 
-  const notIncluded = [
+  const vipNotIncluded = [
     "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "End Of service (pay your worker direct)",
     "Return Home Ticket",
     "Fake Promises to keep you hooked"
   ];
+
+  const included = selectedService === 'vip' ? vipIncluded : standardIncluded;
+  const notIncluded = selectedService === 'vip' ? vipNotIncluded : standardNotIncluded;
 
   return (
     <Layout>
@@ -86,7 +110,15 @@ const Pricing = () => {
           {/* Pricing Boxes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
             {/* Standard Service */}
-            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-accent">
+            <div 
+              onMouseEnter={() => setSelectedService('standard')}
+              onClick={() => setSelectedService('standard')}
+              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+                selectedService === 'standard' 
+                  ? 'border-4 border-accent scale-105' 
+                  : 'border-2 border-accent hover:border-4'
+              }`}
+            >
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Standard Service
@@ -110,7 +142,15 @@ const Pricing = () => {
             </div>
 
             {/* VIP Service */}
-            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-primary">
+            <div 
+              onMouseEnter={() => setSelectedService('vip')}
+              onClick={() => setSelectedService('vip')}
+              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+                selectedService === 'vip' 
+                  ? 'border-4 border-primary scale-105' 
+                  : 'border-2 border-primary hover:border-4'
+              }`}
+            >
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
                   VIP Service
@@ -128,10 +168,18 @@ const Pricing = () => {
                   </span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
-                  <Link to="/start-here">Get Standard Service</Link>
+                  <Link to="/start-here">Get VIP Service</Link>
                 </Button>
               </div>
             </div>
+          </div>
+
+          {/* Service Selection Indicator */}
+          <div className="text-center mb-8">
+            <p className="text-lg text-gray-600">
+              Currently viewing: <span className="font-bold text-primary">{selectedService === 'vip' ? 'VIP Service' : 'Standard Service'}</span> benefits
+            </p>
+            <p className="text-sm text-gray-500 mt-2">Hover over or click a service box above to see what's included</p>
           </div>
 
           {/* What's Included/Not Included */}
@@ -216,7 +264,12 @@ const Pricing = () => {
                 window.location.href = "tel:+971565822258";
               }}>
                 Call 0565822258 for help
-              </Button>
+                </Button>
+                <Button variant="outline" className="border-white text-green-500 hover:bg-white hover:text-primary px-8 py-3" onClick={() => {
+                  window.location.href = "tel:+971565822258";
+                }}>
+                  Call 0565822258 for help
+                </Button>
             </div>
           </div>
         </div>
