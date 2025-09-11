@@ -85,11 +85,11 @@ const Pricing = () => {
 
           {/* Pricing Boxes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
-            {/* VIP Service */}
+            {/* Standard Service */}
             <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-accent">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  VIP Service
+                  Standard Service
                 </span>
               </div>
               <div className="absolute -top-3 right-4">
@@ -109,11 +109,11 @@ const Pricing = () => {
               </div>
             </div>
 
-            {/* Standard Service */}
+            {/* VIP Service */}
             <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-primary">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  Standard Service
+                  VIP Service
                 </span>
               </div>
               <div className="text-center">
