@@ -80,9 +80,10 @@ const Pricing = () => {
             </p>
           </div>
 
-          {/* Pricing Box */}
-          <div className="flex justify-center mb-16">
-            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-accent max-w-md w-full">
+          {/* Pricing Boxes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
+            {/* VIP Service */}
+            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-accent">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
                   VIP Service
@@ -101,6 +102,30 @@ const Pricing = () => {
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Link to="/start-here">UAE's Best Value Package</Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Standard Service */}
+            <div className="relative bg-white rounded-2xl p-8 shadow-lg hover-lift border-2 border-primary">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  Standard Service
+                </span>
+              </div>
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa</h3>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-primary">8,400</span>
+                  <span className="text-gray-600"> AED</span>
+                </div>
+                <div className="mb-6">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Visa and Medical Insurance
+                  </span>
+                </div>
+                <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
+                  <Link to="/start-here">Get Standard Service</Link>
                 </Button>
               </div>
             </div>
