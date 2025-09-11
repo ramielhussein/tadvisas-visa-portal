@@ -34,7 +34,7 @@ const ValueProposition = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
-            Why Choose TADVISAS?
+            Don't have a maid? get a maid from TADMAIDS
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Because we are not here to hook you up for 2 years. We have no intention of taking your maid under the pretense of helping you. We do a service get paid once and will not blackmail you with monthly payments forever.
