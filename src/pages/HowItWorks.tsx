@@ -1,14 +1,14 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight } from "lucide-react";
+import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight, DollarSign, HelpCircle } from "lucide-react";
 import manThinking from "@/assets/man-thinking-2.png";
 import crossroad from "@/assets/crossroad.png";
 
 const HowItWorks = () => {
   const steps = [
     {
-      icon: ArrowDownToLine,
+      icon: DollarSign,
       title: "1. Yes! money matters",
       description: "If you have a worker and want a visa, you are saving money, if you need a worker you have to consider that there is an additional significant fees involved.",
       details: [
@@ -18,7 +18,7 @@ const HowItWorks = () => {
       ]
     },
     {
-      icon: FileText,
+      icon: HelpCircle,
       title: "2. Think of the path to follow",
       description: "We collect all necessary documents from you and your domestic worker in 2 minutes. Email or WhatsApp them and off we go.",
       details: [
