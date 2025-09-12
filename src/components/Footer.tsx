@@ -36,7 +36,7 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Services</h3>
             <ul className="space-y-2 text-blue-100">
               <li>2-Year Maid Visa</li>
-              <li>Visa Transfer</li>
+              <li>Hire a worker</li>
               <li>Medical & Emirates ID</li>
               <li>Legal Documentation</li>
             </ul>
