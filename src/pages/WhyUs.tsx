@@ -10,8 +10,7 @@ const WhyUs = () => {
     { nationality: "Ethiopia (Experienced)", price: "2,625" },
     { nationality: "Uganda / Kenya / Benin", price: "2,800" },
     { nationality: "India / Myanmar", price: "3,150" },
-    { nationality: "Philippines", price: "3,675" },
-    { nationality: "Indonesia", price: "4,200" },
+    { nationality: "Philippines / Indonesia", price: "3,675" },
   ];
 
   const liveOutPrices = [
