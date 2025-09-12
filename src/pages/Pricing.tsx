@@ -46,9 +46,9 @@ const Pricing = () => {
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
-    "Legal compliance guarantee",
     "NOC to travel with you",
-    "ILOE Insurance for 2 years"
+    "ILOE Insurance for 2 years",
+    "Legal compliance guarantee"
   ];
 
   const standardNotIncluded = [
@@ -66,10 +66,10 @@ const Pricing = () => {
     "Emirates ID processing",
     "All government fees",
     "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
-    "Legal compliance guarantee",
     "NOC to travel with you",
     "Medical Insurance (2 years)",
-    "ILOE Insurance for 2 years"
+    "ILOE Insurance for 2 years",
+    "Legal compliance guarantee"
   ];
 
   const vipNotIncluded = [
