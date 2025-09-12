@@ -66,14 +66,6 @@ const Pricing = () => {
       others: true
     },
     {
-      feature: "Transparent Pricing",
-      us: true,
-      tadvisasPlus: true,
-      tadvisasPremium: true,
-      personalSponsorship: true,
-      others: false
-    },
-    {
       feature: "Complete Documentation Support",
       us: true,
       tadvisasPlus: true,
