@@ -13,8 +13,8 @@ const HowItWorksPreview = () => {
     },
     {
       icon: Cog,
-      title: "We Process",
-      description: "We handle all documentation, medical tests, and visa processing paperwork. We even send her a car to do all the needed steps. You relax.",
+      title: "⚙️ We Process",
+      description: "We take care of all paperwork, medical tests, and visa steps — and even provide car transport for your worker. 🚗 You just relax, we'll handle everything. ✅",
       color: "text-orange-500"
     },
     {
