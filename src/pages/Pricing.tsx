@@ -92,7 +92,9 @@ const Pricing = () => {
     "ILOE Insurance for 2 years",
     "End of Service Benefits (EOSB)",
     "Return Home Ticket",
-    "Legal compliance guarantee"
+    "Legal compliance guarantee",
+    "Free cancellation any time (no refund)",
+    "Free Absconding report (if applicable)"
   ];
 
   const premiumNotIncluded = [
