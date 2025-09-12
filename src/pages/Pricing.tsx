@@ -96,8 +96,7 @@ const Pricing = () => {
   ];
 
   const premiumNotIncluded = [
-    "Hidden charges",
-    "Fake Promises to keep you hooked"
+    "Hidden charges"
   ];
 
   const included = selectedService === 'premium' ? premiumIncluded : selectedService === 'vip' ? vipIncluded : standardIncluded;
