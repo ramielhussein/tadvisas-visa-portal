@@ -5,6 +5,7 @@ import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, C
 import manThinking from "@/assets/man-thinking-2.png";
 import crossroad from "@/assets/crossroad.png";
 import choices from "@/assets/choices.png";
+import maidAndFamily from "@/assets/maid-and-family.png";
 
 const HowItWorks = () => {
   const steps = [
@@ -106,6 +107,12 @@ const HowItWorks = () => {
                       <img 
                         src={choices} 
                         alt="Choices, beliefs and diet directional signs" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : index === 3 ? (
+                      <img 
+                        src={maidAndFamily} 
+                        alt="Family with domestic worker" 
                         className="w-full h-full object-cover"
                       />
                     ) : index === 1 ? (
