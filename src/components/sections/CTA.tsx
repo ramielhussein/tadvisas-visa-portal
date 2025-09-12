@@ -43,7 +43,7 @@ const CTA = () => {
         </div>
 
         <div className="mt-8 text-primary-100">
-          <p>📞 +971565822258 | 📧 info@tadvisas.com</p>
+          <p>📞 +971565822258 | 📧 tadbeer@tadmaids.com</p>
         </div>
       </div>
     </section>

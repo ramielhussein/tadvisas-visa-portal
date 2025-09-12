@@ -143,7 +143,7 @@ const FAQ = () => {
                 <span className="text-orange-600 text-xl">📧</span>
               </div>
               <h3 className="font-semibold text-primary mb-2">Email</h3>
-              <p className="text-gray-600">info@tadvisas.com</p>
+              <p className="text-gray-600">tadbeer@tadmaids.com</p>
             </div>
           </div>
         </div>
