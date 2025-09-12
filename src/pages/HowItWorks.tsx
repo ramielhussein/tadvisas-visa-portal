@@ -11,7 +11,7 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: DollarSign,
-      title: "1. Yes! money matters",
+      title: "1. Yes! Money Matters!",
       description: "If you have a worker and want a visa, you are saving money, if you need a worker you have to consider that there are additional significant fees involved.",
       details: [
         "The maid fees capped by MOHRE start from 5250 all the way to 15750 for workers depend on the nationality. Here is the most common ones",
