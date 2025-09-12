@@ -44,7 +44,7 @@ const HowItWorks = () => {
       description: "If you have your wishlist and you know what you want it is time you talk to us.",
       details: [
         "First click on the what's app link and tell us what u need and how you need to do it to recap",
-        "Nationality or worker",
+        "Nationality of worker",
         "Main Tasks",
         "Any consideration to age, skills experience",
         "To respect the privacy of the workers we do not publish workers biodata, please ask for them on a private message.",
