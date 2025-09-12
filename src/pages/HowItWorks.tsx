@@ -24,7 +24,7 @@ const HowItWorks = () => {
       title: "2. Think of the path to follow",
       description: "If you do not have a worker and want one, then you actually want multiple services all at a cost, you need to decide how to go",
       details: [
-        "Path1 - Get a worker, pay our fees, get a visa, pay a fee to us or to the authorities if you want to sponsor yourself, then do the medical insurance and pay a significantly smaller monthly salary to the worker, This is the most economic way, You save around 15000 to 25000 Dhs over two years contract, PLEASE DO THE MATH. But at what cost? You risk losing the cost of the visa, while we can give you a replacement worker but not replacement visa, that is an additional cost.",
+        "Path 1 – Save More (But With Risk) • Pay our fees → Get a worker → Get the visa. • You can sponsor the visa yourself or through us. • Add medical insurance. • Pay only the worker's monthly salary (much lower). • Over 2 years, you save AED 15,000–25,000. ⚠️ Risk: If the worker leaves, we can replace the worker, but not the visa cost.",
         "Path2- Convenience comes with a price. We will be happy to give you a worker on a monthly fixed fee. Pay one time per month inclusive of Worker Salary, Visa, insurance, and our fees. Overall you will be paying more over a 2 years contract but your risk will always be limited to the month you are in and we will happily replace the worker unlimited amount of times. Tough choice!"
       ]
     },
