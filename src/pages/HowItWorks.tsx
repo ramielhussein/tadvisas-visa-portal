@@ -21,7 +21,10 @@ const HowItWorks = () => {
       icon: FileText,
       title: "2. Think of the path to follow",
       description: "We collect all necessary documents from you and your domestic worker in 2 minutes. Email or WhatsApp them and off we go.",
-      details: ["It is important to tell us what you want the worker for, is she an all around, would she be looking after babies? Infants? Pets? Does she need to cook? Does she have to be of a of particular religion or have specific dietary habits (eg: vegan)", "Remember you can wish for anything but the more you wish for the harder the task. Think of what matters to you and your family most.", "Passport copies", "Entry permit or cancellation", "A clear passport quality photo", "Your Emirates ID and Dewa Bill"]
+      details: [
+        "Path1 - Get a worker, pay our fees, get a visa, pay a fee to us or to the authorities if you want to sponsor yourself, then do the medical insurance and pay a significantly smaller monthly salary to the worker, This is the most economic way, You save around 15000 to 25000 Dhs over two years contract, PLEASE DO THE MATH. But at what cost? You risk losing the cost of the visa, while we can give you a replacement worker but not replacement visa, that is an additional cost.",
+        "Path2- Convenience comes with a price. We will be happy to give you a worker on a monthly fixed fee. Pay one time per month inclusive of Worker Salary, Visa, insurance, and our fees. Overall you will be paying more over a 2 years contract but your risk will always be limited to the month you are in and we will happily replace the worker unlimited amount of times. Tough choice!"
+      ]
     },
     {
       icon: Cog,
@@ -67,7 +70,7 @@ const HowItWorks = () => {
                     <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-start">
-                          {index === 0 ? (
+                          {index === 0 || index === 1 ? (
                             <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                           ) : (
                             <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
