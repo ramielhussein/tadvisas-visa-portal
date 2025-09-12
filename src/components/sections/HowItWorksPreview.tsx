@@ -41,16 +41,6 @@ const HowItWorksPreview = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {steps.map((step, index) => (
             <div key={index} className="text-center group">
-              <div className="relative">
-                <div className={`w-20 h-20 ${step.color} bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6`}>
-                  <step.icon className={`w-10 h-10 ${step.color}`} />
-                </div>
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-full w-full">
-                    <ArrowRight className="w-6 h-6 text-gray-400 mx-auto" />
-                  </div>
-                )}
-              </div>
               <h3 className="text-xl font-semibold text-primary mb-3">
                 {step.title}
               </h3>
