@@ -247,6 +247,7 @@ const Pricing = () => {
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Early Visa Cancellation</h4>
                 <p className="text-gray-600">300 AED if you wish us to cancel the visa of the worker for any reason</p>
+                <p className="text-sm text-gray-500">Free with TADVISA++</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Absconding Report</h4>
