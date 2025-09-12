@@ -5,7 +5,7 @@ import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, C
 import manThinking from "@/assets/man-thinking-2.png";
 import crossroad from "@/assets/crossroad.png";
 import choices from "@/assets/choices.png";
-import maidAndFamily from "@/assets/maid-and-family.png";
+import maidChildParent from "@/assets/maid-child-parent.png";
 
 const HowItWorks = () => {
   const steps = [
@@ -111,8 +111,8 @@ const HowItWorks = () => {
                       />
                     ) : index === 3 ? (
                       <img 
-                        src={maidAndFamily} 
-                        alt="Family with domestic worker" 
+                        src={maidChildParent} 
+                        alt="Domestic worker playing with child and parent" 
                         className="w-full h-full object-cover"
                       />
                     ) : index === 1 ? (
