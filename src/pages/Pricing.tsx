@@ -688,44 +688,6 @@ const Pricing = () => {
             </div>
           </div>
 
-          {/* What We Need From You */}
-          <div className="bg-gradient-light rounded-2xl p-8 mb-16">
-            <h2 className="text-3xl font-bold text-primary text-center mb-8">
-              What do we need from you?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-xl font-semibold text-primary mb-4">
-                  Why Licensing Matters
-                </h3>
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Only 125 centers are licensed in UAE</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Government oversight and regulation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Legal protection for customers</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                    <span>Quality standards compliance</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="text-center">
-                <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <Award className="w-16 h-16 text-primary" />
-                </div>
-                <p className="text-primary font-semibold">100% MOHRE Licensed</p>
-              </div>
-            </div>
-          </div>
-
           {/* CTA Section */}
           <div className="text-center bg-gradient-primary rounded-2xl p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Ready to Experience the Difference?</h2>
