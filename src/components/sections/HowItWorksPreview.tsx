@@ -34,7 +34,7 @@ const HowItWorksPreview = () => {
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Getting your 2-year maid visa is simple and straightforward. 
-            We handle everything so you don't have to worry about the complexities.
+            We handle everything so you don't have to worry about the complexities. Don't have a worker? We can help you get one too.
           </p>
         </div>
 
