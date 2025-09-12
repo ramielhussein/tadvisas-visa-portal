@@ -6,7 +6,7 @@ import { CheckCircle, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Pricing = () => {
-  const [selectedService, setSelectedService] = useState<'standard' | 'vip'>('standard');
+  const [selectedService, setSelectedService] = useState<'standard' | 'vip' | 'premium'>('standard');
 
   const pricingData = [
     {
@@ -80,8 +80,28 @@ const Pricing = () => {
     "Fake Promises to keep you hooked"
   ];
 
-  const included = selectedService === 'vip' ? vipIncluded : standardIncluded;
-  const notIncluded = selectedService === 'vip' ? vipNotIncluded : standardNotIncluded;
+  const premiumIncluded = [
+    "Complete visa processing",
+    "Medical examination",
+    "Emirates ID processing",
+    "All government fees",
+    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
+    "NOC to travel with you",
+    "Medical Insurance (2 years)",
+    "ILOE Insurance for 2 years",
+    "End of Service Benefits (EOSB)",
+    "Return Home Ticket",
+    "Legal compliance guarantee"
+  ];
+
+  const premiumNotIncluded = [
+    "Monthly admin fees (We charge ZERO!)",
+    "Hidden charges",
+    "Fake Promises to keep you hooked"
+  ];
+
+  const included = selectedService === 'premium' ? premiumIncluded : selectedService === 'vip' ? vipIncluded : standardIncluded;
+  const notIncluded = selectedService === 'premium' ? premiumNotIncluded : selectedService === 'vip' ? vipNotIncluded : standardNotIncluded;
 
   return (
     <Layout>
@@ -110,7 +130,7 @@ const Pricing = () => {
           </div>
 
           {/* Pricing Boxes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
             {/* Standard Service */}
             <div 
               onMouseEnter={() => setSelectedService('standard')}
@@ -179,12 +199,44 @@ const Pricing = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Premium Service */}
+            <div 
+              onMouseEnter={() => setSelectedService('premium')}
+              onClick={() => setSelectedService('premium')}
+              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+                selectedService === 'premium' 
+                  ? 'border-4 border-gradient-gold scale-105' 
+                  : 'border-2 border-gradient-gold hover:border-4'
+              }`}
+            >
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-gold text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  TADVISA++
+                </span>
+              </div>
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa</h3>
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-primary">9,450</span>
+                  <span className="text-gray-600"> AED</span>
+                </div>
+                <div className="mb-6">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Visa, Medical, EOSB, Ticket. 168 Per month
+                  </span>
+                </div>
+                <Button asChild className="w-full bg-gradient-gold hover:bg-gradient-primary text-white">
+                  <Link to="/start-here">Get TADVISA++ the premium package</Link>
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Service Selection Indicator */}
           <div className="text-center mb-8">
             <p className="text-lg text-gray-600">
-              Currently viewing: <span className="font-bold text-primary">{selectedService === 'vip' ? 'TADVISA+' : 'TADVISA'}</span> benefits
+              Currently viewing: <span className="font-bold text-primary">{selectedService === 'premium' ? 'TADVISA++' : selectedService === 'vip' ? 'TADVISA+' : 'TADVISA'}</span> benefits
             </p>
             <p className="text-sm text-gray-500 mt-2">Hover over or click a service box above to see what's included</p>
           </div>
