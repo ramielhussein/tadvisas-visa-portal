@@ -110,7 +110,7 @@ const Pricing = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-              Transparent Pricing
+              Visa Pricing
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               No hidden fees, no surprises. Our pricing is straightforward and includes everything 
