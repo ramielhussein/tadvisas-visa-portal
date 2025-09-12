@@ -152,7 +152,7 @@ const Pricing = () => {
             >
               {selectedService === 'standard' && (
                 <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                     ✨ CURRENTLY SELECTED ✨
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const Pricing = () => {
             >
               {selectedService === 'vip' && (
                 <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                     ✨ CURRENTLY SELECTED ✨
                   </div>
                 </div>
@@ -253,7 +253,7 @@ const Pricing = () => {
             >
               {selectedService === 'premium' && (
                 <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-10">
-                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                     ⭐ CURRENTLY SELECTED ⭐
                   </div>
                 </div>
