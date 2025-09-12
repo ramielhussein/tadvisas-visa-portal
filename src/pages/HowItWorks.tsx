@@ -8,7 +8,7 @@ const HowItWorks = () => {
     {
       icon: Search,
       title: "1. Initial Consultation",
-      description: "Contact us via WhatsApp or phone. We'll discuss your requirements and explain the entire process.",
+      description: "Firstly think about what you need, it is important to consider these factors",
       details: ["Free consultation, Will ask about your maid's status and documents availability", "Requirement assessment", "Process explanation, this takes a bit of time, will explain every step and how long it takes.", "Timeline discussion"]
     },
     {
