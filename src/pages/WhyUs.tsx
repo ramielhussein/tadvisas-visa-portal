@@ -130,10 +130,6 @@ const WhyUs = () => {
                     <Car className="h-5 w-5 text-primary" />
                     <span><strong>Transportation:</strong> Based on location & availability of public transport</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Utensils className="h-5 w-5 text-primary" />
-                    <span><strong>Food Allowance:</strong> AED 30 / month</span>
-                  </div>
                 </div>
               </div>
 
