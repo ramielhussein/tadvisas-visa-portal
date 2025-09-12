@@ -117,11 +117,6 @@ const WhyUs = () => {
               <CardDescription>TADMAIDS Live Out Price Calculation</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground mb-6">
-                The Monthly Base Price already covers: Worker's Salary + Visa fees + Tadbeer Procurement Fee + Medical Insurance.
-                This rate applies to Live-In workers (6 days/week).
-              </p>
-              
               <div className="bg-accent/50 rounded-lg p-6 mb-8">
                 <p className="font-semibold mb-4">
                   👉 If you require a Live-Out worker, the following additional allowances apply:
