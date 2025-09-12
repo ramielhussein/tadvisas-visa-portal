@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Check, Home, Calendar, MapPin, Utensils, Car } from "lucide-react";
+import { Check, Home, Calendar, Wallet } from "lucide-react";
 
 const WhyUs = () => {
   const liveInPrices = [
@@ -123,12 +123,8 @@ const WhyUs = () => {
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <span><strong>Accommodation:</strong> AED 450 / month</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Car className="h-5 w-5 text-primary" />
-                    <span><strong>Transportation:</strong> Based on location & availability of public transport</span>
+                    <Wallet className="h-5 w-5 text-primary" />
+                    <span><strong>Accommodation/Transportation/Food Allowance:</strong> AED 975 per month per worker, regardless of nationality.</span>
                   </div>
                 </div>
               </div>
