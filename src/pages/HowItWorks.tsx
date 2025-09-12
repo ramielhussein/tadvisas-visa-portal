@@ -184,8 +184,8 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-blue-600">3</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 6-18</h4>
-                <p className="text-gray-600">Once you're sure this is the right fit, we'll handle the visa and take care of all legal requirements.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 6-18: Visa & Legalities</h4>
+                <p className="text-gray-600">We Handle the Paperwork 📝<br/>Once you're confident, we'll take care of the visa and all legal requirements.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
