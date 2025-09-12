@@ -160,7 +160,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-blue-600">3</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Day 6-18</h4>
-                <p className="text-gray-600">Visa Position Amendment and EID and Medical Application</p>
+                <p className="text-gray-600">Now that you are sure this is the right fit for you we will do the visa and make sure of all the legalities in place.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
