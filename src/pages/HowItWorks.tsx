@@ -2,6 +2,7 @@
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight } from "lucide-react";
+import manThinking from "@/assets/man-thinking.png";
 
 const HowItWorks = () => {
   const steps = [
@@ -78,12 +79,20 @@ const HowItWorks = () => {
                 </div>
                 <div className="lg:w-1/2">
                   <div className="bg-gradient-light rounded-2xl p-8 h-64 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-3xl font-bold text-primary">{index + 1}</span>
+                    {index === 0 ? (
+                      <img 
+                        src={manThinking} 
+                        alt="Person thinking about costs" 
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <div className="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <span className="text-3xl font-bold text-primary">{index + 1}</span>
+                        </div>
+                        <p className="text-primary font-medium">Step {index + 1}</p>
                       </div>
-                      <p className="text-primary font-medium">Step {index + 1}</p>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
