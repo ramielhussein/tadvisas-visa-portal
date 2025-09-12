@@ -34,7 +34,7 @@ const Pricing = () => {
       others: "140-250 AED"
     },
     {
-      feature: "WPS ATM card & Payroll processing",
+      feature: "WPS ATM card/App & Payroll processing",
       us: true,
       tadvisasPlus: true,
       tadvisasPremium: true,
