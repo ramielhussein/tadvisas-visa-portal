@@ -44,9 +44,6 @@ const HowItWorksPreview = () => {
               <div className="relative">
                 <div className={`w-20 h-20 ${step.color} bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6`}>
                   <step.icon className={`w-10 h-10 ${step.color}`} />
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    {index + 1}
-                  </div>
                 </div>
                 {index < steps.length - 1 && (
                   <div className="hidden md:block absolute top-10 left-full w-full">
