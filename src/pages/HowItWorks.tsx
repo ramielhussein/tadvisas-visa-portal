@@ -218,7 +218,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Day 2-5</h4>
-                <p className="text-gray-600">Worker will join your home, and you will both make sure that it works for both of you.</p>
+                <p className="text-gray-600">The worker will join your home, and both of you will make sure the arrangement works well.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
