@@ -137,7 +137,7 @@ const Pricing = () => {
                 </div>
                 <div className="mb-6">
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Visa Only. Best Rate
+                    Visa Only. Zero Monthly. Best Rate
                   </span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
@@ -169,7 +169,7 @@ const Pricing = () => {
                 </div>
                 <div className="mb-6">
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Visa and Medical Insurance
+                    Visa and Medical Insurance. 150 Per month
                   </span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
