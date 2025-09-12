@@ -11,7 +11,8 @@ const HowItWorks = () => {
       description: "Firstly think about what you need, it is important to consider these factors",
       details: [
         "The maid fees capped by MOHRE start from 5250 all the way to 15750 for workers depend on the nationality. Here is the most common ones",
-        "Philippines, India, Myanmar 12600 | Ethiopia 5250, Uganda Kenya 6825 | Indonesia Sri Lanka 15750"
+        "Philippines, India, Myanmar 12600 | Ethiopia 5250, Uganda Kenya 6825 | Indonesia Sri Lanka 15750",
+        "Please remember these costs are on top of any visa fees or salary. If you actually prefer or want a Monthly Inclusive package please check the section Monthly Packages."
       ]
     },
     {
