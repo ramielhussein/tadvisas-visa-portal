@@ -177,8 +177,8 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 2-5</h4>
-                <p className="text-gray-600">The worker will join your home, and both of you will make sure the arrangement works well.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 2 to 5: Trial & Fit</h4>
+                <p className="text-gray-600">A Perfect Start 🤝<br/>Your worker joins your home — both sides make sure it's the right fit.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
