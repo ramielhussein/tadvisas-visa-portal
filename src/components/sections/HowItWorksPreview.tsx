@@ -7,8 +7,8 @@ const HowItWorksPreview = () => {
   const steps = [
     {
       icon: FileText,
-      title: "Share Details",
-      description: "Share your maid's Passport copy and Visa/Cancellation and your Emirates ID.",
+      title: "📤 Share Your Details",
+      description: "Just send us: Your maid's passport copy, Her visa or cancellation paper, Your Emirates ID. That's it — we'll take it from there. ✅",
       color: "text-blue-500"
     },
     {
