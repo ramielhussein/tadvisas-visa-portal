@@ -65,6 +65,10 @@ const FAQ = () => {
     {
       question: "Will my worker be able to travel with me any time?",
       answer: "Yes. We provide unlimited NOC (No objection certificate) so your worker can leave and enter the country freely with you."
+    },
+    {
+      question: "I do not have a maid, would you provide me a maid with the same cost of the visa?",
+      answer: "We can provide a maid of course of any and most nationalities but this comes at an extra fee. The fees are capped by MOHRE, the governing authority of Domestic Workers Centers like ours in UAE."
     }
   ];
 
