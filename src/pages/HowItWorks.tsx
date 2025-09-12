@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight, DollarSign, HelpCircle } from "lucide-react";
+import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight, DollarSign, HelpCircle, MessageCircle } from "lucide-react";
 import manThinking from "@/assets/man-thinking-2.png";
 import crossroad from "@/assets/crossroad.png";
 import choices from "@/assets/choices.png";
@@ -39,7 +39,7 @@ const HowItWorks = () => {
       ]
     },
     {
-      icon: FileCheck,
+      icon: MessageCircle,
       title: "4. Let's start the journey",
       description: "If you have your wishlist and you know what you want it is time you talk to us.",
       details: [
@@ -83,7 +83,7 @@ const HowItWorks = () => {
                     <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-start">
-                          {index === 0 || index === 1 || index === 2 ? (
+                          {index === 0 || index === 1 || index === 2 || index === 3 ? (
                             <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                           ) : (
                             <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
