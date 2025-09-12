@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight, DollarSign, HelpCircle } from "lucide-react";
 import manThinking from "@/assets/man-thinking-2.png";
 import crossroad from "@/assets/crossroad.png";
+import choices from "@/assets/choices.png";
 
 const HowItWorks = () => {
   const steps = [
@@ -92,6 +93,12 @@ const HowItWorks = () => {
                       <img 
                         src={manThinking} 
                         alt="Person thinking about costs" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : index === 2 ? (
+                      <img 
+                        src={choices} 
+                        alt="Choices, beliefs and diet directional signs" 
                         className="w-full h-full object-cover"
                       />
                     ) : index === 1 ? (
