@@ -152,7 +152,7 @@ const WhyUs = () => {
     {
       feature: "END OF SERVICE",
       us: false,
-      tadvisasPlus: true,
+      tadvisasPlus: false,
       tadvisasPremium: true,
       personalSponsorship: false,
       others: false
