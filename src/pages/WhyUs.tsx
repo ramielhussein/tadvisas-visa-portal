@@ -119,7 +119,7 @@ const WhyUs = () => {
             <CardContent>
               <div className="bg-accent/50 rounded-lg p-6 mb-8">
                 <p className="font-semibold mb-4">
-                  👉 If you require a Live-Out worker, the following additional allowances apply:
+                  👉 If you require a Live-Out worker, the following additional fees apply:
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
