@@ -30,7 +30,7 @@ const HowItWorks = () => {
     {
       icon: Cog,
       title: "3. What do you need",
-      description: "We have established that you need a worker from us and ready to move on, not very happy but you must do what you must do",
+      description: "You have established that you need a worker from us and ready to move on, not very happy but you must do what you must do",
       details: [
         "It is important to tell us what you want the worker for, is she an all around, would she be looking after babies? Infants? Pets?",
         "Does she need to cook? Does she have to be of a of particular religion or have specific dietary needs (eg: vegan)",
