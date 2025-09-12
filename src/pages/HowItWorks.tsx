@@ -8,7 +8,7 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: ArrowDownToLine,
-      title: "1. Initial Consultation",
+      title: "1. Yes! money matters",
       description: "Firstly think about what you need, it is important to consider these factors",
       details: [
         "The maid fees capped by MOHRE start from 5250 all the way to 15750 for workers depend on the nationality. Here is the most common ones",
