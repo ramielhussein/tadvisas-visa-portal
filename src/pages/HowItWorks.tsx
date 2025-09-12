@@ -90,18 +90,48 @@ const HowItWorks = () => {
                       <h3 className="text-2xl font-bold text-primary">{step.title}</h3>
                     </div>
                     <p className="text-gray-600 text-lg mb-6">{step.description}</p>
-                    <ul className="space-y-3">
-                      {step.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-start">
-                          {index === 0 || index === 1 || index === 2 || index === 3 ? (
-                            <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-                          ) : (
-                            <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                          )}
-                          <span className="text-gray-700">{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {index === 1 ? (
+                      // Special formatting for Path 1 and Path 2
+                      <div className="space-y-4">
+                        {/* Path 1 */}
+                        <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
+                          <h4 className="font-bold text-green-700 mb-3">{step.details[0]}</h4>
+                          <ul className="space-y-2">
+                            {step.details.slice(1, 7).map((detail, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <ChevronRight className="w-5 h-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                                <span className="text-gray-700">{detail}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        {/* Path 2 */}
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                          <h4 className="font-bold text-blue-700 mb-3">{step.details[7]}</h4>
+                          <ul className="space-y-2">
+                            {step.details.slice(8).map((detail, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <ChevronRight className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                                <span className="text-gray-700">{detail}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <ul className="space-y-3">
+                        {step.details.map((detail, idx) => (
+                          <li key={idx} className="flex items-start">
+                            {index === 0 || index === 1 || index === 2 || index === 3 ? (
+                              <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                            ) : (
+                              <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            )}
+                            <span className="text-gray-700">{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
                 <div className="lg:w-1/2">
