@@ -170,8 +170,8 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-blue-600">1</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 1</h4>
-                <p className="text-gray-600">Talk to us → View candidates → Interview online, by phone, or in person.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 1: Interviews</h4>
+                <p className="text-gray-600">Meet Your Match 👩‍👩‍👧<br/>View candidates and interview by phone, video, or in person — at your convenience.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
