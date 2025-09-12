@@ -475,28 +475,6 @@ const Pricing = () => {
             <p className="text-sm text-gray-500 mt-2">Hover over or click a service box above to see what's included</p>
           </div>
 
-          {/* Add-ons Section */}
-          <div className="bg-gray-50 rounded-2xl p-8 mb-16">
-            <h2 className="text-3xl font-bold text-primary text-center mb-8">Add-ons</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
-                <h4 className="text-lg font-semibold text-primary mb-2">Medical Insurance</h4>
-                <p className="text-gray-600 mb-3">Comprehensive health coverage for your domestic worker</p>
-                <p className="text-2xl font-bold text-primary">735 AED<span className="text-sm text-gray-500">/year</span></p>
-              </div>
-              <div className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
-                <h4 className="text-lg font-semibold text-primary mb-2">NOC Travel Permit</h4>
-                <p className="text-gray-600 mb-3">Permission for your worker to travel with you</p>
-                <p className="text-2xl font-bold text-primary">150 AED<span className="text-sm text-gray-500">/permit</span></p>
-              </div>
-              <div className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
-                <h4 className="text-lg font-semibold text-primary mb-2">Express Processing</h4>
-                <p className="text-gray-600 mb-3">Fast-track your visa application</p>
-                <p className="text-2xl font-bold text-primary">500 AED<span className="text-sm text-gray-500">/one-time</span></p>
-              </div>
-            </div>
-          </div>
-
           {/* What's Included/Not Included */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* Included */}
