@@ -138,7 +138,7 @@ const HowItWorks = () => {
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
                           {step.details.map((detail, idx) => (
-                            <li key={idx} className="flex items-start">
+                            <li key={idx} className={`flex items-start ${index === 3 && idx >= 4 && idx <= 6 ? 'ml-8' : ''}`}>
                               <span className="text-gray-700">{detail}</span>
                             </li>
                           ))}
