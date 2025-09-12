@@ -141,7 +141,7 @@ const Pricing = () => {
                   </span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
-                  <Link to="/start-here">UAE's Best Value Package</Link>
+                  <Link to="/start-here">Get TADVISA with zero monthly</Link>
                 </Button>
               </div>
             </div>
