@@ -40,13 +40,9 @@ const HowItWorks = () => {
     {
       icon: Cog,
       title: "3. What do you need?",
-      description: "You've decided to get a worker from us. Now we need to know your priorities:",
+      description: "🏡 Your Home, Your Rules",
       details: [
-        "• Will she handle everything, or focus on babies, infants, or pets?",
-        "• Should she cook?",
-        "• Do you prefer a certain religion or diet (e.g., vegan)?",
-        "• Do you have time to train her, or do you need someone experienced?",
-        "💡 You can ask for many things, but the more specific you are, the harder the search. Focus on what truly matters most to you and your family."
+        "Babies, pets, cooking, or full support — tell us what matters most, and we'll match you with the right worker."
       ]
     },
     {
