@@ -40,7 +40,7 @@ const HowItWorks = () => {
     },
     {
       icon: FileCheck,
-      title: "4. Final Approval",
+      title: "4. Let's start the journey",
       description: "Once approved, we coordinate the final steps and handover.",
       details: ["Approval notification", "Final documentation", "Visa collection", "Support & guidance"]
     }
