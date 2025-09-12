@@ -75,13 +75,20 @@ export default function Admin() {
     e.preventDefault();
     setIsAuthenticating(true);
     
+    console.log("Attempting login with:", { email, supabaseUrl: supabase });
+    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      console.log("Login response:", { data, error });
+
+      if (error) {
+        console.error("Login error details:", error);
+        throw error;
+      }
 
       setUser(data.user);
       toast({
@@ -89,6 +96,7 @@ export default function Admin() {
         description: "Logged in successfully",
       });
     } catch (error: any) {
+      console.error("Caught error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to login",
