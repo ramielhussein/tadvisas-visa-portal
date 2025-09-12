@@ -38,12 +38,13 @@ const ValueProposition = () => {
             Don't have a maid? get a maid from TADMAIDS
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            TADMAIDS is a provider of domestic workers in UAE, our experience and origins go back to 2005. We can help you get Nannies, Housemaid, Driver, Cooks, Babysitters, and Caregivers too.
+            🌟 TADMAIDS – Your Trusted Partner Since 2005<br/>
+            We provide experienced Nannies, Housemaids, Drivers, Cooks, Babysitters, and Caregivers across the UAE.
           </p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
-            WhatsApp us now and we will send you available applications.{" "}
+            📲 WhatsApp us now to view available candidates and start our{" "}
             <Link to="/how-it-works" className="text-primary hover:text-primary-700 underline">
-              Check out our simple process.
+              simple, step-by-step process.
             </Link>
           </p>
         </div>
