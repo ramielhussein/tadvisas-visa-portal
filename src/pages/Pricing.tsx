@@ -208,8 +208,8 @@ const Pricing = () => {
               onClick={() => setSelectedService('premium')}
               className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
                 selectedService === 'premium' 
-                  ? 'border-4 border-gradient-gold scale-105' 
-                  : 'border-2 border-gradient-gold hover:border-4'
+                  ? 'border-4 border-yellow-500 scale-105' 
+                  : 'border-2 border-yellow-500 hover:border-4'
               }`}
             >
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
