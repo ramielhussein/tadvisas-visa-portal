@@ -121,7 +121,7 @@ const Pricing = () => {
             >
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  Standard Service
+                  TADVISA
                 </span>
               </div>
               <div className="absolute -top-3 right-4">
@@ -158,7 +158,7 @@ const Pricing = () => {
             >
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  VIP Service
+                  TADVISA+
                 </span>
               </div>
               <div className="text-center">
@@ -182,7 +182,7 @@ const Pricing = () => {
           {/* Service Selection Indicator */}
           <div className="text-center mb-8">
             <p className="text-lg text-gray-600">
-              Currently viewing: <span className="font-bold text-primary">{selectedService === 'vip' ? 'VIP Service' : 'Standard Service'}</span> benefits
+              Currently viewing: <span className="font-bold text-primary">{selectedService === 'vip' ? 'TADVISA+' : 'TADVISA'}</span> benefits
             </p>
             <p className="text-sm text-gray-500 mt-2">Hover over or click a service box above to see what's included</p>
           </div>
