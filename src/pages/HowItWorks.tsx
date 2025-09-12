@@ -43,7 +43,7 @@ const HowItWorks = () => {
       title: "4. Let's start the journey",
       description: "If you have your wishlist and you know what you want it is time you talk to us.",
       details: [
-        "First click on the what's app link and tell us what u need and how you need to do it to recap",
+        "First click on the what's app link and tell us what u need and how you need to do it.",
         "Nationality of worker",
         "Main Tasks",
         "Any consideration to age, skills experience",
