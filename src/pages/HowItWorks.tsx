@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone } from "lucide-react";
+import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight } from "lucide-react";
 
 const HowItWorks = () => {
   const steps = [
@@ -65,7 +65,11 @@ const HowItWorks = () => {
                     <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-start">
-                          <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                          {index === 0 ? (
+                            <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                          ) : (
+                            <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                          )}
                           <span className="text-gray-700">{detail}</span>
                         </li>
                       ))}
