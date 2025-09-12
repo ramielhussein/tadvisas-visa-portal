@@ -2,7 +2,7 @@
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight } from "lucide-react";
-import manThinking from "@/assets/man-thinking.png";
+import manThinking from "@/assets/man-thinking-2.png";
 
 const HowItWorks = () => {
   const steps = [
