@@ -75,7 +75,6 @@ const Pricing = () => {
   ];
 
   const vipNotIncluded = [
-    "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "End Of service (pay your worker direct)",
     "Return Home Ticket"
