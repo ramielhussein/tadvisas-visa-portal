@@ -78,15 +78,15 @@ const HowItWorks = () => {
                   </div>
                 </div>
                 <div className="lg:w-1/2">
-                  <div className="bg-gradient-light rounded-2xl p-8 h-64 flex items-center justify-center">
+                  <div className="bg-gradient-light rounded-2xl h-64 flex items-center justify-center overflow-hidden">
                     {index === 0 ? (
                       <img 
                         src={manThinking} 
                         alt="Person thinking about costs" 
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="text-center">
+                      <div className="text-center p-8">
                         <div className="w-24 h-24 bg-primary bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
                           <span className="text-3xl font-bold text-primary">{index + 1}</span>
                         </div>
