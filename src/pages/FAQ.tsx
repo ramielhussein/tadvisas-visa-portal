@@ -61,6 +61,10 @@ const FAQ = () => {
     {
       question: "Do you have installments plan?",
       answer: "You bet! We have access to payments via Tabby and Tamara. Some fees may apply, please ask your visa expert from Tadvisas."
+    },
+    {
+      question: "Will my worker be able to travel with me any time?",
+      answer: "Yes. We provide unlimited NOC (No objection certificate) so your worker can leave and enter the country freely with you."
     }
   ];
 
