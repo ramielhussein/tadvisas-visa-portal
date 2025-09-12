@@ -15,8 +15,8 @@ const Footer = () => {
               className="h-8 w-auto brightness-0 invert"
             />
             <p className="text-blue-100">
-              Your trusted partner for 2-year maid visa services in UAE. 
-              100% Tadbeer licensed with zero monthly admin fees.
+              Your trusted partner for domestic workers, and 2-year maid visa services in UAE. 
+              100% Tadbeer licensed with an option for zero monthly admin fees.
             </p>
           </div>
 
