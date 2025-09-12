@@ -1,12 +1,12 @@
 
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { FileText, Search, Cog, FileCheck, Users, CheckCircle, Phone } from "lucide-react";
+import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone } from "lucide-react";
 
 const HowItWorks = () => {
   const steps = [
     {
-      icon: Search,
+      icon: ArrowDownToLine,
       title: "1. Initial Consultation",
       description: "Firstly think about what you need, it is important to consider these factors",
       details: [
