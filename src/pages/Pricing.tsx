@@ -58,14 +58,6 @@ const Pricing = () => {
       others: false
     },
     {
-      feature: "MOHRE Licensed",
-      us: true,
-      tadvisasPlus: true,
-      tadvisasPremium: true,
-      personalSponsorship: false,
-      others: true
-    },
-    {
       feature: "Complete Documentation Support",
       us: true,
       tadvisasPlus: true,
