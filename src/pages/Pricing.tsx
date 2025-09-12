@@ -134,12 +134,27 @@ const Pricing = () => {
             <div 
               onMouseEnter={() => setSelectedService('standard')}
               onClick={() => setSelectedService('standard')}
-              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+              className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'standard' 
-                  ? 'border-4 border-accent scale-105' 
-                  : 'border-2 border-accent hover:border-4'
+                  ? 'border-4 border-accent scale-105 shadow-2xl ring-4 ring-accent/30 animate-pulse-border' 
+                  : 'border-2 border-accent hover:border-4 opacity-75 hover:opacity-100'
               }`}
+              style={{
+                background: selectedService === 'standard' 
+                  ? 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,237,213,0.3) 100%)'
+                  : 'white',
+                boxShadow: selectedService === 'standard'
+                  ? '0 20px 40px -10px rgba(251, 146, 60, 0.4), 0 0 60px -20px rgba(251, 146, 60, 0.3)'
+                  : undefined
+              }}
             >
+              {selectedService === 'standard' && (
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                    ✨ CURRENTLY SELECTED ✨
+                  </div>
+                </div>
+              )}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold">
                   TADVISA
@@ -172,12 +187,27 @@ const Pricing = () => {
             <div 
               onMouseEnter={() => setSelectedService('vip')}
               onClick={() => setSelectedService('vip')}
-              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+              className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'vip' 
-                  ? 'border-4 border-primary scale-105' 
-                  : 'border-2 border-primary hover:border-4'
+                  ? 'border-4 border-primary scale-105 shadow-2xl ring-4 ring-primary/30 animate-pulse-border' 
+                  : 'border-2 border-primary hover:border-4 opacity-75 hover:opacity-100'
               }`}
+              style={{
+                background: selectedService === 'vip' 
+                  ? 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(59,130,246,0.1) 100%)'
+                  : 'white',
+                boxShadow: selectedService === 'vip'
+                  ? '0 20px 40px -10px rgba(59, 130, 246, 0.4), 0 0 60px -20px rgba(59, 130, 246, 0.3)'
+                  : undefined
+              }}
             >
+              {selectedService === 'vip' && (
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                    ✨ CURRENTLY SELECTED ✨
+                  </div>
+                </div>
+              )}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
                   TADVISA+
@@ -205,12 +235,27 @@ const Pricing = () => {
             <div 
               onMouseEnter={() => setSelectedService('premium')}
               onClick={() => setSelectedService('premium')}
-              className={`relative bg-white rounded-2xl p-8 shadow-lg hover-lift cursor-pointer transition-all ${
+              className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'premium' 
-                  ? 'border-4 border-yellow-500 scale-105' 
-                  : 'border-2 border-yellow-500 hover:border-4'
+                  ? 'border-4 border-yellow-500 scale-105 shadow-2xl ring-4 ring-yellow-400/30 animate-pulse-border' 
+                  : 'border-2 border-yellow-500 hover:border-4 opacity-75 hover:opacity-100'
               }`}
+              style={{
+                background: selectedService === 'premium' 
+                  ? 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,215,0,0.15) 100%)'
+                  : 'white',
+                boxShadow: selectedService === 'premium'
+                  ? '0 20px 40px -10px rgba(255, 215, 0, 0.5), 0 0 60px -20px rgba(255, 215, 0, 0.4)'
+                  : undefined
+              }}
             >
+              {selectedService === 'premium' && (
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-2 rounded-full text-sm font-bold animate-bounce shadow-lg">
+                    ⭐ CURRENTLY SELECTED ⭐
+                  </div>
+                </div>
+              )}
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-gold text-white px-4 py-1 rounded-full text-sm font-semibold">
                   TADVISA++
