@@ -44,6 +44,7 @@ const Pricing = () => {
   const standardIncluded = [
     "Complete visa processing",
     "Direct Debit for WPS salary Process",
+    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
@@ -54,7 +55,6 @@ const Pricing = () => {
 
   const standardNotIncluded = [
     "Medical Insurance",
-    "VIP Chauffeur Service",
     "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "End Of service (pay your worker direct)",
@@ -64,10 +64,10 @@ const Pricing = () => {
   const vipIncluded = [
     "Complete visa processing",
     "Direct Debit for WPS salary Process",
+    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
-    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "NOC to travel with you",
     "Medical Insurance (2 years)",
     "ILOE Insurance for 2 years",
@@ -85,10 +85,10 @@ const Pricing = () => {
   const premiumIncluded = [
     "Complete visa processing",
     "Direct Debit for WPS salary Process",
+    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
-    "VIP Chauffeur Service for TAWJEEH/MEDICAL/BIOMETRIC",
     "NOC to travel with you",
     "Medical Insurance (2 years)",
     "ILOE Insurance for 2 years",
