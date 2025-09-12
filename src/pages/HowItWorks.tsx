@@ -9,7 +9,12 @@ const HowItWorks = () => {
       icon: Search,
       title: "1. Initial Consultation",
       description: "Firstly think about what you need, it is important to consider these factors",
-      details: ["Free consultation, Will ask about your maid's status and documents availability", "Requirement assessment", "Process explanation, this takes a bit of time, will explain every step and how long it takes.", "Timeline discussion"]
+      details: [
+        "1- The maid fees capped by MOHRE start from 5250 all the way to 15750 for workers depend on the nationality. Here is the most common ones",
+        "Philippines, India, Myanmar 12600 | Ethiopia 5250, Uganda Kenya 6825 | Indonesia Sri Lanka 15750",
+        "2- It is important to tell us what you want the worker for, is she an all around, would she be looking after babies? Infants? Pets? Does she need to cook? Does she have to be of a of particular religion or have specific dietary habits (eg: vegan)",
+        "Remember you can wish for anything but the more you wish for the harder the task. Think of what matters to you and your family most."
+      ]
     },
     {
       icon: FileText,
