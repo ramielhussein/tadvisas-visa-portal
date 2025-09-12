@@ -166,7 +166,7 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-blue-700">✓</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Day 6-10</h4>
+                <h4 className="font-semibold text-primary mb-2">Two Years</h4>
                 <p className="text-gray-600">Take the worker to do Medical, Biometric & Tawjeeh. Get Emirates ID at completion.</p>
               </div>
             </div>
