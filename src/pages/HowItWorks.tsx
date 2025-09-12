@@ -12,20 +12,15 @@ const HowItWorks = () => {
     {
       icon: DollarSign,
       title: "1. Yes! Money Matters!",
-      description: "💡 Visa Only? Or Worker + Visa?",
+      description: "💡 Know Before You Decide",
       details: [
-        "• Already have a worker? ✅ Just process the visa and save money.",
-        "• Need a worker too? 🔄 Expect additional, government-capped fees.",
-        "",
-        "📊 Government-Capped Worker Fees (by Nationality):",
+        "Government-capped fees per nationality:",
         "• Philippines / India / Myanmar → AED 12,600",
         "• Ethiopia → AED 5,250",
         "• Uganda / Kenya → AED 6,825",
         "• Indonesia / Sri Lanka → AED 15,750",
         "",
-        "⚠️ These fees are set by MOHRE and are in addition to visa costs and salary.",
-        "",
-        "👉 Want it all in one simple monthly payment? Check our Monthly Packages."
+        "Visa & salary not included. Prefer all-in-one? 👉 Check Monthly Packages."
       ]
     },
     {
