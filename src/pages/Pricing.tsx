@@ -357,7 +357,7 @@ const Pricing = () => {
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Legal/Fines Support</h4>
-                <p className="text-gray-600">If your worker have fines or absconding, we can help, mediate and appeal to the authorities but we do not guarantee the outcome.</p>
+                <p className="text-gray-600">If your worker have fines or absconding, we can help, mediate and appeal to the authorities <u>but we do not guarantee the outcome.</u></p>
                 <p className="text-sm text-gray-500">Free</p>
               </div>
             </div>
