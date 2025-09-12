@@ -315,6 +315,44 @@ const Pricing = () => {
             </p>
           </div>
 
+          {/* Add-ons Section */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg mb-16 border-2 border-gray-200">
+            <h2 className="text-3xl font-bold text-primary mb-6 text-center">Add-ons you can buy</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Medical Insurance Add-on */}
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">Medical Insurance</h3>
+                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">Popular</span>
+                </div>
+                <p className="text-gray-600 mb-4">Comprehensive health coverage for 2 years</p>
+                <div className="text-2xl font-bold text-primary mb-2">735 AED</div>
+                <p className="text-sm text-gray-500">Per year</p>
+              </div>
+
+              {/* NOC Travel Permit Add-on */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">NOC Travel Permit</h3>
+                </div>
+                <p className="text-gray-600 mb-4">Permission for your helper to travel with you</p>
+                <div className="text-2xl font-bold text-primary mb-2">FREE</div>
+                <p className="text-sm text-gray-500">With all packages</p>
+              </div>
+
+              {/* Express Processing Add-on */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">Express Processing</h3>
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">Fast</span>
+                </div>
+                <p className="text-gray-600 mb-4">Get your visa in just 3-5 business days</p>
+                <div className="text-2xl font-bold text-primary mb-2">500 AED</div>
+                <p className="text-sm text-gray-500">One-time fee</p>
+              </div>
+            </div>
+          </div>
+
           {/* Pricing Boxes */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
             {/* Standard Service */}
