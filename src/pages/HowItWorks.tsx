@@ -61,7 +61,7 @@ const HowItWorks = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-              Help me get a domestic worker
+              Planning to get a domestic worker
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               For the last 20 years we have been helping families in UAE get domestic workers from trusted sources, legally, safely and cost effectively. Here is a simple process of how we can help you achieve that
