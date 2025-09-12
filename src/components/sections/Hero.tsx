@@ -29,7 +29,7 @@ const Hero = () => {
             
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Get your 2-year maid visa processed by UAE's most trusted MOHRE licensed center. 
-              Transparent pricing, zero monthly admin fees, and 100% legal compliance guaranteed.
+              Transparent pricing, with an option of zero monthly admin fees, and 100% legal compliance guaranteed.
             </p>
 
             {/* Key Benefits */}
