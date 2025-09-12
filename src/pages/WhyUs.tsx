@@ -198,7 +198,7 @@ const WhyUs = () => {
               Visa Benefits Table
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Because we are not here to hook you up for 2 years. We have no intention of taking your maid under the pretense of helping you. We do a service get paid once and will not blackmail you with monthly payments forever.
+              We are here to help you get a good service at affordable fees. Transparency and clarity is what we promise you, you will never be surprised by any additional or hidden fees.
             </p>
           </div>
 
