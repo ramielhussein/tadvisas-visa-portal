@@ -21,7 +21,7 @@ const CTA = () => {
         </h2>
         <p className="text-xl text-primary-100 mb-8 leading-relaxed">
           Join over 1700 satisfied families who chose TADVISAS for their domestic worker visa needs. 
-          Get started today with zero monthly admin fees and complete transparency. Don't have a worker? We can help you find a worker too.
+          Get started today with zero monthly admin fees option with complete transparency. Don't have a worker? We can help you find a worker too.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
