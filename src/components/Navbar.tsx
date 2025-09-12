@@ -12,8 +12,8 @@ const Navbar = () => {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "How It Works", path: "/how-it-works" },
-    { name: "Visa Pricing", path: "/pricing" },
-    { name: "Visa Table of Benefits", path: "/why-us" },
+    { name: "Pricing", path: "/pricing" },
+    { name: "Compare", path: "/why-us" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
     { name: "Start Here & Now", path: "/start-here" },
