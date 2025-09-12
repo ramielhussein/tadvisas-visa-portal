@@ -56,14 +56,15 @@ const HowItWorks = () => {
     {
       icon: MessageCircle,
       title: "4. Let's start the journey",
-      description: "If you have your wishlist and you know what you want it is time you talk to us.",
+      description: "Have your wishlist ready? Here's how to start:",
       details: [
-        "First click on the what's app link and tell us what u need and how you need to do it.",
-        "Nationality of worker",
-        "Main Tasks",
-        "Any consideration to age, skills experience",
-        "To respect the privacy of the workers we do not publish workers biodata, please ask for them on a private message.",
-        "Talk to you soon."
+        "1. Click the WhatsApp link.",
+        "2. Tell us what you need:",
+        "• Worker's nationality",
+        "• Main tasks",
+        "• Age, skills, or experience preferences",
+        "🔒 For privacy, we don't publish worker biodata publicly. Please request it in a private message.",
+        "We'll talk to you soon!"
       ]
     }
   ];
