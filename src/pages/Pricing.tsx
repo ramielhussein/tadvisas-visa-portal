@@ -238,6 +238,7 @@ const Pricing = () => {
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">1500 Two Years Medical Insurance</p>
+                <p className="text-sm text-gray-500">Only with TADVISA</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
