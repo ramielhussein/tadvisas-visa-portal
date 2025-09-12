@@ -38,7 +38,7 @@ const HowItWorks = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-              How It Works
+              Help me get a domestic worker
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our streamlined 4-step process makes getting your 2-year maid visa simple, 
