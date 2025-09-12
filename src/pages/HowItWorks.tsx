@@ -42,16 +42,15 @@ const HowItWorks = () => {
     },
     {
       icon: MessageCircle,
-      title: "4. Let's start the journey",
-      description: "Have your wishlist ready? Here's how to start:",
+      title: "4. Start the Process",
+      description: "🚀 Getting Started Is Simple",
       details: [
-        "1. Click the WhatsApp link.",
-        "2. Tell us what you need:",
+        "Click our WhatsApp link and tell us:",
         "• Worker's nationality",
         "• Main tasks",
-        "• Age, skills, or experience preferences",
-        "🔒 For privacy, we don't publish worker biodata publicly. Please request it in a private message.",
-        "We'll talk to you soon!"
+        "• Skills, age, or experience you prefer",
+        "",
+        "🔒 Worker profiles are shared privately to protect confidentiality."
       ]
     }
   ];
