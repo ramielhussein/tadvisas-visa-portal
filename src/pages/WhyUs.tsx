@@ -133,31 +133,6 @@ const WhyUs = () => {
                 </div>
               </div>
 
-              <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                <span className="text-xl">📊</span> Live-Out Price Guide
-              </h4>
-              
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nationality</TableHead>
-                    <TableHead className="text-right">Monthly Base Price (AED)</TableHead>
-                    <TableHead className="text-right">Add-Ons for Live Out</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {liveOutPrices.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.nationality}</TableCell>
-                      <TableCell className="text-right font-semibold">{item.basePrice}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        + Accommodation + Transport + Food
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
               <div className="mt-8 p-6 bg-primary/5 border border-primary/20 rounded-lg text-center">
                 <p className="text-lg font-semibold text-primary">
                   Special deals available for long-term commitments.
