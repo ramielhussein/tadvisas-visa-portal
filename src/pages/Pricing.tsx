@@ -158,9 +158,10 @@ const Pricing = () => {
                   <span className="text-gray-600"> AED</span>
                 </div>
                 <div className="mb-6">
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Visa Only. Zero Monthly. Best Rate
-                  </span>
+                  <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg">
+                    <p className="text-sm font-medium">Visa only. Big Saving</p>
+                    <p className="text-sm font-medium">Zero Per month</p>
+                  </div>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Link to="/start-here">Get TADVISA with zero monthly</Link>
@@ -190,9 +191,10 @@ const Pricing = () => {
                   <span className="text-gray-600"> AED</span>
                 </div>
                 <div className="mb-6">
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Visa and Medical Insurance. 150 Per month
-                  </span>
+                  <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg">
+                    <p className="text-sm font-medium">Visa & Medical Insurance</p>
+                    <p className="text-sm font-medium">150 Per month</p>
+                  </div>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Link to="/start-here">Get TADVISA+ with insurance</Link>
@@ -222,9 +224,10 @@ const Pricing = () => {
                   <span className="text-gray-600"> AED</span>
                 </div>
                 <div className="mb-6">
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    Visa, Medical, EOSB, Ticket. 168 Per month
-                  </span>
+                  <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg">
+                    <p className="text-sm font-medium">Visa, Medical, EOSB & Ticket</p>
+                    <p className="text-sm font-medium">168 Per month</p>
+                  </div>
                 </div>
                 <Button asChild className="w-full bg-gradient-gold hover:bg-gradient-primary text-white">
                   <Link to="/start-here">Get TADVISA++ the premium package</Link>
