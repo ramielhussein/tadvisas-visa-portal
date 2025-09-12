@@ -69,7 +69,7 @@ const Pricing = () => {
     "Emirates ID processing",
     "All government fees",
     "NOC to travel with you",
-    "Medical Insurance (2 years)",
+    "2 Years Medical Insurance",
     "ILOE Insurance for 2 years",
     "Legal compliance guarantee"
   ];
@@ -78,8 +78,7 @@ const Pricing = () => {
     "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "End Of service (pay your worker direct)",
-    "Return Home Ticket",
-    "Fake Promises to keep you hooked"
+    "Return Home Ticket"
   ];
 
   const premiumIncluded = [
