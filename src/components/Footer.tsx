@@ -68,7 +68,7 @@ const Footer = () => {
 
         <div className="border-t border-blue-600 mt-8 pt-8 text-center">
           <p className="text-blue-100">
-            © 2025 TADVISAS.com - Tadmaids Domestic Workers Services Center. All rights reserved.
+            © 2025 tadmaids.com - Tadmaids Domestic Workers Services Center. All rights reserved.
           </p>
         </div>
       </div>
