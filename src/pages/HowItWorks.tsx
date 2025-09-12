@@ -15,7 +15,7 @@ const HowItWorks = () => {
       description: "💡 Visa Only? Or Worker + Visa?",
       details: [
         "• Already have a worker? ✅ Just process the visa and save money.",
-        "• Need a worker too? 🔄 Expect additional, government-set fees.",
+        "• Need a worker too? 🔄 Expect additional, government-capped fees.",
         "",
         "📊 Government-Capped Worker Fees (by Nationality):",
         "• Philippines / India / Myanmar → AED 12,600",
