@@ -220,7 +220,7 @@ const Pricing = () => {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-primary mb-4">2 Years Maid Visa</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-primary">9,450</span>
+                  <span className="text-5xl font-bold text-primary">10,500</span>
                   <span className="text-gray-600"> AED</span>
                 </div>
                 <div className="mb-6">
