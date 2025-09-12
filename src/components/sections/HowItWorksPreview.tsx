@@ -30,11 +30,11 @@ const HowItWorksPreview = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
-            How It Works
+            🔑 How It Works
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Getting your 2-year maid visa is simple and straightforward. 
-            We handle everything so you don't have to worry about the complexities. Don't have a worker? We can help you get one too.
+            Getting your 2-year maid visa is fast and hassle-free. ✅ We handle all the paperwork so you don't have to.<br/>
+            No worker yet? 👩‍👩‍👧 Don't worry — we'll help you find the right one too.
           </p>
         </div>
 
