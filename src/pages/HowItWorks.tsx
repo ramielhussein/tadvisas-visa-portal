@@ -12,11 +12,15 @@ const HowItWorks = () => {
     {
       icon: DollarSign,
       title: "1. Yes! Money Matters!",
-      description: "If you have a worker and want a visa, you are saving money, if you need a worker you have to consider that there are additional significant fees involved.",
+      description: "If you already have a worker and only need a visa → you save money. If you still need a worker → expect additional fees.",
       details: [
-        "The maid fees capped by MOHRE start from AED 5250 all the way to AED 15750 for workers depend on the nationality. Here is the most common ones",
-        "Philippines, India, Myanmar AED 12600 | Ethiopia AED 5250, Uganda Kenya AED 6825 | Indonesia Sri Lanka AED 15750",
-        "Please remember these costs are on top of any visa fees or salary. If you actually prefer or want a Monthly Inclusive package please check the section Monthly Packages."
+        "MOHRE-capped fees (by nationality):",
+        "• Philippines, India, Myanmar → AED 12,600",
+        "• Ethiopia → AED 5,250",
+        "• Uganda, Kenya → AED 6,825",
+        "• Indonesia, Sri Lanka → AED 15,750",
+        "⚠️ These fees are on top of visa costs and salary.",
+        "👉 If you prefer one fixed monthly fee, see Monthly Packages."
       ]
     },
     {
