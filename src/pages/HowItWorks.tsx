@@ -41,8 +41,7 @@ const HowItWorks = () => {
               Help me get a domestic worker
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our streamlined 4-step process makes getting your 2-year maid visa simple, 
-              transparent, and hassle-free. We handle everything so you don't have to.
+              For the last 20 years we have been helping families in UAE get domestic workers from trusted sources, legally, safely and cost effectively. Here is a simple process of how we can help you achieve that
             </p>
           </div>
 
