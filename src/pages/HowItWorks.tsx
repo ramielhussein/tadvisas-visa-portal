@@ -9,7 +9,7 @@ const HowItWorks = () => {
     {
       icon: ArrowDownToLine,
       title: "1. Yes! money matters",
-      description: "Firstly think about what you need, it is important to consider these factors",
+      description: "If you have a worker and want a visa, you are saving money, if you need a worker you have to consider that there is an additional significant fees involved.",
       details: [
         "The maid fees capped by MOHRE start from 5250 all the way to 15750 for workers depend on the nationality. Here is the most common ones",
         "Philippines, India, Myanmar 12600 | Ethiopia 5250, Uganda Kenya 6825 | Indonesia Sri Lanka 15750",
