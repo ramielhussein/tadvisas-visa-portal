@@ -30,20 +30,11 @@ const HowItWorks = () => {
     },
     {
       icon: HelpCircle,
-      title: "2. Think of the path to follow",
-      description: "If you do not have a worker and want one, then you actually want multiple services all at a cost, you need to decide how to go",
+      title: "2. Path Options",
+      description: "💰 Save Big or Go Hassle-Free — The Choice Is Yours",
       details: [
-        "Path 1 – Save More (But With Risk)",
-        "• Pay our fees → Get a worker → Get the visa.",
-        "• You can sponsor the visa yourself or through us.",
-        "• Add medical insurance.",
-        "• Pay only the worker's monthly salary (much lower).",
-        "• Over 2 years, you save AED 15,000–25,000.",
-        "⚠️ Risk: If the worker leaves, we can replace the worker, but not the visa cost.",
-        "Path 2 – Convenience (All-Inclusive)",
-        "• Pay one fixed monthly fee.",
-        "• Covers: worker salary, visa, insurance, and our fees.",
-        "• Simple, predictable, hassle-free."
+        "• Savings Plan: Take the visa yourself, pay a smaller salary, and save up to AED 25,000 in 2 years.",
+        "• Convenience Plan: One monthly fee covers everything — visa, salary, insurance, fees."
       ]
     },
     {
@@ -112,33 +103,7 @@ const HowItWorks = () => {
                           ))}
                         </ul>
                       </div>
-                    ) : index === 1 ? (
-                      // Special formatting for Path 1 and Path 2
-                      <div className="space-y-4">
-                        {/* Path 1 */}
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                          <h4 className="font-bold text-blue-700 mb-3">{step.details[0]}</h4>
-                          <ul className="space-y-2">
-                            {step.details.slice(1, 7).map((detail, idx) => (
-                              <li key={idx} className="flex items-start">
-                                <span className="text-gray-700">{detail}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        {/* Path 2 */}
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                          <h4 className="font-bold text-blue-700 mb-3">{step.details[7]}</h4>
-                          <ul className="space-y-2">
-                            {step.details.slice(8).map((detail, idx) => (
-                              <li key={idx} className="flex items-start">
-                                <span className="text-gray-700">{detail}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ) : index === 2 || index === 3 ? (
+                    ) : index === 1 || index === 2 || index === 3 ? (
                       // Special formatting for sections 3 and 4 - with blue box
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
