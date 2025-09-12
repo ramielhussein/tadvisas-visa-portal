@@ -48,7 +48,8 @@ const Pricing = () => {
     "All government fees",
     "NOC to travel with you",
     "ILOE Insurance for 2 years",
-    "Legal compliance guarantee"
+    "Legal compliance guarantee",
+    "Direct Debit for WPS salary Process"
   ];
 
   const standardNotIncluded = [
@@ -69,7 +70,8 @@ const Pricing = () => {
     "NOC to travel with you",
     "Medical Insurance (2 years)",
     "ILOE Insurance for 2 years",
-    "Legal compliance guarantee"
+    "Legal compliance guarantee",
+    "Direct Debit for WPS salary Process"
   ];
 
   const vipNotIncluded = [
@@ -91,7 +93,8 @@ const Pricing = () => {
     "ILOE Insurance for 2 years",
     "End of Service Benefits (EOSB)",
     "Return Home Ticket",
-    "Legal compliance guarantee"
+    "Legal compliance guarantee",
+    "Direct Debit for WPS salary Process"
   ];
 
   const premiumNotIncluded = [
