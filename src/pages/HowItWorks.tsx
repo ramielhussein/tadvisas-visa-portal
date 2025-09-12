@@ -41,8 +41,15 @@ const HowItWorks = () => {
     {
       icon: FileCheck,
       title: "4. Let's start the journey",
-      description: "Once approved, we coordinate the final steps and handover.",
-      details: ["Approval notification", "Final documentation", "Visa collection", "Support & guidance"]
+      description: "If you have your wishlist and you know what you want it is time you talk to us.",
+      details: [
+        "First click on the what's app link and tell us what u need and how you need to do it to recap",
+        "Nationality or worker",
+        "Main Tasks",
+        "Any consideration to age, skills experience",
+        "To respect the privacy of the workers we do not publish workers biodata, please ask for them on a private message.",
+        "Talk to you soon."
+      ]
     }
   ];
 
