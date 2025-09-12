@@ -31,7 +31,10 @@ const HowItWorks = () => {
         "• Pay only the worker's monthly salary (much lower).",
         "• Over 2 years, you save AED 15,000–25,000.",
         "⚠️ Risk: If the worker leaves, we can replace the worker, but not the visa cost.",
-        "Path2- Convenience comes with a price. We will be happy to give you a worker on a monthly fixed fee. Pay one time per month inclusive of Worker Salary, Visa, insurance, and our fees. Overall you will be paying more over a 2 years contract but your risk will always be limited to the month you are in and we will happily replace the worker unlimited amount of times. Tough choice!"
+        "Path 2 – Convenience (All-Inclusive)",
+        "• Pay one fixed monthly fee.",
+        "• Covers: worker salary, visa, insurance, and our fees.",
+        "• Simple, predictable, hassle-free."
       ]
     },
     {
