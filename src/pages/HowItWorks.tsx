@@ -28,9 +28,14 @@ const HowItWorks = () => {
     },
     {
       icon: Cog,
-      title: "3. Visa Processing",
-      description: "Our team handles all government procedures, medical tests, and paperwork.",
-      details: ["Government submissions (pre approval, visa, vpa, EID, medical)", "Medical appointments, we will chauffer her back and for.", "Emirates ID processing, will drop your worker and return her safe and sound.", "Tawjeeh Session, this is compulsory for Center Workers, it takes 2 hours."]
+      title: "3. What do you need",
+      description: "We have established that you need a worker from us and ready to move on, not very happy but you must do what you must do",
+      details: [
+        "It is important to tell us what you want the worker for, is she an all around, would she be looking after babies? Infants? Pets?",
+        "Does she need to cook? Does she have to be of a of particular religion or have specific dietary needs (eg: vegan)",
+        "Do you have time to teach or you prefer an experienced one?",
+        "Remember you can wish for anything but the more you wish for the harder the task. Think of what matters to you and your family most."
+      ]
     },
     {
       icon: FileCheck,
@@ -70,7 +75,7 @@ const HowItWorks = () => {
                     <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-start">
-                          {index === 0 || index === 1 ? (
+                          {index === 0 || index === 1 || index === 2 ? (
                             <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
                           ) : (
                             <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
