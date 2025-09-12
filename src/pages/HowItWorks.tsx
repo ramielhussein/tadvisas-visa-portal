@@ -18,7 +18,7 @@ const HowItWorks = () => {
     },
     {
       icon: FileText,
-      title: "2. Documentation Collection",
+      title: "2. Think of the path to follow",
       description: "We collect all necessary documents from you and your domestic worker in 2 minutes. Email or WhatsApp them and off we go.",
       details: ["It is important to tell us what you want the worker for, is she an all around, would she be looking after babies? Infants? Pets? Does she need to cook? Does she have to be of a of particular religion or have specific dietary habits (eg: vegan)", "Remember you can wish for anything but the more you wish for the harder the task. Think of what matters to you and your family most.", "Passport copies", "Entry permit or cancellation", "A clear passport quality photo", "Your Emirates ID and Dewa Bill"]
     },
