@@ -141,8 +141,10 @@ const HowItWorks = () => {
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
                           {step.details.map((detail, idx) => (
-                            <li key={idx} className={`flex items-start ${index === 3 && idx >= 3 && idx <= 5 ? 'ml-6' : ''}`}>
-                              <ChevronRight className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                            <li key={idx} className={`flex items-start ${index === 3 && idx === 4 ? 'ml-12' : index === 3 && (idx === 5 || idx === 6) ? 'ml-6' : ''}`}>
+                              {!(index === 3 && idx >= 4 && idx <= 6) && (
+                                <ChevronRight className="w-5 h-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                              )}
                               <span className="text-gray-700">{detail}</span>
                             </li>
                           ))}
