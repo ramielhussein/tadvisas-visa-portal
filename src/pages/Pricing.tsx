@@ -96,7 +96,6 @@ const Pricing = () => {
   ];
 
   const premiumNotIncluded = [
-    "Monthly admin fees (We charge ZERO!)",
     "Hidden charges",
     "Fake Promises to keep you hooked"
   ];
