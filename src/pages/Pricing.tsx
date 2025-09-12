@@ -135,6 +135,11 @@ const Pricing = () => {
                   <span className="text-5xl font-bold text-primary">8,925</span>
                   <span className="text-gray-600"> AED</span>
                 </div>
+                <div className="mb-6">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    Visa Only. Best Rate
+                  </span>
+                </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
                   <Link to="/start-here">UAE's Best Value Package</Link>
                 </Button>
