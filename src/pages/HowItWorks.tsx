@@ -191,8 +191,8 @@ const HowItWorks = () => {
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl font-bold text-blue-700">✓</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Two Years</h4>
-                <p className="text-gray-600">Enjoy peace of mind and a clean, organized home with your dedicated domestic worker.</p>
+                <h4 className="font-semibold text-primary mb-2">Two Years: Peace of Mind</h4>
+                <p className="text-gray-600">Relax. We've Got You Covered 🌟<br/>Enjoy a clean, organized home and total peace of mind with your dedicated worker.</p>
               </div>
             </div>
           </div>
