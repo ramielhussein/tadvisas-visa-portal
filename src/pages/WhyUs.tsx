@@ -9,6 +9,7 @@ const WhyUs = () => {
       feature: "Cost 1 Year Visa",
       us: "8925",
       tadvisasPlus: "8400",
+      tadvisasPremium: "10500",
       personalSponsorship: "9000",
       others: "8400"
     },
@@ -16,6 +17,7 @@ const WhyUs = () => {
       feature: "Cost 2 Year Visa",
       us: "Zero",
       tadvisasPlus: "Zero",
+      tadvisasPremium: "Zero",
       personalSponsorship: "7000",
       others: "Zero"
     },
@@ -23,6 +25,7 @@ const WhyUs = () => {
       feature: "Monthly Admin Fees",
       us: "ZERO",
       tadvisasPlus: "150",
+      tadvisasPremium: "168",
       personalSponsorship: "ZERO",
       others: "140-250 AED"
     },
@@ -30,6 +33,7 @@ const WhyUs = () => {
       feature: "WPS ATM card & Payroll processing",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: true
     },
@@ -37,6 +41,7 @@ const WhyUs = () => {
       feature: "Salary & Banking APP",
       us: "Yes/C3 CARD",
       tadvisasPlus: "YES C3 Card",
+      tadvisasPremium: "YES C3 Card",
       personalSponsorship: false,
       others: "Varies"
     },
@@ -44,6 +49,7 @@ const WhyUs = () => {
       feature: "Deposit",
       us: false,
       tadvisasPlus: false,
+      tadvisasPremium: false,
       personalSponsorship: "2000",
       others: "Up to 5000"
     },
@@ -51,6 +57,7 @@ const WhyUs = () => {
       feature: "Free Transportation",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: false
     },
@@ -58,6 +65,7 @@ const WhyUs = () => {
       feature: "MOHRE Licensed",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: true
     },
@@ -65,6 +73,7 @@ const WhyUs = () => {
       feature: "Transparent Pricing",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: true,
       others: false
     },
@@ -72,6 +81,7 @@ const WhyUs = () => {
       feature: "Complete Documentation Support",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: true
     },
@@ -79,6 +89,7 @@ const WhyUs = () => {
       feature: "Customer Support",
       us: "10 AM to 10 PM Daily",
       tadvisasPlus: "10 AM to 10 PM Daily",
+      tadvisasPremium: "10 AM to 10 PM Daily",
       personalSponsorship: "None",
       others: "Varies"
     },
@@ -86,6 +97,7 @@ const WhyUs = () => {
       feature: "Processing Time",
       us: "7-12 Business Days",
       tadvisasPlus: "7-12 Business Days",
+      tadvisasPremium: "7-12 Business Days",
       personalSponsorship: "Varies",
       others: "Varies"
     },
@@ -93,6 +105,7 @@ const WhyUs = () => {
       feature: "Absocond/Fines Removal Support",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: true
     },
@@ -100,6 +113,7 @@ const WhyUs = () => {
       feature: "NOC to travel with you",
       us: true,
       tadvisasPlus: true,
+      tadvisasPremium: true,
       personalSponsorship: "Not required",
       others: "150 to 500 Per permit"
     },
@@ -107,6 +121,7 @@ const WhyUs = () => {
       feature: "Medical Insurance",
       us: "735 Per Year",
       tadvisasPlus: "Free",
+      tadvisasPremium: "Free",
       personalSponsorship: false,
       others: "170 per month"
     },
@@ -114,6 +129,7 @@ const WhyUs = () => {
       feature: "WPS Salary Process Fee",
       us: "Free",
       tadvisasPlus: "Free",
+      tadvisasPremium: "Free",
       personalSponsorship: false,
       others: "140-250 AED"
     },
@@ -121,6 +137,7 @@ const WhyUs = () => {
       feature: "Cancellation",
       us: "300",
       tadvisasPlus: "300",
+      tadvisasPremium: "Free",
       personalSponsorship: "300",
       others: "Varies"
     },
@@ -128,6 +145,7 @@ const WhyUs = () => {
       feature: "ILOE Insurance",
       us: "Free",
       tadvisasPlus: "Free",
+      tadvisasPremium: "Free",
       personalSponsorship: "Paid",
       others: "Paid"
     },
@@ -135,6 +153,15 @@ const WhyUs = () => {
       feature: "END OF SERVICE",
       us: false,
       tadvisasPlus: true,
+      tadvisasPremium: true,
+      personalSponsorship: false,
+      others: false
+    },
+    {
+      feature: "Return Home Ticket",
+      us: false,
+      tadvisasPlus: false,
+      tadvisasPremium: true,
       personalSponsorship: false,
       others: false
     }
@@ -211,6 +238,7 @@ const WhyUs = () => {
                     <th className="px-6 py-4 text-left text-lg font-semibold text-primary">Feature</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-green-600">TADVISAS+</th>
+                    <th className="px-6 py-4 text-center text-lg font-semibold text-yellow-600">TADVISAS++</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-blue-600">Personal Sponsorship</th>
                     <th className="px-6 py-4 text-center text-lg font-semibold text-red-600">Other Centers</th>
                   </tr>
@@ -239,6 +267,17 @@ const WhyUs = () => {
                           )
                         ) : (
                           <span className="text-green-600 font-semibold">{row.tadvisasPlus}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {typeof row.tadvisasPremium === 'boolean' ? (
+                          row.tadvisasPremium ? (
+                            <CheckCircle className="w-6 h-6 text-green-500 mx-auto" />
+                          ) : (
+                            <X className="w-6 h-6 text-red-500 mx-auto" />
+                          )
+                        ) : (
+                          <span className="text-yellow-600 font-semibold">{row.tadvisasPremium}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-center">
