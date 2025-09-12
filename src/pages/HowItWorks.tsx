@@ -167,7 +167,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-blue-700">✓</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Two Years</h4>
-                <p className="text-gray-600">Take the worker to do Medical, Biometric & Tawjeeh. Get Emirates ID at completion.</p>
+                <p className="text-gray-600">Enjoy peace of mind and a clean, organized home with your dedicated domestic worker.</p>
               </div>
             </div>
           </div>
