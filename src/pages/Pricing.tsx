@@ -173,7 +173,7 @@ const Pricing = () => {
                   </span>
                 </div>
                 <Button asChild className="w-full bg-primary hover:bg-primary-700 text-white">
-                  <Link to="/start-here">Get VIP Service</Link>
+                  <Link to="/start-here">Get TADVISA+ with insurance</Link>
                 </Button>
               </div>
             </div>
