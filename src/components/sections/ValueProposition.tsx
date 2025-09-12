@@ -1,5 +1,6 @@
 
 import { Shield, Clock, CreditCard, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ValueProposition = () => {
   const values = [
@@ -40,7 +41,10 @@ const ValueProposition = () => {
             TADMAIDS is a provider of domestic workers in UAE, our experience and origins go back to 2005. We can help you get Nannies, Housemaid, Driver, Cooks, Babysitters, and Caregivers too.
           </p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
-            WhatsApp us now and we will send you available applications.
+            WhatsApp us now and we will send you available applications.{" "}
+            <Link to="/how-it-works" className="text-primary hover:text-primary-700 underline">
+              Check out our simple process.
+            </Link>
           </p>
         </div>
 
