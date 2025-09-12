@@ -39,7 +39,7 @@ const HowItWorks = () => {
     },
     {
       icon: Cog,
-      title: "3. What do you need",
+      title: "3. What do you need?",
       description: "You've decided to get a worker from us. Now we need to know your priorities:",
       details: [
         "• Will she handle everything, or focus on babies, infants, or pets?",
