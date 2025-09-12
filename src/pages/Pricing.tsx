@@ -43,13 +43,13 @@ const Pricing = () => {
 
   const standardIncluded = [
     "Complete visa processing",
+    "Direct Debit for WPS salary Process",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
     "NOC to travel with you",
     "ILOE Insurance for 2 years",
-    "Legal compliance guarantee",
-    "Direct Debit for WPS salary Process"
+    "Legal compliance guarantee"
   ];
 
   const standardNotIncluded = [
@@ -63,6 +63,7 @@ const Pricing = () => {
 
   const vipIncluded = [
     "Complete visa processing",
+    "Direct Debit for WPS salary Process",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
@@ -70,8 +71,7 @@ const Pricing = () => {
     "NOC to travel with you",
     "Medical Insurance (2 years)",
     "ILOE Insurance for 2 years",
-    "Legal compliance guarantee",
-    "Direct Debit for WPS salary Process"
+    "Legal compliance guarantee"
   ];
 
   const vipNotIncluded = [
@@ -84,6 +84,7 @@ const Pricing = () => {
 
   const premiumIncluded = [
     "Complete visa processing",
+    "Direct Debit for WPS salary Process",
     "Medical examination",
     "Emirates ID processing",
     "All government fees",
@@ -93,8 +94,7 @@ const Pricing = () => {
     "ILOE Insurance for 2 years",
     "End of Service Benefits (EOSB)",
     "Return Home Ticket",
-    "Legal compliance guarantee",
-    "Direct Debit for WPS salary Process"
+    "Legal compliance guarantee"
   ];
 
   const premiumNotIncluded = [
