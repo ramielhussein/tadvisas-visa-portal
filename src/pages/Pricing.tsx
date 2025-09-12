@@ -106,14 +106,6 @@ const Pricing = () => {
       others: "170 per month"
     },
     {
-      feature: "WPS Salary Process Fee",
-      us: "Free",
-      tadvisasPlus: "Free",
-      tadvisasPremium: "Free",
-      personalSponsorship: false,
-      others: "140-250 AED"
-    },
-    {
       feature: "Cancellation",
       us: "300",
       tadvisasPlus: "300",
