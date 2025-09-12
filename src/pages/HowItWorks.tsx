@@ -11,50 +11,60 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: DollarSign,
-      title: "1. Path Options",
-      description: "",
+      title: "1. Yes! Money Matters!",
+      description: "If you already have a worker and only need a visa → you save money. If you still need a worker → expect additional fees.",
       details: [
-        "Path 1 – Big Savings 💰",
-        "Cut costs and save up to AED 25,000 in 2 years. Take on the visa and salary yourself, and keep expenses low. Smart but comes with risk.",
-        "",
-        "Path 2 – All-Inclusive Convenience ✨",
-        "One fixed monthly fee. Salary, visa, insurance, and fees all covered. Simple. Hassle-free. Peace of mind."
-      ]
-    },
-    {
-      icon: Cog,
-      title: "2. Worker Preferences",
-      description: "Your Home, Your Choice 🏡",
-      details: [
-        "Need an all-around helper? Infant care? Pet care? Cooking? Experience or trainable?",
-        "Tell us what matters most — and we'll match you with the right worker."
+        "MOHRE-capped fees (by nationality):",
+        "• Philippines, India, Myanmar → AED 12,600",
+        "• Ethiopia → AED 5,250",
+        "• Uganda, Kenya → AED 6,825",
+        "• Indonesia, Sri Lanka → AED 15,750",
+        "⚠️ These fees are on top of visa costs and salary.",
+        "👉 If you prefer one fixed monthly fee, see Monthly Packages."
       ]
     },
     {
       icon: HelpCircle,
-      title: "3. Fees & Costs",
-      description: "Know the Real Costs 🔍",
+      title: "2. Think of the path to follow",
+      description: "If you do not have a worker and want one, then you actually want multiple services all at a cost, you need to decide how to go",
       details: [
-        "• Philippines / India / Myanmar → AED 12,600",
-        "• Ethiopia → AED 5,250",
-        "• Uganda / Kenya → AED 6,825",
-        "• Indonesia / Sri Lanka → AED 15,750",
-        "",
-        "These fees are set by MOHRE and are separate from visa & salary.",
-        "👉 Prefer one fixed monthly fee? See Monthly Packages."
+        "Path 1 – Save More (But With Risk)",
+        "• Pay our fees → Get a worker → Get the visa.",
+        "• You can sponsor the visa yourself or through us.",
+        "• Add medical insurance.",
+        "• Pay only the worker's monthly salary (much lower).",
+        "• Over 2 years, you save AED 15,000–25,000.",
+        "⚠️ Risk: If the worker leaves, we can replace the worker, but not the visa cost.",
+        "Path 2 – Convenience (All-Inclusive)",
+        "• Pay one fixed monthly fee.",
+        "• Covers: worker salary, visa, insurance, and our fees.",
+        "• Simple, predictable, hassle-free."
+      ]
+    },
+    {
+      icon: Cog,
+      title: "3. What do you need?",
+      description: "You've decided to get a worker from us. Now we need to know your priorities:",
+      details: [
+        "• Will she handle everything, or focus on babies, infants, or pets?",
+        "• Should she cook?",
+        "• Do you prefer a certain religion or diet (e.g., vegan)?",
+        "• Do you have time to train her, or do you need someone experienced?",
+        "💡 You can ask for many things, but the more specific you are, the harder the search. Focus on what truly matters most to you and your family."
       ]
     },
     {
       icon: MessageCircle,
-      title: "4. Start the Process",
-      description: "Your Next Step 🚀",
+      title: "4. Let's start the journey",
+      description: "Have your wishlist ready? Here's how to start:",
       details: [
-        "Click the WhatsApp link and tell us:",
-        "• Nationality",
+        "1. Click the WhatsApp link.",
+        "2. Tell us what you need:",
+        "• Worker's nationality",
         "• Main tasks",
-        "• Age, skills, experience",
-        "",
-        "🔒 Worker biodata is shared privately for confidentiality."
+        "• Age, skills, or experience preferences",
+        "🔒 For privacy, we don't publish worker biodata publicly. Please request it in a private message.",
+        "We'll talk to you soon!"
       ]
     }
   ];
@@ -87,40 +97,50 @@ const HowItWorks = () => {
                     </div>
                     <p className="text-gray-600 text-lg mb-6">{step.description}</p>
                     {index === 0 ? (
-                      // Special formatting for Path Options
-                      <div className="space-y-4">
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                          <h4 className="font-bold text-blue-700 mb-3">{step.details[0]}</h4>
-                          <p className="text-gray-700">{step.details[1]}</p>
-                        </div>
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                          <h4 className="font-bold text-blue-700 mb-3">{step.details[3]}</h4>
-                          <p className="text-gray-700">{step.details[4]}</p>
-                        </div>
-                      </div>
-                    ) : index === 1 || index === 2 ? (
-                      // Special formatting for Worker Preferences and Fees & Costs
+                      // Special formatting for section 1 - Money Matters
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
                           {step.details.map((detail, idx) => (
-                            detail && (
-                              <li key={idx} className="text-gray-700">
-                                {detail}
-                              </li>
-                            )
+                            <li key={idx} className="flex items-start">
+                              <span className="text-gray-700">{detail}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
-                    ) : index === 3 ? (
-                      // Special formatting for Start the Process
+                    ) : index === 1 ? (
+                      // Special formatting for Path 1 and Path 2
+                      <div className="space-y-4">
+                        {/* Path 1 */}
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                          <h4 className="font-bold text-blue-700 mb-3">{step.details[0]}</h4>
+                          <ul className="space-y-2">
+                            {step.details.slice(1, 7).map((detail, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <span className="text-gray-700">{detail}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        {/* Path 2 */}
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                          <h4 className="font-bold text-blue-700 mb-3">{step.details[7]}</h4>
+                          <ul className="space-y-2">
+                            {step.details.slice(8).map((detail, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <span className="text-gray-700">{detail}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : index === 2 || index === 3 ? (
+                      // Special formatting for sections 3 and 4 - with blue box
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
                           {step.details.map((detail, idx) => (
-                            detail && (
-                              <li key={idx} className={`text-gray-700 ${idx >= 1 && idx <= 3 ? 'ml-8' : ''}`}>
-                                {detail}
-                              </li>
-                            )
+                            <li key={idx} className={`flex items-start ${index === 3 && idx >= 4 && idx <= 6 ? 'ml-8' : ''}`}>
+                              <span className="text-gray-700">{detail}</span>
+                            </li>
                           ))}
                         </ul>
                       </div>
@@ -128,7 +148,11 @@ const HowItWorks = () => {
                       <ul className="space-y-3">
                         {step.details.map((detail, idx) => (
                           <li key={idx} className="flex items-start">
-                            <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                            {index === 0 || index === 1 || index === 2 || index === 3 ? (
+                              <ChevronRight className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+                            ) : (
+                              <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                            )}
                             <span className="text-gray-700">{detail}</span>
                           </li>
                         ))}
@@ -179,40 +203,36 @@ const HowItWorks = () => {
           {/* Timeline */}
           <div className="bg-white rounded-2xl p-8 shadow-lg mb-16">
             <h2 className="text-3xl font-bold text-primary text-center mb-8">
-              Your Journey Timeline
+              Typical Timeline
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-blue-600">5</span>
+                  <span className="text-2xl font-bold text-blue-600">1</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Interviews</h4>
-                <h5 className="text-lg font-medium text-gray-800 mb-2">Meet Your Match 👩‍👩‍👧</h5>
-                <p className="text-gray-600">View candidates and interview by phone, video, or in person — at your convenience.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 1</h4>
+                <p className="text-gray-600">Talk to us → View candidates → Interview online, by phone, or in person.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-primary">6</span>
+                  <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Trial & Fit</h4>
-                <h5 className="text-lg font-medium text-gray-800 mb-2">A Perfect Start 🤝</h5>
-                <p className="text-gray-600">Your worker joins your home — both sides make sure it's the right fit.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 2-5</h4>
+                <p className="text-gray-600">The worker will join your home, and both of you will make sure the arrangement works well.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-blue-600">7</span>
+                  <span className="text-2xl font-bold text-blue-600">3</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Visa & Legalities</h4>
-                <h5 className="text-lg font-medium text-gray-800 mb-2">We Handle the Paperwork 📝</h5>
-                <p className="text-gray-600">Once you're confident, we'll take care of the visa and all legal requirements.</p>
+                <h4 className="font-semibold text-primary mb-2">Day 6-18</h4>
+                <p className="text-gray-600">Once you're sure this is the right fit, we'll handle the visa and take care of all legal requirements.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-blue-700">8</span>
+                  <span className="text-2xl font-bold text-blue-700">✓</span>
                 </div>
-                <h4 className="font-semibold text-primary mb-2">Peace of Mind</h4>
-                <h5 className="text-lg font-medium text-gray-800 mb-2">Relax. We've Got You Covered 🌟</h5>
-                <p className="text-gray-600">Enjoy a clean, organized home and total peace of mind with your dedicated worker.</p>
+                <h4 className="font-semibold text-primary mb-2">Two Years</h4>
+                <p className="text-gray-600">Enjoy peace of mind and a clean, organized home with your dedicated domestic worker.</p>
               </div>
             </div>
           </div>
