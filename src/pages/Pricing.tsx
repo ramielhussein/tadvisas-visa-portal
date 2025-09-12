@@ -138,7 +138,7 @@ const Pricing = () => {
               onClick={() => setSelectedService('standard')}
               className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'standard' 
-                  ? 'border-4 border-accent scale-105 shadow-2xl ring-4 ring-accent/30 animate-pulse-border' 
+                  ? 'border-4 border-accent scale-105 shadow-2xl ring-4 ring-accent/30' 
                   : 'border-2 border-accent hover:border-4 opacity-75 hover:opacity-100'
               }`}
               style={{
@@ -191,7 +191,7 @@ const Pricing = () => {
               onClick={() => setSelectedService('vip')}
               className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'vip' 
-                  ? 'border-4 border-primary scale-105 shadow-2xl ring-4 ring-primary/30 animate-pulse-border' 
+                  ? 'border-4 border-primary scale-105 shadow-2xl ring-4 ring-primary/30' 
                   : 'border-2 border-primary hover:border-4 opacity-75 hover:opacity-100'
               }`}
               style={{
@@ -239,7 +239,7 @@ const Pricing = () => {
               onClick={() => setSelectedService('premium')}
               className={`relative bg-white rounded-2xl p-8 shadow-lg cursor-pointer transition-all duration-500 ${
                 selectedService === 'premium' 
-                  ? 'border-4 border-yellow-500 scale-105 shadow-2xl ring-4 ring-yellow-400/30 animate-pulse-border' 
+                  ? 'border-4 border-yellow-500 scale-105 shadow-2xl ring-4 ring-yellow-400/30' 
                   : 'border-2 border-yellow-500 hover:border-4 opacity-75 hover:opacity-100'
               }`}
               style={{
