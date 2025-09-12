@@ -7,7 +7,7 @@ const ValueProposition = () => {
     {
       icon: CreditCard,
       title: "Zero Monthly Fees",
-      description: "Unlike others, we charge no monthly admin fees. Pay once, get your visa processed.",
+      description: "Unlike others, we have an option of no monthly admin fees. Pay once, get your visa processed.",
       color: "text-green-500"
     },
     {
