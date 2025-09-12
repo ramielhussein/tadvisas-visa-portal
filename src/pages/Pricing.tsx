@@ -307,10 +307,11 @@ const Pricing = () => {
           <div className="bg-gradient-gold text-white rounded-2xl p-8 text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Choose what works for you</h2>
             <p className="text-xl mb-4">
-              Unlike other providers who charge 150-200 AED monthly, we give you the option to pay absolutely nothing after your visa is processed! Choose the limited time option of 8925 and zero monthly fee. But be careful, this does not include medical insurance.
+              Other providers charge AED 150–200 monthly. With us, you can pay just AED 8,925 one time — and nothing more.<br/>
+              ⚠️ Medical insurance not included.
             </p>
             <p className="text-xl">
-              Want a medical insurance? You can choose the standard service that is inclusive of 2 years medical insurance.
+              Need insurance? ✔️ Choose our standard package with 2 years medical coverage included.
             </p>
           </div>
 
