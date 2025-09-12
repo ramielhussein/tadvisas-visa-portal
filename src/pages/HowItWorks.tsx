@@ -232,7 +232,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-blue-700">✓</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Two Years</h4>
-                <p className="text-gray-600">Enjoy peace of mind and a clean, organized home with your dedicated domestic worker.</p>
+                <p className="text-gray-600">Enjoy peace of mind and a clean, organized home — with the support of your dedicated domestic worker.</p>
               </div>
             </div>
           </div>
