@@ -146,7 +146,7 @@ const HowItWorks = () => {
                   <span className="text-2xl font-bold text-blue-600">1</span>
                 </div>
                 <h4 className="font-semibold text-primary mb-2">Day 1</h4>
-                <p className="text-gray-600">Consultation & Documentation</p>
+                <p className="text-gray-600">Talk to us, view candidate and do online or phone or in-person interviews.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
