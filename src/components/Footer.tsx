@@ -38,7 +38,7 @@ const Footer = () => {
               <li>2-Year Maid Visa</li>
               <li>Hire a worker</li>
               <li>Medical & Emirates ID</li>
-              <li>Legal Documentation</li>
+              <li>All domestic workers services</li>
             </ul>
           </div>
 
