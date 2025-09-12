@@ -136,8 +136,8 @@ const HowItWorks = () => {
                           </ul>
                         </div>
                       </div>
-                    ) : index === 2 ? (
-                      // Special formatting for section 3 - What do you need
+                    ) : index === 2 || index === 3 ? (
+                      // Special formatting for sections 3 and 4 - with blue box
                       <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <ul className="space-y-2">
                           {step.details.map((detail, idx) => (
