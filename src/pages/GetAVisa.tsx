@@ -10,7 +10,7 @@ const GetAVisa = () => {
 
   const comparison = [
     {
-      feature: "Cost 1 Year Visa",
+      feature: "2 Year Visa",
       us: "8925",
       tadvisasPlus: "8400",
       tadvisasPremium: "10500",
