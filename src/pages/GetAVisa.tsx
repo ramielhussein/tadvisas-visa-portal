@@ -484,20 +484,23 @@ const GetAVisa = () => {
               Addons you can buy, only IF YOU WISH
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
+              <div className="text-center p-6 border-2 border-blue-200 bg-blue-50 rounded-xl hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-3">🏥</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">Medical insurance for 1 year</p>
-                <p className="text-sm text-gray-500 mt-2">Available with all packages</p>
+                <p className="text-sm text-blue-600 mt-2 font-medium">✅ Available with all packages</p>
               </div>
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
+              <div className="text-center p-6 border-2 border-green-200 bg-green-50 rounded-xl hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-3">💳</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
                 <p className="text-gray-600">Split your payment into 4 easy installments</p>
-                <p className="text-sm text-gray-500 mt-2">Flexible payment option</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">💰 Flexible payment option</p>
               </div>
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
+              <div className="text-center p-6 border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl hover:shadow-lg transition-shadow">
+                <div className="text-4xl mb-3">⚡</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">VIP Service</h4>
                 <p className="text-gray-600">Get your visa in 3-5 days</p>
-                <p className="text-2xl font-bold text-primary mt-2">AED 500</p>
+                <p className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mt-2">AED 500</p>
               </div>
             </div>
           </div>
