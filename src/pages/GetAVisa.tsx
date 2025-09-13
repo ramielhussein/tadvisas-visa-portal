@@ -59,7 +59,7 @@ const GetAVisa = () => {
     },
     {
       feature: "Medical Insurance",
-      us: "735 Per Year",
+      us: "750 Per Year",
       tadvisasPlus: "Free",
       tadvisasPremium: "Free",
       personalSponsorship: false,
