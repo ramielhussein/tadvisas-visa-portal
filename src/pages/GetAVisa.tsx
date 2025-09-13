@@ -460,7 +460,7 @@ const GetAVisa = () => {
                 <div className="text-4xl mb-3">⚡</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">VIP Service</h4>
                 <p className="text-gray-600">Get your visa in 5-7 days</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mt-2">AED 500</p>
+                <p className="text-sm text-yellow-600 mt-2 font-medium">⚡ AED 500</p>
               </div>
             </div>
           </div>
