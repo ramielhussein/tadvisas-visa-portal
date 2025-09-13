@@ -14,7 +14,7 @@ const GetAVisa = () => {
       us: "8925",
       tadvisasPlus: "8400",
       tadvisasPremium: "10500",
-      personalSponsorship: "9000",
+      personalSponsorship: "16000",
       others: "8400"
     },
     {
