@@ -50,14 +50,6 @@ const GetAVisa = () => {
       others: false
     },
     {
-      feature: "Complete Documentation Support",
-      us: true,
-      tadvisasPlus: true,
-      tadvisasPremium: true,
-      personalSponsorship: false,
-      others: true
-    },
-    {
       feature: "NOC to travel with you",
       us: true,
       tadvisasPlus: true,
