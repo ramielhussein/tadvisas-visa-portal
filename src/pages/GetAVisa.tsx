@@ -494,7 +494,7 @@ const GetAVisa = () => {
                 <div className="text-4xl mb-3">💳</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
                 <p className="text-gray-600">Split your payment into 4 easy installments</p>
-                <p className="text-sm text-green-600 mt-2 font-medium">💰 Flexible payment option</p>
+                <p className="text-sm text-green-600 mt-2 font-medium">💰 AED800 (Tabby/Tamara)</p>
               </div>
               <div className="text-center p-6 border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl hover:shadow-lg transition-shadow">
                 <div className="text-4xl mb-3">⚡</div>
