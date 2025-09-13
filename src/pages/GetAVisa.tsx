@@ -26,7 +26,7 @@ const GetAVisa = () => {
       others: "140-250 AED"
     },
     {
-      feature: "WPS ATM card/App & Payroll processing",
+      feature: "Salary/ATM/App",
       us: true,
       tadvisasPlus: true,
       tadvisasPremium: true,
