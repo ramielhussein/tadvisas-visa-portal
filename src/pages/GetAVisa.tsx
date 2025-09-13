@@ -82,7 +82,7 @@ const GetAVisa = () => {
       others: "Paid"
     },
     {
-      feature: "END OF SERVICE",
+      feature: "Gratuity",
       us: false,
       tadvisasPlus: false,
       tadvisasPremium: true,
