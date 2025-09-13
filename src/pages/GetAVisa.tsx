@@ -488,7 +488,7 @@ const GetAVisa = () => {
                 <div className="text-4xl mb-3">🏥</div>
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
                 <p className="text-gray-600">Medical insurance for 1 year</p>
-                <p className="text-sm text-blue-600 mt-2 font-medium">✅ Available with all packages</p>
+                <p className="text-sm text-blue-600 mt-2 font-medium">✅ AED750 with TADVISA</p>
               </div>
               <div className="text-center p-6 border-2 border-green-200 bg-green-50 rounded-xl hover:shadow-lg transition-shadow">
                 <div className="text-4xl mb-3">💳</div>
