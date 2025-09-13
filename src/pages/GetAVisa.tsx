@@ -18,14 +18,6 @@ const GetAVisa = () => {
       others: "8400"
     },
     {
-      feature: "Cost 2 Year Visa",
-      us: "Zero",
-      tadvisasPlus: "Zero",
-      tadvisasPremium: "Zero",
-      personalSponsorship: "7000",
-      others: "Zero"
-    },
-    {
       feature: "Monthly Admin Fees",
       us: "ZERO",
       tadvisasPlus: "150",
