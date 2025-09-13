@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, X, Star, Award, Users, Clock, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Pricing = () => {
+const GetAVisa = () => {
   const [selectedService, setSelectedService] = useState<'standard' | 'vip' | 'premium'>('standard');
 
   const comparison = [
@@ -483,35 +483,21 @@ const Pricing = () => {
             <h2 className="text-3xl font-bold text-primary text-center mb-8">
               Addons you can buy, only IF YOU WISH
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
-                <p className="text-gray-600">750 One Year Medical Insurance</p>
-                <p className="text-sm text-gray-500">Only with TADVISA</p>
-              </div>
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Medical Insurance</h4>
-                <p className="text-gray-600">1500 Two Years Medical Insurance</p>
-                <p className="text-sm text-gray-500">Only with TADVISA</p>
+                <p className="text-gray-600">Medical insurance for 1 year</p>
+                <p className="text-sm text-gray-500 mt-2">Available with all packages</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
                 <h4 className="text-xl font-semibold text-primary mb-3">4 Installments</h4>
-                <p className="text-gray-600">800 Dhs Split your payment into 4 easy installments.</p>
+                <p className="text-gray-600">Split your payment into 4 easy installments</p>
+                <p className="text-sm text-gray-500 mt-2">Flexible payment option</p>
               </div>
               <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Early Visa Cancellation</h4>
-                <p className="text-gray-600">300 AED if you wish us to cancel the visa of the worker for any reason</p>
-                <p className="text-sm text-gray-500">Free with TADVISA++</p>
-              </div>
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Absconding Report</h4>
-                <p className="text-gray-600">700 Dhs If the worker leaves the work place without proper reporting and your knowledge</p>
-                <p className="text-sm text-gray-500">Free with TADVISA++</p>
-              </div>
-              <div className="text-center p-6 border-2 border-gray-200 rounded-xl">
-                <h4 className="text-xl font-semibold text-primary mb-3">Legal/Fines Support</h4>
-                <p className="text-gray-600">If your worker have fines or absconding, we can help, mediate and appeal to the authorities <u>but we do not guarantee the outcome.</u></p>
-                <p className="text-sm text-gray-500">Free</p>
+                <h4 className="text-xl font-semibold text-primary mb-3">VIP Service</h4>
+                <p className="text-gray-600">Get your visa in 3-5 days</p>
+                <p className="text-2xl font-bold text-primary mt-2">AED 500</p>
               </div>
             </div>
           </div>
@@ -682,4 +668,4 @@ const Pricing = () => {
   );
 };
 
-export default Pricing;
+export default GetAVisa;
