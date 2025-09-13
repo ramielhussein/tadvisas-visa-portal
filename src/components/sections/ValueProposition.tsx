@@ -43,7 +43,7 @@ const ValueProposition = () => {
           </p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
             📲 WhatsApp us now to view available candidates and start our{" "}
-            <Link to="/how-it-works" className="text-primary hover:text-primary-700 underline">
+            <Link to="/hire-a-maid" className="text-primary hover:text-primary-700 underline">
               simple, step-by-step process.
             </Link>
           </p>

@@ -52,7 +52,7 @@ const HowItWorksPreview = () => {
         </div>
 
         <div className="text-center">
-          <Link to="/how-it-works">
+          <Link to="/hire-a-maid">
             <Button className="bg-primary hover:bg-primary-700 text-white px-8 py-3 text-lg">
               Learn More About Our Process
             </Button>

@@ -28,7 +28,7 @@ const FAQ = () => {
     },
     {
       question: "What makes TADVISAS different from other providers?",
-      answer: "The service itself is very standard as it is a governmental service with very small room for innovation, however, removing the extra cost, adding some value added service like chauffeuring the worker is something small but can differentiate the service. Please refer to a full list of comparison https://tadvisas.com/why-us"
+      answer: "The service itself is very standard as it is a governmental service with very small room for innovation, however, removing the extra cost, adding some value added service like chauffeuring the worker is something small but can differentiate the service. Please refer to a full list of comparison https://tadvisas.com/monthly-packages"
     },
     {
       question: "Is there a guarantee if the visa gets rejected?",

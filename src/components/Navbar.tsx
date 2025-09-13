@@ -11,9 +11,9 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Hire a Maid", path: "/how-it-works" },
-    { name: "Get a Visa", path: "/pricing" },
-    { name: "Monthly Packages", path: "/why-us" },
+    { name: "Hire a Maid", path: "/hire-a-maid" },
+    { name: "Get a Visa", path: "/get-a-visa" },
+    { name: "Monthly Packages", path: "/monthly-packages" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
     { name: "Start Here & Now", path: "/start-here" },
