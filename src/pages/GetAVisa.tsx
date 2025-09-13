@@ -66,30 +66,6 @@ const GetAVisa = () => {
       others: true
     },
     {
-      feature: "Customer Support",
-      us: "10 AM to 10 PM Daily",
-      tadvisasPlus: "10 AM to 10 PM Daily",
-      tadvisasPremium: "10 AM to 10 PM Daily",
-      personalSponsorship: "None",
-      others: "Varies"
-    },
-    {
-      feature: "Processing Time",
-      us: "7-12 Business Days",
-      tadvisasPlus: "7-12 Business Days",
-      tadvisasPremium: "7-12 Business Days",
-      personalSponsorship: "Varies",
-      others: "Varies"
-    },
-    {
-      feature: "Absocond/Fines Removal Support",
-      us: true,
-      tadvisasPlus: true,
-      tadvisasPremium: true,
-      personalSponsorship: false,
-      others: true
-    },
-    {
       feature: "NOC to travel with you",
       us: true,
       tadvisasPlus: true,
