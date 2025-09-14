@@ -15,7 +15,7 @@ const StartHere = () => {
     name: "",
     number: "",
     email: "",
-    package: "2-year-limited",
+    package: "",
     addOns: {
       medicalInsurance1Year: false,
       medicalInsurance2Year: false,
@@ -93,7 +93,7 @@ const StartHere = () => {
         name: "", 
         number: "", 
         email: "", 
-        package: "2-year-limited",
+        package: "",
         addOns: {
           medicalInsurance1Year: false,
           medicalInsurance2Year: false,
@@ -263,83 +263,119 @@ const StartHere = () => {
               <CardContent>
                 <div>
                   <Label htmlFor="package">Package</Label>
-                  <Select value={formData.package} onValueChange={(value) => setFormData({...formData, package: value})}>
+                  <Select value={formData.package} onValueChange={(value) => {
+                    setFormData({
+                      ...formData, 
+                      package: value,
+                      addOns: {
+                        medicalInsurance1Year: false,
+                        medicalInsurance2Year: false,
+                        installmentPlan: false
+                      }
+                    });
+                  }}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a package" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="2-year-limited">2 Years Maid Visa - Limited Offer 8925 AED</SelectItem>
+                      <SelectItem value="tadvisa">
+                        <div>
+                          <div className="font-semibold">TADVISA</div>
+                          <div className="text-sm text-muted-foreground">8925 AED • Zero monthly fee</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="tadvisa-plus">
+                        <div>
+                          <div className="font-semibold">TADVISA+</div>
+                          <div className="text-sm text-muted-foreground">8400 AED • 150 AED per month</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="tadvisa-plus-plus">
+                        <div>
+                          <div className="font-semibold">TADVISA++</div>
+                          <div className="text-sm text-muted-foreground">10500 AED • 168 AED per month</div>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Add-Ons Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-primary" />
-                  Select Add-Ons
-                </CardTitle>
-                <CardDescription>Choose optional add-ons for your package</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="medicalInsurance1Year"
-                    checked={formData.addOns.medicalInsurance1Year}
-                    onCheckedChange={(checked) => 
-                      setFormData({
-                        ...formData, 
-                        addOns: { 
-                          ...formData.addOns, 
-                          medicalInsurance1Year: checked as boolean,
-                          medicalInsurance2Year: checked ? false : formData.addOns.medicalInsurance2Year
-                        }
-                      })
-                    }
-                  />
-                  <Label htmlFor="medicalInsurance1Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    1 Year Medical Insurance 750 AED
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="medicalInsurance2Year"
-                    checked={formData.addOns.medicalInsurance2Year}
-                    onCheckedChange={(checked) => 
-                      setFormData({
-                        ...formData, 
-                        addOns: { 
-                          ...formData.addOns, 
-                          medicalInsurance2Year: checked as boolean,
-                          medicalInsurance1Year: checked ? false : formData.addOns.medicalInsurance1Year
-                        }
-                      })
-                    }
-                  />
-                  <Label htmlFor="medicalInsurance2Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    2 Year Medical Insurance 1500 AED
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="installmentPlan"
-                    checked={formData.addOns.installmentPlan}
-                    onCheckedChange={(checked) => 
-                      setFormData({
-                        ...formData, 
-                        addOns: { ...formData.addOns, installmentPlan: checked as boolean }
-                      })
-                    }
-                  />
-                  <Label htmlFor="installmentPlan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Installment Plan 800 AED
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Add-Ons Selection - Conditional based on package */}
+            {formData.package && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="w-5 h-5 text-primary" />
+                    Select Add-Ons
+                  </CardTitle>
+                  <CardDescription>Choose optional add-ons for your package</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Show medical options only for TADVISA (8925 AED) */}
+                  {formData.package === "tadvisa" && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="medicalInsurance1Year"
+                          checked={formData.addOns.medicalInsurance1Year}
+                          onCheckedChange={(checked) => 
+                            setFormData({
+                              ...formData, 
+                              addOns: { 
+                                ...formData.addOns, 
+                                medicalInsurance1Year: checked as boolean,
+                                medicalInsurance2Year: checked ? false : formData.addOns.medicalInsurance2Year
+                              }
+                            })
+                          }
+                        />
+                        <Label htmlFor="medicalInsurance1Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          1 Year Medical Insurance - 750 AED
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="medicalInsurance2Year"
+                          checked={formData.addOns.medicalInsurance2Year}
+                          onCheckedChange={(checked) => 
+                            setFormData({
+                              ...formData, 
+                              addOns: { 
+                                ...formData.addOns, 
+                                medicalInsurance2Year: checked as boolean,
+                                medicalInsurance1Year: checked ? false : formData.addOns.medicalInsurance1Year
+                              }
+                            })
+                          }
+                        />
+                        <Label htmlFor="medicalInsurance2Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          2 Year Medical Insurance - 1500 AED
+                        </Label>
+                      </div>
+                    </>
+                  )}
+                  
+                  {/* Show installment plan for all packages */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="installmentPlan"
+                      checked={formData.addOns.installmentPlan}
+                      onCheckedChange={(checked) => 
+                        setFormData({
+                          ...formData, 
+                          addOns: { ...formData.addOns, installmentPlan: checked as boolean }
+                        })
+                      }
+                    />
+                    <Label htmlFor="installmentPlan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Installment Plan - 800 AED
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Document Uploads */}
             <div className="space-y-4">
