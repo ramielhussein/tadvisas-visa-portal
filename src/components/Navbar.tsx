@@ -67,9 +67,9 @@ const Navbar = () => {
               href="https://wa.me/971567222248" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="p-2"
+              className="text-green-500 font-semibold text-sm"
             >
-              <MessageCircle className="w-6 h-6 text-green-500" fill="currentColor" />
+              WhatsApp Us
             </a>
             <button
               onClick={toggleMenu}
