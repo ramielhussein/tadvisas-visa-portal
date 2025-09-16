@@ -65,12 +65,11 @@ const Navbar = () => {
           <div className="md:hidden flex items-center gap-2">
             <Button 
               asChild 
-              size="sm"
-              className="bg-green-500 hover:bg-green-600 text-white"
+              size="icon"
+              className="bg-green-500 hover:bg-green-600 text-white h-10 w-10"
             >
-              <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="w-4 h-4 mr-1" />
-                <span className="text-xs">WhatsApp Us</span>
+              <a href="https://wa.me/971567222248" target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="w-5 h-5" fill="currentColor" />
               </a>
             </Button>
             <button
