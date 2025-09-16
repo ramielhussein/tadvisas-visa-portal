@@ -2,7 +2,6 @@
 import { ReactNode } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import WhatsAppButton from "./WhatsAppButton";
 import FloatingButtons from "./FloatingButtons";
 
 interface LayoutProps {
@@ -17,7 +16,6 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
-      <WhatsAppButton />
       <FloatingButtons />
     </div>
   );
