@@ -1,18 +1,6 @@
-import { useState, useEffect } from "react";
-import visaBanner1 from "@/assets/visa-banner-1.jpeg";
-import visaBanner2 from "@/assets/visa-banner-2.jpeg";
+import visaWhatsApp from "@/assets/visa-whatsapp.png";
 
 const TopBanner = () => {
-  const [currentImage, setCurrentImage] = useState(0);
-  const images = [visaBanner1, visaBanner2];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 5000); // Switch every 5 seconds
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleWhatsAppClick = () => {
     const message = encodeURIComponent("Hello! I want to apply for my maid's visa online.");
@@ -23,18 +11,13 @@ const TopBanner = () => {
     <section className="relative w-full bg-gradient-to-r from-primary/5 to-accent/5 overflow-hidden">
       <div className="container mx-auto px-4 py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-          {/* Left side - Rotating images */}
-          <div className="relative w-full lg:w-1/2 h-[300px] lg:h-[400px]">
-            {images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`TadMaids visa service ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 ${
-                  currentImage === index ? "opacity-100" : "opacity-0"
-                }`}
-              />
-            ))}
+          {/* Left side - WhatsApp visa confirmation */}
+          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px]">
+            <img
+              src={visaWhatsApp}
+              alt="TadMaids visa WhatsApp confirmation"
+              className="w-full h-full object-contain"
+            />
           </div>
 
           {/* Right side - Call to action */}
