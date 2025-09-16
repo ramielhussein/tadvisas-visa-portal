@@ -1,6 +1,7 @@
 
-import { Shield, Clock, CreditCard, Users } from "lucide-react";
+import { Shield, Clock, CreditCard, Users, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const ValueProposition = () => {
   const values = [
@@ -37,16 +38,38 @@ const ValueProposition = () => {
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
             Don't have a maid? Get a maid from TADMAIDS!
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             🌟 TADMAIDS – Your Trusted Partner Since 2005<br/>
-            We provide experienced Nannies, Housemaids, Drivers, Cooks, Babysitters, and Caregivers across the UAE.
+            From AED2,100/month<br/>
+            We provide experienced Housemaids, Nannies, Drivers, Cooks, Babysitters, and Caregivers across the UAE.
           </p>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mt-4">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto mt-4">
             📲 WhatsApp us now to view available candidates and start our{" "}
             <Link to="/hire-a-maid" className="text-primary hover:text-primary-700 underline">
               simple, step-by-step process.
             </Link>
           </p>
+          <div className="flex justify-center gap-4 mt-6">
+            <Button
+              onClick={() => {
+                const message = "Hi, I need help hiring a maid";
+                const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+              }}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Hire a Maid
+            </Button>
+            <Button
+              onClick={() => window.location.href = "tel:+97143551186"}
+              variant="outline"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 text-lg font-semibold transition-all duration-300"
+            >
+              <Phone className="w-5 h-5 mr-2" />
+              Call Now
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
