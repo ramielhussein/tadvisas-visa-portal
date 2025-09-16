@@ -16,12 +16,8 @@ const TopBanner = () => {
             <img
               src={visaWhatsApp}
               alt="TadMaids visa WhatsApp confirmation"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain animate-slide-up"
             />
-            {/* Sparkle shimmer effect */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"></div>
-            </div>
           </div>
 
           {/* Right side - Call to action */}
