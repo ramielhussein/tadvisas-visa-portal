@@ -27,10 +27,17 @@ const Hero = () => {
               </span>
             </h1>
             
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-lg text-gray-600 mb-4 leading-relaxed">
               Get your 2-year maid visa processed by UAE's most trusted MOHRE licensed center. 
               Transparent pricing, with an option of zero monthly admin fees, and 100% legal compliance guaranteed.
             </p>
+            
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Why choose TADMAIDS
+                <span className="block w-40 h-1 bg-yellow-500 mt-2 mx-auto lg:mx-0"></span>
+              </h2>
+            </div>
 
             {/* Key Benefits */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
