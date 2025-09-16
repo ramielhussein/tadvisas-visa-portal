@@ -76,21 +76,22 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.map((item) => (
+              {navItems.filter(item => item.name !== "Start Here & Now").map((item) => (
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`block px-3 py-2 font-medium ${
-                    item.name === "Start Here & Now"
-                      ? "bg-yellow-500 text-black rounded-lg mx-2 hover:bg-yellow-600 font-bold"
-                      : "text-gray-700 hover:text-primary"
-                  }`}
+                  className="block px-3 py-2 font-medium text-gray-700 hover:text-primary"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <div className="px-3 py-2">
+              <div className="px-3 py-2 space-y-2">
+                <Button asChild className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                  <Link to="/start-here" onClick={() => setIsMenuOpen(false)}>
+                    Apply Now
+                  </Link>
+                </Button>
                 <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
                   <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="w-4 h-4 mr-2" />
