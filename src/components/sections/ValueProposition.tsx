@@ -40,7 +40,7 @@ const ValueProposition = () => {
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl md:mx-auto">
             🌟 TADMAIDS – Your Trusted Partner Since 2005<br/>
-            From AED<span style={{ color: '#c9a227' }}>2,100</span>/month<br/>
+            From <span style={{ color: '#c9a227' }}>AED2,100/month</span><br/>
             We provide experienced Housemaids, Nannies, Drivers, Cooks, Babysitters, and Caregivers across the UAE.
           </p>
           <p className="text-lg text-gray-600 max-w-3xl md:mx-auto mt-4">
