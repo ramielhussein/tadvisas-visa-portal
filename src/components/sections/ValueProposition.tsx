@@ -34,22 +34,22 @@ const ValueProposition = () => {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div className="text-left md:text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
             Don't have a maid? Get a maid from TADMAIDS!
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl md:mx-auto">
             🌟 TADMAIDS – Your Trusted Partner Since 2005<br/>
             From AED2,100/month<br/>
             We provide experienced Housemaids, Nannies, Drivers, Cooks, Babysitters, and Caregivers across the UAE.
           </p>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mt-4">
+          <p className="text-lg text-gray-600 max-w-3xl md:mx-auto mt-4">
             📲 WhatsApp us now to view available candidates and start our{" "}
             <Link to="/hire-a-maid" className="text-primary hover:text-primary-700 underline">
               simple, step-by-step process.
             </Link>
           </p>
-          <div className="flex justify-center gap-4 mt-6">
+          <div className="flex justify-start md:justify-center gap-4 mt-6">
             <Button
               onClick={() => {
                 const message = "Hi, I need help hiring a maid";
