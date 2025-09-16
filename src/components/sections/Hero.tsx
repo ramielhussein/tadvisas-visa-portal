@@ -33,7 +33,7 @@ const Hero = () => {
             </p>
             
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-yellow-500">
+              <h2 className="text-2xl font-bold" style={{ color: '#c9a227' }}>
                 Why choose TADMAIDS
               </h2>
             </div>
