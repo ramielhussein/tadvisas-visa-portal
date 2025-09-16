@@ -63,15 +63,14 @@ const Navbar = () => {
 
           {/* Mobile menu button and WhatsApp button */}
           <div className="md:hidden flex items-center gap-2">
-            <Button 
-              asChild 
-              size="icon"
-              className="bg-green-500 hover:bg-green-600 text-white h-10 w-10"
+            <a 
+              href="https://wa.me/971567222248" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="p-2"
             >
-              <a href="https://wa.me/971567222248" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="w-5 h-5" fill="currentColor" />
-              </a>
-            </Button>
+              <MessageCircle className="w-6 h-6 text-green-500" fill="currentColor" />
+            </a>
             <button
               onClick={toggleMenu}
               className="text-gray-700 hover:text-primary p-2"
