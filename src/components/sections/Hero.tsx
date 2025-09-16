@@ -33,9 +33,20 @@ const Hero = () => {
             </p>
             
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-800">
+              <h2 className="text-2xl font-bold text-gray-800 inline-block relative">
                 Why choose TADMAIDS
-                <span className="block w-40 h-1 bg-yellow-500 mt-2 mx-auto lg:mx-0"></span>
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  height="20"
+                  viewBox="0 0 200 20"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M0,10 Q20,5 40,10 T80,10 T120,10 T160,10 T200,10 L200,15 Q180,18 160,15 T120,15 T80,15 T40,15 T0,15 Z"
+                    fill="#eab308"
+                    opacity="0.8"
+                  />
+                </svg>
               </h2>
             </div>
 
