@@ -29,7 +29,7 @@ const TopBanner = () => {
               <p className="text-muted-foreground text-base">
                 Just send us your maid's passport through WhatsApp and get it done in 1 week!
               </p>
-              <div className="flex items-center gap-6 justify-center lg:justify-start text-sm text-muted-foreground mt-4">
+              <div className="hidden md:flex items-center gap-6 justify-center lg:justify-start text-sm text-muted-foreground mt-4">
                 <span className="flex items-center gap-1">
                   ✅ Licensed by DLD
                 </span>
