@@ -142,6 +142,14 @@ export default {
 					'20%, 40%, 60%, 80%': {
 						transform: 'translateX(1px) rotate(0.5deg)'
 					}
+				},
+				'shimmer': {
+					'0%': {
+						transform: 'translateX(-100%)'
+					},
+					'100%': {
+						transform: 'translateX(200%)'
+					}
 				}
 			},
 			animation: {
@@ -149,7 +157,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.8s ease-out',
 				'slide-in': 'slide-in 0.5s ease-out',
-				'vibrate': 'vibrate 0.15s ease-in-out infinite'
+				'vibrate': 'vibrate 0.15s ease-in-out infinite',
+				'shimmer': 'shimmer 3s ease-in-out infinite'
 			}
 		}
 	},

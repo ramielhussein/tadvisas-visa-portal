@@ -12,12 +12,16 @@ const TopBanner = () => {
       <div className="container mx-auto px-4 py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           {/* Left side - WhatsApp visa confirmation */}
-          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px]">
+          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px] overflow-hidden">
             <img
               src={visaWhatsApp}
               alt="TadMaids visa WhatsApp confirmation"
               className="w-full h-full object-contain"
             />
+            {/* Sparkle shimmer effect */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 animate-shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"></div>
+            </div>
           </div>
 
           {/* Right side - Call to action */}
