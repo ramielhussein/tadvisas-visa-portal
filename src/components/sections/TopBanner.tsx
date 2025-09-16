@@ -8,7 +8,7 @@ const TopBanner = () => {
   };
 
   return (
-    <section className="relative w-full bg-gradient-to-r from-primary/5 to-accent/5 overflow-hidden">
+    <section className="relative w-full bg-white overflow-hidden">
       <div className="container mx-auto px-4 py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           {/* Left side - WhatsApp visa confirmation */}
