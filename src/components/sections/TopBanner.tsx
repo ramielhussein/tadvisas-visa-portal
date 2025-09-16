@@ -22,10 +22,10 @@ const TopBanner = () => {
 
           {/* Right side - Call to action */}
           <div className="w-full lg:w-1/2 text-center lg:text-left space-y-4">
-            <h2 className="text-2xl lg:text-3xl font-bold text-foreground">
+            <h2 className="text-xl lg:text-2xl font-bold text-foreground">
               Apply for Your Maid's Visa in <span className="text-primary">5 Minutes</span>
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-base">
               Just send us your maid's passport through WhatsApp and get it done in 1 week!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
