@@ -16,7 +16,7 @@ const TopBanner = () => {
             <img
               src={visaWhatsApp}
               alt="TadMaids visa WhatsApp confirmation"
-              className="w-full h-full object-contain animate-vibrate"
+              className="w-full h-full object-contain"
             />
           </div>
 
