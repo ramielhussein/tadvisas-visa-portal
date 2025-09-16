@@ -88,7 +88,7 @@ const Hero = () => {
           </div>
 
           {/* Right Column - Image/Visual */}
-          <div className="animate-slide-in">
+          <div className="hidden lg:block animate-slide-in">
             <div className="bg-white rounded-2xl p-8 shadow-2xl hover-lift">
               <div className="text-center">
                 <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
