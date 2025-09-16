@@ -12,12 +12,16 @@ const TopBanner = () => {
       <div className="container mx-auto px-4 py-6 lg:py-8">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           {/* Left side - WhatsApp visa confirmation */}
-          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px]">
+          <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px] animate-fade-in">
             <img
               src={visaWhatsApp}
               alt="TadMaids visa WhatsApp confirmation"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain animate-float"
             />
+            {/* Ring effect */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-[280px] h-[580px] md:w-[320px] md:h-[640px] rounded-[60px] border-4 border-primary/20 animate-pulse-ring"></div>
+            </div>
           </div>
 
           {/* Right side - Call to action */}
