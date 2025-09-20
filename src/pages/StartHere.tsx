@@ -51,7 +51,16 @@ const StartHere = () => {
       submitData.append('number', formData.number);
       submitData.append('email', formData.email);
       submitData.append('package', formData.package);
-      submitData.append('addOns', JSON.stringify(formData.addOns));
+      // Append addons as individual form fields for multipart/form-data compatibility
+      if (formData.addOns.medicalInsurance1Year) {
+        submitData.append('addons', 'medicalInsurance1Year');
+      }
+      if (formData.addOns.medicalInsurance2Year) {
+        submitData.append('addons', 'medicalInsurance2Year');
+      }
+      if (formData.addOns.installmentPlan) {
+        submitData.append('addons', 'installmentPlan');
+      }
       
       // Add files to FormData
       Object.entries(files).forEach(([key, file]) => {
