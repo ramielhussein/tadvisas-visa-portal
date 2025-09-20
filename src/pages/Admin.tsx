@@ -143,17 +143,37 @@ export default function Admin() {
 
   const fetchSubmissions = async () => {
     try {
+      console.log("Fetching submissions from Supabase...");
       const { data, error } = await supabase
         .from("submissions")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      console.log("Supabase response:", { data, error });
+
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+      
       setSubmissions(data || []);
+      
+      if (!data || data.length === 0) {
+        toast({
+          title: "No submissions found",
+          description: "The database is empty. Submit a form first to see data here.",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `Loaded ${data.length} submission(s)`,
+        });
+      }
     } catch (error: any) {
+      console.error("Failed to fetch submissions:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch submissions",
+        description: error.message || "Failed to fetch submissions. Check console for details.",
         variant: "destructive",
       });
     }
