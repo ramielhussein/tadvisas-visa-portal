@@ -8,6 +8,12 @@ const CTA = () => {
   };
 
   const handleWhatsAppClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     const message = "Hi! I'm ready to start my 2-year maid visa process. Can you help me?";
     const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

@@ -20,6 +20,12 @@ const Navbar = () => {
   ];
 
   const handleWhatsAppClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     window.open("https://wa.me/971565822258", "_blank");
   };
   // Backward compat: ensure any leftover call handler points to WhatsApp

@@ -2,6 +2,12 @@ import { FileText, Users } from "lucide-react";
 
 const FloatingButtons = () => {
   const handleMaidVisaClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     const phoneNumber = "971567222248";
     const message = "Hi, I need help with maid visa services";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -9,6 +15,12 @@ const FloatingButtons = () => {
   };
 
   const handleHireMaidClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     const phoneNumber = "971565822258";
     const message = "Hi, I need help hiring a maid";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;

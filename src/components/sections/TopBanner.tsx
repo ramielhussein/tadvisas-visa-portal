@@ -3,6 +3,12 @@ import visaWhatsApp from "@/assets/visa-whatsapp.png";
 const TopBanner = () => {
 
   const handleWhatsAppClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     const message = encodeURIComponent("Hello! I want to apply for my maid's visa online.");
     window.open(`https://wa.me/971508882480?text=${message}`, "_blank");
   };

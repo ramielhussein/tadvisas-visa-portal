@@ -52,6 +52,12 @@ const ValueProposition = () => {
           <div className="flex justify-start md:justify-center gap-4 mt-6">
             <Button
               onClick={() => {
+                // Track WhatsApp click conversion
+                if ((window as any).gtag) {
+                  (window as any).gtag('event', 'conversion', {
+                    'send_to': 'AW-17128942210'
+                  });
+                }
                 const message = "Hi, I need help hiring a maid";
                 const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
                 window.open(url, '_blank');

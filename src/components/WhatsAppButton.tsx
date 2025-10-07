@@ -6,6 +6,12 @@ const WhatsAppButton = () => {
   const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
   
   const handleWhatsAppClick = () => {
+    // Track WhatsApp click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210'
+      });
+    }
     const url = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
