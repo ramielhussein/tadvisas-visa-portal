@@ -12,6 +12,7 @@ import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import StartHere from "./pages/StartHere";
 import Admin from "./pages/Admin";
+import Refund from "./pages/Refund";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/start-here" element={<StartHere />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/refund" element={<Refund />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
