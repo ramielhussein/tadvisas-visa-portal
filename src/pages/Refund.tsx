@@ -17,7 +17,7 @@ type Nationality = 'Philippines'|'Indonesia'|'Ethiopia'|'Uganda'|'Kenya'|'Myanma
 type Location = 'Inside Country'|'Outside Country';
 type YesNo = 'Yes'|'No';
 type Stage = 'None'|'OEC Issued'|'Contract Attested'|'Medical Done';
-type Reason = '— Not applicable / <= 6 months —'|'Client does not need her'|'Runaway'|'Refused to work (no reason)'|'Medically Unfit'|'Other';
+type Reason = '— Not applicable / <= 6 months —'|'Client does not need her'|'Runaway'|'Refused to work (no reason)'|'Medically Unfit'|'Maid Backed Out'|'Client Cancelled'|'Medical Failed outside country'|'Late Delivery'|'Maid want to travel to home country'|'Maid wants to work outside home/domestic'|'Maid Abused Family'|'Family Accused of Mistreatment'|'Food/Shelter/Basics Claim'|'Other';
 
 interface FormData {
   // Step 1
@@ -627,6 +627,15 @@ const Refund = () => {
                               <SelectItem value="Runaway">Runaway</SelectItem>
                               <SelectItem value="Refused to work (no reason)">Refused to work (no reason)</SelectItem>
                               <SelectItem value="Medically Unfit">Medically Unfit</SelectItem>
+                              <SelectItem value="Maid Backed Out">Maid Backed Out</SelectItem>
+                              <SelectItem value="Client Cancelled">Client Cancelled</SelectItem>
+                              <SelectItem value="Medical Failed outside country">Medical Failed outside country</SelectItem>
+                              <SelectItem value="Late Delivery">Late Delivery</SelectItem>
+                              <SelectItem value="Maid want to travel to home country">Maid want to travel to home country</SelectItem>
+                              <SelectItem value="Maid wants to work outside home/domestic">Maid wants to work outside home/domestic</SelectItem>
+                              <SelectItem value="Maid Abused Family">Maid Abused Family</SelectItem>
+                              <SelectItem value="Family Accused of Mistreatment">Family Accused of Mistreatment</SelectItem>
+                              <SelectItem value="Food/Shelter/Basics Claim">Food/Shelter/Basics Claim</SelectItem>
                               <SelectItem value="Other">Other</SelectItem>
                             </SelectContent>
                           </Select>
