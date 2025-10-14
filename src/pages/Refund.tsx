@@ -22,14 +22,15 @@ type Reason = '— Not applicable / <= 6 months —'|'Client does not need her'|
 interface FormData {
   // Step 1
   preparedBy: string;
+  contractNo: string;
+  clientName: string;
+  clientMobile: string;
   emirate: Emirate;
+  workerName: string;
   nationality: Nationality;
   salaryAED: string;
   priceInclVAT: string;
   vatPercent: string;
-  clientName: string;
-  clientMobile: string;
-  contractNo: string;
 
   // Step 2
   location: Location;
@@ -63,14 +64,15 @@ const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
+    contractNo: '',
+    clientName: '',
+    clientMobile: '',
     emirate: 'Dubai',
+    workerName: '',
     nationality: 'Philippines',
     salaryAED: '',
     priceInclVAT: '',
     vatPercent: '5',
-    clientName: '',
-    clientMobile: '',
-    contractNo: '',
     location: 'Inside Country',
     directHire: 'No',
     failBring: 'No',
@@ -446,6 +448,33 @@ const Refund = () => {
                         </div>
 
                         <div className="space-y-2">
+                          <Label>Contract Number</Label>
+                          <Input 
+                            value={formData.contractNo}
+                            onChange={(e) => setFormData({...formData, contractNo: e.target.value})}
+                            placeholder="Enter contract number"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Client Name</Label>
+                          <Input 
+                            value={formData.clientName}
+                            onChange={(e) => setFormData({...formData, clientName: e.target.value})}
+                            placeholder="Enter client name"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Client Phone</Label>
+                          <Input 
+                            value={formData.clientMobile}
+                            onChange={(e) => setFormData({...formData, clientMobile: e.target.value})}
+                            placeholder="Enter phone"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
                           <Label>Client Emirate</Label>
                           <Select value={formData.emirate} onValueChange={(v) => setFormData({...formData, emirate: v as Emirate})}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -459,6 +488,15 @@ const Refund = () => {
                               <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
                             </SelectContent>
                           </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Worker Name</Label>
+                          <Input 
+                            value={formData.workerName}
+                            onChange={(e) => setFormData({...formData, workerName: e.target.value})}
+                            placeholder="Enter worker name"
+                          />
                         </div>
 
                         <div className="space-y-2">
@@ -479,7 +517,7 @@ const Refund = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Worker Monthly Salary (AED)</Label>
+                          <Label>Worker Salary (AED)</Label>
                           <Input 
                             type="number" 
                             value={formData.salaryAED}
@@ -489,7 +527,7 @@ const Refund = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Selling Price (incl. VAT)</Label>
+                          <Label>Commission (incl. VAT)</Label>
                           <Input 
                             type="number" 
                             value={formData.priceInclVAT}
@@ -505,43 +543,6 @@ const Refund = () => {
                             value={formData.vatPercent}
                             onChange={(e) => setFormData({...formData, vatPercent: e.target.value})}
                             placeholder="5"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Price excl. VAT (calculated)</Label>
-                          <Input value={exVAT.toFixed(2)} readOnly className="bg-slate-100" />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>VAT Amount (calculated)</Label>
-                          <Input value={vatAmt.toFixed(2)} readOnly className="bg-slate-100" />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Client Name</Label>
-                          <Input 
-                            value={formData.clientName}
-                            onChange={(e) => setFormData({...formData, clientName: e.target.value})}
-                            placeholder="Enter client name"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Mobile</Label>
-                          <Input 
-                            value={formData.clientMobile}
-                            onChange={(e) => setFormData({...formData, clientMobile: e.target.value})}
-                            placeholder="Enter mobile"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Contract Number</Label>
-                          <Input 
-                            value={formData.contractNo}
-                            onChange={(e) => setFormData({...formData, contractNo: e.target.value})}
-                            placeholder="Enter contract number"
                           />
                         </div>
                       </div>
@@ -925,14 +926,15 @@ const Refund = () => {
                       {/* Header Pills */}
                       <div className="flex flex-wrap gap-2">
                         {formData.preparedBy && <Badge variant="default">Prepared By: {formData.preparedBy}</Badge>}
+                        {formData.contractNo && <Badge variant="outline">Contract: {formData.contractNo}</Badge>}
+                        {formData.clientName && <Badge variant="outline">{formData.clientName}</Badge>}
+                        {formData.clientMobile && <Badge variant="outline">{formData.clientMobile}</Badge>}
                         <Badge variant="secondary">{formData.emirate}</Badge>
+                        {formData.workerName && <Badge variant="outline">Worker: {formData.workerName}</Badge>}
                         <Badge variant="secondary">{formData.nationality}</Badge>
                         <Badge variant="secondary">{formData.location}</Badge>
                         <Badge variant="secondary">Direct: {formData.directHire}</Badge>
                         <Badge variant="secondary">Days: {result.days}</Badge>
-                        {formData.contractNo && <Badge variant="outline">Contract: {formData.contractNo}</Badge>}
-                        {formData.clientName && <Badge variant="outline">{formData.clientName}</Badge>}
-                        {formData.clientMobile && <Badge variant="outline">{formData.clientMobile}</Badge>}
                       </div>
 
                       {/* No Refund Case */}
