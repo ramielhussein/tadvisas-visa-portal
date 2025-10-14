@@ -43,6 +43,7 @@ interface FormData {
   govVisaAED: string;
   reason: Reason;
   otherReason: string;
+  medicalVisaCostAED: string;
 
   // Step 3
   deliveredDate: Date | undefined;
@@ -83,6 +84,7 @@ const Refund = () => {
     govVisaAED: '0',
     reason: '— Not applicable / <= 6 months —',
     otherReason: '',
+    medicalVisaCostAED: '0',
     deliveredDate: undefined,
     returnedDate: undefined,
     docPhone: 'No',
@@ -165,6 +167,7 @@ const Refund = () => {
     const cashAssistance = parseFloat(formData.cashAssistanceAED) || 0;
     const govVisa = parseFloat(formData.govVisaAED) || 0;
     const unpaidDays = parseFloat(formData.unpaidSalaryDays) || 0;
+    const medicalVisaCost = parseFloat(formData.medicalVisaCostAED) || 0;
 
     let refundEx = 0;
     let vatRefund = 0;
@@ -295,7 +298,12 @@ const Refund = () => {
       additions.push({ label: 'VAT to Refund', amount: vatRefund, rule: 'Returned before VAT filing' });
     }
 
-    const totalRefund = Math.max(0, refundEx) + vatRefund;
+    // Add Medical Visa Cost if reason is Medically Unfit
+    if (formData.reason === 'Medically Unfit' && medicalVisaCost > 0) {
+      additions.push({ label: 'Medical Visa Cost', amount: medicalVisaCost, rule: 'Medically Unfit' });
+    }
+
+    const totalRefund = Math.max(0, refundEx) + vatRefund + (formData.reason === 'Medically Unfit' ? medicalVisaCost : 0);
 
     return {
       exVAT,
@@ -675,6 +683,18 @@ const Refund = () => {
                               value={formData.otherReason}
                               onChange={(e) => setFormData({...formData, otherReason: e.target.value})}
                               placeholder="Please specify"
+                            />
+                          </div>
+                        )}
+
+                        {formData.reason === 'Medically Unfit' && (
+                          <div className="space-y-2">
+                            <Label>Medical Visa Cost (AED)</Label>
+                            <Input 
+                              type="number"
+                              value={formData.medicalVisaCostAED}
+                              onChange={(e) => setFormData({...formData, medicalVisaCostAED: e.target.value})}
+                              placeholder="0"
                             />
                           </div>
                         )}
