@@ -243,15 +243,8 @@ const Refund = () => {
       refundEx = exVAT;
       additions.push({ label: 'Base Price (excl. VAT)', amount: exVAT, rule: 'Inside country delivered' });
 
-      // Salary deduction
-      const salaryDed = (salary / 30) * unpaidDays;
-      if (salaryDed > 0) {
-        deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
-        refundEx -= salaryDed;
-      }
-
       if (days < 5) {
-        // Daily charges only
+        // Daily charges only (includes salary, so no separate salary deduction)
         const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
         deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days < 5` });
         refundEx -= dailyDed;
@@ -263,6 +256,12 @@ const Refund = () => {
           deductions.push({ label: 'Law 1/24 Deduction', amount: Math.round(lawDed * 100) / 100, rule: `${months} started months` });
           refundEx -= lawDed;
         }
+        // Salary deduction (only when not using daily charges)
+        const salaryDed = (salary / 30) * unpaidDays;
+        if (salaryDed > 0) {
+          deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
+          refundEx -= salaryDed;
+        }
       } else {
         // No Visa & VPA
         if (formData.optionB === 'Yes') {
@@ -271,7 +270,14 @@ const Refund = () => {
           deductions.push({ label: 'Option B Penalty', amount: penalty, rule: formData.emirate });
           deductions.push({ label: 'Standard Tadbeer Fees', amount: tadbeerFees, rule: 'Option B' });
           refundEx -= (penalty + tadbeerFees);
+          // Salary deduction (only when not using daily charges)
+          const salaryDed = (salary / 30) * unpaidDays;
+          if (salaryDed > 0) {
+            deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
+            refundEx -= salaryDed;
+          }
         } else {
+          // Daily charges (includes salary, so no separate salary deduction)
           const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
           deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days (no visa)` });
           refundEx -= dailyDed;
