@@ -21,6 +21,7 @@ type Reason = '— Not applicable / <= 6 months —'|'Client does not need her'|
 
 interface FormData {
   // Step 1
+  preparedBy: string;
   emirate: Emirate;
   nationality: Nationality;
   salaryAED: string;
@@ -61,6 +62,7 @@ interface FormData {
 const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
+    preparedBy: '',
     emirate: 'Dubai',
     nationality: 'Philippines',
     salaryAED: '',
@@ -419,6 +421,30 @@ const Refund = () => {
                   {currentStep === 1 && (
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Prepared By</Label>
+                          <Select value={formData.preparedBy} onValueChange={(v) => setFormData({...formData, preparedBy: v})}>
+                            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Nour">Nour</SelectItem>
+                              <SelectItem value="Rami">Rami</SelectItem>
+                              <SelectItem value="Mohd Ramadan">Mohd Ramadan</SelectItem>
+                              <SelectItem value="Ramadan Ihab">Ramadan Ihab</SelectItem>
+                              <SelectItem value="Obada">Obada</SelectItem>
+                              <SelectItem value="Majd">Majd</SelectItem>
+                              <SelectItem value="Zaidan">Zaidan</SelectItem>
+                              <SelectItem value="Ali">Ali</SelectItem>
+                              <SelectItem value="Futoon">Futoon</SelectItem>
+                              <SelectItem value="Bahraa">Bahraa</SelectItem>
+                              <SelectItem value="Aijin">Aijin</SelectItem>
+                              <SelectItem value="Aisha">Aisha</SelectItem>
+                              <SelectItem value="Malik">Malik</SelectItem>
+                              <SelectItem value="Milka">Milka</SelectItem>
+                              <SelectItem value="Asmit">Asmit</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
                         <div className="space-y-2">
                           <Label>Client Emirate</Label>
                           <Select value={formData.emirate} onValueChange={(v) => setFormData({...formData, emirate: v as Emirate})}>
@@ -898,6 +924,7 @@ const Refund = () => {
                     <div id="summary-content" className="space-y-6">
                       {/* Header Pills */}
                       <div className="flex flex-wrap gap-2">
+                        {formData.preparedBy && <Badge variant="default">Prepared By: {formData.preparedBy}</Badge>}
                         <Badge variant="secondary">{formData.emirate}</Badge>
                         <Badge variant="secondary">{formData.nationality}</Badge>
                         <Badge variant="secondary">{formData.location}</Badge>
