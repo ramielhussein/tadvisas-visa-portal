@@ -52,6 +52,7 @@ interface FormData {
   docPassport: YesNo;
   docCancel: YesNo;
   abuDhabiInsuranceCancelled: YesNo;
+  abscondReport: YesNo;
   abscondDate: Date | undefined;
   unpaidSalaryDays: string;
 
@@ -91,6 +92,7 @@ const Refund = () => {
     docPassport: 'No',
     docCancel: 'No',
     abuDhabiInsuranceCancelled: 'No',
+    abscondReport: 'No',
     abscondDate: undefined,
     unpaidSalaryDays: '0',
     visaVpaDone: 'No',
@@ -168,6 +170,7 @@ const Refund = () => {
     const govVisa = parseFloat(formData.govVisaAED) || 0;
     const unpaidDays = parseFloat(formData.unpaidSalaryDays) || 0;
     const medicalVisaCost = parseFloat(formData.medicalVisaCostAED) || 0;
+    const totalPaid = parseFloat(formData.priceInclVAT) || 0;
 
     let refundEx = 0;
     let vatRefund = 0;
@@ -175,6 +178,40 @@ const Refund = () => {
     let additions: Array<{label: string, amount: number, rule: string}> = [];
     let dueDate: string | Date = '';
     let noRefund = false;
+
+    // Special case: Medically Unfit - no deductions, only total paid + Medical Visa Cost
+    if (formData.reason === 'Medically Unfit') {
+      additions.push({ label: 'Total Paid (incl. VAT)', amount: totalPaid, rule: 'Medically Unfit' });
+      if (medicalVisaCost > 0) {
+        additions.push({ label: 'Medical Visa Cost', amount: medicalVisaCost, rule: 'Medically Unfit' });
+      }
+      const totalRefund = totalPaid + medicalVisaCost;
+      
+      // Due date logic for Medically Unfit
+      const missing = [];
+      if (formData.docPhone !== 'Yes') missing.push('Phone');
+      if (formData.docPassport !== 'Yes') missing.push('Passport');
+      if (formData.docCancel !== 'Yes') missing.push('Visa cancellation');
+      
+      if (missing.length === 0 && formData.returnedDate) {
+        dueDate = addDays(formData.returnedDate, 14);
+      } else {
+        dueDate = `Pending: ${missing.join(', ')}`;
+      }
+
+      return {
+        exVAT,
+        vatAmt,
+        vatRefund: 0,
+        refundEx: totalRefund,
+        totalRefund,
+        deductions: [],
+        additions,
+        dueDate,
+        days,
+        noRefund: false
+      };
+    }
 
     // VAT refund logic
     if (formData.location === 'Outside Country' && !formData.deliveredDate) {
@@ -289,6 +326,11 @@ const Refund = () => {
       if (formData.docPhone !== 'Yes') missing.push('Phone');
       if (formData.docPassport !== 'Yes') missing.push('Passport');
       if (formData.docCancel !== 'Yes') missing.push('Visa cancellation');
+      
+      // For Runaway, also check Abscond Report
+      if (formData.reason === 'Runaway' && formData.abscondReport !== 'Yes') {
+        missing.push('Abscond Report');
+      }
 
       if (missing.length === 0 && (formData.returnedDate || formData.abscondDate)) {
         const baseDate = formData.reason === 'Runaway' && formData.abscondDate 
@@ -304,12 +346,7 @@ const Refund = () => {
       additions.push({ label: 'VAT to Refund', amount: vatRefund, rule: 'Returned before VAT filing' });
     }
 
-    // Add Medical Visa Cost if reason is Medically Unfit
-    if (formData.reason === 'Medically Unfit' && medicalVisaCost > 0) {
-      additions.push({ label: 'Medical Visa Cost', amount: medicalVisaCost, rule: 'Medically Unfit' });
-    }
-
-    const totalRefund = Math.max(0, refundEx) + vatRefund + (formData.reason === 'Medically Unfit' ? medicalVisaCost : 0);
+    const totalRefund = Math.max(0, refundEx) + vatRefund;
 
     return {
       exVAT,
@@ -817,30 +854,43 @@ const Refund = () => {
                         )}
 
                         {formData.reason === 'Runaway' && (
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>Abscond report date (if Runaway)</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !formData.abscondDate && "text-muted-foreground")}>
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {formData.abscondDate ? format(formData.abscondDate, "PPP") : "Pick a date"}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={formData.abscondDate}
-                                  onSelect={(date) => setFormData({...formData, abscondDate: date})}
-                                  initialFocus
-                                  className="pointer-events-auto"
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <p className="text-xs text-muted-foreground">
-                              EN: Use the official MoHRE abscond report filing date.<br />
-                              <span dir="rtl">AR: استخدم تاريخ تقديم بلاغ الهروب الرسمي لدى وزارة الموارد البشرية.</span>
-                            </p>
-                          </div>
+                          <>
+                            <div className="space-y-2">
+                              <Label>Abscond Report</Label>
+                              <Select value={formData.abscondReport} onValueChange={(v) => setFormData({...formData, abscondReport: v as YesNo})}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Yes">Yes</SelectItem>
+                                  <SelectItem value="No">No</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            <div className="space-y-2 md:col-span-2">
+                              <Label>Abscond report date (if Runaway)</Label>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !formData.abscondDate && "text-muted-foreground")}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {formData.abscondDate ? format(formData.abscondDate, "PPP") : "Pick a date"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={formData.abscondDate}
+                                    onSelect={(date) => setFormData({...formData, abscondDate: date})}
+                                    initialFocus
+                                    className="pointer-events-auto"
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <p className="text-xs text-muted-foreground">
+                                EN: Use the official MoHRE abscond report filing date.<br />
+                                <span dir="rtl">AR: استخدم تاريخ تقديم بلاغ الهروب الرسمي لدى وزارة الموارد البشرية.</span>
+                              </p>
+                            </div>
+                          </>
                         )}
 
                         <div className="space-y-2">
