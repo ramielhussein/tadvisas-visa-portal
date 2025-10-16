@@ -181,11 +181,18 @@ const Refund = () => {
 
     // Special case: Medically Unfit - no deductions, only total paid + Medical Visa Cost
     if (formData.reason === 'Medically Unfit') {
-      additions.push({ label: 'Total Paid (incl. VAT)', amount: totalPaid, rule: 'Medically Unfit' });
+      // For Medically Unfit, refund base price + VAT + Medical Visa Cost
+      refundEx = exVAT;
+      vatRefund = vatAmt;
+      
+      additions.push({ label: 'Base Price (excl. VAT)', amount: exVAT, rule: 'Medically Unfit - Full Refund' });
+      additions.push({ label: 'VAT to Refund', amount: vatAmt, rule: 'Medically Unfit - Full Refund' });
+      
       if (medicalVisaCost > 0) {
         additions.push({ label: 'Medical Visa Cost', amount: medicalVisaCost, rule: 'Medically Unfit' });
       }
-      const totalRefund = totalPaid + medicalVisaCost;
+      
+      const totalRefund = exVAT + vatAmt + medicalVisaCost;
       
       // Due date logic for Medically Unfit
       const missing = [];
@@ -202,8 +209,8 @@ const Refund = () => {
       return {
         exVAT,
         vatAmt,
-        vatRefund: 0,
-        refundEx: totalRefund,
+        vatRefund,
+        refundEx,
         totalRefund,
         deductions: [],
         additions,
