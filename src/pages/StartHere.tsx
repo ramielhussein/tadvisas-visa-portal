@@ -49,21 +49,31 @@ const StartHere = () => {
       const timestamp = Date.now();
       const folderName = `${formData.name.replace(/\s+/g, '_')}_${timestamp}`;
       
+      console.log('Starting upload process for folder:', folderName);
+      
       // Upload all files to storage
       const uploadPromises = Object.entries(files).map(async ([key, file]) => {
         if (file) {
           const fileExt = file.name.split('.').pop();
           const fileName = `${folderName}/${key}.${fileExt}`;
           
-          const { error: uploadError } = await supabase.storage
+          console.log('Uploading file:', fileName);
+          
+          const { data, error: uploadError } = await supabase.storage
             .from('start-here-uploads')
             .upload(fileName, file);
 
-          if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error('Upload error for', fileName, ':', uploadError);
+            throw uploadError;
+          }
+          
+          console.log('Successfully uploaded:', fileName, data);
         }
       });
 
       await Promise.all(uploadPromises);
+      console.log('All files uploaded successfully');
 
       // Save form data as JSON file
       const formDataJSON = {
@@ -72,13 +82,20 @@ const StartHere = () => {
         files: Object.keys(files).filter(key => files[key as keyof typeof files] !== null)
       };
 
+      console.log('Saving form data:', formDataJSON);
+
       const formDataBlob = new Blob([JSON.stringify(formDataJSON, null, 2)], { type: 'application/json' });
       
-      const { error: jsonError } = await supabase.storage
+      const { data: jsonData, error: jsonError } = await supabase.storage
         .from('start-here-uploads')
         .upload(`${folderName}/application-data.json`, formDataBlob);
 
-      if (jsonError) throw jsonError;
+      if (jsonError) {
+        console.error('JSON upload error:', jsonError);
+        throw jsonError;
+      }
+      
+      console.log('Form data saved successfully:', jsonData);
 
       // Show success page
       setIsSubmitted(true);
@@ -228,7 +245,9 @@ const StartHere = () => {
                     required
                     value={formData.number}
                     onChange={handleInputChange}
-                    placeholder="Enter your phone number"
+                    placeholder="e.g., 0502020070"
+                    pattern="[0-9]{10}"
+                    title="Please enter a 10-digit phone number"
                   />
                 </div>
                 <div>
