@@ -1,211 +1,450 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { Upload, Trash2, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Upload, FileText, CreditCard, User, BookOpen, Package, Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
-
-interface File {
-  id: string;
-  url: string;
-  created_at: string;
-}
+import { supabase } from "@/integrations/supabase/client";
 
 const StartHere = () => {
-  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Fetch files from storage
-  const { data: files = [], isLoading } = useQuery({
-    queryKey: ['start-here-files'],
-    queryFn: async () => {
-      const { data, error } = await supabase.storage
-        .from('start-here-uploads')
-        .list('', {
-          sortBy: { column: 'created_at', order: 'desc' }
-        });
-
-      if (error) throw error;
-
-      const filesWithUrls = await Promise.all(
-        data.map(async (file) => {
-          const { data: urlData } = supabase.storage
-            .from('start-here-uploads')
-            .getPublicUrl(file.name);
-
-          return {
-            id: file.name,
-            url: urlData.publicUrl,
-            created_at: file.created_at
-          };
-        })
-      );
-
-      return filesWithUrls;
+  const [formData, setFormData] = useState({
+    name: "",
+    number: "",
+    email: "",
+    package: "",
+    addOns: {
+      medicalInsurance1Year: false,
+      medicalInsurance2Year: false,
+      installmentPlan: false
     }
   });
+  const [files, setFiles] = useState({
+    emiratesId: null as File | null,
+    dewaBill: null as File | null,
+    maidPassport: null as File | null,
+    maidVisa: null as File | null,
+    maidPhoto: null as File | null
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Upload files
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadFiles = e.target.files;
-    if (!uploadFiles || uploadFiles.length === 0) return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    setUploading(true);
+  const handleFileChange = (field: keyof typeof files, file: File | null) => {
+    setFiles({ ...files, [field]: file });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
     try {
-      for (const file of Array.from(uploadFiles)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+      const timestamp = Date.now();
+      const folderName = `${formData.name.replace(/\s+/g, '_')}_${timestamp}`;
+      
+      // Upload all files to storage
+      const uploadPromises = Object.entries(files).map(async ([key, file]) => {
+        if (file) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${folderName}/${key}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('start-here-uploads')
+            .upload(fileName, file);
 
-        const { error: uploadError } = await supabase.storage
-          .from('start-here-uploads')
-          .upload(fileName, file);
+          if (uploadError) throw uploadError;
+        }
+      });
 
-        if (uploadError) throw uploadError;
-      }
+      await Promise.all(uploadPromises);
+
+      // Save form data as JSON file
+      const formDataJSON = {
+        ...formData,
+        submittedAt: new Date().toISOString(),
+        files: Object.keys(files).filter(key => files[key as keyof typeof files] !== null)
+      };
+
+      const formDataBlob = new Blob([JSON.stringify(formDataJSON, null, 2)], { type: 'application/json' });
+      
+      const { error: jsonError } = await supabase.storage
+        .from('start-here-uploads')
+        .upload(`${folderName}/application-data.json`, formDataBlob);
+
+      if (jsonError) throw jsonError;
+
+      // Show success page
+      setIsSubmitted(true);
+
+      // Reset form
+      setFormData({ 
+        name: "", 
+        number: "", 
+        email: "", 
+        package: "",
+        addOns: {
+          medicalInsurance1Year: false,
+          medicalInsurance2Year: false,
+          installmentPlan: false
+        }
+      });
+      setFiles({
+        emiratesId: null,
+        dewaBill: null,
+        maidPassport: null,
+        maidVisa: null,
+        maidPhoto: null
+      });
 
       toast({
         title: "Success!",
-        description: `${uploadFiles.length} file(s) uploaded successfully.`,
+        description: "Your application has been submitted successfully.",
       });
 
-      queryClient.invalidateQueries({ queryKey: ['start-here-files'] });
     } catch (error: any) {
+      console.error('Submission error:', error);
       toast({
-        title: "Upload failed",
-        description: error.message,
-        variant: "destructive",
+        title: "Error",
+        description: `Failed to submit application: ${error.message}`,
+        variant: "destructive"
       });
     } finally {
-      setUploading(false);
-      e.target.value = '';
+      setIsSubmitting(false);
     }
   };
 
-  // Delete file
-  const deleteMutation = useMutation({
-    mutationFn: async (fileId: string) => {
-      const { error } = await supabase.storage
-        .from('start-here-uploads')
-        .remove([fileId]);
+  const FileUploadField = ({ 
+    field, 
+    label, 
+    icon: Icon, 
+    description 
+  }: { 
+    field: keyof typeof files; 
+    label: string; 
+    icon: any; 
+    description: string;
+  }) => (
+    <Card className="mb-4">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Icon className="w-5 h-5 text-primary" />
+          {label}
+        </CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Label htmlFor={field} className="cursor-pointer">
+          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
+            <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              {files[field] ? files[field]!.name : "Click to upload or drag and drop"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">PNG, JPG, PDF (max 10MB)</p>
+          </div>
+          <Input
+            id={field}
+            type="file"
+            accept=".png,.jpg,.jpeg,.pdf"
+            className="hidden"
+            onChange={(e) => handleFileChange(field, e.target.files?.[0] || null)}
+          />
+        </Label>
+      </CardContent>
+    </Card>
+  );
 
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Deleted",
-        description: "File removed successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['start-here-files'] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Delete failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  return (
-    <Layout>
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">START HERE & NOW</h1>
-              <p className="text-muted-foreground">Upload your documents and files to get started</p>
-            </div>
-            
-            <div className="relative">
-              <input
-                type="file"
-                id="file-upload"
-                multiple
-                accept="*/*"
-                onChange={handleUpload}
-                className="hidden"
-                disabled={uploading}
-              />
-              <Button
-                asChild
-                disabled={uploading}
-                size="lg"
+  if (isSubmitted) {
+    return (
+      <Layout>
+        <div className="min-h-screen py-12 flex items-center justify-center relative">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <div className="text-6xl mb-6">✨</div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
+                ABRA CADABRA!
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                Your application has been submitted successfully! We'll contact you soon.
+              </p>
+              <Button 
+                onClick={() => setIsSubmitted(false)}
+                className="bg-gradient-primary text-white px-8 py-3 text-lg font-semibold rounded-lg"
               >
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  {uploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="mr-2 h-5 w-5" />
-                      Upload Files
-                    </>
-                  )}
-                </label>
+                Submit Another Application
               </Button>
             </div>
           </div>
+        </div>
+      </Layout>
+    );
+  }
 
-          {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          ) : files.length === 0 ? (
+  return (
+    <Layout>
+      <div className="min-h-screen py-12 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl lg:text-5xl font-bold text-primary mb-4">
+              START HERE & NOW
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Start your process right now and right here
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Information */}
             <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Upload className="h-16 w-16 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No files yet</p>
-                <p className="text-muted-foreground">Upload your first documents to get started</p>
+              <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+                <CardDescription>Please fill in your contact details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="number">Phone Number</Label>
+                  <Input
+                    id="number"
+                    name="number"
+                    type="tel"
+                    required
+                    value={formData.number}
+                    onChange={handleInputChange}
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Enter your email address"
+                  />
+                </div>
               </CardContent>
             </Card>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {files.map((file) => (
-                <Card key={file.id} className="overflow-hidden group relative">
-                  <CardContent className="p-0">
-                    <div className="aspect-square relative">
-                      {file.url.match(/\.(mp4|webm|ogg|mov)$/i) ? (
-                        <video
-                          src={file.url}
-                          className="w-full h-full object-cover"
-                          controls
-                        />
-                      ) : file.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                        <img
-                          src={file.url}
-                          alt="Uploaded file"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted">
-                          <div className="text-center p-4">
-                            <Upload className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                            <p className="text-sm text-muted-foreground break-all">{file.id}</p>
-                          </div>
+
+            {/* Package Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-primary" />
+                  Select Package
+                </CardTitle>
+                <CardDescription>Choose your visa package</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Label htmlFor="package">Package</Label>
+                  <Select value={formData.package} onValueChange={(value) => {
+                    setFormData({
+                      ...formData, 
+                      package: value,
+                      addOns: {
+                        medicalInsurance1Year: false,
+                        medicalInsurance2Year: false,
+                        installmentPlan: false
+                      }
+                    });
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a package" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tadvisa">
+                        <div>
+                          <div className="font-semibold">TADVISA</div>
+                          <div className="text-sm text-muted-foreground">8925 AED • Zero monthly fee</div>
                         </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(file.id)}
-                          disabled={deleteMutation.isPending}
-                          className="pointer-events-auto"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      </SelectItem>
+                      <SelectItem value="tadvisa-plus">
+                        <div>
+                          <div className="font-semibold">TADVISA+</div>
+                          <div className="text-sm text-muted-foreground">8400 AED • 150 AED per month</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="tadvisa-plus-plus">
+                        <div>
+                          <div className="font-semibold">TADVISA++</div>
+                          <div className="text-sm text-muted-foreground">10500 AED • 168 AED per month</div>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Add-Ons Selection */}
+            {formData.package && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="w-5 h-5 text-primary" />
+                    Select Add-Ons
+                  </CardTitle>
+                  <CardDescription>Choose optional add-ons for your package</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {formData.package === "tadvisa" && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="medicalInsurance1Year"
+                          checked={formData.addOns.medicalInsurance1Year}
+                          onCheckedChange={(checked) => 
+                            setFormData({
+                              ...formData, 
+                              addOns: { 
+                                ...formData.addOns, 
+                                medicalInsurance1Year: checked as boolean,
+                                medicalInsurance2Year: checked ? false : formData.addOns.medicalInsurance2Year
+                              }
+                            })
+                          }
+                        />
+                        <Label htmlFor="medicalInsurance1Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          1 Year Medical Insurance - 750 AED
+                        </Label>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="medicalInsurance2Year"
+                          checked={formData.addOns.medicalInsurance2Year}
+                          onCheckedChange={(checked) => 
+                            setFormData({
+                              ...formData, 
+                              addOns: { 
+                                ...formData.addOns, 
+                                medicalInsurance2Year: checked as boolean,
+                                medicalInsurance1Year: checked ? false : formData.addOns.medicalInsurance1Year
+                              }
+                            })
+                          }
+                        />
+                        <Label htmlFor="medicalInsurance2Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          2 Year Medical Insurance - 1500 AED
+                        </Label>
+                      </div>
+                    </>
+                  )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="installmentPlan"
+                      checked={formData.addOns.installmentPlan}
+                      onCheckedChange={(checked) => 
+                        setFormData({
+                          ...formData, 
+                          addOns: { ...formData.addOns, installmentPlan: checked as boolean }
+                        })
+                      }
+                    />
+                    <Label htmlFor="installmentPlan" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Installment Plan - 800 AED
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Document Uploads */}
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-center mb-6">Upload Required Documents</h2>
+              
+              <div className="grid gap-4">
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h3 className="font-semibold text-primary mb-2">Step 1</h3>
+                  <FileUploadField
+                    field="emiratesId"
+                    label="Emirates ID"
+                    icon={CreditCard}
+                    description="Upload a clear copy of your Emirates ID (front and back)"
+                  />
+                </div>
+
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h3 className="font-semibold text-primary mb-2">Step 2</h3>
+                  <FileUploadField
+                    field="dewaBill"
+                    label="DEWA or ETISALAT Bill"
+                    icon={FileText}
+                    description="Upload your latest utility bill as proof of residence"
+                  />
+                </div>
+
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h3 className="font-semibold text-primary mb-2">Step 3</h3>
+                  <FileUploadField
+                    field="maidPassport"
+                    label="Maid Passport Copy"
+                    icon={BookOpen}
+                    description="Upload a clear copy of the maid's passport"
+                  />
+                </div>
+
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h3 className="font-semibold text-primary mb-2">Step 4</h3>
+                  <FileUploadField
+                    field="maidVisa"
+                    label="Maid Visa or Cancellation"
+                    icon={FileText}
+                    description="Upload the maid's current visa or cancellation document"
+                  />
+                </div>
+
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <h3 className="font-semibold text-primary mb-2">Step 5</h3>
+                  <FileUploadField
+                    field="maidPhoto"
+                    label="Maid Passport Photo"
+                    icon={User}
+                    description="Upload a passport-style photo of the maid"
+                  />
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Submit Button */}
+            <div className="text-center pt-8">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="bg-gradient-primary text-white px-12 py-6 text-lg font-semibold rounded-lg shadow-elegant hover:shadow-glow transition-all"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Application"
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </Layout>
