@@ -116,7 +116,7 @@ const Kenya = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-4xl font-bold mb-2">Kenya Photo Album</h1>
-              <p className="text-muted-foreground">Upload and manage your daily photos</p>
+              <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
             <div className="relative">
@@ -124,7 +124,7 @@ const Kenya = () => {
                 type="file"
                 id="photo-upload"
                 multiple
-                accept="image/*"
+                accept="image/*,video/*"
                 onChange={handleUpload}
                 className="hidden"
                 disabled={uploading}
@@ -143,7 +143,7 @@ const Kenya = () => {
                   ) : (
                     <>
                       <Upload className="mr-2 h-5 w-5" />
-                      Upload Photos
+                      Upload Media
                     </>
                   )}
                 </label>
@@ -159,8 +159,8 @@ const Kenya = () => {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Upload className="h-16 w-16 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium mb-2">No photos yet</p>
-                <p className="text-muted-foreground">Upload your first photos to get started</p>
+                <p className="text-lg font-medium mb-2">No media yet</p>
+                <p className="text-muted-foreground">Upload your first photos and videos to get started</p>
               </CardContent>
             </Card>
           ) : (
@@ -169,11 +169,19 @@ const Kenya = () => {
                 <Card key={photo.id} className="overflow-hidden group relative">
                   <CardContent className="p-0">
                     <div className="aspect-square relative">
-                      <img
-                        src={photo.url}
-                        alt="Kenya photo"
-                        className="w-full h-full object-cover"
-                      />
+                      {photo.url.match(/\.(mp4|webm|ogg|mov)$/i) ? (
+                        <video
+                          src={photo.url}
+                          className="w-full h-full object-cover"
+                          controls
+                        />
+                      ) : (
+                        <img
+                          src={photo.url}
+                          alt="Kenya media"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <Button
                           variant="destructive"
