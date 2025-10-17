@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import StartHere from "./pages/StartHere";
 import Admin from "./pages/Admin";
 import Refund from "./pages/Refund";
+import Kenya from "./pages/Kenya";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/start-here" element={<StartHere />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/refund" element={<Refund />} />
+          <Route path="/kenya" element={<Kenya />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
