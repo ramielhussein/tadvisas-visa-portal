@@ -14,6 +14,12 @@ import StartHere from "./pages/StartHere";
 import Admin from "./pages/Admin";
 import Refund from "./pages/Refund";
 import Kenya from "./pages/Kenya";
+import IdOc from "./pages/IdOc";
+import IdIc from "./pages/IdIc";
+import PhIc from "./pages/PhIc";
+import PhOc from "./pages/PhOc";
+import EtIc from "./pages/EtIc";
+import EtOc from "./pages/EtOc";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -37,6 +43,12 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/kenya" element={<Kenya />} />
+          <Route path="/id-oc" element={<IdOc />} />
+          <Route path="/id-ic" element={<IdIc />} />
+          <Route path="/ph-ic" element={<PhIc />} />
+          <Route path="/ph-oc" element={<PhOc />} />
+          <Route path="/et-ic" element={<EtIc />} />
+          <Route path="/et-oc" element={<EtOc />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
