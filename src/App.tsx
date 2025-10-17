@@ -45,13 +45,13 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/kenya" element={<ProtectedRoute><Kenya /></ProtectedRoute>} />
-          <Route path="/id-oc" element={<ProtectedRoute><IdOc /></ProtectedRoute>} />
-          <Route path="/id-ic" element={<ProtectedRoute><IdIc /></ProtectedRoute>} />
-          <Route path="/ph-ic" element={<ProtectedRoute><PhIc /></ProtectedRoute>} />
-          <Route path="/ph-oc" element={<ProtectedRoute><PhOc /></ProtectedRoute>} />
-          <Route path="/et-ic" element={<ProtectedRoute><EtIc /></ProtectedRoute>} />
-          <Route path="/et-oc" element={<ProtectedRoute><EtOc /></ProtectedRoute>} />
+          <Route path="/kenya" element={<Kenya />} />
+          <Route path="/id-oc" element={<IdOc />} />
+          <Route path="/id-ic" element={<IdIc />} />
+          <Route path="/ph-ic" element={<PhIc />} />
+          <Route path="/ph-oc" element={<PhOc />} />
+          <Route path="/et-ic" element={<EtIc />} />
+          <Route path="/et-oc" element={<EtOc />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

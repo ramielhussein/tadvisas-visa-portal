@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface Photo {
   id: string;
@@ -15,8 +16,21 @@ interface Photo {
 
 const EtIc = () => {
   const [uploading, setUploading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Fetch photos from storage
   const { data: photos = [], isLoading } = useQuery({
@@ -119,36 +133,42 @@ const EtIc = () => {
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
-            <div className="relative">
-              <input
-                type="file"
-                id="photo-upload"
-                multiple
-                accept="image/*,video/*"
-                onChange={handleUpload}
-                className="hidden"
-                disabled={uploading}
-              />
-              <Button
-                asChild
-                disabled={uploading}
-                size="lg"
-              >
-                <label htmlFor="photo-upload" className="cursor-pointer">
-                  {uploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="mr-2 h-5 w-5" />
-                      Upload Media
-                    </>
-                  )}
-                </label>
+            {isAuthenticated ? (
+              <div className="relative">
+                <input
+                  type="file"
+                  id="photo-upload"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleUpload}
+                  className="hidden"
+                  disabled={uploading}
+                />
+                <Button
+                  asChild
+                  disabled={uploading}
+                  size="lg"
+                >
+                  <label htmlFor="photo-upload" className="cursor-pointer">
+                    {uploading ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="mr-2 h-5 w-5" />
+                        Upload Media
+                      </>
+                    )}
+                  </label>
+                </Button>
+              </div>
+            ) : (
+              <Button asChild size="lg">
+                <Link to="/auth">Login to Upload</Link>
               </Button>
-            </div>
+            )}
           </div>
 
           {isLoading ? (
@@ -182,17 +202,19 @@ const EtIc = () => {
                           className="w-full h-full object-cover"
                         />
                       )}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(photo.id)}
-                          disabled={deleteMutation.isPending}
-                          className="pointer-events-auto"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      {isAuthenticated && (
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(photo.id)}
+                            disabled={deleteMutation.isPending}
+                            className="pointer-events-auto"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
