@@ -51,6 +51,9 @@ const StartHere = () => {
       
       console.log('Starting upload process for folder:', folderName);
       
+      // Track uploaded file URLs
+      const fileUrls: Record<string, string> = {};
+      
       // Upload all files to storage
       const uploadPromises = Object.entries(files).map(async ([key, file]) => {
         if (file) {
@@ -67,6 +70,13 @@ const StartHere = () => {
             console.error('Upload error for', fileName, ':', uploadError);
             throw uploadError;
           }
+          
+          // Get public URL for the uploaded file
+          const { data: { publicUrl } } = supabase.storage
+            .from('start-here-uploads')
+            .getPublicUrl(fileName);
+          
+          fileUrls[key] = publicUrl;
           
           console.log('Successfully uploaded:', fileName, data);
         }
@@ -96,6 +106,31 @@ const StartHere = () => {
       }
       
       console.log('Form data saved successfully:', jsonData);
+
+      // Save submission to database
+      const { error: dbError } = await supabase
+        .from('submissions')
+        .insert({
+          name: formData.name,
+          phone: formData.number,
+          email: formData.email,
+          package: formData.package,
+          medical_insurance: formData.addOns.medicalInsurance1Year || formData.addOns.medicalInsurance2Year,
+          installment_plan: formData.addOns.installmentPlan,
+          emirates_id_url: fileUrls.emiratesId || null,
+          dewa_bill_url: fileUrls.dewaBill || null,
+          maid_passport_url: fileUrls.maidPassport || null,
+          maid_visa_url: fileUrls.maidVisa || null,
+          maid_photo_url: fileUrls.maidPhoto || null,
+        });
+
+      if (dbError) {
+        console.error('Error saving to database:', dbError);
+        toast({
+          title: "Warning",
+          description: "Files uploaded but couldn't save to database. We'll process your application manually.",
+        });
+      }
 
       // Show success page
       setIsSubmitted(true);

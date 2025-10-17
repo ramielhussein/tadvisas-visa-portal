@@ -35,15 +35,102 @@ export type Database = {
         }
         Relationships: []
       }
+      submissions: {
+        Row: {
+          addons: string[] | null
+          created_at: string | null
+          dewa_bill_url: string | null
+          email: string
+          emirates_id_url: string | null
+          id: string
+          installment_plan: boolean | null
+          maid_passport_url: string | null
+          maid_photo_url: string | null
+          maid_visa_url: string | null
+          medical_insurance: boolean | null
+          name: string
+          notes: string | null
+          package: string
+          phone: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          addons?: string[] | null
+          created_at?: string | null
+          dewa_bill_url?: string | null
+          email: string
+          emirates_id_url?: string | null
+          id?: string
+          installment_plan?: boolean | null
+          maid_passport_url?: string | null
+          maid_photo_url?: string | null
+          maid_visa_url?: string | null
+          medical_insurance?: boolean | null
+          name: string
+          notes?: string | null
+          package: string
+          phone: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          addons?: string[] | null
+          created_at?: string | null
+          dewa_bill_url?: string | null
+          email?: string
+          emirates_id_url?: string | null
+          id?: string
+          installment_plan?: boolean | null
+          maid_passport_url?: string | null
+          maid_photo_url?: string | null
+          maid_visa_url?: string | null
+          medical_insurance?: boolean | null
+          name?: string
+          notes?: string | null
+          package?: string
+          phone?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -170,6 +257,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
