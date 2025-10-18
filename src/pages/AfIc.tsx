@@ -129,7 +129,7 @@ const AfIc = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Afghanistan Workers Inside Country</h1>
+              <h1 className="text-4xl font-bold mb-2">Uganda Kenya Workers Inside Country</h1>
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
