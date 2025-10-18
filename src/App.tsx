@@ -24,6 +24,7 @@ import EtIc from "./pages/EtIc";
 import EtOc from "./pages/EtOc";
 import AfIc from "./pages/AfIc";
 import AfOc from "./pages/AfOc";
+import MyIc from "./pages/MyIc";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/et-oc" element={<EtOc />} />
           <Route path="/af-ic" element={<AfIc />} />
           <Route path="/af-oc" element={<AfOc />} />
+          <Route path="/my-ic" element={<MyIc />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -129,7 +129,7 @@ const EtIc = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">ET-IC Album</h1>
+              <h1 className="text-4xl font-bold mb-2">Ethiopia Workers Inside Country</h1>
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             

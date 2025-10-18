@@ -14,7 +14,7 @@ interface Photo {
   created_at: string;
 }
 
-const PhIc = () => {
+const MyIc = () => {
   const [uploading, setUploading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
@@ -34,10 +34,10 @@ const PhIc = () => {
 
   // Fetch photos from storage
   const { data: photos = [], isLoading } = useQuery({
-    queryKey: ['ph-ic-photos'],
+    queryKey: ['my-ic-photos'],
     queryFn: async () => {
       const { data, error } = await supabase.storage
-        .from('ph-ic-album')
+        .from('my-ic-album')
         .list('', {
           sortBy: { column: 'created_at', order: 'desc' }
         });
@@ -47,7 +47,7 @@ const PhIc = () => {
       const photosWithUrls = await Promise.all(
         data.map(async (file) => {
           const { data: urlData } = supabase.storage
-            .from('ph-ic-album')
+            .from('my-ic-album')
             .getPublicUrl(file.name);
 
           return {
@@ -74,7 +74,7 @@ const PhIc = () => {
         const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('ph-ic-album')
+          .from('my-ic-album')
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
@@ -85,7 +85,7 @@ const PhIc = () => {
         description: `${files.length} file(s) uploaded successfully.`,
       });
 
-      queryClient.invalidateQueries({ queryKey: ['ph-ic-photos'] });
+      queryClient.invalidateQueries({ queryKey: ['my-ic-photos'] });
     } catch (error: any) {
       toast({
         title: "Upload failed",
@@ -102,7 +102,7 @@ const PhIc = () => {
   const deleteMutation = useMutation({
     mutationFn: async (photoId: string) => {
       const { error } = await supabase.storage
-        .from('ph-ic-album')
+        .from('my-ic-album')
         .remove([photoId]);
 
       if (error) throw error;
@@ -112,7 +112,7 @@ const PhIc = () => {
         title: "Deleted",
         description: "File removed successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['ph-ic-photos'] });
+      queryClient.invalidateQueries({ queryKey: ['my-ic-photos'] });
     },
     onError: (error: any) => {
       toast({
@@ -129,7 +129,7 @@ const PhIc = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Philippines Workers Inside Country</h1>
+              <h1 className="text-4xl font-bold mb-2">Myanmar Workers Inside Country</h1>
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
@@ -198,7 +198,7 @@ const PhIc = () => {
                       ) : (
                         <img
                           src={photo.url}
-                          alt="PH-IC media"
+                          alt="MY-IC media"
                           className="w-full h-full object-cover"
                         />
                       )}
@@ -227,4 +227,4 @@ const PhIc = () => {
   );
 };
 
-export default PhIc;
+export default MyIc;
