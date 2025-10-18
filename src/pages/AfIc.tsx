@@ -216,6 +216,17 @@ const AfIc = () => {
                         </div>
                       )}
                     </div>
+                    <div className="p-4">
+                      <Button 
+                        asChild
+                        className="w-full bg-gradient-primary text-white"
+                        size="sm"
+                      >
+                        <Link to={`/book-worker?photo=${encodeURIComponent(photo.url)}`}>
+                          Book This Worker
+                        </Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

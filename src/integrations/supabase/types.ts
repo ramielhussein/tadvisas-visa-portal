@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          created_at: string
+          eid_back_url: string | null
+          eid_front_url: string | null
+          email: string
+          id: string
+          name: string
+          passport_url: string | null
+          phone: string
+          updated_at: string
+          worker_photo_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          eid_back_url?: string | null
+          eid_front_url?: string | null
+          email: string
+          id?: string
+          name: string
+          passport_url?: string | null
+          phone: string
+          updated_at?: string
+          worker_photo_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          eid_back_url?: string | null
+          eid_front_url?: string | null
+          email?: string
+          id?: string
+          name?: string
+          passport_url?: string | null
+          phone?: string
+          updated_at?: string
+          worker_photo_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
