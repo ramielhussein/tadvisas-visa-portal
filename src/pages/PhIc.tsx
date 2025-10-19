@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { checkAdminRole, resetAlbum, resetAllAlbums } from "@/utils/albumHelpers";
 
 interface Photo {
   id: string;
@@ -28,17 +29,33 @@ interface Photo {
 const PhIc = () => {
   const [uploading, setUploading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [resetting, setResetting] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
-    });
+      
+      if (session?.user) {
+        const isAdminUser = await checkAdminRole(session.user.id);
+        setIsAdmin(isAdminUser);
+      }
+    };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setIsAuthenticated(!!session);
+      
+      if (session?.user) {
+        const isAdminUser = await checkAdminRole(session.user.id);
+        setIsAdmin(isAdminUser);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -135,54 +152,52 @@ const PhIc = () => {
     }
   });
 
-  const handleResetAllAlbums = async () => {
-    if (!isAuthenticated) {
+  const handleResetThisAlbum = async () => {
+    if (!isAdmin) {
       toast({
-        title: "Authentication required",
-        description: "Please login to reset albums.",
+        title: "Access denied",
+        description: "Only admins can reset albums.",
         variant: "destructive",
       });
       return;
     }
 
     setResetting(true);
-    const buckets = [
-      'ph-ic-album', 'ph-oc-album',
-      'id-ic-album', 'id-oc-album',
-      'et-ic-album', 'et-oc-album',
-      'af-ic-album', 'af-oc-album',
-      'my-ic-album', 'my-oc-album',
-      'kenya-album'
-    ];
-
     try {
-      for (const bucket of buckets) {
-        const { data: files, error: listError } = await supabase.storage
-          .from(bucket)
-          .list('');
+      await resetAlbum('ph-ic-album');
+      toast({
+        title: "Success!",
+        description: "This album has been reset.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['ph-ic-photos'] });
+    } catch (error: any) {
+      toast({
+        title: "Reset failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setResetting(false);
+    }
+  };
 
-        if (listError) {
-          console.error(`Error listing files in ${bucket}:`, listError);
-          continue;
-        }
+  const handleResetAllAlbums = async () => {
+    if (!isAdmin) {
+      toast({
+        title: "Access denied",
+        description: "Only admins can reset albums.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-        if (files && files.length > 0) {
-          const filePaths = files.map(file => file.name);
-          const { error: deleteError } = await supabase.storage
-            .from(bucket)
-            .remove(filePaths);
-
-          if (deleteError) {
-            console.error(`Error deleting files from ${bucket}:`, deleteError);
-          }
-        }
-      }
-
+    setResetting(true);
+    try {
+      await resetAllAlbums();
       toast({
         title: "Success!",
         description: "All albums have been reset.",
       });
-
       queryClient.invalidateQueries();
     } catch (error: any) {
       toast({
@@ -206,7 +221,7 @@ const PhIc = () => {
             </div>
             
             <div className="flex gap-2">
-              {isAuthenticated && (
+              {isAdmin && (
                 <>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -223,7 +238,43 @@ const PhIc = () => {
                         ) : (
                           <>
                             <AlertTriangle className="mr-2 h-5 w-5" />
-                            RESET ALBUMS
+                            RESET THIS ALBUM
+                          </>
+                        )}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete all photos and videos from this album.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleResetThisAlbum}>
+                          Yes, delete this album
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="lg"
+                        disabled={resetting}
+                      >
+                        {resetting ? (
+                          <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Resetting...
+                          </>
+                        ) : (
+                          <>
+                            <AlertTriangle className="mr-2 h-5 w-5" />
+                            RESET ALL ALBUMS
                           </>
                         )}
                       </Button>
@@ -243,39 +294,42 @@ const PhIc = () => {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
-
-                  <div className="relative">
-                    <input
-                      type="file"
-                      id="photo-upload"
-                      multiple
-                      accept="image/*,video/*"
-                      onChange={handleUpload}
-                      className="hidden"
-                      disabled={uploading}
-                    />
-                    <Button
-                      asChild
-                      disabled={uploading}
-                      size="lg"
-                    >
-                      <label htmlFor="photo-upload" className="cursor-pointer">
-                        {uploading ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="mr-2 h-5 w-5" />
-                            Upload Media
-                          </>
-                        )}
-                      </label>
-                    </Button>
-                  </div>
                 </>
               )}
+              
+              {isAuthenticated && (
+                <div className="relative">
+                  <input
+                    type="file"
+                    id="photo-upload"
+                    multiple
+                    accept="image/*,video/*"
+                    onChange={handleUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <Button
+                    asChild
+                    disabled={uploading}
+                    size="lg"
+                  >
+                    <label htmlFor="photo-upload" className="cursor-pointer">
+                      {uploading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-5 w-5" />
+                          Upload Media
+                        </>
+                      )}
+                    </label>
+                  </Button>
+                </div>
+              )}
+              
               {!isAuthenticated && (
                 <Button asChild size="lg">
                   <Link to="/auth">Login to Upload</Link>
