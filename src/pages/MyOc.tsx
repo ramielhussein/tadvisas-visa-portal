@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,8 +18,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
 
 interface Photo {
   id: string;
@@ -25,7 +25,7 @@ interface Photo {
   created_at: string;
 }
 
-const IdOc = () => {
+const MyOc = () => {
   const [uploading, setUploading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -44,12 +44,11 @@ const IdOc = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch photos from storage
   const { data: photos = [], isLoading } = useQuery({
-    queryKey: ['id-oc-photos'],
+    queryKey: ['my-oc-photos'],
     queryFn: async () => {
       const { data, error } = await supabase.storage
-        .from('id-oc-album')
+        .from('my-oc-album')
         .list('', {
           sortBy: { column: 'created_at', order: 'desc' }
         });
@@ -59,7 +58,7 @@ const IdOc = () => {
       const photosWithUrls = await Promise.all(
         data.map(async (file) => {
           const { data: urlData } = supabase.storage
-            .from('id-oc-album')
+            .from('my-oc-album')
             .getPublicUrl(file.name);
 
           return {
@@ -74,7 +73,6 @@ const IdOc = () => {
     }
   });
 
-  // Upload photos
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -86,7 +84,7 @@ const IdOc = () => {
         const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('id-oc-album')
+          .from('my-oc-album')
           .upload(fileName, file);
 
         if (uploadError) throw uploadError;
@@ -97,7 +95,7 @@ const IdOc = () => {
         description: `${files.length} file(s) uploaded successfully.`,
       });
 
-      queryClient.invalidateQueries({ queryKey: ['id-oc-photos'] });
+      queryClient.invalidateQueries({ queryKey: ['my-oc-photos'] });
     } catch (error: any) {
       toast({
         title: "Upload failed",
@@ -110,11 +108,10 @@ const IdOc = () => {
     }
   };
 
-  // Delete photo
   const deleteMutation = useMutation({
     mutationFn: async (photoId: string) => {
       const { error } = await supabase.storage
-        .from('id-oc-album')
+        .from('my-oc-album')
         .remove([photoId]);
 
       if (error) throw error;
@@ -124,7 +121,7 @@ const IdOc = () => {
         title: "Deleted",
         description: "File removed successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['id-oc-photos'] });
+      queryClient.invalidateQueries({ queryKey: ['my-oc-photos'] });
     },
     onError: (error: any) => {
       toast({
@@ -201,7 +198,7 @@ const IdOc = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Indonesia Workers Outside Country</h1>
+              <h1 className="text-4xl font-bold mb-2">Myanmar Workers Outside Country</h1>
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
@@ -311,7 +308,7 @@ const IdOc = () => {
                       ) : (
                         <img
                           src={photo.url}
-                          alt="ID-OC media"
+                          alt="MY-OC media"
                           className="w-full h-full object-cover"
                         />
                       )}
@@ -351,4 +348,4 @@ const IdOc = () => {
   );
 };
 
-export default IdOc;
+export default MyOc;
