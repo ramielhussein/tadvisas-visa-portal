@@ -15,7 +15,6 @@ import Admin from "./pages/Admin";
 import Refund from "./pages/Refund";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Kenya from "./pages/Kenya";
 import IdOc from "./pages/IdOc";
 import IdIc from "./pages/IdIc";
 import PhIc from "./pages/PhIc";
@@ -51,7 +50,6 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/kenya" element={<Kenya />} />
           <Route path="/id-oc" element={<IdOc />} />
           <Route path="/id-ic" element={<IdIc />} />
           <Route path="/ph-ic" element={<PhIc />} />

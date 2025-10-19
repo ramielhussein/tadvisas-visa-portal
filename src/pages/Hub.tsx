@@ -64,12 +64,6 @@ const Hub = () => {
       path: "/my-oc",
       region: "Myanmar",
       location: "Outside Country"
-    },
-    {
-      title: "Kenya Workers",
-      path: "/kenya",
-      region: "Kenya",
-      location: "All Locations"
     }
   ];
 
