@@ -17,6 +17,8 @@ const Navbar = () => {
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
     { name: "Start Here & Now", path: "/start-here" },
+    { name: "CV Wizard", path: "/cvwizard" },
+    { name: "Admin", path: "/admin" },
   ];
 
   const handleWhatsAppClick = () => {

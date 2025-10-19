@@ -1,1 +1,4 @@
 project_id = "uwncpnveatbwnsgepjlb"
+
+[functions.submit-cv]
+verify_jwt = false

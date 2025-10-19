@@ -66,6 +66,10 @@ const App = () => (
           <Route path="/my-oc" element={<MyOc />} />
           <Route path="/hub" element={<Hub />} />
           <Route path="/book-worker" element={<BookWorker />} />
+          <Route path="/cvwizard" element={<ProtectedRoute><CVWizard /></ProtectedRoute>} />
+          <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
+          <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
+          <Route path="/admin/create-user" element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
