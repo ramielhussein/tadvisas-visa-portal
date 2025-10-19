@@ -151,8 +151,7 @@ const MyIc = () => {
       'id-ic-album', 'id-oc-album',
       'et-ic-album', 'et-oc-album',
       'af-ic-album', 'af-oc-album',
-      'my-ic-album', 'my-oc-album',
-      'kenya-album'
+      'my-ic-album', 'my-oc-album'
     ];
 
     try {
