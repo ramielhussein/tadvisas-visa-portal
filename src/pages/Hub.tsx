@@ -1,69 +1,40 @@
 import Layout from "@/components/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Users, Globe, MapPin } from "lucide-react";
+import { MapPin, Globe } from "lucide-react";
 
 const Hub = () => {
-  const albums = [
+  const countries = [
     {
-      title: "Philippines Workers Inside Country",
-      path: "/ph-ic",
-      region: "Philippines",
-      location: "Inside Country"
+      name: "Philippines",
+      flag: "🇵🇭",
+      insidePath: "/ph-ic",
+      outsidePath: "/ph-oc"
     },
     {
-      title: "Philippines Workers Outside Country",
-      path: "/ph-oc",
-      region: "Philippines",
-      location: "Outside Country"
+      name: "Indonesia",
+      flag: "🇮🇩",
+      insidePath: "/id-ic",
+      outsidePath: "/id-oc"
     },
     {
-      title: "Indonesia Workers Inside Country",
-      path: "/id-ic",
-      region: "Indonesia",
-      location: "Inside Country"
+      name: "Ethiopia",
+      flag: "🇪🇹",
+      insidePath: "/et-ic",
+      outsidePath: "/et-oc"
     },
     {
-      title: "Indonesia Workers Outside Country",
-      path: "/id-oc",
-      region: "Indonesia",
-      location: "Outside Country"
+      name: "Uganda / Kenya",
+      flag: "🇺🇬 🇰🇪",
+      insidePath: "/af-ic",
+      outsidePath: "/af-oc"
     },
     {
-      title: "Ethiopia Workers Inside Country",
-      path: "/et-ic",
-      region: "Ethiopia",
-      location: "Inside Country"
-    },
-    {
-      title: "Ethiopia Workers Outside Country",
-      path: "/et-oc",
-      region: "Ethiopia",
-      location: "Outside Country"
-    },
-    {
-      title: "Uganda Kenya Workers Inside Country",
-      path: "/af-ic",
-      region: "Uganda/Kenya",
-      location: "Inside Country"
-    },
-    {
-      title: "Uganda Kenya Workers Outside Country",
-      path: "/af-oc",
-      region: "Uganda/Kenya",
-      location: "Outside Country"
-    },
-    {
-      title: "Myanmar Workers Inside Country",
-      path: "/my-ic",
-      region: "Myanmar",
-      location: "Inside Country"
-    },
-    {
-      title: "Myanmar Workers Outside Country",
-      path: "/my-oc",
-      region: "Myanmar",
-      location: "Outside Country"
+      name: "Myanmar",
+      flag: "🇲🇲",
+      insidePath: "/my-ic",
+      outsidePath: "/my-oc"
     }
   ];
 
@@ -101,27 +72,48 @@ const Hub = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {albums.map((album) => (
-              <Link key={album.path} to={album.path}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 group-hover:text-primary transition-colors">
-                      <Users className="h-5 w-5" />
-                      {album.region}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span>{album.location}</span>
-                      </div>
-                      <p className="text-sm font-medium mt-4">{album.title}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {countries.map((country) => (
+              <Card key={country.name} className="overflow-hidden hover:shadow-xl transition-all duration-300">
+                <CardContent className="p-8">
+                  <div className="flex flex-col items-center space-y-6">
+                    {/* Flag */}
+                    <div className="text-8xl leading-none">
+                      {country.flag}
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    
+                    {/* Country Name */}
+                    <h3 className="text-2xl font-bold text-center">
+                      {country.name}
+                    </h3>
+                    
+                    {/* Selection Buttons */}
+                    <div className="w-full space-y-3">
+                      <Button
+                        asChild
+                        className="w-full h-12 text-base"
+                        variant="default"
+                      >
+                        <Link to={country.insidePath} className="flex items-center justify-center gap-2">
+                          <MapPin className="h-5 w-5" />
+                          Inside Country
+                        </Link>
+                      </Button>
+                      
+                      <Button
+                        asChild
+                        className="w-full h-12 text-base"
+                        variant="outline"
+                      >
+                        <Link to={country.outsidePath} className="flex items-center justify-center gap-2">
+                          <Globe className="h-5 w-5" />
+                          Outside Country
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
