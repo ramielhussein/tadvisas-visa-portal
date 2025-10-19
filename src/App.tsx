@@ -26,6 +26,7 @@ import AfIc from "./pages/AfIc";
 import AfOc from "./pages/AfOc";
 import MyIc from "./pages/MyIc";
 import MyOc from "./pages/MyOc";
+import Hub from "./pages/Hub";
 import BookWorker from "./pages/BookWorker";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/af-oc" element={<AfOc />} />
           <Route path="/my-ic" element={<MyIc />} />
           <Route path="/my-oc" element={<MyOc />} />
+          <Route path="/hub" element={<Hub />} />
           <Route path="/book-worker" element={<BookWorker />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
