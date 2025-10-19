@@ -74,6 +74,30 @@ export type Database = {
         }
         Relationships: []
       }
+      settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          key: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          key: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          key?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
       submissions: {
         Row: {
           addons: string[] | null
@@ -152,6 +176,96 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      workers: {
+        Row: {
+          age: number
+          center_ref: string | null
+          children: number | null
+          created_at: string | null
+          education: Json | null
+          employer_count: number | null
+          employers: Json | null
+          experience: Json | null
+          files: Json | null
+          financials: Json | null
+          height_cm: number | null
+          id: string
+          job1: string
+          job2: string | null
+          languages: Json | null
+          maid_status: string
+          marital_status: string
+          name: string
+          nationality_code: string
+          passport_expiry: string
+          passport_no: string
+          religion: string
+          skills: Json | null
+          status: string | null
+          updated_at: string | null
+          visa: Json | null
+          weight_kg: number | null
+        }
+        Insert: {
+          age: number
+          center_ref?: string | null
+          children?: number | null
+          created_at?: string | null
+          education?: Json | null
+          employer_count?: number | null
+          employers?: Json | null
+          experience?: Json | null
+          files?: Json | null
+          financials?: Json | null
+          height_cm?: number | null
+          id?: string
+          job1: string
+          job2?: string | null
+          languages?: Json | null
+          maid_status: string
+          marital_status: string
+          name: string
+          nationality_code: string
+          passport_expiry: string
+          passport_no: string
+          religion: string
+          skills?: Json | null
+          status?: string | null
+          updated_at?: string | null
+          visa?: Json | null
+          weight_kg?: number | null
+        }
+        Update: {
+          age?: number
+          center_ref?: string | null
+          children?: number | null
+          created_at?: string | null
+          education?: Json | null
+          employer_count?: number | null
+          employers?: Json | null
+          experience?: Json | null
+          files?: Json | null
+          financials?: Json | null
+          height_cm?: number | null
+          id?: string
+          job1?: string
+          job2?: string | null
+          languages?: Json | null
+          maid_status?: string
+          marital_status?: string
+          name?: string
+          nationality_code?: string
+          passport_expiry?: string
+          passport_no?: string
+          religion?: string
+          skills?: Json | null
+          status?: string | null
+          updated_at?: string | null
+          visa?: Json | null
+          weight_kg?: number | null
         }
         Relationships: []
       }
