@@ -1,12 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
-
-const cors
-
-Headers = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
 interface CVFormData {
   name: string;
   passport_no: string;
