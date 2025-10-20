@@ -68,7 +68,7 @@ const Footer = () => {
 
         <div className="border-t border-blue-600 mt-8 pt-8 text-center">
           <p className="text-blue-100">
-            © 2025 tadmaids.com - Tadmaids Domestic Workers Services Center. All <Link to="/hub" className="text-blue-100 hover:text-white transition-colors">rights</Link> <Link to="/refund" className="text-blue-100 hover:text-white transition-colors">reserved</Link>.
+            © <Link to="/admin" className="text-blue-100 hover:text-white transition-colors">2025</Link> <Link to="/cvwizard" className="text-blue-100 hover:text-white transition-colors">tadmaids.com</Link> - Tadmaids Domestic Workers Services Center. All <Link to="/hub" className="text-blue-100 hover:text-white transition-colors">rights</Link> <Link to="/refund" className="text-blue-100 hover:text-white transition-colors">reserved</Link>.
           </p>
         </div>
       </div>
