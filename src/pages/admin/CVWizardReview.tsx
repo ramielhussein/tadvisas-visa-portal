@@ -153,9 +153,14 @@ const CVWizardReview = () => {
   return (
     <Layout>
       <div className="container mx-auto py-8 px-4">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">CV Review</h1>
-          <p className="text-muted-foreground">Review and approve worker CVs</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">CV Review</h1>
+            <p className="text-muted-foreground">Review and approve worker CVs</p>
+          </div>
+          <Button onClick={() => window.location.href = '/cvwizard'}>
+            Add CV
+          </Button>
         </div>
 
         <div className="grid gap-4">
