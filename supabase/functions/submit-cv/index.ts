@@ -24,6 +24,7 @@ interface CVFormData {
   visa: any;
   files: any;
   financials: any;
+  salary?: number;
   consent: boolean;
 }
 
@@ -137,6 +138,7 @@ Deno.serve(async (req) => {
         employers: [],
         employer_count,
         financials,
+        salary: formData.salary,
         status: 'Available',
       })
       .select()

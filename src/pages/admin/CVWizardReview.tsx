@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, Eye, CheckCircle, XCircle, CreditCard } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +21,22 @@ interface Worker {
   center_ref: string;
   nationality_code: string;
   job1: string;
+  job2?: string;
   age: number;
   status: string;
   created_at: string;
   maid_status: string;
+  religion?: string;
+  marital_status?: string;
+  children?: number;
+  height_cm?: number;
+  weight_kg?: number;
+  salary?: number;
   experience: Array<{ country: string; years: number }>;
   languages: Array<{ name: string; level: string }>;
+  skills?: any;
+  education?: any;
+  files?: any;
   financials: any;
 }
 
@@ -36,6 +46,8 @@ const CVWizardReview = () => {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [maidCardOpen, setMaidCardOpen] = useState(false);
+  const [maidCardWorker, setMaidCardWorker] = useState<Worker | null>(null);
 
   useEffect(() => {
     loadWorkers();
@@ -66,6 +78,18 @@ const CVWizardReview = () => {
   const handleView = (worker: Worker) => {
     setSelectedWorker(worker);
     setDialogOpen(true);
+  };
+
+  const handleShowMaidCard = (worker: Worker) => {
+    setMaidCardWorker(worker);
+    setMaidCardOpen(true);
+  };
+
+  const skillsList = (skills: any) => {
+    if (!skills) return [];
+    return Object.entries(skills)
+      .filter(([_, value]) => value === true)
+      .map(([key]) => key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()));
   };
 
   const handleApprove = async (id: string) => {
@@ -193,6 +217,16 @@ const CVWizardReview = () => {
                     View Details
                   </Button>
 
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => handleShowMaidCard(worker)}
+                    className="bg-primary/10"
+                  >
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Maid Card
+                  </Button>
+
                   {worker.status === "Available" && (
                     <>
                       <Button
@@ -305,6 +339,164 @@ const CVWizardReview = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {maidCardWorker && (
+          <Dialog open={maidCardOpen} onOpenChange={setMaidCardOpen}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Maid Card - {maidCardWorker.name}</DialogTitle>
+              </DialogHeader>
+
+              <div className="bg-white p-6 space-y-6">
+                {/* Header */}
+                <div className="text-center border-b-4 border-primary pb-4">
+                  <h1 className="text-3xl font-bold text-primary">MAID CARD</h1>
+                  {maidCardWorker.center_ref && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Ref: {maidCardWorker.center_ref}
+                    </p>
+                  )}
+                </div>
+
+                {/* Photo and Basic Info */}
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="col-span-1">
+                    {maidCardWorker.files?.photo ? (
+                      <img
+                        src={maidCardWorker.files.photo}
+                        alt={maidCardWorker.name}
+                        className="w-full aspect-[3/4] object-cover rounded-lg border-2 border-gray-200"
+                      />
+                    ) : (
+                      <div className="w-full aspect-[3/4] bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">No Photo</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-span-2 space-y-3">
+                    <div>
+                      <h2 className="text-2xl font-bold">{maidCardWorker.name}</h2>
+                      <p className="text-sm text-muted-foreground">
+                        {maidCardWorker.nationality_code} • {maidCardWorker.age} years old
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      {maidCardWorker.religion && (
+                        <div>
+                          <span className="font-semibold">Religion:</span> {maidCardWorker.religion}
+                        </div>
+                      )}
+                      {maidCardWorker.marital_status && (
+                        <div>
+                          <span className="font-semibold">Marital Status:</span> {maidCardWorker.marital_status}
+                        </div>
+                      )}
+                      {maidCardWorker.children !== undefined && (
+                        <div>
+                          <span className="font-semibold">Children:</span> {maidCardWorker.children}
+                        </div>
+                      )}
+                      {maidCardWorker.height_cm && (
+                        <div>
+                          <span className="font-semibold">Height:</span> {maidCardWorker.height_cm} cm
+                        </div>
+                      )}
+                      {maidCardWorker.weight_kg && (
+                        <div>
+                          <span className="font-semibold">Weight:</span> {maidCardWorker.weight_kg} kg
+                        </div>
+                      )}
+                      {maidCardWorker.salary && (
+                        <div className="col-span-2">
+                          <span className="font-semibold">Expected Salary:</span> {maidCardWorker.salary} AED/month
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-3 border-t">
+                      <h3 className="font-semibold text-primary mb-2">Job Roles</h3>
+                      <div className="flex gap-2">
+                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                          {maidCardWorker.job1}
+                        </Badge>
+                        {maidCardWorker.job2 && (
+                          <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                            {maidCardWorker.job2}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Languages */}
+                <div>
+                  <h3 className="font-semibold text-primary mb-3 text-lg border-b pb-2">
+                    Languages
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {maidCardWorker.languages.map((lang, idx) => (
+                      <Badge key={idx} variant="secondary">
+                        {lang.name} <span className="text-xs ml-1">({lang.level})</span>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Experience */}
+                {maidCardWorker.experience && maidCardWorker.experience.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-primary mb-3 text-lg border-b pb-2">
+                      Work Experience
+                    </h3>
+                    <div className="space-y-2">
+                      {maidCardWorker.experience.map((exp, idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center bg-muted p-2 rounded"
+                        >
+                          <span className="font-medium">{exp.country}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {exp.years} {exp.years === 1 ? "year" : "years"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Skills */}
+                {maidCardWorker.skills && skillsList(maidCardWorker.skills).length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-primary mb-3 text-lg border-b pb-2">
+                      Skills
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {skillsList(maidCardWorker.skills).map((skill, idx) => (
+                        <Badge
+                          key={idx}
+                          className="bg-green-50 text-green-700 hover:bg-green-100"
+                        >
+                          ✓ {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div className="text-center text-xs text-muted-foreground pt-4 border-t">
+                  <p>Generated on {new Date().toLocaleDateString()}</p>
+                  <p className="mt-2 text-xs italic">
+                    Tip: Use browser&apos;s Print function (Ctrl+P / Cmd+P) or screenshot tool to save as image
+                  </p>
+                </div>
               </div>
             </DialogContent>
           </Dialog>

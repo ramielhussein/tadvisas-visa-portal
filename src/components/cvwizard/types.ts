@@ -72,6 +72,9 @@ export interface CVFormData {
     revenues: Array<{ label: string; amount: number }>;
   };
   
+  // Salary
+  salary?: number;
+  
   // Consent
   consent: boolean;
 }

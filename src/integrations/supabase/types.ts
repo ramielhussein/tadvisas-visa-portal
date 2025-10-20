@@ -203,6 +203,7 @@ export type Database = {
           passport_expiry: string
           passport_no: string
           religion: string
+          salary: number | null
           skills: Json | null
           status: string | null
           updated_at: string | null
@@ -232,6 +233,7 @@ export type Database = {
           passport_expiry: string
           passport_no: string
           religion: string
+          salary?: number | null
           skills?: Json | null
           status?: string | null
           updated_at?: string | null
@@ -261,6 +263,7 @@ export type Database = {
           passport_expiry?: string
           passport_no?: string
           religion?: string
+          salary?: number | null
           skills?: Json | null
           status?: string | null
           updated_at?: string | null

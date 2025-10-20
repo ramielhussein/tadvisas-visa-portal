@@ -55,6 +55,18 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">Financials (Optional)</h3>
 
+      <div className="space-y-2">
+        <Label htmlFor="salary">Expected Maid Salary (AED per month)</Label>
+        <Input
+          id="salary"
+          type="number"
+          min={0}
+          value={formData.salary || ''}
+          onChange={(e) => updateFormData({ salary: parseFloat(e.target.value) || undefined })}
+          placeholder="e.g. 1500"
+        />
+      </div>
+
       <div className="space-y-4">
         <h4 className="font-medium">Costs</h4>
         {formData.financials.costs.map((cost, index) => (
