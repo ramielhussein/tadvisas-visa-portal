@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { CVFormData } from "@/pages/CVWizard";
+import type { CVFormData } from "@/components/cvwizard/types";
 import { useState } from "react";
 
 interface Props {

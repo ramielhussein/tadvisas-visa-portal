@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CVFormData } from "@/pages/CVWizard";
+import type { CVFormData } from "@/components/cvwizard/types";
 
 interface Props {
   formData: CVFormData;

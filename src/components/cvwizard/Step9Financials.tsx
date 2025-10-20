@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { CVFormData } from "@/pages/CVWizard";
+import type { CVFormData } from "@/components/cvwizard/types";
 
 interface Props {
   formData: CVFormData;
