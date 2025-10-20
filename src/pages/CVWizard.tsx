@@ -194,10 +194,28 @@ const CVWizard = () => {
   };
 
   const handleNext = () => {
-    if (!validateStep(currentStep)) {
+    console.log("Current step:", currentStep);
+    console.log("Form data:", formData);
+    const isValid = validateStep(currentStep);
+    console.log("Step validation result:", isValid);
+    
+    if (!isValid) {
+      let missingFields = "";
+      if (currentStep === 1) {
+        const missing = [];
+        if (!formData.name) missing.push("Full Name");
+        if (!formData.passport_no) missing.push("Passport Number");
+        if (!formData.passport_expiry) missing.push("Passport Expiry");
+        if (!formData.nationality_code) missing.push("Nationality");
+        if (!formData.religion) missing.push("Religion");
+        if (!formData.maid_status) missing.push("Maid Status");
+        if (formData.age < 18 || formData.age > 60) missing.push("Valid Age (18-60)");
+        missingFields = missing.length > 0 ? ` Missing: ${missing.join(", ")}` : "";
+      }
+      
       toast({
         title: "Incomplete Step",
-        description: "Please fill all required fields before proceeding.",
+        description: `Please fill all required fields before proceeding.${missingFields}`,
         variant: "destructive",
       });
       return;
