@@ -187,9 +187,31 @@ const CVWizard = () => {
     setSubmitting(true);
 
     try {
-      // Call edge function to handle submission
+      // Convert files to base64 before sending
+      const filesBase64: any = {};
+      for (const [key, file] of Object.entries(formData.files)) {
+        if (file) {
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file as File);
+          });
+          filesBase64[key] = {
+            data: base64,
+            name: (file as File).name,
+            type: (file as File).type,
+          };
+        }
+      }
+
+      // Call edge function with base64 files
+      const payload = {
+        ...formData,
+        files: filesBase64,
+      };
+
       const { data, error } = await supabase.functions.invoke("submit-cv", {
-        body: formData,
+        body: payload,
       });
 
       if (error) throw error;

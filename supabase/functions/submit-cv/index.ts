@@ -46,29 +46,39 @@ function computeCenterRef(data: CVFormData): string {
 async function uploadFile(
   supabase: any,
   passportNo: string,
-  file: any,
+  fileData: any,
   fileName: string
 ): Promise<string | null> {
-  if (!file) return null;
+  if (!fileData?.data) return null;
   
-  const filePath = `${passportNo}/${fileName}`;
-  
-  const { data, error } = await supabase.storage
-    .from('cvs')
-    .upload(filePath, file, {
-      upsert: true,
-    });
-  
-  if (error) {
-    console.error(`Error uploading ${fileName}:`, error);
+  try {
+    // Extract base64 data (remove data:image/jpeg;base64, prefix)
+    const base64Data = fileData.data.split(',')[1];
+    const buffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    
+    const filePath = `${passportNo}/${fileName}`;
+    
+    const { error } = await supabase.storage
+      .from('cvs')
+      .upload(filePath, buffer, {
+        contentType: fileData.type,
+        upsert: true,
+      });
+    
+    if (error) {
+      console.error(`Error uploading ${fileName}:`, error);
+      return null;
+    }
+    
+    const { data: urlData } = supabase.storage
+      .from('cvs')
+      .getPublicUrl(filePath);
+    
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error(`Error processing ${fileName}:`, error);
     return null;
   }
-  
-  const { data: urlData } = supabase.storage
-    .from('cvs')
-    .getPublicUrl(filePath);
-  
-  return urlData.publicUrl;
 }
 
 Deno.serve(async (req) => {
@@ -108,8 +118,25 @@ Deno.serve(async (req) => {
     // Upload files to storage
     const fileUrls: any = {};
     
-    // Note: In a real implementation, you'd need to handle multipart/form-data
-    // For now, this is a placeholder structure
+    if (formData.files) {
+      const fileKeys = ['photo', 'passport', 'medical', 'pcc', 'entry_permit', 'visit_visa', 'video', 'other_1', 'other_2', 'other_3'];
+      
+      for (const key of fileKeys) {
+        if (formData.files[key]) {
+          const url = await uploadFile(
+            supabase,
+            formData.passport_no,
+            formData.files[key],
+            `${key}_${Date.now()}.${formData.files[key].name.split('.').pop()}`
+          );
+          if (url) {
+            fileUrls[key] = url;
+          }
+        }
+      }
+    }
+    
+    console.log('Uploaded files:', Object.keys(fileUrls));
     
     // Create the worker record
     const { data: worker, error: insertError } = await supabase
