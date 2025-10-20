@@ -194,34 +194,52 @@ const CVWizard = () => {
   };
 
   const handleNext = () => {
-    console.log("Current step:", currentStep);
-    console.log("Form data:", formData);
     const isValid = validateStep(currentStep);
-    console.log("Step validation result:", isValid);
     
     if (!isValid) {
-      let missingFields = "";
+      let missingFields = [];
+      
       if (currentStep === 1) {
-        const missing = [];
-        if (!formData.name) missing.push("Full Name");
-        if (!formData.passport_no) missing.push("Passport Number");
-        if (!formData.passport_expiry) missing.push("Passport Expiry");
-        if (!formData.nationality_code) missing.push("Nationality");
-        if (!formData.religion) missing.push("Religion");
-        if (!formData.maid_status) missing.push("Maid Status");
-        if (formData.age < 18 || formData.age > 60) missing.push("Valid Age (18-60)");
-        missingFields = missing.length > 0 ? ` Missing: ${missing.join(", ")}` : "";
+        if (!formData.name) missingFields.push("Full Name");
+        if (!formData.passport_no) missingFields.push("Passport Number");
+        if (!formData.passport_expiry) missingFields.push("Passport Expiry");
+        if (!formData.nationality_code) missingFields.push("Nationality");
+        if (!formData.religion) missingFields.push("Religion");
+        if (!formData.maid_status) missingFields.push("Maid Status");
+        if (formData.age < 18 || formData.age > 60) missingFields.push("Valid Age (18-60)");
+      } else if (currentStep === 2) {
+        if (!formData.job1) missingFields.push("Primary Job");
+        if (!formData.marital_status) missingFields.push("Marital Status");
+      } else if (currentStep === 3) {
+        if (formData.languages.length === 0) missingFields.push("At least one language");
+      } else if (currentStep === 4) {
+        if (!formData.education.track) missingFields.push("Education Track");
+      } else if (currentStep === 7) {
+        if (!formData.visa.status) missingFields.push("Visa Status");
+        if (["Cancelled", "Entry Tourist"].includes(formData.visa.status) && !formData.visa.overstay_or_grace_date) {
+          missingFields.push("Overstay/Grace Date");
+        }
+      } else if (currentStep === 8) {
+        if (!formData.files.photo) missingFields.push("Photo");
+        if (!formData.files.passport) missingFields.push("Passport Copy");
+      } else if (currentStep === 10) {
+        if (!formData.consent) missingFields.push("Consent Checkbox");
       }
       
       toast({
-        title: "Incomplete Step",
-        description: `Please fill all required fields before proceeding.${missingFields}`,
+        title: "❌ Incomplete Step",
+        description: missingFields.length > 0 
+          ? `Missing: ${missingFields.join(", ")}` 
+          : "Please fill all required fields before proceeding.",
         variant: "destructive",
+        duration: 5000,
       });
       return;
     }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
