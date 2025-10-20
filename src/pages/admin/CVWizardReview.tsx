@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+// @ts-ignore
+import html2canvas from "html2canvas";
 
 interface Worker {
   id: string;
@@ -48,6 +50,8 @@ const CVWizardReview = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [maidCardOpen, setMaidCardOpen] = useState(false);
   const [maidCardWorker, setMaidCardWorker] = useState<Worker | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const maidCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     loadWorkers();
@@ -93,17 +97,44 @@ const CVWizardReview = () => {
   };
 
   const handleExportMaidCard = async () => {
-    if (!maidCardWorker) return;
+    if (!maidCardRef.current || !maidCardWorker) return;
 
-    toast({
-      title: "Export Instructions",
-      description: "Use Ctrl+P (Cmd+P on Mac) to print or save as PDF. Then convert PDF to JPG if needed.",
-    });
+    setExporting(true);
+    try {
+      const canvas = await html2canvas(maidCardRef.current, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+      });
 
-    // Trigger browser print dialog
-    setTimeout(() => {
-      window.print();
-    }, 500);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const fileName = `maid-card-${maidCardWorker.name.replace(/\s+/g, "-").toLowerCase()}.jpg`;
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        toast({
+          title: "Success",
+          description: `Maid card exported as ${fileName}`,
+        });
+      }, "image/jpeg", 0.95);
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast({
+        title: "Export Failed",
+        description: "Could not export the maid card. Please try using screenshot instead.",
+        variant: "destructive",
+      });
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleApprove = async (id: string) => {
@@ -371,15 +402,25 @@ const CVWizardReview = () => {
                   <DialogTitle>Maid Card - {maidCardWorker.name}</DialogTitle>
                   <Button 
                     onClick={handleExportMaidCard}
+                    disabled={exporting}
                     size="sm"
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export JPG
+                    {exporting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Exporting...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="h-4 w-4 mr-2" />
+                        Export JPG
+                      </>
+                    )}
                   </Button>
                 </div>
               </DialogHeader>
 
-              <div className="bg-white p-6 space-y-6">
+              <div ref={maidCardRef} className="bg-white p-6 space-y-6">
                 {/* Header */}
                 <div className="text-center border-b-4 border-primary pb-4">
                   <h1 className="text-3xl font-bold text-primary">MAID CARD</h1>
