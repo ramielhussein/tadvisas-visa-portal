@@ -11,9 +11,10 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
   const handleFileChange = (field: string, file: File | null) => {
     if (!file) return;
     
-    // Validate file size (15MB max)
-    if (file.size > 15 * 1024 * 1024) {
-      alert("File size must be less than 15MB");
+    // Video files can be larger (up to 50MB), other files 15MB max
+    const maxSize = field === 'video' ? 50 * 1024 * 1024 : 15 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert(`File size must be less than ${field === 'video' ? '50MB' : '15MB'}`);
       return;
     }
 
@@ -26,7 +27,7 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Attachments</h3>
       <p className="text-sm text-muted-foreground">
-        All files must be under 15MB. Photos: JPG/PNG. Documents: PDF
+        Documents/Photos: Max 15MB. Video: Max 50MB. Photos: JPG/PNG. Documents: PDF. Video: MP4/MOV
       </p>
 
       <div className="space-y-2">
@@ -112,6 +113,20 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
         />
         {formData.files.visit_visa && (
           <p className="text-sm text-green-600">✓ {formData.files.visit_visa.name}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="video">Maid Video (Optional - Max 50MB)</Label>
+        <Input
+          id="video"
+          type="file"
+          accept="video/mp4,video/quicktime,video/*"
+          capture="user"
+          onChange={(e) => handleFileChange("video", e.target.files?.[0] || null)}
+        />
+        {formData.files.video && (
+          <p className="text-sm text-green-600">✓ {formData.files.video.name}</p>
         )}
       </div>
 

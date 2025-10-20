@@ -60,6 +60,7 @@ export interface CVFormData {
     pcc?: File;
     entry_permit?: File;
     visit_visa?: File;
+    video?: File;
     other_1?: File;
     other_2?: File;
     other_3?: File;
