@@ -221,8 +221,8 @@ const CVWizard = () => {
         description: `CV submitted successfully! Reference: ${data.center_ref}`,
       });
 
-      // Navigate to a success page or reset
-      navigate("/");
+      // Navigate to CV review page
+      navigate("/admin/cvwizard-review");
     } catch (error: any) {
       console.error("Submit error:", error);
       toast({
