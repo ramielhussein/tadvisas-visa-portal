@@ -54,7 +54,7 @@ serve(async (req) => {
       });
     }
 
-    // Create the user using admin client
+    // Create the user using admin client with service role
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -65,8 +65,11 @@ serve(async (req) => {
     });
 
     if (createError) {
+      console.error("Error from createUser:", createError);
       throw createError;
     }
+
+    console.log("User created successfully:", newUser.user.id);
 
     return new Response(
       JSON.stringify({

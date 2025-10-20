@@ -35,7 +35,14 @@ const CreateUser = () => {
         body: { email, password, fullName },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw error;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Success",
@@ -50,7 +57,7 @@ const CreateUser = () => {
       console.error("Error creating user:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to create user. Check console for details.",
         variant: "destructive",
       });
     } finally {
