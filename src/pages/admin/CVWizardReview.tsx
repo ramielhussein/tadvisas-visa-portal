@@ -114,7 +114,9 @@ const CVWizardReview = () => {
         
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const fileName = `maid-card-${maidCardWorker.name.replace(/\s+/g, "-").toLowerCase()}.jpg`;
+        const fileName = maidCardWorker.center_ref 
+          ? `${maidCardWorker.center_ref.replace(/\s+/g, " ")}.jpg`
+          : `maid-card-${maidCardWorker.name.replace(/\s+/g, "-").toLowerCase()}.jpg`;
         link.download = fileName;
         link.href = url;
         link.click();
