@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, CheckCircle, XCircle, CreditCard } from "lucide-react";
+import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -90,6 +90,20 @@ const CVWizardReview = () => {
     return Object.entries(skills)
       .filter(([_, value]) => value === true)
       .map(([key]) => key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()));
+  };
+
+  const handleExportMaidCard = async () => {
+    if (!maidCardWorker) return;
+
+    toast({
+      title: "Export Instructions",
+      description: "Use Ctrl+P (Cmd+P on Mac) to print or save as PDF. Then convert PDF to JPG if needed.",
+    });
+
+    // Trigger browser print dialog
+    setTimeout(() => {
+      window.print();
+    }, 500);
   };
 
   const handleApprove = async (id: string) => {
@@ -353,7 +367,16 @@ const CVWizardReview = () => {
           <Dialog open={maidCardOpen} onOpenChange={setMaidCardOpen}>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Maid Card - {maidCardWorker.name}</DialogTitle>
+                <div className="flex items-center justify-between">
+                  <DialogTitle>Maid Card - {maidCardWorker.name}</DialogTitle>
+                  <Button 
+                    onClick={handleExportMaidCard}
+                    size="sm"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export JPG
+                  </Button>
+                </div>
               </DialogHeader>
 
               <div className="bg-white p-6 space-y-6">
