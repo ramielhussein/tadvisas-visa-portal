@@ -49,13 +49,13 @@ const Step2Jobs = ({ formData, updateFormData }: Props) => {
         <Label htmlFor="job2">Secondary Job (Optional)</Label>
         <Select
           value={formData.job2}
-          onValueChange={(value) => updateFormData({ job2: value })}
+          onValueChange={(value) => updateFormData({ job2: value === 'none' ? '' : value })}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select secondary job" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">None</SelectItem>
+            <SelectItem value="none">None</SelectItem>
             {jobOptions.map((job) => (
               <SelectItem key={job} value={job}>
                 {job}
