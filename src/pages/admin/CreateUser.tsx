@@ -30,17 +30,9 @@ const CreateUser = () => {
     setCreating(true);
 
     try {
-      // This would typically be done via an admin function
-      // For now, we'll create via the client (requires proper RLS setup)
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-          emailRedirectTo: window.location.origin,
-        },
+      // Call admin edge function to create user
+      const { data, error } = await supabase.functions.invoke("create-user", {
+        body: { email, password, fullName },
       });
 
       if (error) throw error;

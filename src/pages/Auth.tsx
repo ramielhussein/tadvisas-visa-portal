@@ -9,7 +9,6 @@ import { Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,34 +37,17 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast({
-          title: "Success",
-          description: "Logged in successfully!",
-        });
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-          },
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Success",
-          description: "Account created successfully!",
-        });
-      }
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -83,11 +65,9 @@ const Auth = () => {
         <div className="max-w-md mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle>{isLogin ? "Login" : "Sign Up"}</CardTitle>
+              <CardTitle>Login</CardTitle>
               <CardDescription>
-                {isLogin
-                  ? "Enter your credentials to access the photo albums"
-                  : "Create an account to manage photo albums"}
+                Enter your credentials to access the system
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -118,21 +98,13 @@ const Auth = () => {
                       Please wait...
                     </>
                   ) : (
-                    <>{isLogin ? "Login" : "Sign Up"}</>
+                    <>Login</>
                   )}
                 </Button>
               </form>
-              <div className="mt-4 text-center">
-                <Button
-                  variant="link"
-                  onClick={() => setIsLogin(!isLogin)}
-                  type="button"
-                >
-                  {isLogin
-                    ? "Don't have an account? Sign up"
-                    : "Already have an account? Login"}
-                </Button>
-              </div>
+              <p className="mt-4 text-center text-sm text-muted-foreground">
+                Only authorized users can access this system. Contact your administrator for credentials.
+              </p>
             </CardContent>
           </Card>
         </div>
