@@ -11,3 +11,10 @@ verify_jwt = true
 
 [functions.reset-admin]
 verify_jwt = false
+
+[functions.create-sales-team]
+verify_jwt = false
+
+[functions.assign-lead-round-robin]
+verify_jwt = false
+
