@@ -23,7 +23,6 @@ import CVWizard from "./pages/CVWizard";
 import CVWizardSettings from "./pages/admin/CVWizardSettings";
 import CVWizardReview from "./pages/admin/CVWizardReview";
 import CreateUser from "./pages/admin/CreateUser";
-import CreateSalesTeam from "./pages/admin/CreateSalesTeam";
 import ResetAdmin from "./pages/ResetAdmin";
 import EtIc from "./pages/EtIc";
 import EtOc from "./pages/EtOc";
@@ -74,7 +73,6 @@ const App = () => (
           <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
         <Route path="/admin/create-user" element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
-        <Route path="/admin/create-sales-team" element={<ProtectedRoute><CreateSalesTeam /></ProtectedRoute>} />
         <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
