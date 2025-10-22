@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
+import AdminMenu from "./AdminMenu";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       <Footer />
       <FloatingButtons />
+      <AdminMenu />
     </div>
   );
 };
