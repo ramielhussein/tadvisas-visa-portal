@@ -129,7 +129,7 @@ const AdminMenu = () => {
             className={location.pathname === '/admin' ? 'bg-accent' : ''}
           >
             <FileText className="h-4 w-4 mr-2" />
-            Submissions Dashboard
+            Client Request Submissions
           </DropdownMenuItem>
           
           <DropdownMenuItem 

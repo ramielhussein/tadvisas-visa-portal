@@ -355,7 +355,7 @@ export default function Admin() {
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-12">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-4xl font-bold">Client Request Submissions</h1>
             <Button onClick={handleLogout} variant="outline">
               Logout
             </Button>
@@ -365,7 +365,7 @@ export default function Admin() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Total Submissions</CardTitle>
+                <CardTitle className="text-lg">Total Client Requests</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{submissions.length}</p>
@@ -440,7 +440,7 @@ export default function Admin() {
           {/* Submissions Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Submissions</CardTitle>
+              <CardTitle>Client Requests</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
