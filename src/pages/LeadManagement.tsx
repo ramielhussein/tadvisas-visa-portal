@@ -12,6 +12,7 @@ import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { Search, Plus, Download, Upload } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
+import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 
 interface Lead {
   id: string;
@@ -210,6 +211,11 @@ const LeadManagement = () => {
                 Add Lead (Ctrl+Shift+Q)
               </Button>
             </div>
+          </div>
+
+          {/* Round Robin Toggle */}
+          <div className="mb-8">
+            <RoundRobinToggle />
           </div>
 
           {/* Stats Cards */}

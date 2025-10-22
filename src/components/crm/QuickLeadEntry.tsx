@@ -103,7 +103,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
       await Promise.all(uploadPromises);
 
       // Insert lead into database
-      const { error: dbError } = await supabase.from("leads").insert([{
+      const { data: newLead, error: dbError } = await supabase.from("leads").insert([{
         client_name: formData.client_name || null,
         email: formData.email || null,
         mobile_number: phoneValidation.formatted,
@@ -114,9 +114,21 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
-      }]);
+      }]).select().single();
 
       if (dbError) throw dbError;
+
+      // Trigger round-robin assignment for the new lead
+      if (newLead) {
+        try {
+          await supabase.functions.invoke("assign-lead-round-robin", {
+            body: { leadId: newLead.id },
+          });
+        } catch (rrError) {
+          console.log("Round robin assignment failed (may be disabled):", rrError);
+          // Don't throw - lead was created successfully
+        }
+      }
 
       // Call Trello edge function (will be implemented)
       try {

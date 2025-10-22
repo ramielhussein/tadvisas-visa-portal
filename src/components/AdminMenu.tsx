@@ -190,6 +190,14 @@ const AdminMenu = () => {
             <Users className="h-4 w-4 mr-2" />
             Create User
           </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/admin/create-sales-team')}
+            className={location.pathname === '/admin/create-sales-team' ? 'bg-accent' : ''}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Create Sales Team
+          </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
