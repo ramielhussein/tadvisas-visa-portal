@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, CreditCard, BookOpen, Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, CreditCard, BookOpen, Loader2, Package } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ const BookWorker = () => {
     name: "",
     phone: "",
     email: "",
+    package: "",
   });
 
   const [files, setFiles] = useState({
@@ -77,7 +79,7 @@ const BookWorker = () => {
           name: formData.name,
           phone: formData.phone,
           email: formData.email,
-          package: null,
+          package: formData.package,
           emirates_id_front_url: fileUrls.eidFront || null,
           emirates_id_back_url: fileUrls.eidBack || null,
           passport_url: fileUrls.passport || null,
@@ -231,6 +233,41 @@ const BookWorker = () => {
                     onChange={handleInputChange}
                     placeholder="Enter your email address"
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Package Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-primary" />
+                  Select Package
+                </CardTitle>
+                <CardDescription>Choose your booking package</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Label htmlFor="package">Package</Label>
+                  <Select value={formData.package} onValueChange={(value) => setFormData({ ...formData, package: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a package" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Package 1: Two years worker on my sponsorship">
+                        <div>
+                          <div className="font-semibold">Package 1</div>
+                          <div className="text-sm text-muted-foreground">Two years worker on my sponsorship</div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="Package 4: Monthly package of selected worker">
+                        <div>
+                          <div className="font-semibold">Package 4</div>
+                          <div className="text-sm text-muted-foreground">Monthly package of selected worker</div>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
