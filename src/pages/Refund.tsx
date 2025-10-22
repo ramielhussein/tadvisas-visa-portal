@@ -293,12 +293,18 @@ const Refund = () => {
         deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days < 5` });
         refundEx -= dailyDed;
       } else if (formData.visaVpaDone === 'Yes') {
-        // Law 1/24
+        // Monthly deduction: 500 AED per full month + proportional days
         if (days >= 30) {
-          const months = Math.ceil(days / 30);
-          const lawDed = (exVAT / 24) * months;
-          deductions.push({ label: 'Law 1/24 Deduction', amount: Math.round(lawDed * 100) / 100, rule: `${months} started months` });
-          refundEx -= lawDed;
+          const fullMonths = Math.floor(days / 30);
+          const remainingDays = days % 30;
+          const monthlyRate = 500;
+          const monthlyDed = (fullMonths * monthlyRate) + ((monthlyRate / 30) * remainingDays);
+          deductions.push({ 
+            label: 'Monthly Deduction', 
+            amount: Math.round(monthlyDed * 100) / 100, 
+            rule: `${fullMonths} month(s) + ${remainingDays} days @ ${monthlyRate} AED/month` 
+          });
+          refundEx -= monthlyDed;
         }
         // Salary deduction (only when not using daily charges)
         const salaryDed = (salary / 30) * unpaidDays;
