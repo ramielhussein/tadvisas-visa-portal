@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get all sales team members (users with email starting with sales)
+    // Get all sales team members (users with email starting with sales) who are active
     const { data: salesUsers, error: usersError } = await supabase
       .from('profiles')
       .select('id, email')
@@ -65,6 +65,33 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Get active status for each user
+    const { data: activeSettings, error: activeError } = await supabase
+      .from('settings')
+      .select('key, value')
+      .like('key', 'sales_active_%');
+
+    if (activeError && activeError.code !== 'PGRST116') {
+      console.error('Error fetching active settings:', activeError);
+      throw activeError;
+    }
+
+    // Create map of active users
+    const activeMap = new Map(
+      (activeSettings || []).map(s => [s.key.replace('sales_active_', ''), s.value === 'true'])
+    );
+
+    // Filter to only active users (default to active if not set)
+    const activeUsers = salesUsers.filter(user => activeMap.get(user.id) !== false);
+
+    if (activeUsers.length === 0) {
+      console.log('No active sales users found, skipping assignment');
+      return new Response(
+        JSON.stringify({ success: true, message: 'No active sales users available' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Get current round robin index
     const { data: indexSetting, error: indexError } = await supabase
       .from('settings')
@@ -78,10 +105,10 @@ Deno.serve(async (req) => {
     }
 
     const currentIndex = indexSetting?.value ? parseInt(indexSetting.value) : 0;
-    const nextIndex = (currentIndex + 1) % salesUsers.length;
-    const assignedUser = salesUsers[currentIndex];
+    const nextIndex = (currentIndex + 1) % activeUsers.length;
+    const assignedUser = activeUsers[currentIndex];
 
-    console.log(`Assigning lead to user ${assignedUser.email} (index ${currentIndex})`);
+    console.log(`Assigning lead to user ${assignedUser.email} (index ${currentIndex} of ${activeUsers.length} active users)`);
 
     // Assign the lead
     const { error: updateError } = await supabase
