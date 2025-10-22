@@ -36,7 +36,9 @@ const ValueProposition = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-left md:text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
-            Don't have a maid? Get a maid from TADMAIDS!
+            <a href="https://tadmaids.com/hub" target="_blank" rel="noopener noreferrer" className="hover:underline">
+              Don't have a maid? Get a maid from TADMAIDS!
+            </a>
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl md:mx-auto">
             🌟 TADMAIDS – Your Trusted Partner Since 2005<br/>
