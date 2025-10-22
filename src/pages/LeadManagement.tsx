@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -23,6 +24,12 @@ interface Lead {
   nationality_code: string | null;
   remind_me: string;
   created_at: string;
+  assigned_to: string | null;
+}
+
+interface User {
+  id: string;
+  email: string;
 }
 
 const LeadManagement = () => {
@@ -35,6 +42,7 @@ const LeadManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showQuickEntry, setShowQuickEntry] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -44,12 +52,13 @@ const LeadManagement = () => {
 
   useEffect(() => {
     fetchLeads();
+    fetchUsers();
   }, []);
 
   useEffect(() => {
-    // Keyboard shortcut Ctrl+Shift+L
+    // Keyboard shortcut Ctrl+Shift+Q (changed from L)
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'L') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'Q') {
         e.preventDefault();
         setShowQuickEntry(true);
       }
@@ -87,6 +96,7 @@ const LeadManagement = () => {
       setLeads(data || []);
       setFilteredLeads(data || []);
     } catch (error: any) {
+      console.error("Error fetching leads:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -95,6 +105,50 @@ const LeadManagement = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, email")
+        .order("email");
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error: any) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleAssignLead = async (leadId: string, userId: string | null) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ assigned_to: userId })
+        .eq("id", leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Lead assignment updated",
+      });
+
+      fetchLeads();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getAssignedEmail = (userId: string | null) => {
+    if (!userId) return "Unassigned";
+    const user = users.find(u => u.id === userId);
+    return user?.email || "Unknown";
   };
 
   const getStatusColor = (status: string) => {
@@ -153,7 +207,7 @@ const LeadManagement = () => {
               </Button>
               <Button onClick={() => setShowQuickEntry(true)}>
                 <Plus className="w-4 h-4 mr-2" />
-                Add Lead (Ctrl+Shift+L)
+                Add Lead (Ctrl+Shift+Q)
               </Button>
             </div>
           </div>
@@ -212,6 +266,7 @@ const LeadManagement = () => {
                       <TableHead>Nationality</TableHead>
                       <TableHead>Service</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Assigned To</TableHead>
                       <TableHead>Remind Me</TableHead>
                       <TableHead>Created</TableHead>
                     </TableRow>
@@ -219,7 +274,7 @@ const LeadManagement = () => {
                   <TableBody>
                     {filteredLeads.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8">
+                        <TableCell colSpan={10} className="text-center py-8">
                           No leads found. Add your first lead!
                         </TableCell>
                       </TableRow>
@@ -227,7 +282,7 @@ const LeadManagement = () => {
                       filteredLeads.map((lead) => (
                         <TableRow key={lead.id}>
                           <TableCell className="font-medium">
-                            {lead.client_name}
+                            {lead.client_name || "-"}
                           </TableCell>
                           <TableCell>{lead.mobile_number}</TableCell>
                           <TableCell>{lead.email || "-"}</TableCell>
@@ -238,6 +293,31 @@ const LeadManagement = () => {
                             <Badge className={getStatusColor(lead.status)}>
                               {lead.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={lead.assigned_to || "unassigned"}
+                              onValueChange={(value) =>
+                                handleAssignLead(
+                                  lead.id,
+                                  value === "unassigned" ? null : value
+                                )
+                              }
+                            >
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Unassigned" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="unassigned">
+                                  Unassigned
+                                </SelectItem>
+                                {users.map((user) => (
+                                  <SelectItem key={user.id} value={user.id}>
+                                    {user.email}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           <TableCell>
                             {new Date(lead.remind_me).toLocaleDateString()}
