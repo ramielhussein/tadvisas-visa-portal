@@ -133,6 +133,14 @@ const AdminMenu = () => {
           </DropdownMenuItem>
           
           <DropdownMenuItem 
+            onClick={() => handleNavigation('/crm/leads')}
+            className={location.pathname === '/crm/leads' ? 'bg-accent' : ''}
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            TADCRM - Leads
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/cvwizard-review')}
             className={location.pathname === '/admin/cvwizard-review' ? 'bg-accent' : ''}
           >

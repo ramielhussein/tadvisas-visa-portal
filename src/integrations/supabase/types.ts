@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      leads: {
+        Row: {
+          assigned_to: string | null
+          client_name: string
+          created_at: string
+          eid_back_url: string | null
+          eid_front_url: string | null
+          email: string | null
+          emirate: string | null
+          id: string
+          mobile_number: string
+          nationality_code: string | null
+          passport_copy_url: string | null
+          remind_me: string | null
+          service_required: string | null
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_name: string
+          created_at?: string
+          eid_back_url?: string | null
+          eid_front_url?: string | null
+          email?: string | null
+          emirate?: string | null
+          id?: string
+          mobile_number: string
+          nationality_code?: string | null
+          passport_copy_url?: string | null
+          remind_me?: string | null
+          service_required?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_name?: string
+          created_at?: string
+          eid_back_url?: string | null
+          eid_front_url?: string | null
+          email?: string | null
+          emirate?: string | null
+          id?: string
+          mobile_number?: string
+          nationality_code?: string | null
+          passport_copy_url?: string | null
+          remind_me?: string | null
+          service_required?: string | null
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -254,6 +308,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      lead_status: "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -382,6 +437,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      lead_status: ["New Lead", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"],
     },
   },
 } as const

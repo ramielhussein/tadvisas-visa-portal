@@ -34,6 +34,7 @@ import Hub from "./pages/Hub";
 import BookWorker from "./pages/BookWorker";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import LeadManagement from "./pages/LeadManagement";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
           <Route path="/admin/create-user" element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
+          <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
