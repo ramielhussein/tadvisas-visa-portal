@@ -19,13 +19,15 @@ interface Submission {
   name: string;
   phone: string;
   email: string;
-  package: string;
+  package: string | null;
   addons: string[];
-  emirates_id_url: string;
+  emirates_id_front_url: string;
+  emirates_id_back_url: string;
   dewa_bill_url: string;
   maid_passport_url: string;
   maid_visa_url: string;
   maid_photo_url: string;
+  worker_photo_url: string | null;
   status: string;
   notes: string;
   created_at: string;
@@ -547,15 +549,27 @@ export default function Admin() {
               <div>
                 <h3 className="font-semibold mb-3">Documents</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {selectedSubmission.emirates_id_url && (
+                  {selectedSubmission.emirates_id_front_url && (
                     <a
-                      href={selectedSubmission.emirates_id_url}
+                      href={selectedSubmission.emirates_id_front_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 p-3 border rounded-lg hover:bg-muted transition-colors"
                     >
                       <FileText className="h-4 w-4" />
-                      <span className="text-sm">Emirates ID</span>
+                      <span className="text-sm">Emirates ID (Front)</span>
+                      <Download className="h-3 w-3 ml-auto" />
+                    </a>
+                  )}
+                  {selectedSubmission.emirates_id_back_url && (
+                    <a
+                      href={selectedSubmission.emirates_id_back_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-3 border rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span className="text-sm">Emirates ID (Back)</span>
                       <Download className="h-3 w-3 ml-auto" />
                     </a>
                   )}

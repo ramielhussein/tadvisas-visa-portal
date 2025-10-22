@@ -14,45 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      bookings: {
-        Row: {
-          created_at: string
-          eid_back_url: string | null
-          eid_front_url: string | null
-          email: string
-          id: string
-          name: string
-          passport_url: string | null
-          phone: string
-          updated_at: string
-          worker_photo_url: string | null
-        }
-        Insert: {
-          created_at?: string
-          eid_back_url?: string | null
-          eid_front_url?: string | null
-          email: string
-          id?: string
-          name: string
-          passport_url?: string | null
-          phone: string
-          updated_at?: string
-          worker_photo_url?: string | null
-        }
-        Update: {
-          created_at?: string
-          eid_back_url?: string | null
-          eid_front_url?: string | null
-          email?: string
-          id?: string
-          name?: string
-          passport_url?: string | null
-          phone?: string
-          updated_at?: string
-          worker_photo_url?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -104,7 +65,8 @@ export type Database = {
           created_at: string | null
           dewa_bill_url: string | null
           email: string
-          emirates_id_url: string | null
+          emirates_id_back_url: string | null
+          emirates_id_front_url: string | null
           id: string
           installment_plan: boolean | null
           maid_passport_url: string | null
@@ -113,17 +75,19 @@ export type Database = {
           medical_insurance: boolean | null
           name: string
           notes: string | null
-          package: string
+          package: string | null
           phone: string
           status: string | null
           updated_at: string | null
+          worker_photo_url: string | null
         }
         Insert: {
           addons?: string[] | null
           created_at?: string | null
           dewa_bill_url?: string | null
           email: string
-          emirates_id_url?: string | null
+          emirates_id_back_url?: string | null
+          emirates_id_front_url?: string | null
           id?: string
           installment_plan?: boolean | null
           maid_passport_url?: string | null
@@ -132,17 +96,19 @@ export type Database = {
           medical_insurance?: boolean | null
           name: string
           notes?: string | null
-          package: string
+          package?: string | null
           phone: string
           status?: string | null
           updated_at?: string | null
+          worker_photo_url?: string | null
         }
         Update: {
           addons?: string[] | null
           created_at?: string | null
           dewa_bill_url?: string | null
           email?: string
-          emirates_id_url?: string | null
+          emirates_id_back_url?: string | null
+          emirates_id_front_url?: string | null
           id?: string
           installment_plan?: boolean | null
           maid_passport_url?: string | null
@@ -151,10 +117,11 @@ export type Database = {
           medical_insurance?: boolean | null
           name?: string
           notes?: string | null
-          package?: string
+          package?: string | null
           phone?: string
           status?: string | null
           updated_at?: string | null
+          worker_photo_url?: string | null
         }
         Relationships: []
       }

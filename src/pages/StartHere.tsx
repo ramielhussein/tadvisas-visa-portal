@@ -24,7 +24,8 @@ const StartHere = () => {
     }
   });
   const [files, setFiles] = useState({
-    emiratesId: null as File | null,
+    emiratesIdFront: null as File | null,
+    emiratesIdBack: null as File | null,
     dewaBill: null as File | null,
     maidPassport: null as File | null,
     maidVisa: null as File | null,
@@ -117,11 +118,13 @@ const StartHere = () => {
           package: formData.package,
           medical_insurance: formData.addOns.medicalInsurance1Year || formData.addOns.medicalInsurance2Year,
           installment_plan: formData.addOns.installmentPlan,
-          emirates_id_url: fileUrls.emiratesId || null,
+          emirates_id_front_url: fileUrls.emiratesIdFront || null,
+          emirates_id_back_url: fileUrls.emiratesIdBack || null,
           dewa_bill_url: fileUrls.dewaBill || null,
           maid_passport_url: fileUrls.maidPassport || null,
           maid_visa_url: fileUrls.maidVisa || null,
           maid_photo_url: fileUrls.maidPhoto || null,
+          worker_photo_url: null,
         });
 
       if (dbError) {
@@ -148,7 +151,8 @@ const StartHere = () => {
         }
       });
       setFiles({
-        emiratesId: null,
+        emiratesIdFront: null,
+        emiratesIdBack: null,
         dewaBill: null,
         maidPassport: null,
         maidVisa: null,
@@ -432,10 +436,16 @@ const StartHere = () => {
                 <div className="bg-primary/10 p-4 rounded-lg">
                   <h3 className="font-semibold text-primary mb-2">Step 1</h3>
                   <FileUploadField
-                    field="emiratesId"
-                    label="Emirates ID"
+                    field="emiratesIdFront"
+                    label="Emirates ID (Front)"
                     icon={CreditCard}
-                    description="Upload a clear copy of your Emirates ID (front and back)"
+                    description="Upload the front side of your Emirates ID"
+                  />
+                  <FileUploadField
+                    field="emiratesIdBack"
+                    label="Emirates ID (Back)"
+                    icon={CreditCard}
+                    description="Upload the back side of your Emirates ID"
                   />
                 </div>
 

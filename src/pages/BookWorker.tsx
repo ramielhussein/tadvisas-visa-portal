@@ -70,17 +70,20 @@ const BookWorker = () => {
 
       await Promise.all(uploadPromises);
 
-      // Save booking to database
+      // Save booking to submissions database
       const { error: dbError } = await supabase
-        .from('bookings')
+        .from('submissions')
         .insert({
           name: formData.name,
           phone: formData.phone,
           email: formData.email,
-          eid_front_url: fileUrls.eidFront || null,
-          eid_back_url: fileUrls.eidBack || null,
+          package: null,
+          emirates_id_front_url: fileUrls.eidFront || null,
+          emirates_id_back_url: fileUrls.eidBack || null,
           passport_url: fileUrls.passport || null,
           worker_photo_url: workerPhotoUrl,
+          medical_insurance: false,
+          installment_plan: false,
         });
 
       if (dbError) throw dbError;
