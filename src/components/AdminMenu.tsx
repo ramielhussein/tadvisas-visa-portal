@@ -10,12 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
 const AdminMenu = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [showQuickEntry, setShowQuickEntry] = useState(false);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -141,6 +143,13 @@ const AdminMenu = () => {
           </DropdownMenuItem>
           
           <DropdownMenuItem 
+            onClick={() => setShowQuickEntry(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Quick Lead Entry (Ctrl+Shift+L)
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/cvwizard-review')}
             className={location.pathname === '/admin/cvwizard-review' ? 'bg-accent' : ''}
           >
@@ -179,6 +188,17 @@ const AdminMenu = () => {
       <div className="text-xs text-muted-foreground mt-2 text-center">
         Press Ctrl+Shift+A
       </div>
+
+      <QuickLeadEntry
+        open={showQuickEntry}
+        onClose={() => setShowQuickEntry(false)}
+        onSuccess={() => {
+          toast({
+            title: "Success",
+            description: "Lead added successfully",
+          });
+        }}
+      />
     </div>
   );
 };
