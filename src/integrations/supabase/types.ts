@@ -17,7 +17,7 @@ export type Database = {
       leads: {
         Row: {
           assigned_to: string | null
-          client_name: string
+          client_name: string | null
           created_at: string
           eid_back_url: string | null
           eid_front_url: string | null
@@ -34,7 +34,7 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
-          client_name: string
+          client_name?: string | null
           created_at?: string
           eid_back_url?: string | null
           eid_front_url?: string | null
@@ -51,7 +51,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
-          client_name?: string
+          client_name?: string | null
           created_at?: string
           eid_back_url?: string | null
           eid_front_url?: string | null

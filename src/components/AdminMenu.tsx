@@ -25,9 +25,13 @@ const AdminMenu = () => {
 
   useEffect(() => {
     checkAdminStatus();
-    
+  }, []);
+
+  useEffect(() => {
     // Keyboard shortcuts
     const handleKeyPress = (e: KeyboardEvent) => {
+      if (!isAdmin) return; // Only work if user is admin
+      
       // Ctrl+Shift+A to toggle admin menu
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
@@ -36,13 +40,17 @@ const AdminMenu = () => {
       // Ctrl+Shift+Q for quick lead entry
       if (e.ctrlKey && e.shiftKey && e.key === 'Q') {
         e.preventDefault();
-        setShowQuickEntry(true);
+        console.log('Quick lead entry shortcut triggered');
+        setShowQuickEntry(prev => {
+          console.log('Setting showQuickEntry to:', !prev);
+          return true;
+        });
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  }, [isAdmin]);
 
   const checkAdminStatus = async () => {
     try {
@@ -149,7 +157,11 @@ const AdminMenu = () => {
           </DropdownMenuItem>
           
           <DropdownMenuItem 
-            onClick={() => setShowQuickEntry(true)}
+            onClick={(e) => {
+              e.preventDefault();
+              console.log('Menu item clicked, opening quick entry');
+              setShowQuickEntry(true);
+            }}
           >
             <Plus className="h-4 w-4 mr-2" />
             Quick Lead Entry (Ctrl+Shift+Q)
