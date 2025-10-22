@@ -26,11 +26,17 @@ const AdminMenu = () => {
   useEffect(() => {
     checkAdminStatus();
     
-    // Keyboard shortcut: Ctrl+Shift+A to toggle admin menu
+    // Keyboard shortcuts
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Ctrl+Shift+A to toggle admin menu
       if (e.ctrlKey && e.shiftKey && e.key === 'A') {
         e.preventDefault();
         setIsVisible(prev => !prev);
+      }
+      // Ctrl+Shift+Q for quick lead entry
+      if (e.ctrlKey && e.shiftKey && e.key === 'Q') {
+        e.preventDefault();
+        setShowQuickEntry(true);
       }
     };
 
@@ -146,7 +152,7 @@ const AdminMenu = () => {
             onClick={() => setShowQuickEntry(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Quick Lead Entry (Ctrl+Shift+L)
+            Quick Lead Entry (Ctrl+Shift+Q)
           </DropdownMenuItem>
           
           <DropdownMenuItem 

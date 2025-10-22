@@ -104,7 +104,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
       // Insert lead into database
       const { error: dbError } = await supabase.from("leads").insert([{
-        client_name: formData.client_name,
+        client_name: formData.client_name || null,
         email: formData.email || null,
         mobile_number: phoneValidation.formatted,
         emirate: formData.emirate || null,
@@ -193,19 +193,18 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Quick Lead Entry (Ctrl+Shift+L)</DialogTitle>
+          <DialogTitle>Quick Lead Entry (Ctrl+Shift+Q)</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="client_name">Client Name *</Label>
+            <Label htmlFor="client_name">Client Name</Label>
             <Input
               id="client_name"
               value={formData.client_name}
               onChange={(e) =>
                 setFormData({ ...formData, client_name: e.target.value })
               }
-              required
             />
           </div>
 
