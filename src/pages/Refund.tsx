@@ -292,45 +292,51 @@ const Refund = () => {
         const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
         deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days < 5` });
         refundEx -= dailyDed;
-      } else if (formData.visaVpaDone === 'Yes') {
+      } else if (days >= 30) {
         // Monthly deduction: 500 AED per full month + proportional days
-        if (days >= 30) {
-          const fullMonths = Math.floor(days / 30);
-          const remainingDays = days % 30;
-          const monthlyRate = 500;
-          const monthlyDed = (fullMonths * monthlyRate) + ((monthlyRate / 30) * remainingDays);
-          deductions.push({ 
-            label: 'Monthly Deduction', 
-            amount: Math.round(monthlyDed * 100) / 100, 
-            rule: `${fullMonths} month(s) + ${remainingDays} days @ ${monthlyRate} AED/month` 
-          });
-          refundEx -= monthlyDed;
-        }
-        // Salary deduction (only when not using daily charges)
+        const fullMonths = Math.floor(days / 30);
+        const remainingDays = days % 30;
+        const monthlyRate = 500;
+        const monthlyDed = (fullMonths * monthlyRate) + ((monthlyRate / 30) * remainingDays);
+        deductions.push({
+          label: 'Monthly Deduction',
+          amount: Math.round(monthlyDed * 100) / 100,
+          rule: `${fullMonths} month(s) + ${remainingDays} day(s) @ ${monthlyRate} AED/month`
+        });
+        refundEx -= monthlyDed;
+        // Salary deduction (applies in addition to monthly deduction)
         const salaryDed = (salary / 30) * unpaidDays;
         if (salaryDed > 0) {
           deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
           refundEx -= salaryDed;
         }
       } else {
-        // No Visa & VPA
-        if (formData.optionB === 'Yes') {
-          const penalty = formData.emirate === 'Dubai' ? 1750 : 1300;
-          const tadbeerFees = parseFloat(formData.standardTadbeerFeesAED) || 0;
-          deductions.push({ label: 'Option B Penalty', amount: penalty, rule: formData.emirate });
-          deductions.push({ label: 'Standard Tadbeer Fees', amount: tadbeerFees, rule: 'Option B' });
-          refundEx -= (penalty + tadbeerFees);
-          // Salary deduction (only when not using daily charges)
+        // 5-29 days
+        if (formData.visaVpaDone === 'Yes') {
+          // Only unpaid salary for short periods when Visa/VPA done
           const salaryDed = (salary / 30) * unpaidDays;
           if (salaryDed > 0) {
             deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
             refundEx -= salaryDed;
           }
         } else {
-          // Daily charges (includes salary, so no separate salary deduction)
-          const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
-          deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days (no visa)` });
-          refundEx -= dailyDed;
+          if (formData.optionB === 'Yes') {
+            const penalty = formData.emirate === 'Dubai' ? 1750 : 1300;
+            const tadbeerFees = parseFloat(formData.standardTadbeerFeesAED) || 0;
+            deductions.push({ label: 'Option B Penalty', amount: penalty, rule: formData.emirate });
+            deductions.push({ label: 'Standard Tadbeer Fees', amount: tadbeerFees, rule: 'Option B' });
+            refundEx -= (penalty + tadbeerFees);
+            const salaryDed = (salary / 30) * unpaidDays;
+            if (salaryDed > 0) {
+              deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
+              refundEx -= salaryDed;
+            }
+          } else {
+            // Daily charges (includes salary, so no separate salary deduction)
+            const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
+            deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days (no visa)` });
+            refundEx -= dailyDed;
+          }
         }
       }
 
