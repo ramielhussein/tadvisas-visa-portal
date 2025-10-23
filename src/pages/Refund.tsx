@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,6 +65,7 @@ interface FormData {
 
 const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
     contractNo: '',
@@ -99,6 +101,29 @@ const Refund = () => {
     optionB: 'No',
     standardTadbeerFeesAED: '0',
   });
+
+  // Load users with refund.create permission
+  useEffect(() => {
+    const loadAuthorizedUsers = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, permissions')
+        .not('full_name', 'is', null);
+
+      if (!error && data) {
+        // Filter users who have refund.create permission
+        const refundUsers = data.filter(user => 
+          user.permissions && 
+          typeof user.permissions === 'object' &&
+          'refund' in user.permissions &&
+          (user.permissions as any).refund?.create === true
+        );
+        setAuthorizedUsers(refundUsers as Array<{ id: string; full_name: string }>);
+      }
+    };
+
+    loadAuthorizedUsers();
+  }, []);
 
   // Auto-disable direct hire for Inside Country
   useEffect(() => {
@@ -494,23 +519,19 @@ const Refund = () => {
                         <div className="space-y-2">
                           <Label>Prepared By</Label>
                           <Select value={formData.preparedBy} onValueChange={(v) => setFormData({...formData, preparedBy: v})}>
-                            <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Nour">Nour</SelectItem>
-                              <SelectItem value="Rami">Rami</SelectItem>
-                              <SelectItem value="Mohd Ramadan">Mohd Ramadan</SelectItem>
-                              <SelectItem value="Ramadan Ihab">Ramadan Ihab</SelectItem>
-                              <SelectItem value="Obada">Obada</SelectItem>
-                              <SelectItem value="Majd">Majd</SelectItem>
-                              <SelectItem value="Zaidan">Zaidan</SelectItem>
-                              <SelectItem value="Ali">Ali</SelectItem>
-                              <SelectItem value="Futoon">Futoon</SelectItem>
-                              <SelectItem value="Bahraa">Bahraa</SelectItem>
-                              <SelectItem value="Aijin">Aijin</SelectItem>
-                              <SelectItem value="Aisha">Aisha</SelectItem>
-                              <SelectItem value="Malik">Malik</SelectItem>
-                              <SelectItem value="Milka">Milka</SelectItem>
-                              <SelectItem value="Asmit">Asmit</SelectItem>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="Select authorized user..." />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background z-50">
+                              {authorizedUsers.length > 0 ? (
+                                authorizedUsers.map((user) => (
+                                  <SelectItem key={user.id} value={user.full_name}>
+                                    {user.full_name}
+                                  </SelectItem>
+                                ))
+                              ) : (
+                                <SelectItem value="none" disabled>No authorized users found</SelectItem>
+                              )}
                             </SelectContent>
                           </Select>
                         </div>

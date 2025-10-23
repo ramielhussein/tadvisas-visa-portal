@@ -45,7 +45,7 @@ serve(async (req) => {
     }
 
     // Get the new user details from the request
-    const { email, password, fullName } = await req.json();
+    const { email, password, fullName, permissions } = await req.json();
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -83,6 +83,23 @@ serve(async (req) => {
     }
 
     console.log("User created successfully:", newUser.user.id);
+
+    // Update the profile with full_name and permissions
+    const { error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .update({
+        full_name: fullName || "",
+        permissions: permissions || {
+          cv: { create: false, edit: false, delete: false },
+          refund: { create: false },
+          leads: { create: false, assign: false }
+        }
+      })
+      .eq('id', newUser.user.id);
+
+    if (profileError) {
+      console.error("Error updating profile:", profileError);
+    }
 
     return new Response(
       JSON.stringify({
