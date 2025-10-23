@@ -279,10 +279,17 @@ const Refund = () => {
             refundEx -= stageDed;
           }
         }
+        
+        // Unpaid salary deduction for Outside Country when delivered
+        if (formData.deliveredDate && unpaidDays > 0) {
+          const salaryDed = (salary / 30) * unpaidDays;
+          deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
+          refundEx -= salaryDed;
+        }
       }
 
       dueDate = addDays(new Date(), 14);
-    } 
+    }
     // Inside Country logic
     else {
       refundEx = exVAT;
