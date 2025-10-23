@@ -22,8 +22,7 @@ import PhOc from "./pages/PhOc";
 import CVWizard from "./pages/CVWizard";
 import CVWizardSettings from "./pages/admin/CVWizardSettings";
 import CVWizardReview from "./pages/admin/CVWizardReview";
-import CreateUser from "./pages/admin/CreateUser";
-import SetupSalesTeam from "./pages/admin/SetupSalesTeam";
+import UserManagement from "./pages/admin/UserManagement";
 import ResetAdmin from "./pages/ResetAdmin";
 import EtIc from "./pages/EtIc";
 import EtOc from "./pages/EtOc";
@@ -57,7 +56,6 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/reset-admin" element={<ResetAdmin />} />
           <Route path="/id-oc" element={<IdOc />} />
           <Route path="/id-ic" element={<IdIc />} />
           <Route path="/ph-ic" element={<PhIc />} />
@@ -73,9 +71,9 @@ const App = () => (
           <Route path="/cvwizard" element={<ProtectedRoute><CVWizard /></ProtectedRoute>} />
           <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
-        <Route path="/admin/create-user" element={<ProtectedRoute><CreateUser /></ProtectedRoute>} />
-        <Route path="/admin/setup-sales-team" element={<ProtectedRoute><SetupSalesTeam /></ProtectedRoute>} />
-        <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
+          <Route path="/admin/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+          <Route path="/admin/reset-admin" element={<ResetAdmin />} />
+          <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

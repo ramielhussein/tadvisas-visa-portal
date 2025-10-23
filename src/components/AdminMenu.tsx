@@ -184,11 +184,19 @@ const AdminMenu = () => {
           </DropdownMenuItem>
 
           <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/create-user')}
-            className={location.pathname === '/admin/create-user' ? 'bg-accent' : ''}
+            onClick={() => handleNavigation('/admin/user-management')}
+            className={location.pathname === '/admin/user-management' ? 'bg-accent' : ''}
           >
             <Users className="h-4 w-4 mr-2" />
-            Create User
+            User Management
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/admin/reset-admin')}
+            className={location.pathname === '/admin/reset-admin' ? 'bg-accent' : ''}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Reset Admin
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />

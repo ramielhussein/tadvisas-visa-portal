@@ -1,7 +1,7 @@
 project_id = "uwncpnveatbwnsgepjlb"
 
 [functions.submit-cv]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-user]
 verify_jwt = true
