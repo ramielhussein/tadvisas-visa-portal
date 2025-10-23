@@ -266,7 +266,8 @@ const Refund = () => {
       } else {
         // Not direct hire
         refundEx = exVAT;
-        additions.push({ label: 'Base Price (excl. VAT)', amount: exVAT, rule: 'Outside not delivered' });
+        const baseRule = formData.failBring === 'Yes' ? 'Outside not delivered' : 'Outside Country - Delivered';
+        additions.push({ label: 'Base Price (excl. VAT)', amount: exVAT, rule: baseRule });
         
         if (formData.failBring === 'Yes' && formData.atFault === 'Yes' && govVisa > 0) {
           additions.push({ label: 'Gov. Visa Issuance', amount: govVisa, rule: 'Center at fault' });
