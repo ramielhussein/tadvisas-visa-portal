@@ -279,13 +279,6 @@ const Refund = () => {
             refundEx -= stageDed;
           }
         }
-        
-        // Unpaid salary deduction for Outside Country when delivered
-        if (formData.deliveredDate && unpaidDays > 0) {
-          const salaryDed = (salary / 30) * unpaidDays;
-          deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
-          refundEx -= salaryDed;
-        }
       }
 
       dueDate = addDays(new Date(), 14);
@@ -312,21 +305,10 @@ const Refund = () => {
           rule: `${fullMonths} month(s) + ${remainingDays} day(s) @ ${monthlyRate} AED/month`
         });
         refundEx -= monthlyDed;
-        // Salary deduction (applies in addition to monthly deduction)
-        const salaryDed = (salary / 30) * unpaidDays;
-        if (salaryDed > 0) {
-          deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
-          refundEx -= salaryDed;
-        }
       } else {
         // 5-29 days
         if (formData.visaVpaDone === 'Yes') {
-          // Only unpaid salary for short periods when Visa/VPA done
-          const salaryDed = (salary / 30) * unpaidDays;
-          if (salaryDed > 0) {
-            deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
-            refundEx -= salaryDed;
-          }
+          // No other deductions when Visa/VPA done - unpaid salary will be handled by master deduction
         } else {
           if (formData.optionB === 'Yes') {
             const penalty = formData.emirate === 'Dubai' ? 1750 : 1300;
@@ -334,11 +316,6 @@ const Refund = () => {
             deductions.push({ label: 'Option B Penalty', amount: penalty, rule: formData.emirate });
             deductions.push({ label: 'Standard Tadbeer Fees', amount: tadbeerFees, rule: 'Option B' });
             refundEx -= (penalty + tadbeerFees);
-            const salaryDed = (salary / 30) * unpaidDays;
-            if (salaryDed > 0) {
-              deductions.push({ label: 'Unpaid Salary', amount: Math.round(salaryDed * 100) / 100, rule: `${unpaidDays} days × ${salary}/30` });
-              refundEx -= salaryDed;
-            }
           } else {
             // Daily charges (includes salary, so no separate salary deduction)
             const dailyDed = 105 * Math.min(days, 5) + 210 * Math.max(0, days - 5);
@@ -367,6 +344,19 @@ const Refund = () => {
       } else {
         dueDate = `Pending: ${missing.join(', ')}`;
       }
+    }
+
+    // MASTER UNPAID SALARY DEDUCTION - Applies to all scenarios except Outside Country + Center Failed to Deliver
+    const shouldApplyUnpaidSalary = !(formData.location === 'Outside Country' && formData.failBring === 'Yes');
+    
+    if (shouldApplyUnpaidSalary && unpaidDays > 0 && salary > 0) {
+      const salaryDed = (salary / 30) * unpaidDays;
+      deductions.push({ 
+        label: 'Unpaid Salary', 
+        amount: Math.round(salaryDed * 100) / 100, 
+        rule: `${unpaidDays} days × ${salary}/30` 
+      });
+      refundEx -= salaryDed;
     }
 
     if (vatRefund > 0) {
