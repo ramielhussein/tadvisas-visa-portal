@@ -63,9 +63,17 @@ interface FormData {
   standardTadbeerFeesAED: string;
 }
 
+interface CVWorker {
+  id: string;
+  name: string;
+  nationality_code: string;
+  salary: number | null;
+}
+
 const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
+  const [cvWorkers, setCVWorkers] = useState<CVWorker[]>([]);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
     contractNo: '',
@@ -123,6 +131,22 @@ const Refund = () => {
     };
 
     loadAuthorizedUsers();
+  }, []);
+
+  // Load CV Wizard workers
+  useEffect(() => {
+    const loadWorkers = async () => {
+      const { data, error } = await supabase
+        .from('workers')
+        .select('id, name, nationality_code, salary')
+        .order('name');
+
+      if (!error && data) {
+        setCVWorkers(data as CVWorker[]);
+      }
+    };
+
+    loadWorkers();
   }, []);
 
   // Auto-disable direct hire for Inside Country
@@ -581,11 +605,49 @@ const Refund = () => {
 
                         <div className="space-y-2">
                           <Label>Worker Name</Label>
-                          <Input 
-                            value={formData.workerName}
-                            onChange={(e) => setFormData({...formData, workerName: e.target.value})}
-                            placeholder="Enter worker name"
-                          />
+                          <Select 
+                            value={formData.workerName} 
+                            onValueChange={(workerId) => {
+                              const worker = cvWorkers.find(w => w.id === workerId);
+                              if (worker) {
+                                // Map nationality code to full name
+                                const nationalityMap: Record<string, Nationality> = {
+                                  'PH': 'Philippines',
+                                  'ID': 'Indonesia',
+                                  'ET': 'Ethiopia',
+                                  'UG': 'Uganda',
+                                  'KE': 'Kenya',
+                                  'MY': 'Myanmar',
+                                  'IN': 'India',
+                                };
+                                
+                                setFormData({
+                                  ...formData, 
+                                  workerName: worker.name,
+                                  nationality: nationalityMap[worker.nationality_code] || 'Other',
+                                  salaryAED: worker.salary ? worker.salary.toString() : ''
+                                });
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a worker from CV Wizard" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {cvWorkers.length === 0 ? (
+                                <SelectItem value="none" disabled>No workers found</SelectItem>
+                              ) : (
+                                cvWorkers.map((worker) => (
+                                  <SelectItem key={worker.id} value={worker.id}>
+                                    {worker.name} ({worker.nationality_code})
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            Workers from CV Wizard will auto-fill nationality and salary
+                          </p>
                         </div>
 
                         <div className="space-y-2">
