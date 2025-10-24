@@ -45,16 +45,27 @@ const LeadManagement = () => {
   const [showQuickEntry, setShowQuickEntry] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
 
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      navigate("/auth");
-    }
-  }, [isAdmin, authLoading, navigate]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    fetchLeads();
-    fetchUsers();
+    checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+    } else {
+      setCurrentUser(user);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchLeads();
+      fetchUsers();
+    }
+  }, [currentUser, isAdmin]);
 
   useEffect(() => {
     // Keyboard shortcut Ctrl+Shift+Q (changed from L)
@@ -88,10 +99,16 @@ const LeadManagement = () => {
   const fetchLeads = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from("leads")
-        .select("*")
-        .order("created_at", { ascending: false });
+      
+      // Build query based on user role
+      let query = supabase.from("leads").select("*");
+      
+      // If not admin, only show leads assigned to current user
+      if (!isAdmin && currentUser) {
+        query = query.eq("assigned_to", currentUser.id);
+      }
+      
+      const { data, error } = await query.order("created_at", { ascending: false });
 
       if (error) throw error;
       setLeads(data || []);
@@ -196,27 +213,42 @@ const LeadManagement = () => {
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-12">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">TADCRM - Lead Management</h1>
+            <div>
+              <h1 className="text-4xl font-bold">
+                {isAdmin ? "TADCRM - Lead Management" : "My Assigned Leads"}
+              </h1>
+              {!isAdmin && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Viewing leads assigned to you
+                </p>
+              )}
+            </div>
             <div className="flex gap-2">
-              <Button onClick={handleImportGoogle} variant="outline">
-                <Download className="w-4 h-4 mr-2" />
-                Import Google Sheets
-              </Button>
-              <Button onClick={handleImportExcel} variant="outline">
-                <Upload className="w-4 h-4 mr-2" />
-                Import Excel
-              </Button>
-              <Button onClick={() => setShowQuickEntry(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Lead (Ctrl+Shift+Q)
-              </Button>
+              {isAdmin && (
+                <>
+                  <Button onClick={handleImportGoogle} variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Import Google Sheets
+                  </Button>
+                  <Button onClick={handleImportExcel} variant="outline">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Import Excel
+                  </Button>
+                  <Button onClick={() => setShowQuickEntry(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Lead (Ctrl+Shift+Q)
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Round Robin Toggle */}
-          <div className="mb-8">
-            <RoundRobinToggle />
-          </div>
+          {/* Round Robin Toggle - Admin only */}
+          {isAdmin && (
+            <div className="mb-8">
+              <RoundRobinToggle />
+            </div>
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
@@ -258,7 +290,7 @@ const LeadManagement = () => {
           {/* Leads Table */}
           <Card>
             <CardHeader>
-              <CardTitle>All Leads</CardTitle>
+              <CardTitle>{isAdmin ? "All Leads" : "My Leads"}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
@@ -272,7 +304,7 @@ const LeadManagement = () => {
                       <TableHead>Nationality</TableHead>
                       <TableHead>Service</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Assigned To</TableHead>
+                      {isAdmin && <TableHead>Assigned To</TableHead>}
                       <TableHead>Remind Me</TableHead>
                       <TableHead>Created</TableHead>
                     </TableRow>
@@ -300,31 +332,33 @@ const LeadManagement = () => {
                               {lead.status}
                             </Badge>
                           </TableCell>
-                          <TableCell>
-                            <Select
-                              value={lead.assigned_to || "unassigned"}
-                              onValueChange={(value) =>
-                                handleAssignLead(
-                                  lead.id,
-                                  value === "unassigned" ? null : value
-                                )
-                              }
-                            >
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Unassigned" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="unassigned">
-                                  Unassigned
-                                </SelectItem>
-                                {users.map((user) => (
-                                  <SelectItem key={user.id} value={user.id}>
-                                    {user.email}
+                          {isAdmin && (
+                            <TableCell>
+                              <Select
+                                value={lead.assigned_to || "unassigned"}
+                                onValueChange={(value) =>
+                                  handleAssignLead(
+                                    lead.id,
+                                    value === "unassigned" ? null : value
+                                  )
+                                }
+                              >
+                                <SelectTrigger className="w-[180px]">
+                                  <SelectValue placeholder="Unassigned" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="unassigned">
+                                    Unassigned
                                   </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
+                                  {users.map((user) => (
+                                    <SelectItem key={user.id} value={user.id}>
+                                      {user.email}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          )}
                           <TableCell>
                             {new Date(lead.remind_me).toLocaleDateString()}
                           </TableCell>
