@@ -53,6 +53,7 @@ const LeadManagement = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(100);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     // Check initial session
@@ -141,13 +142,14 @@ const LeadManagement = () => {
       }
       
       // Remove default 1000 row limit by setting a high range
-      const { data, error } = await query
+      const { data, count, error } = await query
         .order("created_at", { ascending: false })
         .range(0, 99999);
 
       if (error) throw error;
       setLeads(data || []);
       setFilteredLeads(data || []);
+      setTotalCount(count ?? 0);
     } catch (error: any) {
       console.error("Error fetching leads:", error);
       toast({
@@ -362,7 +364,7 @@ const LeadManagement = () => {
                 <CardTitle className="text-sm">Total Leads</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{leads.length}</p>
+                <p className="text-2xl font-bold">{totalCount}</p>
               </CardContent>
             </Card>
             {["New Lead", "Warm", "HOT", "SOLD", "LOST"].map((status) => (
