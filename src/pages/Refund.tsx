@@ -722,6 +722,11 @@ const Refund = () => {
                             placeholder="Search clients..."
                             value={clientSearch}
                             onChange={(e) => setClientSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                              }
+                            }}
                             className="mb-2"
                           />
                           <Select 
@@ -821,6 +826,11 @@ const Refund = () => {
                             placeholder="Search workers..."
                             value={workerSearch}
                             onChange={(e) => setWorkerSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                              }
+                            }}
                             className="mb-2"
                           />
                           <Select 
