@@ -14,7 +14,6 @@ const Navbar = () => {
     { name: "Hire a Maid", path: "/hire-a-maid" },
     { name: "Get a Visa", path: "/get-a-visa" },
     { name: "Monthly Packages", path: "/monthly-packages" },
-    { name: "Wizard Album", path: "/wizardalbum" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
     { name: "Start Here & Now", path: "/start-here" },

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -181,6 +181,14 @@ const AdminMenu = () => {
           >
             <Settings className="h-4 w-4 mr-2" />
             CV Wizard Settings
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/wizardalbum')}
+            className={location.pathname === '/wizardalbum' ? 'bg-accent' : ''}
+          >
+            <Images className="h-4 w-4 mr-2" />
+            Wizard Album
           </DropdownMenuItem>
 
           <DropdownMenuItem 
