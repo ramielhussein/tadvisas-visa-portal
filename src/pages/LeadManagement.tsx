@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload, ArrowUpDown } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
@@ -51,6 +51,8 @@ const LeadManagement = () => {
   const [authChecking, setAuthChecking] = useState(true);
   const [sortColumn, setSortColumn] = useState<'nationality_code' | 'service_required' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(100);
 
   useEffect(() => {
     // Check initial session
@@ -123,6 +125,7 @@ const LeadManagement = () => {
     }
 
     setFilteredLeads(filtered);
+    setCurrentPage(1); // Reset to first page when filtering
   }, [searchQuery, leads, sortColumn, sortDirection]);
 
   const fetchLeads = async () => {
@@ -221,6 +224,12 @@ const LeadManagement = () => {
     };
     return colors[status] || "bg-gray-500";
   };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredLeads.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedLeads = filteredLeads.slice(startIndex, endIndex);
 
   const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -370,9 +379,9 @@ const LeadManagement = () => {
             ))}
           </div>
 
-          {/* Search */}
-          <div className="mb-6">
-            <div className="relative">
+          {/* Search and Pagination Info */}
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search by phone number, name, or email..."
@@ -381,6 +390,9 @@ const LeadManagement = () => {
                 onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
                 className="pl-10"
               />
+            </div>
+            <div className="text-sm text-muted-foreground whitespace-nowrap">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredLeads.length)} of {filteredLeads.length}
             </div>
           </div>
 
@@ -426,14 +438,14 @@ const LeadManagement = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLeads.length === 0 ? (
+                    {paginatedLeads.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={11} className="text-center py-8">
                           No leads found. Add your first lead!
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredLeads.map((lead) => (
+                      paginatedLeads.map((lead) => (
                         <TableRow key={lead.id} className="text-sm">
                           <TableCell className="font-medium">
                             {lead.client_name || "-"}
@@ -505,6 +517,39 @@ const LeadManagement = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <Card className="mt-4">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 
