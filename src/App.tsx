@@ -36,6 +36,7 @@ import BookWorker from "./pages/BookWorker";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import LeadManagement from "./pages/LeadManagement";
+import WizardAlbum from "./pages/WizardAlbum";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => (
           <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
+          <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
