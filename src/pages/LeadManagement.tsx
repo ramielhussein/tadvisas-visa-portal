@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
@@ -46,6 +46,8 @@ const LeadManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [authChecking, setAuthChecking] = useState(true);
+  const [sortColumn, setSortColumn] = useState<'nationality_code' | 'service_required' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     // Check initial session
@@ -91,20 +93,34 @@ const LeadManagement = () => {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredLeads(leads);
-    } else {
+    let filtered = leads;
+    
+    if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
-      setFilteredLeads(
-        leads.filter(
-          (lead) =>
-            lead.mobile_number.includes(query) ||
-            lead.client_name.toLowerCase().includes(query) ||
-            lead.email?.toLowerCase().includes(query)
-        )
+      filtered = leads.filter(
+        (lead) =>
+          lead.mobile_number.includes(query) ||
+          lead.client_name.toLowerCase().includes(query) ||
+          lead.email?.toLowerCase().includes(query)
       );
     }
-  }, [searchQuery, leads]);
+
+    // Apply sorting
+    if (sortColumn) {
+      filtered = [...filtered].sort((a, b) => {
+        const aVal = a[sortColumn] || "";
+        const bVal = b[sortColumn] || "";
+        
+        if (sortDirection === 'asc') {
+          return aVal.localeCompare(bVal);
+        } else {
+          return bVal.localeCompare(aVal);
+        }
+      });
+    }
+
+    setFilteredLeads(filtered);
+  }, [searchQuery, leads, sortColumn, sortDirection]);
 
   const fetchLeads = async () => {
     try {
@@ -177,6 +193,15 @@ const LeadManagement = () => {
     if (!userId) return "Unassigned";
     const user = users.find(u => u.id === userId);
     return user?.email || "Unknown";
+  };
+
+  const handleSort = (column: 'nationality_code' | 'service_required') => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -366,8 +391,26 @@ const LeadManagement = () => {
                       <TableHead>Mobile</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Emirate</TableHead>
-                      <TableHead>Nationality</TableHead>
-                      <TableHead>Service</TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('nationality_code')}
+                          className="h-8 px-2 hover:bg-accent"
+                        >
+                          Nationality
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleSort('service_required')}
+                          className="h-8 px-2 hover:bg-accent"
+                        >
+                          Service
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       {isAdmin && <TableHead>Assigned To</TableHead>}
                       <TableHead>Remind Me</TableHead>
