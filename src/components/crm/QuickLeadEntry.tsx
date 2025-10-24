@@ -26,6 +26,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     status: "New Lead" as const,
     service_required: "",
     nationality_code: "",
+    lead_source: "",
   });
 
   const [files, setFiles] = useState<{
@@ -132,6 +133,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         status: formData.status,
         service_required: formData.service_required || null,
         nationality_code: formData.nationality_code || null,
+        lead_source: formData.lead_source || null,
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
@@ -179,6 +181,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         status: "New Lead",
         service_required: "",
         nationality_code: "",
+        lead_source: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
 
@@ -354,6 +357,31 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
                 <SelectItem value="Caregiver">Caregiver</SelectItem>
                 <SelectItem value="Nurse">Nurse</SelectItem>
                 <SelectItem value="Skilled">Skilled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lead_source">Lead Source</Label>
+            <Select
+              value={formData.lead_source}
+              onValueChange={(value) =>
+                setFormData({ ...formData, lead_source: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Website">Website</SelectItem>
+                <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                <SelectItem value="Phone">Phone Call</SelectItem>
+                <SelectItem value="Referral">Referral</SelectItem>
+                <SelectItem value="Facebook">Facebook</SelectItem>
+                <SelectItem value="Instagram">Instagram</SelectItem>
+                <SelectItem value="Google Ads">Google Ads</SelectItem>
+                <SelectItem value="Walk-in">Walk-in</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>

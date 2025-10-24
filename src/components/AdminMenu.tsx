@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -142,6 +142,14 @@ const AdminMenu = () => {
           
           {/* CRM Section */}
           <DropdownMenuLabel className="text-xs text-muted-foreground">CRM & Leads</DropdownMenuLabel>
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/crm/dashboard')}
+            className={location.pathname === '/crm/dashboard' ? 'bg-accent' : ''}
+          >
+            <BarChart3 className="h-4 w-4 mr-2" />
+            CRM Dashboard
+          </DropdownMenuItem>
+          
           <DropdownMenuItem 
             onClick={() => handleNavigation('/crm/leads')}
             className={location.pathname === '/crm/leads' ? 'bg-accent' : ''}

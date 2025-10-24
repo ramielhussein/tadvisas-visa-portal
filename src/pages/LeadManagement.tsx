@@ -350,6 +350,13 @@ const LeadManagement = () => {
                 </p>
               )}
             </div>
+            <Button variant="outline" onClick={() => navigate("/crm/dashboard")}>
+              View Dashboard
+            </Button>
+          </div>
+          <div className="mb-4"></div>
+          <div className="flex justify-between items-center mb-4">
+            <div></div>
             <div className="flex gap-2">
               {isAdmin && (
                 <>

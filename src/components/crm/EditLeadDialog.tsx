@@ -40,6 +40,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
     status: "New Lead" as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
     service_required: "",
     nationality_code: "",
+    lead_source: "",
     remind_me: "",
   });
 
@@ -53,6 +54,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
         status: lead.status as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
         service_required: lead.service_required || "",
         nationality_code: lead.nationality_code || "",
+        lead_source: (lead as any).lead_source || "",
         remind_me: lead.remind_me ? lead.remind_me.split('T')[0] : "",
       });
     }
@@ -74,6 +76,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
           status: formData.status,
           service_required: formData.service_required || null,
           nationality_code: formData.nationality_code || null,
+          lead_source: formData.lead_source || null,
           remind_me: formData.remind_me || null,
         })
         .eq("id", lead.id);
@@ -207,6 +210,26 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lead_source">Lead Source</Label>
+            <Select value={formData.lead_source} onValueChange={(value) => setFormData({ ...formData, lead_source: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select source" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Website">Website</SelectItem>
+                <SelectItem value="WhatsApp">WhatsApp</SelectItem>
+                <SelectItem value="Phone">Phone Call</SelectItem>
+                <SelectItem value="Referral">Referral</SelectItem>
+                <SelectItem value="Facebook">Facebook</SelectItem>
+                <SelectItem value="Instagram">Instagram</SelectItem>
+                <SelectItem value="Google Ads">Google Ads</SelectItem>
+                <SelectItem value="Walk-in">Walk-in</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

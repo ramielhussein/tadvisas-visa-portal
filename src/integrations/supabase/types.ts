@@ -69,6 +69,7 @@ export type Database = {
           email: string | null
           emirate: string | null
           id: string
+          lead_source: string | null
           mobile_number: string
           nationality_code: string | null
           passport_copy_url: string | null
@@ -88,6 +89,7 @@ export type Database = {
           email?: string | null
           emirate?: string | null
           id?: string
+          lead_source?: string | null
           mobile_number: string
           nationality_code?: string | null
           passport_copy_url?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           email?: string | null
           emirate?: string | null
           id?: string
+          lead_source?: string | null
           mobile_number?: string
           nationality_code?: string | null
           passport_copy_url?: string | null
@@ -577,6 +580,19 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sales_performance: {
+        Row: {
+          assigned_to: string | null
+          conversion_rate: number | null
+          hot_leads: number | null
+          lost_leads: number | null
+          new_leads: number | null
+          sold_leads: number | null
+          total_leads: number | null
+          warm_leads: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
