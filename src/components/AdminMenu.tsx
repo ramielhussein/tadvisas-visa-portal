@@ -188,7 +188,15 @@ const AdminMenu = () => {
             className={location.pathname === '/admin/user-management' ? 'bg-accent' : ''}
           >
             <Users className="h-4 w-4 mr-2" />
-            User Management
+            Create User
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/admin/user-list')}
+            className={location.pathname === '/admin/user-list' ? 'bg-accent' : ''}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Manage Users
           </DropdownMenuItem>
           
           <DropdownMenuItem 
