@@ -165,11 +165,21 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
       onClose();
     } catch (error: any) {
       console.error("Error adding lead:", error);
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      
+      // Check if it's a duplicate phone number error
+      if (error.code === '23505' && error.message.includes('leads_mobile_number_unique')) {
+        toast({
+          title: "Duplicate Phone Number",
+          description: "A lead with this phone number already exists in the system.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
