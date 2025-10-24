@@ -54,6 +54,13 @@ const LeadManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(100);
   const [totalCount, setTotalCount] = useState(0);
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
+    "New Lead": 0,
+    "Warm": 0,
+    "HOT": 0,
+    "SOLD": 0,
+    "LOST": 0,
+  });
 
   useEffect(() => {
     // Check initial session
@@ -150,6 +157,25 @@ const LeadManagement = () => {
       setLeads(data || []);
       setFilteredLeads(data || []);
       setTotalCount(count ?? 0);
+
+      // Fetch counts for each status
+      const statuses: Array<"New Lead" | "Warm" | "HOT" | "SOLD" | "LOST"> = ["New Lead", "Warm", "HOT", "SOLD", "LOST"];
+      const statusCountsPromises = statuses.map(
+        async (status) => {
+          const { count } = await supabase
+            .from("leads")
+            .select("*", { count: "exact", head: true })
+            .eq("status", status);
+          return { status, count: count ?? 0 };
+        }
+      );
+
+      const statusCountsResults = await Promise.all(statusCountsPromises);
+      const newStatusCounts = statusCountsResults.reduce(
+        (acc, { status, count }) => ({ ...acc, [status]: count }),
+        {} as Record<string, number>
+      );
+      setStatusCounts(newStatusCounts);
     } catch (error: any) {
       console.error("Error fetching leads:", error);
       toast({
@@ -374,7 +400,7 @@ const LeadManagement = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">
-                    {leads.filter((l) => l.status === status).length}
+                    {statusCounts[status] || 0}
                   </p>
                 </CardContent>
               </Card>
