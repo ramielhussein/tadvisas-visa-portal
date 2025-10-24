@@ -76,6 +76,27 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     setIsSubmitting(true);
 
     try {
+      // Check if phone number already exists as a client
+      const { data: existingClient, error: clientCheckError } = await supabase
+        .from('submissions')
+        .select('id, name, status, created_at')
+        .eq('phone', phoneValidation.formatted)
+        .maybeSingle();
+
+      if (clientCheckError && clientCheckError.code !== 'PGRST116') {
+        throw clientCheckError;
+      }
+
+      if (existingClient) {
+        toast({
+          title: "Already a Client",
+          description: `This phone number belongs to ${existingClient.name}, who is already a client (submitted ${new Date(existingClient.created_at).toLocaleDateString()}). Cannot add as a new lead.`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Upload files to storage if provided
       const timestamp = Date.now();
       const folderName = `leads/${phoneValidation.formatted}_${timestamp}`;
