@@ -130,14 +130,17 @@ const LeadManagement = () => {
       setIsLoading(true);
       
       // Build query based on user role
-      let query = supabase.from("leads").select("*");
+      let query = supabase.from("leads").select("*", { count: 'exact' });
       
       // If not admin, only show leads assigned to current user
       if (!isAdmin && currentUser) {
         query = query.eq("assigned_to", currentUser.id);
       }
       
-      const { data, error } = await query.order("created_at", { ascending: false });
+      // Remove default 1000 row limit by setting a high range
+      const { data, error } = await query
+        .order("created_at", { ascending: false })
+        .range(0, 9999);
 
       if (error) throw error;
       setLeads(data || []);
