@@ -263,6 +263,14 @@ const AdminMenu = () => {
             <MapPin className="h-4 w-4 mr-2" />
             Country Albums Hub
           </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/siteguide')}
+            className={location.pathname === '/siteguide' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Site Guide (PDF)
+          </DropdownMenuItem>
           
           <DropdownMenuSeparator />
           
