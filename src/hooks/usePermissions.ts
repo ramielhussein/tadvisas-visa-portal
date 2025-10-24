@@ -14,6 +14,22 @@ interface Permissions {
     create: boolean;
     assign: boolean;
   };
+  deals: {
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+    view_all: boolean;
+  };
+  finance: {
+    view_dashboard: boolean;
+    manage_invoices: boolean;
+    manage_transactions: boolean;
+  };
+  suppliers: {
+    create: boolean;
+    edit: boolean;
+    view_all: boolean;
+  };
 }
 
 export const usePermissions = () => {

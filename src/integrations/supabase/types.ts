@@ -755,6 +755,7 @@ export type Database = {
           address: string | null
           contact_person: string | null
           created_at: string
+          currency: string | null
           email: string | null
           id: string
           notes: string | null
@@ -771,6 +772,7 @@ export type Database = {
           address?: string | null
           contact_person?: string | null
           created_at?: string
+          currency?: string | null
           email?: string | null
           id?: string
           notes?: string | null
@@ -787,6 +789,7 @@ export type Database = {
           address?: string | null
           contact_person?: string | null
           created_at?: string
+          currency?: string | null
           email?: string | null
           id?: string
           notes?: string | null
@@ -941,6 +944,64 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      worker_suppliers: {
+        Row: {
+          cost_amount: number
+          cost_currency: string | null
+          cost_type: string
+          created_at: string
+          id: string
+          notes: string | null
+          supplier_id: string
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          cost_amount?: number
+          cost_currency?: string | null
+          cost_type: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          supplier_id: string
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          cost_amount?: number
+          cost_currency?: string | null
+          cost_type?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          supplier_id?: string
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_suppliers_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "worker_suppliers_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worker_suppliers_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workers: {
         Row: {

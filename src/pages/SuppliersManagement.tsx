@@ -29,6 +29,7 @@ const supplierSchema = z.object({
   address: z.string().max(500).optional(),
   tax_registration: z.string().max(100).optional(),
   payment_terms: z.string(),
+  currency: z.enum(["AED", "USD"]),
   notes: z.string().max(2000).optional(),
 });
 
@@ -62,6 +63,7 @@ const SuppliersManagement = () => {
     address: "",
     tax_registration: "",
     payment_terms: "Net 30",
+    currency: "AED",
     notes: "",
   });
 
@@ -145,6 +147,7 @@ const SuppliersManagement = () => {
         address: "",
         tax_registration: "",
         payment_terms: "Net 30",
+        currency: "AED",
         notes: "",
       });
 
@@ -269,7 +272,7 @@ const SuppliersManagement = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="tax_registration">Tax Registration</Label>
                       <Input
@@ -277,6 +280,22 @@ const SuppliersManagement = () => {
                         value={formData.tax_registration}
                         onChange={(e) => setFormData({ ...formData, tax_registration: e.target.value })}
                       />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Currency</Label>
+                      <Select
+                        value={formData.currency}
+                        onValueChange={(value) => setFormData({ ...formData, currency: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="AED">AED</SelectItem>
+                          <SelectItem value="USD">USD</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
