@@ -80,6 +80,7 @@ const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
   const [cvWorkers, setCVWorkers] = useState<CVWorker[]>([]);
+  const [workerSearch, setWorkerSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
@@ -723,6 +724,12 @@ const Refund = () => {
 
                         <div className="space-y-2">
                           <Label>Worker Name</Label>
+                          <Input 
+                            placeholder="Search workers..."
+                            value={workerSearch}
+                            onChange={(e) => setWorkerSearch(e.target.value)}
+                            className="mb-2"
+                          />
                           <Select 
                             value={formData.workerName} 
                             onValueChange={(workerId) => {
@@ -752,14 +759,20 @@ const Refund = () => {
                               <SelectValue placeholder="Select a worker from CV Wizard" />
                             </SelectTrigger>
                             <SelectContent>
-                              {cvWorkers.length === 0 ? (
+                              {cvWorkers.filter(worker => 
+                                worker.name.toLowerCase().includes(workerSearch.toLowerCase())
+                              ).length === 0 ? (
                                 <SelectItem value="none" disabled>No workers found</SelectItem>
                               ) : (
-                                cvWorkers.map((worker) => (
-                                  <SelectItem key={worker.id} value={worker.id}>
-                                    {worker.name} ({worker.nationality_code})
-                                  </SelectItem>
-                                ))
+                                cvWorkers
+                                  .filter(worker => 
+                                    worker.name.toLowerCase().includes(workerSearch.toLowerCase())
+                                  )
+                                  .map((worker) => (
+                                    <SelectItem key={worker.id} value={worker.id}>
+                                      {worker.name} ({worker.nationality_code})
+                                    </SelectItem>
+                                  ))
                               )}
                             </SelectContent>
                           </Select>
