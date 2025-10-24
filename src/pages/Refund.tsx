@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, ChevronLeft, ChevronRight, FileText, Printer } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight, FileText, Printer, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import html2pdf from "html2pdf.js";
@@ -71,9 +74,13 @@ interface CVWorker {
 }
 
 const Refund = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { isAdmin } = useAdminCheck();
   const [currentStep, setCurrentStep] = useState(1);
   const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
   const [cvWorkers, setCVWorkers] = useState<CVWorker[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
     contractNo: '',
@@ -463,6 +470,117 @@ const Refund = () => {
 
   const printCalculation = () => {
     window.print();
+  };
+
+  const handleFinalize = async () => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only admins can finalize refunds",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.contractNo || !formData.clientName || !formData.workerName) {
+      toast({
+        title: "Incomplete Data",
+        description: "Please fill in all required fields before finalizing",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const result = calculateRefund();
+      
+      // Parse due date
+      let dueDate = null;
+      if (result.dueDate && typeof result.dueDate !== 'string') {
+        dueDate = format(result.dueDate, 'yyyy-MM-dd');
+      }
+
+      const refundData = {
+        prepared_by: formData.preparedBy || null,
+        finalized_by: user.id,
+        contract_no: formData.contractNo,
+        client_name: formData.clientName,
+        client_mobile: formData.clientMobile,
+        emirate: formData.emirate,
+        worker_name: formData.workerName,
+        nationality: formData.nationality,
+        salary_aed: parseFloat(formData.salaryAED) || null,
+        price_incl_vat: parseFloat(formData.priceInclVAT),
+        vat_percent: parseFloat(formData.vatPercent),
+        location: formData.location,
+        direct_hire: formData.directHire === 'Yes',
+        fail_bring: formData.failBring === 'Yes',
+        at_fault: formData.atFault === 'Yes',
+        enough_time: formData.enoughTime === 'Yes',
+        stage: formData.stage,
+        cash_assistance_aed: parseFloat(formData.cashAssistanceAED) || 0,
+        gov_visa_aed: parseFloat(formData.govVisaAED) || 0,
+        reason: formData.reason,
+        other_reason: formData.otherReason,
+        medical_visa_cost_aed: parseFloat(formData.medicalVisaCostAED) || 0,
+        delivered_date: formData.deliveredDate ? format(formData.deliveredDate, 'yyyy-MM-dd') : null,
+        returned_date: formData.returnedDate ? format(formData.returnedDate, 'yyyy-MM-dd') : null,
+        doc_phone: formData.docPhone === 'Yes',
+        doc_passport: formData.docPassport === 'Yes',
+        doc_cancel: formData.docCancel === 'Yes',
+        abu_dhabi_insurance_cancelled: formData.abuDhabiInsuranceCancelled === 'Yes',
+        abscond_report: formData.abscondReport === 'Yes',
+        abscond_date: formData.abscondDate ? format(formData.abscondDate, 'yyyy-MM-dd') : null,
+        unpaid_salary_days: parseInt(formData.unpaidSalaryDays) || 0,
+        visa_vpa_done: formData.visaVpaDone === 'Yes',
+        option_b: formData.optionB === 'Yes',
+        standard_tadbeer_fees_aed: parseFloat(formData.standardTadbeerFeesAED) || 0,
+        base_price_ex_vat: result.exVAT,
+        vat_amount: result.vatAmt,
+        vat_refund: result.vatRefund,
+        refund_ex_vat: result.refundEx,
+        total_refund_amount: result.totalRefund,
+        days_worked: result.days,
+        due_date: dueDate,
+        calculation_details: {
+          deductions: result.deductions,
+          additions: result.additions,
+          noRefund: result.noRefund,
+        },
+        status: 'finalized',
+      };
+
+      const { error } = await supabase
+        .from('refunds')
+        .insert([refundData]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Refund has been finalized and saved",
+      });
+
+      // Navigate to refunds list after a short delay
+      setTimeout(() => {
+        navigate('/refundslist');
+      }, 1000);
+
+    } catch (error: any) {
+      console.error("Error saving refund:", error);
+      toast({
+        title: "Save Failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const { exVAT, vatAmt } = calculateVAT();
@@ -1328,10 +1446,26 @@ const Refund = () => {
                               <Printer className="mr-2 h-4 w-4" />
                               Print Calculation
                             </Button>
-                            <Button onClick={exportPDF} className="flex-1">
+                            <Button onClick={exportPDF} variant="outline" className="flex-1">
                               <FileText className="mr-2 h-4 w-4" />
                               Export PDF
                             </Button>
+                            {isAdmin && (
+                              <Button 
+                                onClick={handleFinalize} 
+                                className="flex-1 bg-green-600 hover:bg-green-700"
+                                disabled={isSaving}
+                              >
+                                {isSaving ? (
+                                  <>Saving...</>
+                                ) : (
+                                  <>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    Finalize & Save
+                                  </>
+                                )}
+                              </Button>
+                            )}
                           </div>
                         </>
                       )}

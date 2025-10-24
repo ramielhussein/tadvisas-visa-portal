@@ -95,6 +95,171 @@ export type Database = {
         }
         Relationships: []
       }
+      refunds: {
+        Row: {
+          abscond_date: string | null
+          abscond_report: boolean | null
+          abu_dhabi_insurance_cancelled: boolean | null
+          at_fault: boolean | null
+          base_price_ex_vat: number | null
+          calculation_details: Json | null
+          cash_assistance_aed: number | null
+          client_mobile: string | null
+          client_name: string
+          contract_no: string
+          created_at: string
+          days_worked: number | null
+          delivered_date: string | null
+          direct_hire: boolean | null
+          doc_cancel: boolean | null
+          doc_passport: boolean | null
+          doc_phone: boolean | null
+          due_date: string | null
+          emirate: string
+          enough_time: boolean | null
+          fail_bring: boolean | null
+          finalized_by: string | null
+          gov_visa_aed: number | null
+          id: string
+          location: string
+          medical_visa_cost_aed: number | null
+          nationality: string
+          notes: string | null
+          option_b: boolean | null
+          other_reason: string | null
+          prepared_by: string | null
+          price_incl_vat: number
+          reason: string | null
+          refund_ex_vat: number | null
+          returned_date: string | null
+          salary_aed: number | null
+          stage: string | null
+          standard_tadbeer_fees_aed: number | null
+          status: string
+          total_refund_amount: number
+          unpaid_salary_days: number | null
+          updated_at: string
+          vat_amount: number | null
+          vat_percent: number | null
+          vat_refund: number | null
+          visa_vpa_done: boolean | null
+          worker_name: string
+        }
+        Insert: {
+          abscond_date?: string | null
+          abscond_report?: boolean | null
+          abu_dhabi_insurance_cancelled?: boolean | null
+          at_fault?: boolean | null
+          base_price_ex_vat?: number | null
+          calculation_details?: Json | null
+          cash_assistance_aed?: number | null
+          client_mobile?: string | null
+          client_name: string
+          contract_no: string
+          created_at?: string
+          days_worked?: number | null
+          delivered_date?: string | null
+          direct_hire?: boolean | null
+          doc_cancel?: boolean | null
+          doc_passport?: boolean | null
+          doc_phone?: boolean | null
+          due_date?: string | null
+          emirate: string
+          enough_time?: boolean | null
+          fail_bring?: boolean | null
+          finalized_by?: string | null
+          gov_visa_aed?: number | null
+          id?: string
+          location: string
+          medical_visa_cost_aed?: number | null
+          nationality: string
+          notes?: string | null
+          option_b?: boolean | null
+          other_reason?: string | null
+          prepared_by?: string | null
+          price_incl_vat: number
+          reason?: string | null
+          refund_ex_vat?: number | null
+          returned_date?: string | null
+          salary_aed?: number | null
+          stage?: string | null
+          standard_tadbeer_fees_aed?: number | null
+          status?: string
+          total_refund_amount: number
+          unpaid_salary_days?: number | null
+          updated_at?: string
+          vat_amount?: number | null
+          vat_percent?: number | null
+          vat_refund?: number | null
+          visa_vpa_done?: boolean | null
+          worker_name: string
+        }
+        Update: {
+          abscond_date?: string | null
+          abscond_report?: boolean | null
+          abu_dhabi_insurance_cancelled?: boolean | null
+          at_fault?: boolean | null
+          base_price_ex_vat?: number | null
+          calculation_details?: Json | null
+          cash_assistance_aed?: number | null
+          client_mobile?: string | null
+          client_name?: string
+          contract_no?: string
+          created_at?: string
+          days_worked?: number | null
+          delivered_date?: string | null
+          direct_hire?: boolean | null
+          doc_cancel?: boolean | null
+          doc_passport?: boolean | null
+          doc_phone?: boolean | null
+          due_date?: string | null
+          emirate?: string
+          enough_time?: boolean | null
+          fail_bring?: boolean | null
+          finalized_by?: string | null
+          gov_visa_aed?: number | null
+          id?: string
+          location?: string
+          medical_visa_cost_aed?: number | null
+          nationality?: string
+          notes?: string | null
+          option_b?: boolean | null
+          other_reason?: string | null
+          prepared_by?: string | null
+          price_incl_vat?: number
+          reason?: string | null
+          refund_ex_vat?: number | null
+          returned_date?: string | null
+          salary_aed?: number | null
+          stage?: string | null
+          standard_tadbeer_fees_aed?: number | null
+          status?: string
+          total_refund_amount?: number
+          unpaid_salary_days?: number | null
+          updated_at?: string
+          vat_amount?: number | null
+          vat_percent?: number | null
+          vat_refund?: number | null
+          visa_vpa_done?: boolean | null
+          worker_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_finalized_by_fkey"
+            columns: ["finalized_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_prepared_by_fkey"
+            columns: ["prepared_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       settings: {
         Row: {
           created_at: string | null
