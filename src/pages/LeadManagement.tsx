@@ -140,7 +140,7 @@ const LeadManagement = () => {
       // Remove default 1000 row limit by setting a high range
       const { data, error } = await query
         .order("created_at", { ascending: false })
-        .range(0, 9999);
+        .range(0, 99999);
 
       if (error) throw error;
       setLeads(data || []);
