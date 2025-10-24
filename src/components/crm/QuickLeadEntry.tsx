@@ -348,6 +348,12 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
                 <SelectItem value="P5 Tadvisas++">P5 Tadvisas++</SelectItem>
                 <SelectItem value="Typing">Typing</SelectItem>
                 <SelectItem value="P6">P6</SelectItem>
+                <SelectItem value="Driver">Driver</SelectItem>
+                <SelectItem value="DIRECT">DIRECT</SelectItem>
+                <SelectItem value="Cook">Cook</SelectItem>
+                <SelectItem value="Caregiver">Caregiver</SelectItem>
+                <SelectItem value="Nurse">Nurse</SelectItem>
+                <SelectItem value="Skilled">Skilled</SelectItem>
               </SelectContent>
             </Select>
           </div>
