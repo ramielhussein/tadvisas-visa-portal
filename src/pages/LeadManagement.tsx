@@ -102,9 +102,9 @@ const LeadManagement = () => {
       const query = searchQuery.toLowerCase();
       filtered = leads.filter(
         (lead) =>
-          lead.mobile_number.includes(query) ||
-          lead.client_name.toLowerCase().includes(query) ||
-          lead.email?.toLowerCase().includes(query)
+          (lead.mobile_number?.toLowerCase?.().includes(query) ?? false) ||
+          ((lead.client_name || "").toLowerCase().includes(query)) ||
+          ((lead.email || "").toLowerCase().includes(query))
       );
     }
 
@@ -375,6 +375,7 @@ const LeadManagement = () => {
                 placeholder="Search by phone number, name, or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
                 className="pl-10"
               />
             </div>
