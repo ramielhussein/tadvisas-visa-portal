@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3 } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -166,6 +166,26 @@ const AdminMenu = () => {
           >
             <Plus className="h-4 w-4 mr-2" />
             Quick Lead Entry (Ctrl+Shift+Q)
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          
+          {/* ERP & Finance Section */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">ERP & Finance</DropdownMenuLabel>
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/deals')}
+            className={location.pathname === '/deals' ? 'bg-accent' : ''}
+          >
+            <Briefcase className="h-4 w-4 mr-2" />
+            Deals & Sales
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/financial')}
+            className={location.pathname === '/financial' ? 'bg-accent' : ''}
+          >
+            <Coins className="h-4 w-4 mr-2" />
+            Financial Dashboard
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

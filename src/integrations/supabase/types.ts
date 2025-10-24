@@ -14,6 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
+      deals: {
+        Row: {
+          assigned_to: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string
+          closed_at: string | null
+          commission_amount: number | null
+          commission_rate: number | null
+          created_at: string
+          deal_number: string
+          deal_value: number
+          id: string
+          lead_id: string | null
+          notes: string | null
+          payment_terms: string | null
+          service_description: string | null
+          service_type: string
+          status: string
+          total_amount: number
+          updated_at: string
+          vat_amount: number | null
+          vat_rate: number | null
+          worker_id: string | null
+          worker_name: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone: string
+          closed_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          created_at?: string
+          deal_number: string
+          deal_value: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          payment_terms?: string | null
+          service_description?: string | null
+          service_type: string
+          status?: string
+          total_amount: number
+          updated_at?: string
+          vat_amount?: number | null
+          vat_rate?: number | null
+          worker_id?: string | null
+          worker_name?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string
+          closed_at?: string | null
+          commission_amount?: number | null
+          commission_rate?: number | null
+          created_at?: string
+          deal_number?: string
+          deal_value?: number
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          payment_terms?: string | null
+          service_description?: string | null
+          service_type?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vat_amount?: number | null
+          vat_rate?: number | null
+          worker_id?: string | null
+          worker_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          balance_due: number
+          client_email: string | null
+          client_name: string
+          client_phone: string
+          created_at: string
+          deal_id: string | null
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          payment_method: string | null
+          status: string
+          subtotal: number
+          total_amount: number
+          updated_at: string
+          vat_amount: number
+          vat_rate: number | null
+        }
+        Insert: {
+          balance_due: number
+          client_email?: string | null
+          client_name: string
+          client_phone: string
+          created_at?: string
+          deal_id?: string | null
+          due_date: string
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          subtotal: number
+          total_amount: number
+          updated_at?: string
+          vat_amount: number
+          vat_rate?: number | null
+        }
+        Update: {
+          balance_due?: number
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string
+          created_at?: string
+          deal_id?: string | null
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          subtotal?: number
+          total_amount?: number
+          updated_at?: string
+          vat_amount?: number
+          vat_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_activities: {
         Row: {
           activity_type: string
@@ -429,6 +599,81 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          account_type: string
+          amount: number
+          created_at: string
+          created_by: string | null
+          credit_account: string | null
+          deal_id: string | null
+          debit_account: string | null
+          id: string
+          invoice_id: string | null
+          notes: string | null
+          payment_method: string | null
+          reference_number: string | null
+          status: string
+          transaction_date: string
+          transaction_number: string
+          transaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          account_type: string
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          credit_account?: string | null
+          deal_id?: string | null
+          debit_account?: string | null
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          reference_number?: string | null
+          status?: string
+          transaction_date?: string
+          transaction_number: string
+          transaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          account_type?: string
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          credit_account?: string | null
+          deal_id?: string | null
+          debit_account?: string | null
+          id?: string
+          invoice_id?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          reference_number?: string | null
+          status?: string
+          transaction_date?: string
+          transaction_number?: string
+          transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -545,6 +790,19 @@ export type Database = {
       }
     }
     Views: {
+      account_balances: {
+        Row: {
+          client_name: string | null
+          client_phone: string | null
+          latest_due_date: string | null
+          overdue_invoices: number | null
+          pending_invoices: number | null
+          total_invoiced: number | null
+          total_outstanding: number | null
+          total_paid: number | null
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           addons: string[] | null
@@ -596,6 +854,9 @@ export type Database = {
       }
     }
     Functions: {
+      generate_deal_number: { Args: never; Returns: string }
+      generate_invoice_number: { Args: never; Returns: string }
+      generate_transaction_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

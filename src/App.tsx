@@ -38,6 +38,9 @@ import ScrollToTop from "./components/ScrollToTop";
 import LeadManagement from "./pages/LeadManagement";
 import LeadDetail from "./pages/LeadDetail";
 import Dashboard from "./pages/Dashboard";
+import DealsManagement from "./pages/DealsManagement";
+import CreateDeal from "./pages/CreateDeal";
+import FinancialDashboard from "./pages/FinancialDashboard";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
@@ -83,6 +86,9 @@ const App = () => (
           <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
+          <Route path="/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
+          <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
+          <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
