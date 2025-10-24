@@ -73,6 +73,16 @@ interface CVWorker {
   salary: number | null;
 }
 
+interface Client {
+  id: string;
+  client_name: string;
+  mobile_number: string;
+  email: string | null;
+  emirate: string | null;
+  nationality_code: string | null;
+  lead_id: string | null;
+}
+
 const Refund = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -80,7 +90,9 @@ const Refund = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
   const [cvWorkers, setCVWorkers] = useState<CVWorker[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   const [workerSearch, setWorkerSearch] = useState('');
+  const [clientSearch, setClientSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
@@ -155,6 +167,22 @@ const Refund = () => {
     };
 
     loadWorkers();
+  }, []);
+
+  // Load clients (from submissions with complete data)
+  useEffect(() => {
+    const loadClients = async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && data) {
+        setClients(data as Client[]);
+      }
+    };
+
+    loadClients();
   }, []);
 
   // Auto-disable direct hire for Inside Country
@@ -686,6 +714,71 @@ const Refund = () => {
                             onChange={(e) => setFormData({...formData, contractNo: e.target.value})}
                             placeholder="Enter contract number"
                           />
+                        </div>
+
+                        <div className="col-span-2 p-4 bg-muted/50 rounded-lg border">
+                          <Label className="mb-2 block">SELECT CLIENT FROM DATABASE</Label>
+                          <Input 
+                            placeholder="Search clients..."
+                            value={clientSearch}
+                            onChange={(e) => setClientSearch(e.target.value)}
+                            className="mb-2"
+                          />
+                          <Select 
+                            value=""
+                            onValueChange={(clientId) => {
+                              const client = clients.find(c => c.id === clientId);
+                              if (client) {
+                                const emirateMap: Record<string, Emirate> = {
+                                  'Dubai': 'Dubai',
+                                  'Sharjah': 'Sharjah',
+                                  'Ajman': 'Ajman',
+                                  'Umm Al Quwain': 'Umm Al Quwain',
+                                  'Ras Al Khaimah': 'Ras Al Khaimah',
+                                  'Fujairah': 'Fujairah',
+                                  'Abu Dhabi': 'Abu Dhabi',
+                                };
+                                
+                                setFormData({
+                                  ...formData,
+                                  clientName: client.client_name,
+                                  clientMobile: client.mobile_number,
+                                  emirate: (emirateMap[client.emirate || ''] || 'Dubai') as Emirate,
+                                });
+                                
+                                toast({
+                                  title: "Client data loaded",
+                                  description: `Loaded details for ${client.client_name}`,
+                                });
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a client from database" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {clients.filter(client => 
+                                client.client_name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+                                client.mobile_number.includes(clientSearch)
+                              ).length === 0 ? (
+                                <SelectItem value="none" disabled>No clients found</SelectItem>
+                              ) : (
+                                clients
+                                  .filter(client => 
+                                    client.client_name.toLowerCase().includes(clientSearch.toLowerCase()) ||
+                                    client.mobile_number.includes(clientSearch)
+                                  )
+                                  .map((client) => (
+                                    <SelectItem key={client.id} value={client.id}>
+                                      {client.client_name} - {client.mobile_number} {client.lead_id ? '(converted lead)' : ''}
+                                    </SelectItem>
+                                  ))
+                              )}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Clients from the database will auto-fill name, phone, and emirate
+                          </p>
                         </div>
 
                         <div className="space-y-2">

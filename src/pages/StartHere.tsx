@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 const StartHere = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const leadId = searchParams.get('lead_id');
   const [formData, setFormData] = useState({
     name: "",
     number: "",
@@ -33,6 +36,35 @@ const StartHere = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Prefill data from lead if lead_id is provided
+  useEffect(() => {
+    if (leadId) {
+      const fetchLeadData = async () => {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('id', leadId)
+          .single();
+
+        if (!error && data) {
+          setFormData(prev => ({
+            ...prev,
+            name: data.client_name || '',
+            number: data.mobile_number || '',
+            email: data.email || '',
+          }));
+          
+          toast({
+            title: "Lead data loaded",
+            description: "We've prefilled your information from the lead.",
+          });
+        }
+      };
+
+      fetchLeadData();
+    }
+  }, [leadId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -109,7 +141,7 @@ const StartHere = () => {
       console.log('Form data saved successfully:', jsonData);
 
       // Save submission to database
-      const { error: dbError } = await supabase
+      const { data: submissionData, error: dbError } = await supabase
         .from('submissions')
         .insert({
           name: formData.name,
@@ -125,7 +157,10 @@ const StartHere = () => {
           maid_visa_url: fileUrls.maidVisa || null,
           maid_photo_url: fileUrls.maidPhoto || null,
           worker_photo_url: null,
-        });
+          lead_id: leadId || null,
+        })
+        .select()
+        .single();
 
       if (dbError) {
         console.error('Error saving to database:', dbError);
@@ -133,6 +168,22 @@ const StartHere = () => {
           title: "Warning",
           description: "Files uploaded but couldn't save to database. We'll process your application manually.",
         });
+      }
+
+      // If this was a lead conversion, update the lead
+      if (leadId && submissionData) {
+        const { error: leadUpdateError } = await supabase
+          .from('leads')
+          .update({
+            client_converted: true,
+            submission_id: submissionData.id,
+            status: 'SOLD',
+          })
+          .eq('id', leadId);
+
+        if (leadUpdateError) {
+          console.error('Error updating lead:', leadUpdateError);
+        }
       }
 
       // Show success page

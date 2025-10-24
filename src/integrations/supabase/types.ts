@@ -17,6 +17,7 @@ export type Database = {
       leads: {
         Row: {
           assigned_to: string | null
+          client_converted: boolean | null
           client_name: string | null
           created_at: string
           eid_back_url: string | null
@@ -30,10 +31,12 @@ export type Database = {
           remind_me: string | null
           service_required: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          submission_id: string | null
           updated_at: string
         }
         Insert: {
           assigned_to?: string | null
+          client_converted?: boolean | null
           client_name?: string | null
           created_at?: string
           eid_back_url?: string | null
@@ -47,10 +50,12 @@ export type Database = {
           remind_me?: string | null
           service_required?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          submission_id?: string | null
           updated_at?: string
         }
         Update: {
           assigned_to?: string | null
+          client_converted?: boolean | null
           client_name?: string | null
           created_at?: string
           eid_back_url?: string | null
@@ -64,9 +69,25 @@ export type Database = {
           remind_me?: string | null
           service_required?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          submission_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -294,6 +315,7 @@ export type Database = {
           emirates_id_front_url: string | null
           id: string
           installment_plan: boolean | null
+          lead_id: string | null
           maid_passport_url: string | null
           maid_photo_url: string | null
           maid_visa_url: string | null
@@ -315,6 +337,7 @@ export type Database = {
           emirates_id_front_url?: string | null
           id?: string
           installment_plan?: boolean | null
+          lead_id?: string | null
           maid_passport_url?: string | null
           maid_photo_url?: string | null
           maid_visa_url?: string | null
@@ -336,6 +359,7 @@ export type Database = {
           emirates_id_front_url?: string | null
           id?: string
           installment_plan?: boolean | null
+          lead_id?: string | null
           maid_passport_url?: string | null
           maid_photo_url?: string | null
           maid_visa_url?: string | null
@@ -348,7 +372,15 @@ export type Database = {
           updated_at?: string | null
           worker_photo_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "submissions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -466,7 +498,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          addons: string[] | null
+          client_name: string | null
+          created_at: string | null
+          dewa_bill_url: string | null
+          email: string | null
+          emirate: string | null
+          emirates_id_back_url: string | null
+          emirates_id_front_url: string | null
+          id: string | null
+          installment_plan: boolean | null
+          lead_id: string | null
+          maid_passport_url: string | null
+          maid_photo_url: string | null
+          maid_visa_url: string | null
+          medical_insurance: boolean | null
+          mobile_number: string | null
+          nationality_code: string | null
+          notes: string | null
+          package: string | null
+          service_required: string | null
+          status: string | null
+          updated_at: string | null
+          worker_photo_url: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {

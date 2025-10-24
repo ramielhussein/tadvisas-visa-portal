@@ -26,6 +26,8 @@ interface Lead {
   remind_me: string;
   created_at: string;
   assigned_to: string | null;
+  client_converted: boolean;
+  submission_id: string | null;
 }
 
 interface User {
@@ -415,12 +417,13 @@ const LeadManagement = () => {
                       {isAdmin && <TableHead>Assigned To</TableHead>}
                       <TableHead>Remind Me</TableHead>
                       <TableHead>Created</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredLeads.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8">
+                        <TableCell colSpan={11} className="text-center py-8">
                           No leads found. Add your first lead!
                         </TableCell>
                       </TableRow>
@@ -472,6 +475,21 @@ const LeadManagement = () => {
                           </TableCell>
                           <TableCell>
                             {new Date(lead.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {lead.client_converted ? (
+                              <Badge variant="outline" className="bg-green-50">
+                                ✓ Client
+                              </Badge>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
+                              >
+                                Convert to Client
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))
