@@ -191,11 +191,58 @@ const LeadManagement = () => {
     return colors[status] || "bg-gray-500";
   };
 
-  const handleImportExcel = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Excel import functionality will be available soon!",
-    });
+  const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsLoading(true);
+      
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const { data, error } = await supabase.functions.invoke('import-leads-excel', {
+        body: formData,
+      });
+
+      if (error) throw error;
+
+      const result = data as {
+        total: number;
+        imported: number;
+        duplicates: number;
+        errors: number;
+        duplicateNumbers: string[];
+        errorDetails: Array<{ row: number; error: string }>;
+      };
+
+      toast({
+        title: "Import Complete",
+        description: `Imported ${result.imported} leads. Skipped ${result.duplicates} duplicates. ${result.errors} errors.`,
+      });
+
+      // Show detailed results if there are issues
+      if (result.duplicates > 0 || result.errors > 0) {
+        console.log('Import details:', {
+          duplicates: result.duplicateNumbers,
+          errors: result.errorDetails,
+        });
+      }
+
+      // Refresh the leads list
+      fetchLeads();
+    } catch (error: any) {
+      console.error("Error importing Excel:", error);
+      toast({
+        title: "Import Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      // Reset the input
+      event.target.value = '';
+    }
   };
 
   const handleImportGoogle = () => {
@@ -240,9 +287,17 @@ const LeadManagement = () => {
                     <Download className="w-4 h-4 mr-2" />
                     Import Google Sheets
                   </Button>
-                  <Button onClick={handleImportExcel} variant="outline">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Import Excel
+                  <Button variant="outline" asChild>
+                    <label className="cursor-pointer">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Import Excel
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls,.csv"
+                        onChange={handleImportExcel}
+                        className="hidden"
+                      />
+                    </label>
                   </Button>
                   <Button onClick={() => setShowQuickEntry(true)}>
                     <Plus className="w-4 h-4 mr-2" />
