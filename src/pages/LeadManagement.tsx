@@ -9,9 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
+import EditLeadDialog from "@/components/crm/EditLeadDialog";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +47,7 @@ const LeadManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showQuickEntry, setShowQuickEntry] = useState(false);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [authChecking, setAuthChecking] = useState(true);
@@ -522,20 +524,30 @@ const LeadManagement = () => {
                             {new Date(lead.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                           </TableCell>
                           <TableCell>
-                            {lead.client_converted ? (
-                              <Badge variant="outline" className="bg-green-50 text-xs whitespace-nowrap">
-                                ✓ Client
-                              </Badge>
-                            ) : (
+                            <div className="flex gap-1">
                               <Button
                                 size="sm"
-                                variant="outline"
-                                className="h-7 text-xs px-2"
-                                onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
+                                variant="ghost"
+                                className="h-7 w-7 p-0"
+                                onClick={() => setEditingLead(lead)}
                               >
-                                Convert
+                                <Pencil className="h-3 w-3" />
                               </Button>
-                            )}
+                              {lead.client_converted ? (
+                                <Badge variant="outline" className="bg-green-50 text-xs whitespace-nowrap">
+                                  ✓ Client
+                                </Badge>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs px-2"
+                                  onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
+                                >
+                                  Convert
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
@@ -584,6 +596,13 @@ const LeadManagement = () => {
       <QuickLeadEntry
         open={showQuickEntry}
         onClose={() => setShowQuickEntry(false)}
+        onSuccess={fetchLeads}
+      />
+      
+      <EditLeadDialog
+        open={!!editingLead}
+        lead={editingLead}
+        onClose={() => setEditingLead(null)}
         onSuccess={fetchLeads}
       />
     </Layout>
