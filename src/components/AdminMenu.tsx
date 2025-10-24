@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -186,6 +186,14 @@ const AdminMenu = () => {
           >
             <Coins className="h-4 w-4 mr-2" />
             Financial Dashboard
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/suppliers')}
+            className={location.pathname === '/suppliers' ? 'bg-accent' : ''}
+          >
+            <Building2 className="h-4 w-4 mr-2" />
+            Suppliers & A/P
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

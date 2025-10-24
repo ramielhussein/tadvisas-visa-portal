@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { DollarSign, TrendingUp, FileText, AlertCircle, Users } from "lucide-react";
+import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2 } from "lucide-react";
 
 interface FinancialStats {
   totalRevenue: number;
@@ -13,6 +13,8 @@ interface FinancialStats {
   overdueInvoices: number;
   activeDeals: number;
   totalCommissions: number;
+  totalPayable: number;
+  suppliersPending: number;
 }
 
 interface AccountBalance {
@@ -36,8 +38,11 @@ const FinancialDashboard = () => {
     overdueInvoices: 0,
     activeDeals: 0,
     totalCommissions: 0,
+    totalPayable: 0,
+    suppliersPending: 0,
   });
   const [accountBalances, setAccountBalances] = useState<AccountBalance[]>([]);
+  const [supplierBalances, setSupplierBalances] = useState<any[]>([]);
 
   useEffect(() => {
     fetchFinancialData();
@@ -56,6 +61,9 @@ const FinancialDashboard = () => {
       // Fetch account balances
       const { data: balances } = await supabase.from("account_balances").select("*");
 
+      // Fetch supplier balances
+      const { data: suppliers } = await supabase.from("supplier_balances").select("*");
+
       if (invoices) {
         const totalRevenue = invoices.reduce((sum, inv) => sum + Number(inv.total_amount), 0);
         const totalPaid = invoices.reduce((sum, inv) => sum + Number(inv.paid_amount), 0);
@@ -66,6 +74,9 @@ const FinancialDashboard = () => {
         const totalCommissions = deals?.reduce((sum, d) => sum + Number(d.commission_amount || 0), 0) || 0;
         const activeDeals = deals?.filter(d => d.status === 'Active').length || 0;
 
+        const totalPayable = suppliers?.reduce((sum, s) => sum + Number(s.total_outstanding || 0), 0) || 0;
+        const suppliersPending = suppliers?.reduce((sum, s) => sum + Number(s.pending_invoices || 0), 0) || 0;
+
         setStats({
           totalRevenue,
           totalPaid,
@@ -74,10 +85,13 @@ const FinancialDashboard = () => {
           overdueInvoices,
           activeDeals,
           totalCommissions,
+          totalPayable,
+          suppliersPending,
         });
       }
 
       setAccountBalances(balances || []);
+      setSupplierBalances(suppliers || []);
     } catch (error: any) {
       console.error("Error fetching financial data:", error);
       toast({
@@ -110,7 +124,7 @@ const FinancialDashboard = () => {
           <h1 className="text-4xl font-bold mb-8">Financial Dashboard</h1>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
@@ -171,55 +185,113 @@ const FinancialDashboard = () => {
                 </p>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  Payable (A/P)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-red-600">AED {stats.totalPayable.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {stats.suppliersPending} pending bills
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Account Receivables */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Account Receivables (AR Aging)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {accountBalances.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  No outstanding balances
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {accountBalances.map((balance, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
-                    >
-                      <div>
-                        <p className="font-medium">{balance.client_name}</p>
-                        <p className="text-sm text-muted-foreground">{balance.client_phone}</p>
+          {/* Two Column Layout for A/R and A/P */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Account Receivables */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Account Receivables (A/R)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {accountBalances.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    No outstanding balances
+                  </p>
+                ) : (
+                  <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                    {accountBalances.map((balance, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium">{balance.client_name}</p>
+                          <p className="text-sm text-muted-foreground">{balance.client_phone}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-orange-600">
+                            AED {Number(balance.total_outstanding).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {balance.pending_invoices > 0 && (
+                              <span className="text-orange-600">{balance.pending_invoices} pending </span>
+                            )}
+                            {balance.overdue_invoices > 0 && (
+                              <span className="text-red-600">{balance.overdue_invoices} overdue</span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-orange-600">
-                          AED {Number(balance.total_outstanding).toLocaleString()}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Invoiced: AED {Number(balance.total_invoiced).toLocaleString()} | 
-                          Paid: AED {Number(balance.total_paid).toLocaleString()}
-                        </p>
-                        <p className="text-xs mt-1">
-                          {balance.pending_invoices > 0 && (
-                            <span className="text-orange-600">{balance.pending_invoices} pending </span>
-                          )}
-                          {balance.overdue_invoices > 0 && (
-                            <span className="text-red-600">{balance.overdue_invoices} overdue</span>
-                          )}
-                        </p>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Account Payables */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Account Payables (A/P)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {supplierBalances.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    No supplier balances
+                  </p>
+                ) : (
+                  <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                    {supplierBalances.map((supplier, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
+                      >
+                        <div>
+                          <p className="font-medium">{supplier.supplier_name}</p>
+                          <p className="text-sm text-muted-foreground">{supplier.supplier_type}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-red-600">
+                            AED {Number(supplier.total_outstanding).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {supplier.pending_invoices > 0 && (
+                              <span className="text-orange-600">{supplier.pending_invoices} pending </span>
+                            )}
+                            {supplier.overdue_invoices > 0 && (
+                              <span className="text-red-600">{supplier.overdue_invoices} overdue</span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </Layout>

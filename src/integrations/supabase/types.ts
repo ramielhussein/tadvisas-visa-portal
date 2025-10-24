@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      bank_accounts: {
+        Row: {
+          account_name: string
+          account_number: string | null
+          bank_name: string
+          created_at: string
+          currency: string | null
+          current_balance: number | null
+          id: string
+          notes: string | null
+          opening_balance: number | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_name: string
+          account_number?: string | null
+          bank_name: string
+          created_at?: string
+          currency?: string | null
+          current_balance?: number | null
+          id?: string
+          notes?: string | null
+          opening_balance?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string | null
+          bank_name?: string
+          created_at?: string
+          currency?: string | null
+          current_balance?: number | null
+          id?: string
+          notes?: string | null
+          opening_balance?: number | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       deals: {
         Row: {
           assigned_to: string | null
@@ -305,6 +347,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_methods: {
+        Row: {
+          commission_rate: number | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          method_name: string
+          notes: string | null
+        }
+        Insert: {
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          method_name: string
+          notes?: string | null
+        }
+        Update: {
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          method_name?: string
+          notes?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -599,10 +668,143 @@ export type Database = {
           },
         ]
       }
+      supplier_invoices: {
+        Row: {
+          balance_due: number
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          payment_method: string | null
+          status: string
+          subtotal: number
+          supplier_id: string | null
+          supplier_name: string
+          total_amount: number
+          updated_at: string
+          vat_amount: number
+          vat_rate: number | null
+        }
+        Insert: {
+          balance_due: number
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          subtotal: number
+          supplier_id?: string | null
+          supplier_name: string
+          total_amount: number
+          updated_at?: string
+          vat_amount: number
+          vat_rate?: number | null
+        }
+        Update: {
+          balance_due?: number
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          status?: string
+          subtotal?: number
+          supplier_id?: string | null
+          supplier_name?: string
+          total_amount?: number
+          updated_at?: string
+          vat_amount?: number
+          vat_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "supplier_invoices_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          account_balance: number | null
+          address: string | null
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          notes: string | null
+          payment_terms: string | null
+          phone: string | null
+          status: string | null
+          supplier_name: string
+          supplier_type: string
+          tax_registration: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_balance?: number | null
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          status?: string | null
+          supplier_name: string
+          supplier_type: string
+          tax_registration?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_balance?: number | null
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          phone?: string | null
+          status?: string | null
+          supplier_name?: string
+          supplier_type?: string
+          tax_registration?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           account_type: string
           amount: number
+          bank_account_id: string | null
           created_at: string
           created_by: string | null
           credit_account: string | null
@@ -610,10 +812,15 @@ export type Database = {
           debit_account: string | null
           id: string
           invoice_id: string | null
+          net_amount: number | null
           notes: string | null
+          payment_commission_amount: number | null
+          payment_commission_rate: number | null
           payment_method: string | null
           reference_number: string | null
           status: string
+          supplier_id: string | null
+          supplier_invoice_id: string | null
           transaction_date: string
           transaction_number: string
           transaction_type: string
@@ -622,6 +829,7 @@ export type Database = {
         Insert: {
           account_type: string
           amount: number
+          bank_account_id?: string | null
           created_at?: string
           created_by?: string | null
           credit_account?: string | null
@@ -629,10 +837,15 @@ export type Database = {
           debit_account?: string | null
           id?: string
           invoice_id?: string | null
+          net_amount?: number | null
           notes?: string | null
+          payment_commission_amount?: number | null
+          payment_commission_rate?: number | null
           payment_method?: string | null
           reference_number?: string | null
           status?: string
+          supplier_id?: string | null
+          supplier_invoice_id?: string | null
           transaction_date?: string
           transaction_number: string
           transaction_type: string
@@ -641,6 +854,7 @@ export type Database = {
         Update: {
           account_type?: string
           amount?: number
+          bank_account_id?: string | null
           created_at?: string
           created_by?: string | null
           credit_account?: string | null
@@ -648,16 +862,28 @@ export type Database = {
           debit_account?: string | null
           id?: string
           invoice_id?: string | null
+          net_amount?: number | null
           notes?: string | null
+          payment_commission_amount?: number | null
+          payment_commission_rate?: number | null
           payment_method?: string | null
           reference_number?: string | null
           status?: string
+          supplier_id?: string | null
+          supplier_invoice_id?: string | null
           transaction_date?: string
           transaction_number?: string
           transaction_type?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_deal_id_fkey"
             columns: ["deal_id"]
@@ -670,6 +896,27 @@ export type Database = {
             columns: ["invoice_id"]
             isOneToOne: false
             referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "transactions_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_supplier_invoice_id_fkey"
+            columns: ["supplier_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_invoices"
             referencedColumns: ["id"]
           },
         ]
@@ -852,10 +1099,30 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_balances: {
+        Row: {
+          latest_due_date: string | null
+          overdue_invoices: number | null
+          pending_invoices: number | null
+          phone: string | null
+          supplier_id: string | null
+          supplier_name: string | null
+          supplier_type: string | null
+          total_invoiced: number | null
+          total_outstanding: number | null
+          total_paid: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      calculate_net_amount: {
+        Args: { commission_rate: number; gross_amount: number }
+        Returns: number
+      }
       generate_deal_number: { Args: never; Returns: string }
       generate_invoice_number: { Args: never; Returns: string }
+      generate_supplier_invoice_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       has_role: {
         Args: {

@@ -35,6 +35,13 @@ const CreateDeal = () => {
   const [workers, setWorkers] = useState<any[]>([]);
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedWorker, setSelectedWorker] = useState<any>(null);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchPaymentMethods();
+    fetchBankAccounts();
+  }, []);
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -45,6 +52,8 @@ const CreateDeal = () => {
     deal_value: "",
     vat_rate: "5",
     payment_terms: "Full Payment",
+    payment_method: "",
+    bank_account: "",
     commission_rate: "0",
     notes: "",
   });
@@ -53,6 +62,8 @@ const CreateDeal = () => {
     vat_amount: 0,
     total_amount: 0,
     commission_amount: 0,
+    payment_commission: 0,
+    net_amount: 0,
   });
 
   useEffect(() => {
@@ -64,8 +75,40 @@ const CreateDeal = () => {
     const total_amount = dealValue + vat_amount;
     const commission_amount = (dealValue * commissionRate) / 100;
 
-    setCalculatedAmounts({ vat_amount, total_amount, commission_amount });
-  }, [formData.deal_value, formData.vat_rate, formData.commission_rate]);
+    // Calculate payment commission
+    const selectedMethod = paymentMethods.find(m => m.method_name === formData.payment_method);
+    const paymentCommissionRate = selectedMethod?.commission_rate || 0;
+    const payment_commission = (total_amount * paymentCommissionRate) / 100;
+    const net_amount = total_amount - payment_commission;
+
+    setCalculatedAmounts({ 
+      vat_amount, 
+      total_amount, 
+      commission_amount,
+      payment_commission,
+      net_amount
+    });
+  }, [formData.deal_value, formData.vat_rate, formData.commission_rate, formData.payment_method, paymentMethods]);
+
+  const fetchPaymentMethods = async () => {
+    const { data } = await supabase
+      .from("payment_methods")
+      .select("*")
+      .eq("is_active", true)
+      .order("method_name");
+    
+    setPaymentMethods(data || []);
+  };
+
+  const fetchBankAccounts = async () => {
+    const { data } = await supabase
+      .from("bank_accounts")
+      .select("*")
+      .eq("status", "Active")
+      .order("bank_name");
+    
+    setBankAccounts(data || []);
+  };
 
   const searchLeads = async (query: string) => {
     if (query.length < 2) {
@@ -420,12 +463,68 @@ const CreateDeal = () => {
 
                   <div className="p-4 bg-muted rounded-lg space-y-2">
                     <div className="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span className="font-medium">AED {parseFloat(formData.deal_value || "0").toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span>VAT Amount:</span>
                       <span className="font-medium">AED {calculatedAmounts.vat_amount.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-lg font-bold">
+                    <div className="flex justify-between text-lg font-bold border-t pt-2">
                       <span>Total Amount:</span>
                       <span>AED {calculatedAmounts.total_amount.toFixed(2)}</span>
+                    </div>
+                    {calculatedAmounts.payment_commission > 0 && (
+                      <>
+                        <div className="flex justify-between text-orange-600">
+                          <span>Payment Commission:</span>
+                          <span>- AED {calculatedAmounts.payment_commission.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-green-600 font-bold">
+                          <span>Net Amount (after fees):</span>
+                          <span>AED {calculatedAmounts.net_amount.toFixed(2)}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="payment_method">Payment Method *</Label>
+                      <Select
+                        value={formData.payment_method}
+                        onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {paymentMethods.map((method) => (
+                            <SelectItem key={method.id} value={method.method_name}>
+                              {method.method_name} {method.commission_rate > 0 ? `(${method.commission_rate}% fee)` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="bank_account">Bank Account</Label>
+                      <Select
+                        value={formData.bank_account}
+                        onValueChange={(value) => setFormData({ ...formData, bank_account: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select bank" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {bankAccounts.map((bank) => (
+                            <SelectItem key={bank.id} value={bank.id}>
+                              {bank.bank_name} - {bank.account_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
