@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -133,21 +133,15 @@ const AdminMenu = () => {
             Admin Menu
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 bg-background border-2">
+        <DropdownMenuContent align="start" className="w-56 bg-background border-2 max-h-[80vh] overflow-y-auto">
           <DropdownMenuLabel className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />
             Admin Controls
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin')}
-            className={location.pathname === '/admin' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Client Request Submissions
-          </DropdownMenuItem>
-          
+          {/* CRM Section */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">CRM & Leads</DropdownMenuLabel>
           <DropdownMenuItem 
             onClick={() => handleNavigation('/crm/leads')}
             className={location.pathname === '/crm/leads' ? 'bg-accent' : ''}
@@ -159,20 +153,59 @@ const AdminMenu = () => {
           <DropdownMenuItem 
             onClick={(e) => {
               e.preventDefault();
-              console.log('Menu item clicked, opening quick entry');
               setShowQuickEntry(true);
             }}
           >
             <Plus className="h-4 w-4 mr-2" />
             Quick Lead Entry (Ctrl+Shift+Q)
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
           
+          {/* Forms & Submissions */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">Forms & Submissions</DropdownMenuLabel>
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/admin')}
+            className={location.pathname === '/admin' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Client Submissions (Start Here)
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/refund')}
+            className={location.pathname === '/refund' ? 'bg-accent' : ''}
+          >
+            <DollarSign className="h-4 w-4 mr-2" />
+            Refund Calculator
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/refundslist')}
+            className={location.pathname === '/refundslist' ? 'bg-accent' : ''}
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+            Finalized Refunds
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/cvwizard')}
+            className={location.pathname === '/cvwizard' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            CV Wizard Form
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* CV Wizard Management */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">CV Wizard</DropdownMenuLabel>
           <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/cvwizard-review')}
             className={location.pathname === '/admin/cvwizard-review' ? 'bg-accent' : ''}
           >
             <Users className="h-4 w-4 mr-2" />
-            CV Wizard Review
+            CV Review & Approval
           </DropdownMenuItem>
           
           <DropdownMenuItem 
@@ -188,9 +221,13 @@ const AdminMenu = () => {
             className={location.pathname === '/wizardalbum' ? 'bg-accent' : ''}
           >
             <Images className="h-4 w-4 mr-2" />
-            Wizard Album
+            Wizard Album (Photos)
           </DropdownMenuItem>
 
+          <DropdownMenuSeparator />
+
+          {/* User Management */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">User Management</DropdownMenuLabel>
           <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/user-management')}
             className={location.pathname === '/admin/user-management' ? 'bg-accent' : ''}
@@ -204,15 +241,27 @@ const AdminMenu = () => {
             className={location.pathname === '/admin/user-list' ? 'bg-accent' : ''}
           >
             <Users className="h-4 w-4 mr-2" />
-            Manage Users
+            Manage Users & Permissions
           </DropdownMenuItem>
-          
+
+          <DropdownMenuSeparator />
+
+          {/* System */}
+          <DropdownMenuLabel className="text-xs text-muted-foreground">System</DropdownMenuLabel>
           <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/reset-admin')}
             className={location.pathname === '/admin/reset-admin' ? 'bg-accent' : ''}
           >
             <Settings className="h-4 w-4 mr-2" />
-            Reset Admin
+            Reset Admin Password
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/hub')}
+            className={location.pathname === '/hub' ? 'bg-accent' : ''}
+          >
+            <MapPin className="h-4 w-4 mr-2" />
+            Country Albums Hub
           </DropdownMenuItem>
           
           <DropdownMenuSeparator />
