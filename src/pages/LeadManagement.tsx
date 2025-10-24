@@ -36,7 +36,7 @@ interface User {
 const LeadManagement = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin, isLoading: authLoading } = useAdminCheck();
+  const { isAdmin, isLoading: adminCheckLoading } = useAdminCheck();
   
   const [leads, setLeads] = useState<Lead[]>([]);
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
@@ -44,28 +44,38 @@ const LeadManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showQuickEntry, setShowQuickEntry] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
-
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [authChecking, setAuthChecking] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null);
+      setAuthChecking(false);
+      
+      if (!session?.user) {
+        navigate("/auth");
+      }
+    });
 
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth");
-    } else {
-      setCurrentUser(user);
-    }
-  };
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setCurrentUser(session?.user ?? null);
+      
+      if (!session?.user && event !== 'INITIAL_SESSION') {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !authChecking) {
       fetchLeads();
       fetchUsers();
     }
-  }, [currentUser, isAdmin]);
+  }, [currentUser, authChecking, isAdmin]);
 
   useEffect(() => {
     // Keyboard shortcut Ctrl+Shift+Q (changed from L)
@@ -195,7 +205,7 @@ const LeadManagement = () => {
     });
   };
 
-  if (authLoading || isLoading) {
+  if (authChecking || isLoading || adminCheckLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-screen">
