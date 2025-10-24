@@ -18,3 +18,6 @@ verify_jwt = false
 [functions.assign-lead-round-robin]
 verify_jwt = false
 
+[functions.import-leads-excel]
+verify_jwt = true
+
