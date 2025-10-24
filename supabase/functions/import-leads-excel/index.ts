@@ -94,6 +94,24 @@ Deno.serve(async (req) => {
       errorDetails: [],
     };
 
+    // Normalize status values to match database enum
+    const normalizeStatus = (rawStatus: string | undefined): string => {
+      if (!rawStatus) return 'New Lead';
+      
+      const status = String(rawStatus).toLowerCase().trim();
+      
+      // Map common status variations to valid enum values
+      if (status.includes('new') || status.includes('lead')) return 'New Lead';
+      if (status.includes('warm')) return 'Warm';
+      if (status.includes('hot')) return 'HOT';
+      if (status.includes('sold') || status.includes('won') || status.includes('win')) return 'SOLD';
+      if (status.includes('lost') || status.includes('lose')) return 'LOST';
+      if (status.includes('problem') || status.includes('issue')) return 'PROBLEM';
+      
+      // Default to New Lead if status doesn't match any pattern
+      return 'New Lead';
+    };
+
     // Normalize column names (handle different possible column names)
     const normalizeColumnName = (row: any): LeadRow | null => {
       try {
@@ -153,7 +171,7 @@ Deno.serve(async (req) => {
           emirate: emirateField ? row[emirateField] : undefined,
           nationality_code: nationalityField ? row[nationalityField] : undefined,
           service_required: serviceField ? row[serviceField] : undefined,
-          status: statusField ? row[statusField] : 'New Lead',
+          status: normalizeStatus(statusField ? row[statusField] : undefined),
         };
       } catch (error) {
         console.error('Error normalizing row:', error);
