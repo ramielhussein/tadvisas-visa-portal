@@ -13,6 +13,7 @@ import { Search, Plus, Download, Upload, ArrowUpDown } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
+import { cn } from "@/lib/utils";
 
 interface Lead {
   id: string;
@@ -389,35 +390,35 @@ const LeadManagement = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Client Name</TableHead>
-                      <TableHead>Mobile</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Emirate</TableHead>
-                      <TableHead>
+                      <TableHead className="min-w-[120px]">Name</TableHead>
+                      <TableHead className="min-w-[110px]">Mobile</TableHead>
+                      <TableHead className="hidden lg:table-cell">Email</TableHead>
+                      <TableHead className="hidden md:table-cell">Emirate</TableHead>
+                      <TableHead className="min-w-[60px]">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort('nationality_code')}
-                          className="h-8 px-2 hover:bg-accent"
+                          className="h-8 px-1 hover:bg-accent"
                         >
-                          Nationality
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                          Nat.
+                          <ArrowUpDown className="ml-1 h-3 w-3" />
                         </Button>
                       </TableHead>
-                      <TableHead>
+                      <TableHead className="hidden xl:table-cell">
                         <Button
                           variant="ghost"
                           onClick={() => handleSort('service_required')}
-                          className="h-8 px-2 hover:bg-accent"
+                          className="h-8 px-1 hover:bg-accent"
                         >
                           Service
-                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                          <ArrowUpDown className="ml-1 h-3 w-3" />
                         </Button>
                       </TableHead>
-                      <TableHead>Status</TableHead>
-                      {isAdmin && <TableHead>Assigned To</TableHead>}
-                      <TableHead>Remind Me</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead className="min-w-[80px]">Status</TableHead>
+                      {isAdmin && <TableHead className="min-w-[140px]">Assigned</TableHead>}
+                      <TableHead className="hidden md:table-cell min-w-[90px]">Remind</TableHead>
+                      <TableHead className="hidden lg:table-cell min-w-[90px]">Created</TableHead>
+                      <TableHead className="min-w-[100px]">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -429,17 +430,17 @@ const LeadManagement = () => {
                       </TableRow>
                     ) : (
                       filteredLeads.map((lead) => (
-                        <TableRow key={lead.id}>
+                        <TableRow key={lead.id} className="text-sm">
                           <TableCell className="font-medium">
                             {lead.client_name || "-"}
                           </TableCell>
-                          <TableCell>{lead.mobile_number}</TableCell>
-                          <TableCell>{lead.email || "-"}</TableCell>
-                          <TableCell>{lead.emirate || "-"}</TableCell>
+                          <TableCell className="font-mono text-xs">{lead.mobile_number}</TableCell>
+                          <TableCell className="hidden lg:table-cell truncate max-w-[150px]">{lead.email || "-"}</TableCell>
+                          <TableCell className="hidden md:table-cell">{lead.emirate || "-"}</TableCell>
                           <TableCell>{lead.nationality_code || "-"}</TableCell>
-                          <TableCell>{lead.service_required || "-"}</TableCell>
+                          <TableCell className="hidden xl:table-cell truncate max-w-[120px]">{lead.service_required || "-"}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(lead.status)}>
+                            <Badge className={cn("text-xs px-2 py-0", getStatusColor(lead.status))}>
                               {lead.status}
                             </Badge>
                           </TableCell>
@@ -454,7 +455,7 @@ const LeadManagement = () => {
                                   )
                                 }
                               >
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-[130px] h-8 text-xs">
                                   <SelectValue placeholder="Unassigned" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -463,31 +464,32 @@ const LeadManagement = () => {
                                   </SelectItem>
                                   {users.map((user) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                      {user.email}
+                                      {user.email.split('@')[0]}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             </TableCell>
                           )}
-                          <TableCell>
-                            {new Date(lead.remind_me).toLocaleDateString()}
+                          <TableCell className="hidden md:table-cell text-xs">
+                            {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                           </TableCell>
-                          <TableCell>
-                            {new Date(lead.created_at).toLocaleDateString()}
+                          <TableCell className="hidden lg:table-cell text-xs">
+                            {new Date(lead.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                           </TableCell>
                           <TableCell>
                             {lead.client_converted ? (
-                              <Badge variant="outline" className="bg-green-50">
+                              <Badge variant="outline" className="bg-green-50 text-xs whitespace-nowrap">
                                 ✓ Client
                               </Badge>
                             ) : (
                               <Button
                                 size="sm"
                                 variant="outline"
+                                className="h-7 text-xs px-2"
                                 onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
                               >
-                                Convert to Client
+                                Convert
                               </Button>
                             )}
                           </TableCell>
