@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-interface Lead {
+export interface Lead {
   id: string;
   client_name: string;
   email: string | null;
@@ -17,6 +17,9 @@ interface Lead {
   service_required: string | null;
   nationality_code: string | null;
   remind_me: string;
+  created_at: string;
+  assigned_to: string | null;
+  client_converted: boolean;
 }
 
 interface EditLeadDialogProps {

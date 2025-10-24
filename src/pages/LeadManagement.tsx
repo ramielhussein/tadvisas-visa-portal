@@ -478,7 +478,12 @@ const LeadManagement = () => {
                       paginatedLeads.map((lead) => (
                         <TableRow key={lead.id} className="text-sm">
                           <TableCell className="font-medium">
-                            {lead.client_name || "-"}
+                            <button
+                              onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                              className="hover:text-primary hover:underline text-left"
+                            >
+                              {lead.client_name || "-"}
+                            </button>
                           </TableCell>
                           <TableCell className="font-mono text-xs">{lead.mobile_number}</TableCell>
                           <TableCell className="hidden lg:table-cell truncate max-w-[150px]">{lead.email || "-"}</TableCell>

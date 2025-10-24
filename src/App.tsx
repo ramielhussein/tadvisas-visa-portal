@@ -36,6 +36,7 @@ import BookWorker from "./pages/BookWorker";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import LeadManagement from "./pages/LeadManagement";
+import LeadDetail from "./pages/LeadDetail";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
@@ -79,6 +80,7 @@ const App = () => (
           <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
+          <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
