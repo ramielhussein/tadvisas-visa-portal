@@ -84,6 +84,9 @@ export default function UserList() {
     if (!editedUser) return;
 
     setSaving(true);
+    
+    console.log('Attempting to update user:', editedUser.id);
+    
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -93,9 +96,10 @@ export default function UserList() {
       .eq('id', editedUser.id);
 
     if (error) {
+      console.error('Update error:', error);
       toast({
         title: "Error",
-        description: "Failed to update user",
+        description: `Failed to update user: ${error.message}`,
         variant: "destructive",
       });
     } else {
