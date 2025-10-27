@@ -48,6 +48,7 @@ import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
 import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
+import MyCVs from "./pages/MyCVs";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => (
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
           <Route path="/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
           <Route path="/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
+          <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

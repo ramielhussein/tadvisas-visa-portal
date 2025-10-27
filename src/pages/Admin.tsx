@@ -70,6 +70,7 @@ export default function Admin() {
       color: "text-orange-600",
       bgColor: "bg-orange-50",
       items: [
+        { title: "My CVs", path: "/my-cvs", icon: FileText, description: "View your submitted CVs" },
         { title: "CV Wizard Form", path: "/cvwizard", icon: FileText, description: "Create new worker CV" },
         { title: "CV Review & Approval", path: "/admin/cvwizard-review", icon: ListChecks, description: "Review submitted CVs" },
         { title: "Worker Album", path: "/wizardalbum", icon: Images, description: "Browse available workers" },

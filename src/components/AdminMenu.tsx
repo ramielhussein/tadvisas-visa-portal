@@ -272,6 +272,14 @@ const AdminMenu = () => {
           {/* CV Wizard Management */}
           <DropdownMenuLabel className="text-xs text-muted-foreground">CV Wizard</DropdownMenuLabel>
           <DropdownMenuItem 
+            onClick={() => handleNavigation('/my-cvs')}
+            className={location.pathname === '/my-cvs' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            My CVs
+          </DropdownMenuItem>
+          
+          <DropdownMenuItem 
             onClick={() => handleNavigation('/admin/cvwizard-review')}
             className={location.pathname === '/admin/cvwizard-review' ? 'bg-accent' : ''}
           >
