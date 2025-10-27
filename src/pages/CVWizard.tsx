@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ const CVWizard = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState<string>("");
   const totalSteps = 10;
 
   const [formData, setFormData] = useState<CVFormData>({
@@ -73,6 +74,23 @@ const CVWizard = () => {
     },
     consent: false,
   });
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+        
+        setCurrentUserName(profile?.full_name || profile?.email || user.email || 'User');
+      }
+    };
+    
+    fetchUserProfile();
+  }, []);
 
   const updateFormData = (data: Partial<CVFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -286,6 +304,11 @@ const CVWizard = () => {
             <CardDescription>
               Step {currentStep} of {totalSteps}
             </CardDescription>
+            {currentUserName && (
+              <p className="text-sm text-muted-foreground mt-2">
+                This CV is created by <span className="font-semibold text-foreground">{currentUserName}</span>
+              </p>
+            )}
             <Progress value={progress} className="mt-4" />
           </CardHeader>
 
