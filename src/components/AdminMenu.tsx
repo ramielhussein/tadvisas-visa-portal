@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2 } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -89,6 +89,23 @@ const AdminMenu = () => {
       title: "Navigating",
       description: `Opening ${path.split('/').pop()}`,
     });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out",
+      });
+      navigate('/auth');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   // Don't render anything if user is not admin
@@ -316,6 +333,16 @@ const AdminMenu = () => {
           >
             <X className="h-4 w-4 mr-2" />
             Hide Menu
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem 
+            onClick={handleLogout}
+            className="text-destructive focus:text-destructive"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Log Out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
