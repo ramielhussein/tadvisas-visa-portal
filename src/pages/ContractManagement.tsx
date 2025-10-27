@@ -118,7 +118,7 @@ const ContractManagement = () => {
           worker_name: contract.workers?.name || 'Unknown',
           nationality: contract.workers?.nationality_code || 'Unknown',
           location: 'Not specified', // Should come from contract/deal if available
-          status: 'pending_approval',
+          status: 'draft',
           price_incl_vat: Number(contract.total_amount),
           base_price_ex_vat: Number(contract.base_amount),
           vat_amount: Number(contract.vat_amount),
@@ -143,8 +143,8 @@ const ContractManagement = () => {
       setCancelDialogOpen(false);
       setSelectedContract(null);
       
-      toast.success("Contract cancelled and refund created", {
-        description: `Refund ${data.refund.id} has been created and is pending approval`,
+      toast.success("Contract cancelled and refund draft created", {
+        description: `Refund draft created. Complete it in Refunds Management.`,
       });
       
       // Navigate to refunds approval page

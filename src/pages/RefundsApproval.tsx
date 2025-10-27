@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
@@ -11,7 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CheckCircle, XCircle, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, Clock, Edit } from "lucide-react";
+import CompleteRefundDialog from "@/components/refunds/CompleteRefundDialog";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface Refund {
   id: string;
@@ -20,6 +22,8 @@ interface Refund {
   client_mobile: string;
   worker_name: string;
   nationality: string;
+  emirate: string;
+  location: string;
   total_refund_amount: number;
   price_incl_vat: number;
   base_price_ex_vat: number;
@@ -41,9 +45,29 @@ export default function RefundsApproval() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedRefund, setSelectedRefund] = useState<Refund | null>(null);
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [approvalAction, setApprovalAction] = useState<"approve" | "reject">("approve");
   const [rejectionReason, setRejectionReason] = useState("");
+  const [userRole, setUserRole] = useState<string>("");
   const queryClient = useQueryClient();
+  const { permissions, hasPermission } = usePermissions();
+
+  useEffect(() => {
+    const checkRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+
+      if (roles && roles.length > 0) {
+        setUserRole(roles[0].role);
+      }
+    };
+    checkRole();
+  }, []);
 
   const { data: refunds, isLoading } = useQuery({
     queryKey: ["refunds-approval", statusFilter],
@@ -241,8 +265,15 @@ export default function RefundsApproval() {
     });
   };
 
+  const handleCompleteRefund = (refund: Refund) => {
+    setSelectedRefund(refund);
+    setShowCompleteDialog(true);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "draft":
+        return <Badge variant="outline" className="bg-gray-100 text-gray-800"><Edit className="w-3 h-3 mr-1" />Draft</Badge>;
       case "pending_approval":
         return <Badge variant="outline" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case "approved":
@@ -255,6 +286,10 @@ export default function RefundsApproval() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  const hasFinancePermission = hasPermission("finance", "manage_invoices");
+  const canEditDraft = userRole === "admin" || !hasFinancePermission;
+  const canApprove = userRole === "admin" || hasFinancePermission;
 
   if (isLoading) {
     return (
@@ -274,7 +309,7 @@ export default function RefundsApproval() {
             <div className="flex justify-between items-start">
               <div>
                 <CardTitle>Refunds Management</CardTitle>
-                <CardDescription>Review and approve refund requests from cancelled contracts</CardDescription>
+                <CardDescription>Manage refund requests from cancelled contracts</CardDescription>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[200px]">
@@ -282,6 +317,7 @@ export default function RefundsApproval() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Refunds</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="pending_approval">Pending Approval</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
                   <SelectItem value="rejected">Rejected</SelectItem>
@@ -335,7 +371,17 @@ export default function RefundsApproval() {
                       <TableCell>{getStatusBadge(refund.status)}</TableCell>
                       <TableCell>{format(new Date(refund.created_at), "dd MMM yyyy")}</TableCell>
                       <TableCell>
-                        {refund.status === "pending_approval" && (
+                        {refund.status === "draft" && canEditDraft && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCompleteRefund(refund)}
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Complete Refund
+                          </Button>
+                        )}
+                        {refund.status === "pending_approval" && canApprove && (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
@@ -360,6 +406,12 @@ export default function RefundsApproval() {
                         )}
                         {refund.status === "approved" && (
                           <p className="text-sm text-green-600">Invoice created</p>
+                        )}
+                        {refund.status === "draft" && !canEditDraft && (
+                          <p className="text-sm text-muted-foreground">Awaiting completion</p>
+                        )}
+                        {refund.status === "pending_approval" && !canApprove && (
+                          <p className="text-sm text-muted-foreground">Awaiting approval</p>
                         )}
                       </TableCell>
                     </TableRow>
@@ -437,6 +489,16 @@ export default function RefundsApproval() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CompleteRefundDialog
+        refund={selectedRefund}
+        open={showCompleteDialog}
+        onOpenChange={setShowCompleteDialog}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["refunds-approval"] });
+          setSelectedRefund(null);
+        }}
+      />
     </Layout>
   );
 }

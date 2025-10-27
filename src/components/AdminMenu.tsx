@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut, ArrowLeftRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -235,16 +235,8 @@ const AdminMenu = () => {
             onClick={() => handleNavigation('/refunds-approval')}
             className={location.pathname === '/refunds-approval' ? 'bg-accent' : ''}
           >
-            <FileText className="h-4 w-4 mr-2" />
-            Refunds Approval
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/refundslist')}
-            className={location.pathname === '/refundslist' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Refunds List
+            <ArrowLeftRight className="h-4 w-4 mr-2" />
+            Refunds Management
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
