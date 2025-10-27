@@ -94,20 +94,21 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            {user && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground border-l pl-4">
-                <User className="h-3 w-3" />
+            {user ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <User className="h-4 w-4" />
                 <span className="font-medium">
                   {profile?.full_name || user.email}
                 </span>
               </div>
+            ) : (
+              <Button asChild className="bg-green-500 hover:bg-green-600 text-white">
+                <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  WhatsApp Now
+                </a>
+              </Button>
             )}
-            <Button asChild className="bg-green-500 hover:bg-green-600 text-white">
-              <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                WhatsApp Now
-              </a>
-            </Button>
           </div>
 
           {/* Mobile menu button and WhatsApp button */}
