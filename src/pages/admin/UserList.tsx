@@ -127,7 +127,7 @@ export default function UserList() {
 
   return (
     <Layout>
-      <div className="container max-w-6xl mx-auto py-8">
+      <div className="container max-w-6xl mx-auto py-4">
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -147,18 +147,18 @@ export default function UserList() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-2">
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex-1">
-                    <div className="font-semibold">{user.email}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="font-semibold text-sm">{user.email}</div>
+                    <div className="text-xs text-muted-foreground">
                       {user.full_name || <span className="italic">No name set</span>}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
+                    <div className="text-xs text-muted-foreground mt-0.5">
                       Permissions: 
                       {user.permissions?.cv?.create && " CV-Create"}
                       {user.permissions?.cv?.edit && " CV-Edit"}
@@ -168,7 +168,7 @@ export default function UserList() {
                       {user.permissions?.leads?.assign && " Leads-Assign"}
                     </div>
                   </div>
-                  <Button onClick={() => handleEditUser(user)} variant="outline">
+                  <Button onClick={() => handleEditUser(user)} variant="outline" size="sm">
                     Edit
                   </Button>
                 </div>
@@ -188,13 +188,13 @@ export default function UserList() {
           </DialogHeader>
 
           {editedUser && (
-            <div className="space-y-6">
-              <div className="space-y-2">
+            <div className="space-y-4">
+              <div className="space-y-1.5">
                 <Label>Email</Label>
                 <Input value={editedUser.email} disabled />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="edit-fullName">Full Name</Label>
                 <Input
                   id="edit-fullName"
@@ -204,13 +204,13 @@ export default function UserList() {
                 />
               </div>
 
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="font-semibold text-lg">Permissions</h3>
+              <div className="space-y-3 pt-3 border-t">
+                <h3 className="font-semibold text-base">Permissions</h3>
                 
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold">CV Management</Label>
-                    <div className="space-y-2 ml-4">
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">CV Management</Label>
+                    <div className="space-y-1.5 ml-3">
                       <div className="flex items-center space-x-2">
                         <Checkbox 
                           id="edit-cv-create"
@@ -268,9 +268,9 @@ export default function UserList() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold">Refunds</Label>
-                    <div className="space-y-2 ml-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Refunds</Label>
+                    <div className="space-y-1.5 ml-3">
                       <div className="flex items-center space-x-2">
                         <Checkbox 
                           id="edit-refund-create"
@@ -292,9 +292,9 @@ export default function UserList() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label className="text-base font-semibold">Lead Management</Label>
-                    <div className="space-y-2 ml-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Lead Management</Label>
+                    <div className="space-y-1.5 ml-3">
                       <div className="flex items-center space-x-2">
                         <Checkbox 
                           id="edit-leads-create"
@@ -336,7 +336,7 @@ export default function UserList() {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4">
+              <div className="flex gap-2 pt-3">
                 <Button onClick={handleSaveUser} disabled={saving} className="flex-1">
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   <Save className="mr-2 h-4 w-4" />
