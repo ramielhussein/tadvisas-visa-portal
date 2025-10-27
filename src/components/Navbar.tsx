@@ -52,8 +52,9 @@ const Navbar = () => {
     { name: "Monthly Packages", path: "/monthly-packages" },
     { name: "FAQ", path: "/faq" },
     { name: "Contact", path: "/contact" },
-    { name: "Start Here & Now", path: "/start-here" },
   ];
+
+  const authenticatedItems = user ? navItems : [...navItems, { name: "Start Here & Now", path: "/start-here" }];
 
   const handleWhatsAppClick = () => {
     // Track WhatsApp click conversion
@@ -82,7 +83,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
+            {authenticatedItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
@@ -138,7 +139,7 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navItems.filter(item => item.name !== "Start Here & Now").map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.path}
@@ -148,19 +149,28 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="px-3 py-2 space-y-2">
-                <Button asChild className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
-                  <Link to="/start-here" onClick={() => setIsMenuOpen(false)}>
-                    Apply Now
-                  </Link>
-                </Button>
-                <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    WhatsApp Now
-                  </a>
-                </Button>
-              </div>
+              {user ? (
+                <div className="px-3 py-2 flex items-center gap-3">
+                  <NotificationBell />
+                  <span className="text-sm text-muted-foreground">
+                    {profile?.full_name || user.email}
+                  </span>
+                </div>
+              ) : (
+                <div className="px-3 py-2 space-y-2">
+                  <Button asChild className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+                    <Link to="/start-here" onClick={() => setIsMenuOpen(false)}>
+                      Apply Now
+                    </Link>
+                  </Button>
+                  <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
+                    <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      WhatsApp Now
+                    </a>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
