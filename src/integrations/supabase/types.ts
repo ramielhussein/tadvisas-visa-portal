@@ -753,52 +753,55 @@ export type Database = {
         Row: {
           account_balance: number | null
           address: string | null
-          contact_person: string | null
+          contact_person: string
           created_at: string
           currency: string | null
           email: string | null
           id: string
           notes: string | null
           payment_terms: string | null
-          phone: string | null
+          phone: string
           status: string | null
           supplier_name: string
           supplier_type: string
           tax_registration: string | null
+          telephone: string
           updated_at: string
         }
         Insert: {
           account_balance?: number | null
           address?: string | null
-          contact_person?: string | null
+          contact_person: string
           created_at?: string
           currency?: string | null
           email?: string | null
           id?: string
           notes?: string | null
           payment_terms?: string | null
-          phone?: string | null
+          phone: string
           status?: string | null
           supplier_name: string
           supplier_type: string
           tax_registration?: string | null
+          telephone?: string
           updated_at?: string
         }
         Update: {
           account_balance?: number | null
           address?: string | null
-          contact_person?: string | null
+          contact_person?: string
           created_at?: string
           currency?: string | null
           email?: string | null
           id?: string
           notes?: string | null
           payment_terms?: string | null
-          phone?: string | null
+          phone?: string
           status?: string | null
           supplier_name?: string
           supplier_type?: string
           tax_registration?: string | null
+          telephone?: string
           updated_at?: string
         }
         Relationships: []

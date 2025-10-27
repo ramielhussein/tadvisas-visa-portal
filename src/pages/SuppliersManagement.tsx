@@ -23,12 +23,13 @@ import { z } from "zod";
 const supplierSchema = z.object({
   supplier_name: z.string().min(1, "Supplier name required").max(200),
   supplier_type: z.string().min(1, "Type required"),
-  contact_person: z.string().max(200).optional(),
-  phone: z.string().max(20).optional(),
+  contact_person: z.string().min(1, "Contact person required").max(200),
+  phone: z.string().min(1, "Contact number required").max(20),
+  telephone: z.string().min(1, "Telephone required").max(20),
   email: z.string().email().max(255).optional().or(z.literal("")),
   address: z.string().max(500).optional(),
   tax_registration: z.string().max(100).optional(),
-  payment_terms: z.string(),
+  payment_terms: z.enum(["Advance", "On Arrival", "Post Arrival"]),
   currency: z.enum(["AED", "USD"]),
   notes: z.string().max(2000).optional(),
 });
@@ -59,10 +60,11 @@ const SuppliersManagement = () => {
     supplier_type: "",
     contact_person: "",
     phone: "",
+    telephone: "",
     email: "",
     address: "",
     tax_registration: "",
-    payment_terms: "Net 30",
+    payment_terms: "On Arrival",
     currency: "AED",
     notes: "",
   });
@@ -114,21 +116,20 @@ const SuppliersManagement = () => {
       const validated = supplierSchema.parse({
         supplier_name: formData.supplier_name.trim(),
         supplier_type: formData.supplier_type,
-        contact_person: formData.contact_person.trim() || undefined,
-        phone: formData.phone.trim() || undefined,
+        contact_person: formData.contact_person.trim(),
+        phone: formData.phone.trim(),
+        telephone: formData.telephone.trim(),
         email: formData.email.trim() || undefined,
         address: formData.address.trim() || undefined,
         tax_registration: formData.tax_registration.trim() || undefined,
         payment_terms: formData.payment_terms,
+        currency: formData.currency,
         notes: formData.notes.trim() || undefined,
       });
 
       setSubmitting(true);
 
-      const { error } = await supabase.from("suppliers").insert({
-        ...validated,
-        status: "Active",
-      });
+      const { error } = await supabase.from("suppliers").insert(validated);
 
       if (error) throw error;
 
@@ -143,10 +144,11 @@ const SuppliersManagement = () => {
         supplier_type: "",
         contact_person: "",
         phone: "",
+        telephone: "",
         email: "",
         address: "",
         tax_registration: "",
-        payment_terms: "Net 30",
+        payment_terms: "On Arrival",
         currency: "AED",
         notes: "",
       });
@@ -234,32 +236,46 @@ const SuppliersManagement = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="contact_person">Contact Person</Label>
+                      <Label htmlFor="contact_person">Contact Person *</Label>
                       <Input
                         id="contact_person"
+                        required
                         value={formData.contact_person}
                         onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
+                      <Label htmlFor="phone">Contact Number *</Label>
                       <Input
                         id="phone"
+                        required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="telephone">Telephone *</Label>
+                      <Input
+                        id="telephone"
+                        required
+                        value={formData.telephone}
+                        onChange={(e) => setFormData({ ...formData, telephone: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -274,7 +290,7 @@ const SuppliersManagement = () => {
 
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tax_registration">Tax Registration</Label>
+                      <Label htmlFor="tax_registration">TRN</Label>
                       <Input
                         id="tax_registration"
                         value={formData.tax_registration}
@@ -299,7 +315,7 @@ const SuppliersManagement = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="payment_terms">Payment Terms</Label>
+                      <Label htmlFor="payment_terms">Payment Terms *</Label>
                       <Select
                         value={formData.payment_terms}
                         onValueChange={(value) => setFormData({ ...formData, payment_terms: value })}
@@ -308,11 +324,9 @@ const SuppliersManagement = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Net 7">Net 7</SelectItem>
-                          <SelectItem value="Net 15">Net 15</SelectItem>
-                          <SelectItem value="Net 30">Net 30</SelectItem>
-                          <SelectItem value="Net 60">Net 60</SelectItem>
-                          <SelectItem value="Due on Receipt">Due on Receipt</SelectItem>
+                          <SelectItem value="Advance">Advance</SelectItem>
+                          <SelectItem value="On Arrival">On Arrival</SelectItem>
+                          <SelectItem value="Post Arrival">Post Arrival</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
