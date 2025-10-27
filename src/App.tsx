@@ -12,6 +12,7 @@ import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import StartHere from "./pages/StartHere";
 import Admin from "./pages/Admin";
+import ClientSubmissions from "./pages/ClientSubmissions";
 import Refund from "./pages/Refund";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -65,7 +66,8 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/start-here" element={<StartHere />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/client-submissions" element={<ClientSubmissions />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/id-oc" element={<IdOc />} />

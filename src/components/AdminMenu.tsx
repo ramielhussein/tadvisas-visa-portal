@@ -157,6 +157,16 @@ const AdminMenu = () => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           
+          {/* Main Admin Hub */}
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/admin')}
+            className={location.pathname === '/admin' ? 'bg-accent font-semibold' : ''}
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Admin Hub (Main Menu)
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          
           {/* CRM Section */}
           <DropdownMenuLabel className="text-xs text-muted-foreground">CRM & Leads</DropdownMenuLabel>
           <DropdownMenuItem 
@@ -226,8 +236,8 @@ const AdminMenu = () => {
           {/* Forms & Submissions */}
           <DropdownMenuLabel className="text-xs text-muted-foreground">Forms & Submissions</DropdownMenuLabel>
           <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin')}
-            className={location.pathname === '/admin' ? 'bg-accent' : ''}
+            onClick={() => handleNavigation('/client-submissions')}
+            className={location.pathname === '/client-submissions' ? 'bg-accent' : ''}
           >
             <FileText className="h-4 w-4 mr-2" />
             Client Submissions (Start Here)
