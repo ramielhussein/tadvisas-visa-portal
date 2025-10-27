@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Eye, Download, Mail, Phone, Calendar, Package, Plus, FileText, Search, Filter } from "lucide-react";
+import { Loader2, Eye, Download, Mail, Phone, Calendar, Package, Plus, FileText, Search, Filter, Building2, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 
 interface Submission {
@@ -355,11 +355,70 @@ export default function Admin() {
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-12">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">Client Request Submissions</h1>
-            <Button onClick={handleLogout} variant="outline">
-              Logout
-            </Button>
+            <h1 className="text-4xl font-bold">Forms & Submissions</h1>
+            <div className="flex gap-2">
+              <Button onClick={() => navigate('/suppliers')} variant="outline">
+                <Building2 className="w-4 h-4 mr-2" />
+                Suppliers & A/P
+              </Button>
+              <Button onClick={handleLogout} variant="outline">
+                Logout
+              </Button>
+            </div>
           </div>
+
+          {/* Quick Access Links */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Admin Modules</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col items-start"
+                  onClick={() => navigate('/suppliers')}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Building2 className="w-5 h-5" />
+                    <span className="font-semibold">Suppliers & Accounts Payable</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-left">
+                    Manage supplier information and track outstanding payments
+                  </p>
+                  <ArrowRight className="w-4 h-4 mt-2 ml-auto" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col items-start"
+                  onClick={() => navigate('/crm/dashboard')}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="w-5 h-5" />
+                    <span className="font-semibold">CRM Dashboard</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-left">
+                    View leads, sales performance, and follow-ups
+                  </p>
+                  <ArrowRight className="w-4 h-4 mt-2 ml-auto" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col items-start"
+                  onClick={() => navigate('/financial')}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Package className="w-5 h-5" />
+                    <span className="font-semibold">Financial Dashboard</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-left">
+                    View financial overview and accounts receivable
+                  </p>
+                  <ArrowRight className="w-4 h-4 mt-2 ml-auto" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
