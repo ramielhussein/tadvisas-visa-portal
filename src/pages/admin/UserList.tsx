@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Users, Save } from "lucide-react";
+import { Loader2, Users, Save, UserPlus } from "lucide-react";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import {
   Dialog,
@@ -130,13 +130,21 @@ export default function UserList() {
       <div className="container max-w-6xl mx-auto py-8">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-6 w-6" />
-              User List
-            </CardTitle>
-            <CardDescription>
-              View and manage existing users and their permissions
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-6 w-6" />
+                  User List
+                </CardTitle>
+                <CardDescription>
+                  View and manage existing users and their permissions
+                </CardDescription>
+              </div>
+              <Button onClick={() => navigate('/admin/user-management')}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Create New User
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
