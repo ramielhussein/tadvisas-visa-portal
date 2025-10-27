@@ -796,6 +796,14 @@ const CVWizardReview = () => {
                         </Badge>
                       ))}
                     </div>
+                    {maidCardWorker.skills.cook_details && (
+                      <div className="mt-3 p-3 bg-muted rounded-lg">
+                        <p className="text-sm">
+                          <span className="font-semibold">Cooking Details:</span>{" "}
+                          {maidCardWorker.skills.cook_details}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
