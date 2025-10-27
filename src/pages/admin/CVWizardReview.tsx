@@ -122,6 +122,7 @@ const CVWizardReview = () => {
         job2: editedWorker.job2,
         salary: editedWorker.salary,
         status: editedWorker.status,
+        experience: editedWorker.experience,
       };
 
       // Handle file uploads if new files were selected
@@ -694,7 +695,66 @@ const CVWizardReview = () => {
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">Experience</p>
-                  {selectedWorker.experience.length === 0 ? (
+                  {isEditing ? (
+                    <div className="space-y-3">
+                      {editedWorker.experience.map((exp, i) => (
+                        <div key={i} className="flex gap-2 items-start p-2 border rounded">
+                          <div className="flex-1 grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">Country</Label>
+                              <Input
+                                value={exp.country}
+                                onChange={(e) => {
+                                  const newExp = [...editedWorker.experience];
+                                  newExp[i] = { ...newExp[i], country: e.target.value };
+                                  setEditedWorker({ ...editedWorker, experience: newExp });
+                                }}
+                                className="h-8"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs">Years</Label>
+                              <Input
+                                type="number"
+                                value={exp.years}
+                                onChange={(e) => {
+                                  const newExp = [...editedWorker.experience];
+                                  newExp[i] = { ...newExp[i], years: parseInt(e.target.value) || 0 };
+                                  setEditedWorker({ ...editedWorker, experience: newExp });
+                                }}
+                                className="h-8"
+                              />
+                            </div>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const newExp = editedWorker.experience.filter((_, idx) => idx !== i);
+                              setEditedWorker({ ...editedWorker, experience: newExp });
+                            }}
+                            className="h-8 w-8 p-0 mt-5"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditedWorker({
+                            ...editedWorker,
+                            experience: [...editedWorker.experience, { country: '', years: 0 }]
+                          });
+                        }}
+                      >
+                        + Add Experience
+                      </Button>
+                    </div>
+                  ) : selectedWorker.experience.length === 0 ? (
                     <p className="text-sm">No experience listed</p>
                   ) : (
                     <ul className="space-y-1">
