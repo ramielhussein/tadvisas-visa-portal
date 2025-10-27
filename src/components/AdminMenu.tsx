@@ -213,6 +213,14 @@ const AdminMenu = () => {
             Suppliers & A/P
           </DropdownMenuItem>
 
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/contracts')}
+            className={location.pathname === '/contracts' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Contracts Management
+          </DropdownMenuItem>
+
           <DropdownMenuSeparator />
           
           {/* Forms & Submissions */}

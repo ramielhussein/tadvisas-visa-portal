@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download } from "lucide-react";
+import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download, Building2 } from "lucide-react";
+import PullWorkerDialog from "@/components/cvwizard/PullWorkerDialog";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,8 @@ const CVWizardReview = () => {
   const [maidCardWorker, setMaidCardWorker] = useState<Worker | null>(null);
   const [exporting, setExporting] = useState(false);
   const maidCardRef = useRef<HTMLDivElement>(null);
+  const [pullWorkerOpen, setPullWorkerOpen] = useState(false);
+  const [pullWorkerData, setPullWorkerData] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     loadWorkers();
@@ -281,6 +284,18 @@ const CVWizardReview = () => {
 
                   {worker.status === "Available" && (
                     <>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => {
+                          setPullWorkerData({ id: worker.id, name: worker.name });
+                          setPullWorkerOpen(true);
+                        }}
+                      >
+                        <Building2 className="mr-2 h-4 w-4" />
+                        Pull from Supplier
+                      </Button>
+
                       <Button
                         variant="default"
                         size="sm"
@@ -571,6 +586,19 @@ const CVWizardReview = () => {
               </div>
             </DialogContent>
           </Dialog>
+        )}
+
+        {pullWorkerData && (
+          <PullWorkerDialog
+            open={pullWorkerOpen}
+            onOpenChange={setPullWorkerOpen}
+            workerId={pullWorkerData.id}
+            workerName={pullWorkerData.name}
+            onSuccess={() => {
+              loadWorkers();
+              setPullWorkerData(null);
+            }}
+          />
         )}
       </div>
     </Layout>

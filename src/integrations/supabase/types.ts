@@ -56,6 +56,110 @@ export type Database = {
         }
         Relationships: []
       }
+      contracts: {
+        Row: {
+          base_amount: number
+          client_email: string | null
+          client_name: string
+          client_phone: string
+          contract_date: string
+          contract_number: string
+          created_at: string
+          created_by: string | null
+          duration_months: number | null
+          end_date: string | null
+          id: string
+          monthly_amount: number | null
+          notes: string | null
+          product_id: string
+          salesman_id: string
+          start_date: string
+          status: string
+          total_amount: number
+          updated_at: string
+          vat_amount: number
+          vat_rate: number | null
+          worker_id: string | null
+        }
+        Insert: {
+          base_amount: number
+          client_email?: string | null
+          client_name: string
+          client_phone: string
+          contract_date?: string
+          contract_number: string
+          created_at?: string
+          created_by?: string | null
+          duration_months?: number | null
+          end_date?: string | null
+          id?: string
+          monthly_amount?: number | null
+          notes?: string | null
+          product_id: string
+          salesman_id: string
+          start_date: string
+          status?: string
+          total_amount: number
+          updated_at?: string
+          vat_amount: number
+          vat_rate?: number | null
+          worker_id?: string | null
+        }
+        Update: {
+          base_amount?: number
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string
+          contract_date?: string
+          contract_number?: string
+          created_at?: string
+          created_by?: string | null
+          duration_months?: number | null
+          end_date?: string | null
+          id?: string
+          monthly_amount?: number | null
+          notes?: string | null
+          product_id?: string
+          salesman_id?: string
+          start_date?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          vat_amount?: number
+          vat_rate?: number | null
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_salesman_id_fkey"
+            columns: ["salesman_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           assigned_to: string | null
@@ -372,6 +476,51 @@ export type Database = {
           is_active?: boolean | null
           method_name?: string
           notes?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          allows_manual_adjustment: boolean | null
+          code: string
+          created_at: string
+          default_amount: number | null
+          default_duration_months: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_monthly: boolean | null
+          name: string
+          product_type: string
+          updated_at: string
+        }
+        Insert: {
+          allows_manual_adjustment?: boolean | null
+          code: string
+          created_at?: string
+          default_amount?: number | null
+          default_duration_months?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_monthly?: boolean | null
+          name: string
+          product_type: string
+          updated_at?: string
+        }
+        Update: {
+          allows_manual_adjustment?: boolean | null
+          code?: string
+          created_at?: string
+          default_amount?: number | null
+          default_duration_months?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_monthly?: boolean | null
+          name?: string
+          product_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1187,6 +1336,7 @@ export type Database = {
         Args: { commission_rate: number; gross_amount: number }
         Returns: number
       }
+      generate_contract_number: { Args: never; Returns: string }
       generate_deal_number: { Args: never; Returns: string }
       generate_invoice_number: { Args: never; Returns: string }
       generate_supplier_invoice_number: { Args: never; Returns: string }

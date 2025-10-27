@@ -45,6 +45,8 @@ import SuppliersManagement from "./pages/SuppliersManagement";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
+import ContractManagement from "./pages/ContractManagement";
+import CreateContract from "./pages/CreateContract";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +96,8 @@ const App = () => (
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
+          <Route path="/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
+          <Route path="/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
