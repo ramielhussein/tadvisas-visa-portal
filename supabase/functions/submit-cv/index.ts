@@ -26,6 +26,7 @@ interface CVFormData {
   financials: any;
   salary?: number;
   consent: boolean;
+  created_by: string;
 }
 
 function computeCenterRef(data: CVFormData): string {
@@ -167,6 +168,7 @@ Deno.serve(async (req) => {
         financials,
         salary: formData.salary,
         status: 'Available',
+        created_by: formData.created_by,
       })
       .select()
       .single();

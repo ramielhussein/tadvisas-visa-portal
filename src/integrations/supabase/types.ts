@@ -1009,6 +1009,7 @@ export type Database = {
           center_ref: string | null
           children: number | null
           created_at: string | null
+          created_by: string | null
           education: Json | null
           employer_count: number | null
           employers: Json | null
@@ -1039,6 +1040,7 @@ export type Database = {
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
+          created_by?: string | null
           education?: Json | null
           employer_count?: number | null
           employers?: Json | null
@@ -1069,6 +1071,7 @@ export type Database = {
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
+          created_by?: string | null
           education?: Json | null
           employer_count?: number | null
           employers?: Json | null

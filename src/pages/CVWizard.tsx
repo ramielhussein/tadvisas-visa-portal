@@ -187,6 +187,18 @@ const CVWizard = () => {
     setSubmitting(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to submit a CV.",
+          variant: "destructive",
+        });
+        setSubmitting(false);
+        return;
+      }
+
       // Convert files to base64 before sending
       const filesBase64: any = {};
       for (const [key, file] of Object.entries(formData.files)) {
@@ -208,6 +220,7 @@ const CVWizard = () => {
       const payload = {
         ...formData,
         files: filesBase64,
+        created_by: user.id,
       };
 
       const { data, error } = await supabase.functions.invoke("submit-cv", {
