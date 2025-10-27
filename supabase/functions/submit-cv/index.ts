@@ -174,7 +174,26 @@ Deno.serve(async (req) => {
       .single();
     
     if (insertError) {
-      throw insertError;
+      console.error('Database insert error:', insertError);
+      
+      // Provide more helpful error messages
+      let errorMessage = insertError.message;
+      
+      if (insertError.code === '23514') {
+        // Check constraint violation
+        if (errorMessage.includes('weight_kg')) {
+          errorMessage = 'Weight must be between 35 and 200 kg';
+        } else if (errorMessage.includes('height_cm')) {
+          errorMessage = 'Height must be within valid range';
+        } else if (errorMessage.includes('age')) {
+          errorMessage = 'Age must be within valid range';
+        }
+      }
+      
+      return new Response(
+        JSON.stringify({ error: errorMessage, code: insertError.code }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     
     console.log('Worker created:', worker.id);
