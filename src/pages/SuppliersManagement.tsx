@@ -222,13 +222,14 @@ const SuppliersManagement = () => {
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Agency">Agency</SelectItem>
-                          <SelectItem value="Typing Center">Typing Center</SelectItem>
-                          <SelectItem value="Medical Center">Medical Center</SelectItem>
-                          <SelectItem value="Government Fee">Government Fee</SelectItem>
-                          <SelectItem value="Insurance Provider">Insurance Provider</SelectItem>
-                          <SelectItem value="Vendor">Vendor</SelectItem>
-                          <SelectItem value="Other">Other</SelectItem>
+                          <SelectItem value="IN COUNTRY TADBEER">IN COUNTRY TADBEER</SelectItem>
+                          <SelectItem value="Foreign Agent">Foreign Agent</SelectItem>
+                          <SelectItem value="Foreign Agency">Foreign Agency</SelectItem>
+                          <SelectItem value="LOCAL SUPPLIER">LOCAL SUPPLIER</SelectItem>
+                          <SelectItem value="LOCAL TABLE">LOCAL TABLE</SelectItem>
+                          <SelectItem value="UTILITY PROVIDER">UTILITY PROVIDER</SelectItem>
+                          <SelectItem value="VISA PROVIDER">VISA PROVIDER</SelectItem>
+                          <SelectItem value="OTHER">OTHER</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

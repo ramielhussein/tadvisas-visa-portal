@@ -4,17 +4,17 @@ export interface CVFormData {
   passport_no: string;
   passport_expiry: string;
   nationality_code: string;
-  age: number;
+  age?: number;
   religion: string;
   maid_status: string;
   
   // Jobs & Vitals
   job1: string;
   job2: string;
-  height_cm: number;
-  weight_kg: number;
+  height_cm?: number;
+  weight_kg?: number;
   marital_status: string;
-  children: number;
+  children?: number;
   
   // Languages
   languages: Array<{ name: string; level: string }>;
@@ -68,8 +68,8 @@ export interface CVFormData {
   
   // Financials
   financials: {
-    costs: Array<{ label: string; amount: number }>;
-    revenues: Array<{ label: string; amount: number }>;
+    costs: Array<{ label: string; amount?: number }>;
+    revenues: Array<{ label: string; amount?: number }>;
   };
   
   // Salary

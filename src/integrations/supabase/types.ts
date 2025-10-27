@@ -817,6 +817,27 @@ export type Database = {
           },
         ]
       }
+      suggested_supplier_types: {
+        Row: {
+          created_at: string | null
+          id: string
+          sort_order: number | null
+          type_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          sort_order?: number | null
+          type_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          sort_order?: number | null
+          type_name?: string
+        }
+        Relationships: []
+      }
       supplier_invoices: {
         Row: {
           balance_due: number

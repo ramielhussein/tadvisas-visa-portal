@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Step9Financials = ({ formData, updateFormData }: Props) => {
-  const updateCost = (index: number, amount: number) => {
+  const updateCost = (index: number, amount: number | undefined) => {
     const costs = [...formData.financials.costs];
     costs[index].amount = amount;
     updateFormData({
@@ -24,13 +24,13 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
         ...formData.financials,
         revenues: [
           ...formData.financials.revenues,
-          { label: `Revenue ${formData.financials.revenues.length + 1}`, amount: 0 },
+          { label: `Revenue ${formData.financials.revenues.length + 1}`, amount: undefined },
         ],
       },
     });
   };
 
-  const updateRevenue = (index: number, amount: number) => {
+  const updateRevenue = (index: number, amount: number | undefined) => {
     const revenues = [...formData.financials.revenues];
     revenues[index].amount = amount;
     updateFormData({
@@ -47,8 +47,8 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
     });
   };
 
-  const totalCost = formData.financials.costs.reduce((sum, c) => sum + c.amount, 0);
-  const totalRevenue = formData.financials.revenues.reduce((sum, r) => sum + r.amount, 0);
+  const totalCost = formData.financials.costs.reduce((sum, c) => sum + (c.amount ?? 0), 0);
+  const totalRevenue = formData.financials.revenues.reduce((sum, r) => sum + (r.amount ?? 0), 0);
   const pnl = totalRevenue - totalCost;
 
   return (
@@ -61,8 +61,8 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
           id="salary"
           type="number"
           min={0}
-          value={formData.salary || ''}
-          onChange={(e) => updateFormData({ salary: parseFloat(e.target.value) || undefined })}
+          value={formData.salary ?? ''}
+          onChange={(e) => updateFormData({ salary: e.target.value ? parseFloat(e.target.value) : undefined })}
           placeholder="e.g. 1500"
         />
       </div>
@@ -75,8 +75,9 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
             <Input
               type="number"
               min={0}
-              value={cost.amount}
-              onChange={(e) => updateCost(index, parseFloat(e.target.value) || 0)}
+              value={cost.amount ?? ''}
+              onChange={(e) => updateCost(index, e.target.value ? parseFloat(e.target.value) : undefined)}
+              placeholder="0"
             />
           </div>
         ))}
@@ -100,8 +101,9 @@ const Step9Financials = ({ formData, updateFormData }: Props) => {
               <Input
                 type="number"
                 min={0}
-                value={revenue.amount}
-                onChange={(e) => updateRevenue(index, parseFloat(e.target.value) || 0)}
+                value={revenue.amount ?? ''}
+                onChange={(e) => updateRevenue(index, e.target.value ? parseFloat(e.target.value) : undefined)}
+                placeholder="0"
               />
             </div>
             <Button

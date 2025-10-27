@@ -1,6 +1,9 @@
 import { FileText, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const FloatingButtons = () => {
+  const navigate = useNavigate();
+
   const handleMaidVisaClick = () => {
     // Track WhatsApp click conversion
     if ((window as any).gtag) {
@@ -27,6 +30,10 @@ const FloatingButtons = () => {
     window.open(whatsappUrl, "_blank");
   };
 
+  const handleTadmaidsClick = () => {
+    navigate('/cvwizard');
+  };
+
   return (
     <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-nowrap gap-3 whitespace-nowrap">
       <button
@@ -42,6 +49,13 @@ const FloatingButtons = () => {
       >
         <Users className="w-4 h-4" />
         <span className="text-xs font-semibold">Hire a Maid</span>
+      </button>
+      <button
+        onClick={handleTadmaidsClick}
+        className="group shrink-0 flex items-center gap-2 bg-white backdrop-blur-sm border border-primary/30 text-primary px-3 py-2 md:px-5 md:py-3 rounded-none md:rounded-full shadow-lg hover:shadow-xl hover:bg-primary/10 transition-all transform hover:scale-105 whitespace-nowrap"
+      >
+        <FileText className="w-4 h-4" />
+        <span className="text-xs font-semibold">TADMAIDS</span>
       </button>
     </div>
   );

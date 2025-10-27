@@ -3,10 +3,14 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download, Building2 } from "lucide-react";
+import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download, Building2, Edit, Save, X } from "lucide-react";
 import PullWorkerDialog from "@/components/cvwizard/PullWorkerDialog";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   Dialog,
   DialogContent,
@@ -45,9 +49,12 @@ interface Worker {
 
 const CVWizardReview = () => {
   const { toast } = useToast();
+  const { permissions, hasPermission } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
+  const [editedWorker, setEditedWorker] = useState<Worker | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [maidCardOpen, setMaidCardOpen] = useState(false);
   const [maidCardWorker, setMaidCardWorker] = useState<Worker | null>(null);
@@ -84,7 +91,62 @@ const CVWizardReview = () => {
 
   const handleView = (worker: Worker) => {
     setSelectedWorker(worker);
+    setEditedWorker({ ...worker });
+    setIsEditing(false);
     setDialogOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!hasPermission('cv', 'edit')) {
+      toast({
+        title: "Permission Denied",
+        description: "You don't have permission to edit CVs",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editedWorker) return;
+
+    try {
+      const { error } = await supabase
+        .from("workers")
+        .update({
+          name: editedWorker.name,
+          age: editedWorker.age,
+          nationality_code: editedWorker.nationality_code,
+          job1: editedWorker.job1,
+          job2: editedWorker.job2,
+          salary: editedWorker.salary,
+          status: editedWorker.status,
+        })
+        .eq("id", editedWorker.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "CV updated successfully",
+      });
+
+      setIsEditing(false);
+      setSelectedWorker(editedWorker);
+      loadWorkers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedWorker(selectedWorker ? { ...selectedWorker } : null);
+    setIsEditing(false);
   };
 
   const handleShowMaidCard = (worker: Worker) => {
@@ -143,6 +205,15 @@ const CVWizardReview = () => {
   };
 
   const handleApprove = async (id: string) => {
+    if (!hasPermission('cv', 'edit')) {
+      toast({
+        title: "Permission Denied",
+        description: "You don't have permission to change CV status",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("workers")
@@ -167,6 +238,15 @@ const CVWizardReview = () => {
   };
 
   const handleReject = async (id: string) => {
+    if (!hasPermission('cv', 'edit')) {
+      toast({
+        title: "Permission Denied",
+        description: "You don't have permission to change CV status",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("workers")
@@ -321,31 +401,130 @@ const CVWizardReview = () => {
           ))}
         </div>
 
-        {selectedWorker && (
+        {selectedWorker && editedWorker && (
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>{selectedWorker.name}</DialogTitle>
-                <DialogDescription>{selectedWorker.center_ref}</DialogDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <DialogTitle>{selectedWorker.name}</DialogTitle>
+                    <DialogDescription>{selectedWorker.center_ref}</DialogDescription>
+                  </div>
+                  {!isEditing ? (
+                    <Button variant="outline" size="sm" onClick={handleEdit}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleCancelEdit}>
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                      <Button size="sm" onClick={handleSaveEdit}>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </DialogHeader>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Passport No</p>
+                    <Label className="text-sm text-muted-foreground">Name</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedWorker.name}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, name: e.target.value })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Passport No</Label>
                     <p className="font-medium">{selectedWorker.passport_no}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Age</p>
-                    <p className="font-medium">{selectedWorker.age}</p>
+                    <Label className="text-sm text-muted-foreground">Age</Label>
+                    {isEditing ? (
+                      <Input
+                        type="number"
+                        value={editedWorker.age}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, age: parseInt(e.target.value) })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.age}</p>
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Nationality</p>
-                    <p className="font-medium">{selectedWorker.nationality_code}</p>
+                    <Label className="text-sm text-muted-foreground">Nationality</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedWorker.nationality_code}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, nationality_code: e.target.value })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.nationality_code}</p>
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Job</p>
-                    <p className="font-medium">{selectedWorker.job1}</p>
+                    <Label className="text-sm text-muted-foreground">Job 1</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedWorker.job1}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, job1: e.target.value })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.job1}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Job 2</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedWorker.job2 || ''}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, job2: e.target.value })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.job2 || 'N/A'}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Salary (AED)</Label>
+                    {isEditing ? (
+                      <Input
+                        type="number"
+                        value={editedWorker.salary || ''}
+                        onChange={(e) => setEditedWorker({ ...editedWorker, salary: e.target.value ? parseInt(e.target.value) : undefined })}
+                      />
+                    ) : (
+                      <p className="font-medium">{selectedWorker.salary || 'N/A'}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-sm text-muted-foreground">Status</Label>
+                    {isEditing ? (
+                      <Select
+                        value={editedWorker.status}
+                        onValueChange={(value) => setEditedWorker({ ...editedWorker, status: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Available">Available</SelectItem>
+                          <SelectItem value="Ready for Market">Ready for Market</SelectItem>
+                          <SelectItem value="Reserved">Reserved</SelectItem>
+                          <SelectItem value="Sold">Sold</SelectItem>
+                          <SelectItem value="Cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <p className="font-medium">{selectedWorker.status}</p>
+                    )}
                   </div>
                 </div>
 
