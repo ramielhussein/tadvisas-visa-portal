@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut, ArrowLeftRight } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut, ArrowLeftRight, Folder, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -213,6 +213,22 @@ const AdminMenu = () => {
           >
             <Coins className="h-4 w-4 mr-2" />
             Financial Dashboard
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/expense-categories')}
+            className={location.pathname === '/expense-categories' ? 'bg-accent' : ''}
+          >
+            <Folder className="h-4 w-4 mr-2" />
+            Chart of Accounts
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/owner-equity')}
+            className={location.pathname === '/owner-equity' ? 'bg-accent' : ''}
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Owner's Equity
           </DropdownMenuItem>
 
           <DropdownMenuItem 

@@ -50,6 +50,8 @@ import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
 import RefundsApproval from "./pages/RefundsApproval";
 import MyCVs from "./pages/MyCVs";
+import ExpenseCategoriesManagement from "./pages/ExpenseCategoriesManagement";
+import OwnerEquity from "./pages/OwnerEquity";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +106,8 @@ const App = () => (
           <Route path="/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
           <Route path="/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
           <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
+          <Route path="/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
+          <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
