@@ -192,7 +192,7 @@ export const NotificationBell = () => {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-accent cursor-pointer transition-colors ${
+                  className={`p-4 hover:bg-yellow-100 cursor-pointer transition-colors ${
                     !notification.is_read ? "bg-accent/50" : ""
                   }`}
                   onClick={() => handleNotificationClick(notification)}
