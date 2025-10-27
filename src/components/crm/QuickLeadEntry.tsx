@@ -17,13 +17,15 @@ interface QuickLeadEntryProps {
 const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const [existingLead, setExistingLead] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     client_name: "",
     email: "",
     mobile_number: "",
     emirate: "",
-    status: "New Lead" as const,
+    status: "New Lead" as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
     service_required: "",
     nationality_code: "",
     lead_source: "",
@@ -60,8 +62,88 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     return { valid: true, formatted: cleaned };
   };
 
+  const checkExistingLead = async (phoneNumber: string) => {
+    const phoneValidation = validatePhoneNumber(phoneNumber);
+    
+    if (!phoneValidation.valid) {
+      toast({
+        title: "Invalid Phone Number",
+        description: "Phone number must be in format 971xxxxxxxxx (12 digits total)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsChecking(true);
+    
+    try {
+      // Check if phone number exists in leads table
+      const { data: existingLeadData, error } = await supabase
+        .from('leads')
+        .select('*')
+        .eq('mobile_number', phoneValidation.formatted)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (existingLeadData) {
+        setExistingLead(existingLeadData);
+        setFormData({
+          ...formData,
+          client_name: existingLeadData.client_name || "",
+          email: existingLeadData.email || "",
+          mobile_number: phoneValidation.formatted,
+          emirate: existingLeadData.emirate || "",
+          status: existingLeadData.status || "New Lead",
+          service_required: existingLeadData.service_required || "",
+          nationality_code: existingLeadData.nationality_code || "",
+          lead_source: existingLeadData.lead_source || "",
+        });
+        toast({
+          title: "Lead Already Exists",
+          description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}. Cannot add duplicate.`,
+          variant: "destructive",
+        });
+      } else {
+        setExistingLead(null);
+        toast({
+          title: "Phone Number Available",
+          description: "No existing lead found. You can proceed with adding this lead.",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error checking lead:", error);
+      toast({
+        title: "Error",
+        description: "Failed to check for existing lead",
+        variant: "destructive",
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      checkExistingLead(formData.mobile_number);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent submission if this is a duplicate lead
+    if (existingLead) {
+      toast({
+        title: "Cannot Add Duplicate Lead",
+        description: "This phone number already exists in the system. Please use a different number.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Validate phone number
     const phoneValidation = validatePhoneNumber(formData.mobile_number);
@@ -184,6 +266,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         lead_source: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
+      setExistingLead(null);
 
       onSuccess();
       onClose();
@@ -247,6 +330,37 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+            <Input
+              id="mobile_number"
+              value={formData.mobile_number}
+              onChange={(e) => {
+                setFormData({ ...formData, mobile_number: e.target.value });
+                // Clear existing lead when user modifies the phone number
+                if (existingLead) setExistingLead(null);
+              }}
+              onKeyDown={handlePhoneKeyDown}
+              placeholder="971501234567"
+              required
+              disabled={isChecking}
+            />
+            {isChecking && (
+              <p className="text-sm text-muted-foreground">
+                <Loader2 className="inline h-3 w-3 animate-spin mr-1" />
+                Checking for existing lead...
+              </p>
+            )}
+            {existingLead && (
+              <p className="text-sm text-destructive font-medium">
+                ⚠️ This lead already exists in the system
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Press Enter to check if this number already exists
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="client_name">Client Name</Label>
             <Input
               id="client_name"
@@ -254,19 +368,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, client_name: e.target.value })
               }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
-            <Input
-              id="mobile_number"
-              value={formData.mobile_number}
-              onChange={(e) =>
-                setFormData({ ...formData, mobile_number: e.target.value })
-              }
-              placeholder="971501234567"
-              required
+              disabled={!!existingLead}
             />
           </div>
 
@@ -279,6 +381,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
+              disabled={!!existingLead}
             />
           </div>
 
@@ -421,7 +524,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting || !!existingLead}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
