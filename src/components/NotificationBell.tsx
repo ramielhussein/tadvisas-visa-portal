@@ -135,12 +135,9 @@ export const NotificationBell = () => {
     setUnreadCount(0);
   };
 
-  const handleNotificationClick = (notification: Notification) => {
-    markAsRead(notification.id);
-    
-    if (notification.related_lead_id) {
-      setOpen(false);
-      navigate(`/lead-management`);
+  const handleNotificationHover = (notification: Notification) => {
+    if (!notification.is_read) {
+      markAsRead(notification.id);
     }
   };
 
@@ -192,10 +189,10 @@ export const NotificationBell = () => {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 hover:bg-yellow-100 cursor-pointer transition-colors ${
+                  className={`p-4 hover:bg-yellow-100 transition-colors ${
                     !notification.is_read ? "bg-accent/50" : ""
                   }`}
-                  onClick={() => handleNotificationClick(notification)}
+                  onMouseEnter={() => handleNotificationHover(notification)}
                 >
                   <div className="flex items-start gap-3">
                     <div
