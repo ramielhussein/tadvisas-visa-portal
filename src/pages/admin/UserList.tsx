@@ -127,39 +127,38 @@ export default function UserList() {
 
   return (
     <Layout>
-      <div className="container max-w-6xl mx-auto py-4">
+      <div className="container max-w-6xl mx-auto py-2">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-6 w-6" />
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Users className="h-5 w-5" />
                   User List
                 </CardTitle>
-                <CardDescription>
-                  View and manage existing users and their permissions
+                <CardDescription className="text-xs">
+                  Manage users and permissions
                 </CardDescription>
               </div>
-              <Button onClick={() => navigate('/admin/user-management')}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Create New User
+              <Button onClick={() => navigate('/admin/user-management')} size="sm">
+                <UserPlus className="mr-1 h-3 w-3" />
+                New User
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          <CardContent className="pt-0">
+            <div className="space-y-1">
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                  className="flex items-center justify-between p-2 border rounded hover:bg-accent/50 transition-colors"
                 >
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm">{user.email}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {user.full_name || <span className="italic">No name set</span>}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-xs truncate">{user.email}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">
+                      {user.full_name || <span className="italic">No name</span>}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Permissions: 
+                    <div className="text-[10px] text-muted-foreground">
                       {user.permissions?.cv?.create && " CV-Create"}
                       {user.permissions?.cv?.edit && " CV-Edit"}
                       {user.permissions?.cv?.delete && " CV-Delete"}
@@ -168,7 +167,7 @@ export default function UserList() {
                       {user.permissions?.leads?.assign && " Leads-Assign"}
                     </div>
                   </div>
-                  <Button onClick={() => handleEditUser(user)} variant="outline" size="sm">
+                  <Button onClick={() => handleEditUser(user)} variant="outline" size="sm" className="ml-2 h-7 text-xs">
                     Edit
                   </Button>
                 </div>
@@ -180,38 +179,39 @@ export default function UserList() {
 
       <Dialog open={selectedUser !== null} onOpenChange={(open) => !open && setSelectedUser(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-base">Edit User</DialogTitle>
+            <DialogDescription className="text-xs">
               Update user information and permissions
             </DialogDescription>
           </DialogHeader>
 
           {editedUser && (
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label>Email</Label>
-                <Input value={editedUser.email} disabled />
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Email</Label>
+                <Input value={editedUser.email} disabled className="h-8 text-xs" />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="edit-fullName">Full Name</Label>
+              <div className="space-y-1">
+                <Label htmlFor="edit-fullName" className="text-xs">Full Name</Label>
                 <Input
                   id="edit-fullName"
                   value={editedUser.full_name || ""}
                   onChange={(e) => setEditedUser({ ...editedUser, full_name: e.target.value })}
                   placeholder="Enter full name"
+                  className="h-8 text-xs"
                 />
               </div>
 
-              <div className="space-y-3 pt-3 border-t">
-                <h3 className="font-semibold text-base">Permissions</h3>
+              <div className="space-y-2 pt-2 border-t">
+                <h3 className="font-semibold text-sm">Permissions</h3>
                 
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">CV Management</Label>
-                    <div className="space-y-1.5 ml-3">
-                      <div className="flex items-center space-x-2">
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">CV Management</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-cv-create"
                           checked={editedUser.permissions.cv.create}
@@ -224,12 +224,13 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-cv-create" className="text-sm font-medium">
+                        <label htmlFor="edit-cv-create" className="text-xs">
                           Create CV
                         </label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-cv-edit"
                           checked={editedUser.permissions.cv.edit}
@@ -242,12 +243,13 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-cv-edit" className="text-sm font-medium">
+                        <label htmlFor="edit-cv-edit" className="text-xs">
                           Edit CV
                         </label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-cv-delete"
                           checked={editedUser.permissions.cv.delete}
@@ -260,18 +262,19 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-cv-delete" className="text-sm font-medium">
+                        <label htmlFor="edit-cv-delete" className="text-xs">
                           Delete CV
                         </label>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">Refunds</Label>
-                    <div className="space-y-1.5 ml-3">
-                      <div className="flex items-center space-x-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Refunds</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-refund-create"
                           checked={editedUser.permissions.refund.create}
@@ -284,18 +287,19 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-refund-create" className="text-sm font-medium">
+                        <label htmlFor="edit-refund-create" className="text-xs">
                           Create Refund
                         </label>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm font-semibold">Lead Management</Label>
-                    <div className="space-y-1.5 ml-3">
-                      <div className="flex items-center space-x-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Lead Management</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-leads-create"
                           checked={editedUser.permissions.leads.create}
@@ -308,12 +312,13 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-leads-create" className="text-sm font-medium">
+                        <label htmlFor="edit-leads-create" className="text-xs">
                           Create Leads
                         </label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5">
                         <Checkbox 
                           id="edit-leads-assign"
                           checked={editedUser.permissions.leads.assign}
@@ -326,8 +331,9 @@ export default function UserList() {
                               }
                             })
                           }
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="edit-leads-assign" className="text-sm font-medium">
+                        <label htmlFor="edit-leads-assign" className="text-xs">
                           Assign Leads
                         </label>
                       </div>
@@ -336,16 +342,17 @@ export default function UserList() {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-3">
-                <Button onClick={handleSaveUser} disabled={saving} className="flex-1">
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Changes
+              <div className="flex gap-2 pt-2">
+                <Button onClick={handleSaveUser} disabled={saving} className="flex-1 h-8 text-xs">
+                  {saving && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}
+                  <Save className="mr-1 h-3 w-3" />
+                  Save
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={() => setSelectedUser(null)}
                   disabled={saving}
+                  className="h-8 text-xs"
                 >
                   Cancel
                 </Button>
