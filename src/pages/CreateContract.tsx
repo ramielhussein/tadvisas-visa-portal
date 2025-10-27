@@ -52,13 +52,13 @@ const CreateContract = () => {
   const [monthlyAmount, setMonthlyAmount] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
 
-  // Fetch workers with status "Ready for Market"
+  // Fetch workers with status "Ready for Market" or "Available" (but not Reserved or Sold)
   useEffect(() => {
     const fetchWorkers = async () => {
       const { data, error } = await supabase
         .from('workers')
         .select('id, name, nationality_code, job1, status')
-        .eq('status', 'Ready for Market')
+        .in('status', ['Ready for Market', 'Available'])
         .order('name');
 
       if (error) {
@@ -254,7 +254,7 @@ const CreateContract = () => {
                     </SelectContent>
                   </Select>
                   {workers.length === 0 && (
-                    <p className="text-sm text-muted-foreground">No workers available with "Ready for Market" status</p>
+                    <p className="text-sm text-muted-foreground">No workers available (must be "Ready for Market" or "Available" status, not Reserved or Sold)</p>
                   )}
                 </div>
               </CardContent>

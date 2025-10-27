@@ -416,6 +416,20 @@ export default function Admin() {
                   </p>
                   <ArrowRight className="w-4 h-4 mt-2 ml-auto" />
                 </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-4 flex-col items-start"
+                  onClick={() => navigate('/contracts')}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="w-5 h-5" />
+                    <span className="font-semibold">Contracts Management</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-left">
+                    Create and manage client contracts
+                  </p>
+                  <ArrowRight className="w-4 h-4 mt-2 ml-auto" />
+                </Button>
               </div>
             </CardContent>
           </Card>

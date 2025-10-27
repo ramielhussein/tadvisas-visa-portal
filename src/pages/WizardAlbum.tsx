@@ -53,10 +53,9 @@ const WizardAlbum = () => {
       const { data, error } = await supabase
         .from('workers')
         .select('*')
-        .in('maid_status', [
-          'ABROAD',
-          'RETURNED TO COUNTRY RELEASED',
-          'IN COUNTRY CANCELLED READY FOR MARKET'
+        .in('status', [
+          'Available',
+          'Ready for Market'
         ])
         .order('created_at', { ascending: false });
 
@@ -74,8 +73,8 @@ const WizardAlbum = () => {
       worker.job1.toLowerCase().includes(searchQuery.toLowerCase());
 
     // Location filter
-    const isOutsideCountry = ['ABROAD', 'RETURNED TO COUNTRY RELEASED'].includes(worker.maid_status);
-    const isInsideCountry = worker.maid_status === 'IN COUNTRY CANCELLED READY FOR MARKET';
+    const isOutsideCountry = worker.status === 'Available';
+    const isInsideCountry = worker.status === 'Ready for Market';
     
     let matchesLocation = true;
     if (locationFilter === 'inside') matchesLocation = isInsideCountry;
@@ -249,7 +248,7 @@ const WizardAlbum = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredWorkers.map((worker) => {
                 const photoUrl = getPhotoUrl(worker);
-                const isOutsideCountry = ['ABROAD', 'RETURNED TO COUNTRY RELEASED'].includes(worker.maid_status);
+                const isOutsideCountry = worker.status === 'Available';
                 const skillBadges = getSkillBadges(worker.skills);
                 
                 return (
