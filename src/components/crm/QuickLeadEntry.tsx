@@ -125,6 +125,41 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     }
   };
 
+  const pingSalesTeam = async () => {
+    if (!existingLead) {
+      toast({
+        title: "No Lead to Notify About",
+        description: "Check for an existing lead first by pressing Enter on the phone number field.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.functions.invoke("notify-sales-team", {
+        body: {
+          leadId: existingLead.id,
+          phoneNumber: existingLead.mobile_number,
+          existingLeadData: existingLead,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sales Team Notified",
+        description: "The assigned sales person has been notified about this duplicate lead attempt.",
+      });
+    } catch (error: any) {
+      console.error("Error notifying sales team:", error);
+      toast({
+        title: "Notification Failed",
+        description: error.message || "Failed to notify sales team",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handlePhoneKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -330,7 +365,20 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+              {existingLead && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={pingSalesTeam}
+                  className="text-xs"
+                >
+                  Ping Sales Team
+                </Button>
+              )}
+            </div>
             <Input
               id="mobile_number"
               value={formData.mobile_number}

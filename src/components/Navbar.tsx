@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, X, MessageCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,11 +96,14 @@ const Navbar = () => {
               </Link>
             ))}
             {user ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="h-4 w-4" />
-                <span className="font-medium">
-                  {profile?.full_name || user.email}
-                </span>
+              <div className="flex items-center gap-4">
+                <NotificationBell />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <User className="h-4 w-4" />
+                  <span className="font-medium">
+                    {profile?.full_name || user.email}
+                  </span>
+                </div>
               </div>
             ) : (
               <Button asChild className="bg-green-500 hover:bg-green-600 text-white">
