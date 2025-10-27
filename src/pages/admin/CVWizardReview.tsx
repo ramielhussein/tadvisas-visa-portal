@@ -429,7 +429,7 @@ const CVWizardReview = () => {
                     </>
                   )}
 
-                  {worker.status === "Rejected" && (
+                  {worker.status === "Rejected" && hasPermission('cv', 'edit') && (
                     <Button
                       variant="default"
                       size="sm"
