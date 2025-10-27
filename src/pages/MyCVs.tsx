@@ -171,7 +171,7 @@ const MyCVs = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => navigate(`/admin/cvwizard-review`)}
+                      onClick={() => navigate(`/admin/cvwizard-review?id=${worker.id}`)}
                     >
                       <Eye className="mr-2 h-4 w-4" />
                       View Details
@@ -181,12 +181,7 @@ const MyCVs = () => {
                       <Button 
                         variant="secondary" 
                         size="sm"
-                        onClick={() => {
-                          toast({
-                            title: "Edit Feature",
-                            description: "CV editing interface coming soon. For now, please contact admin to make changes.",
-                          });
-                        }}
+                        onClick={() => navigate(`/cvwizard?id=${worker.id}`)}
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit CV

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -23,8 +23,11 @@ import type { CVFormData } from "@/components/cvwizard/types";
 const CVWizard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const editingWorkerId = searchParams.get('id');
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(!!editingWorkerId);
   const [currentUserName, setCurrentUserName] = useState<string>("");
   const totalSteps = 10;
 
@@ -76,7 +79,7 @@ const CVWizard = () => {
   });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const loadData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
@@ -87,10 +90,83 @@ const CVWizard = () => {
         
         setCurrentUserName(profile?.full_name || profile?.email || user.email || 'User');
       }
+
+      // Load worker data if editing
+      if (editingWorkerId) {
+        try {
+          const { data: worker, error } = await supabase
+            .from('workers')
+            .select('*')
+            .eq('id', editingWorkerId)
+            .single();
+
+          if (error) throw error;
+
+          if (worker) {
+            // Transform worker data to form data format
+            setFormData({
+              name: worker.name || "",
+              passport_no: worker.passport_no || "",
+              passport_expiry: worker.passport_expiry || "",
+              nationality_code: worker.nationality_code || "",
+              age: worker.age || undefined,
+              religion: worker.religion || "",
+              maid_status: worker.maid_status || "",
+              job1: worker.job1 || "",
+              job2: worker.job2 || "",
+              height_cm: worker.height_cm || undefined,
+              weight_kg: worker.weight_kg || undefined,
+              marital_status: worker.marital_status || "",
+              children: worker.children || undefined,
+              languages: (worker.languages as any) || [],
+              education: (worker.education as any) || { track: "" },
+              experience: (worker.experience as any) || [],
+              skills: (worker.skills as any) || {
+                baby_sit: false,
+                new_born: false,
+                iron: false,
+                wash: false,
+                dish_wash: false,
+                clean: false,
+                drive: false,
+                cook: false,
+                tutor: false,
+                housekeeping: false,
+                computer_skills: false,
+              },
+              visa: (worker.visa as any) || { status: "" },
+              files: {},
+              financials: (worker.financials as any) || {
+                costs: [
+                  { label: "Agency", amount: undefined },
+                  { label: "Travel Ticket", amount: undefined },
+                  { label: "Medical", amount: undefined },
+                  { label: "Visa", amount: undefined },
+                  { label: "Cash Assistance", amount: undefined },
+                  { label: "Other", amount: undefined },
+                  { label: "Other", amount: undefined },
+                ],
+                revenues: [],
+              },
+              consent: true,
+            });
+          }
+        } catch (error: any) {
+          console.error("Error loading worker:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load CV data",
+            variant: "destructive",
+          });
+          navigate('/my-cvs');
+        } finally {
+          setLoading(false);
+        }
+      }
     };
     
-    fetchUserProfile();
-  }, []);
+    loadData();
+  }, [editingWorkerId]);
 
   const updateFormData = (data: Partial<CVFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -217,43 +293,80 @@ const CVWizard = () => {
         return;
       }
 
-      // Convert files to base64 before sending
-      const filesBase64: any = {};
-      for (const [key, file] of Object.entries(formData.files)) {
-        if (file) {
-          const base64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(file as File);
-          });
-          filesBase64[key] = {
-            data: base64,
-            name: (file as File).name,
-            type: (file as File).type,
-          };
+      if (editingWorkerId) {
+        // Update existing worker directly in database
+        const { error } = await supabase
+          .from('workers')
+          .update({
+            name: formData.name,
+            passport_no: formData.passport_no,
+            passport_expiry: formData.passport_expiry,
+            nationality_code: formData.nationality_code,
+            age: formData.age,
+            religion: formData.religion,
+            maid_status: formData.maid_status,
+            job1: formData.job1,
+            job2: formData.job2,
+            height_cm: formData.height_cm,
+            weight_kg: formData.weight_kg,
+            marital_status: formData.marital_status,
+            children: formData.children,
+            languages: formData.languages,
+            education: formData.education,
+            experience: formData.experience,
+            skills: formData.skills,
+            visa: formData.visa,
+            financials: formData.financials,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', editingWorkerId);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success!",
+          description: "CV updated successfully!",
+        });
+
+        navigate("/my-cvs");
+      } else {
+        // Create new worker - convert files to base64 before sending
+        const filesBase64: any = {};
+        for (const [key, file] of Object.entries(formData.files)) {
+          if (file) {
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(file as File);
+            });
+            filesBase64[key] = {
+              data: base64,
+              name: (file as File).name,
+              type: (file as File).type,
+            };
+          }
         }
+
+        // Call edge function with base64 files
+        const payload = {
+          ...formData,
+          files: filesBase64,
+          created_by: user.id,
+        };
+
+        const { data, error } = await supabase.functions.invoke("submit-cv", {
+          body: payload,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Success!",
+          description: `CV submitted successfully! Reference: ${data.center_ref}`,
+        });
+
+        navigate("/admin/cvwizard-review");
       }
-
-      // Call edge function with base64 files
-      const payload = {
-        ...formData,
-        files: filesBase64,
-        created_by: user.id,
-      };
-
-      const { data, error } = await supabase.functions.invoke("submit-cv", {
-        body: payload,
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: `CV submitted successfully! Reference: ${data.center_ref}`,
-      });
-
-      // Navigate to CV review page
-      navigate("/admin/cvwizard-review");
     } catch (error: any) {
       console.error("Submit error:", error);
       toast({
@@ -295,12 +408,27 @@ const CVWizard = () => {
 
   const progress = (currentStep / totalSteps) * 100;
 
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading CV data...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="container max-w-3xl mx-auto py-8 px-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Tadmaids CV Wizard</CardTitle>
+            <CardTitle className="text-2xl">
+              {editingWorkerId ? "Edit CV" : "Tadmaids CV Wizard"}
+            </CardTitle>
             <CardDescription>
               Step {currentStep} of {totalSteps}
             </CardDescription>
@@ -332,7 +460,10 @@ const CVWizard = () => {
                 </Button>
               ) : (
                 <Button onClick={handleSubmit} disabled={submitting}>
-                  {submitting ? "Submitting..." : "Submit CV"}
+                  {submitting 
+                    ? (editingWorkerId ? "Updating..." : "Submitting...") 
+                    : (editingWorkerId ? "Update CV" : "Submit CV")
+                  }
                 </Button>
               )}
             </div>
