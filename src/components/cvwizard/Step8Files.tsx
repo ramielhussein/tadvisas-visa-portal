@@ -1,5 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import type { CVFormData } from "@/components/cvwizard/types";
 
 interface Props {
@@ -23,6 +25,12 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
     });
   };
 
+  const handleRemoveFile = (field: string) => {
+    updateFormData({
+      files: { ...formData.files, [field]: undefined },
+    });
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Attachments</h3>
@@ -32,16 +40,30 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
 
       <div className="space-y-2">
         <Label htmlFor="photo">Photo * (JPG/PNG)</Label>
-        <Input
-          id="photo"
-          type="file"
-          accept="image/jpeg,image/png,image/*"
-          capture="environment"
-          onChange={(e) => handleFileChange("photo", e.target.files?.[0] || null)}
-          required
-        />
-        {formData.files.photo && (
-          <p className="text-sm text-green-600">✓ {formData.files.photo.name}</p>
+        {formData.files.photo ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2 bg-green-50 rounded border border-green-200">
+              <p className="text-sm text-green-600 flex-1">✓ {formData.files.photo.name}</p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRemoveFile("photo")}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Input
+            id="photo"
+            type="file"
+            accept="image/jpeg,image/png,image/*"
+            capture="environment"
+            onChange={(e) => handleFileChange("photo", e.target.files?.[0] || null)}
+            required
+          />
         )}
       </div>
 
@@ -118,15 +140,29 @@ const Step8Files = ({ formData, updateFormData }: Props) => {
 
       <div className="space-y-2">
         <Label htmlFor="video">Maid Video (Optional - Max 50MB)</Label>
-        <Input
-          id="video"
-          type="file"
-          accept="video/mp4,video/quicktime,video/*"
-          capture="user"
-          onChange={(e) => handleFileChange("video", e.target.files?.[0] || null)}
-        />
-        {formData.files.video && (
-          <p className="text-sm text-green-600">✓ {formData.files.video.name}</p>
+        {formData.files.video ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2 bg-green-50 rounded border border-green-200">
+              <p className="text-sm text-green-600 flex-1">✓ {formData.files.video.name}</p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRemoveFile("video")}
+                className="h-6 w-6 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Input
+            id="video"
+            type="file"
+            accept="video/mp4,video/quicktime,video/*"
+            capture="user"
+            onChange={(e) => handleFileChange("video", e.target.files?.[0] || null)}
+          />
         )}
       </div>
 

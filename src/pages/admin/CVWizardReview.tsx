@@ -62,6 +62,8 @@ const CVWizardReview = () => {
   const maidCardRef = useRef<HTMLDivElement>(null);
   const [pullWorkerOpen, setPullWorkerOpen] = useState(false);
   const [pullWorkerData, setPullWorkerData] = useState<{ id: string; name: string } | null>(null);
+  const [newPhoto, setNewPhoto] = useState<File | null>(null);
+  const [newVideo, setNewVideo] = useState<File | null>(null);
 
   useEffect(() => {
     loadWorkers();
@@ -112,17 +114,44 @@ const CVWizardReview = () => {
     if (!editedWorker) return;
 
     try {
+      const updateData: any = {
+        name: editedWorker.name,
+        age: editedWorker.age,
+        nationality_code: editedWorker.nationality_code,
+        job1: editedWorker.job1,
+        job2: editedWorker.job2,
+        salary: editedWorker.salary,
+        status: editedWorker.status,
+      };
+
+      // Handle file uploads if new files were selected
+      if (newPhoto || newVideo) {
+        const files = editedWorker.files || {};
+        
+        if (newPhoto) {
+          const reader = new FileReader();
+          const photoBase64 = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(newPhoto);
+          });
+          files.photo = photoBase64;
+        }
+        
+        if (newVideo) {
+          const reader = new FileReader();
+          const videoBase64 = await new Promise<string>((resolve) => {
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(newVideo);
+          });
+          files.video = videoBase64;
+        }
+        
+        updateData.files = files;
+      }
+
       const { error } = await supabase
         .from("workers")
-        .update({
-          name: editedWorker.name,
-          age: editedWorker.age,
-          nationality_code: editedWorker.nationality_code,
-          job1: editedWorker.job1,
-          job2: editedWorker.job2,
-          salary: editedWorker.salary,
-          status: editedWorker.status,
-        })
+        .update(updateData)
         .eq("id", editedWorker.id);
 
       if (error) throw error;
@@ -133,6 +162,8 @@ const CVWizardReview = () => {
       });
 
       setIsEditing(false);
+      setNewPhoto(null);
+      setNewVideo(null);
       setSelectedWorker(editedWorker);
       loadWorkers();
     } catch (error: any) {
@@ -146,6 +177,8 @@ const CVWizardReview = () => {
 
   const handleCancelEdit = () => {
     setEditedWorker(selectedWorker ? { ...selectedWorker } : null);
+    setNewPhoto(null);
+    setNewVideo(null);
     setIsEditing(false);
   };
 
@@ -572,6 +605,82 @@ const CVWizardReview = () => {
                   </div>
                 </div>
 
+                {isEditing && (
+                  <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                    <h4 className="font-semibold text-sm">Update Files</h4>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-photo">Photo</Label>
+                      {selectedWorker.files?.photo && !newPhoto && (
+                        <div className="mb-2">
+                          <img 
+                            src={selectedWorker.files.photo} 
+                            alt="Current photo" 
+                            className="h-20 w-20 object-cover rounded"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Current photo</p>
+                        </div>
+                      )}
+                      <Input
+                        id="edit-photo"
+                        type="file"
+                        accept="image/jpeg,image/png,image/*"
+                        onChange={(e) => setNewPhoto(e.target.files?.[0] || null)}
+                        className="text-sm"
+                      />
+                      {newPhoto && (
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-green-600">✓ New photo selected: {newPhoto.name}</p>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setNewPhoto(null)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-video">Video</Label>
+                      {selectedWorker.files?.video && !newVideo && (
+                        <div className="mb-2">
+                          <video 
+                            src={selectedWorker.files.video} 
+                            className="h-20 w-auto rounded"
+                            controls
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">Current video</p>
+                        </div>
+                      )}
+                      <Input
+                        id="edit-video"
+                        type="file"
+                        accept="video/mp4,video/quicktime,video/*"
+                        onChange={(e) => setNewVideo(e.target.files?.[0] || null)}
+                        className="text-sm"
+                      />
+                      {newVideo && (
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-green-600">✓ New video selected: {newVideo.name}</p>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setNewVideo(null)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">Languages</p>
                   <div className="flex flex-wrap gap-2">
@@ -673,7 +782,7 @@ const CVWizardReview = () => {
 
                 {/* Photo and Basic Info */}
                 <div className="grid grid-cols-3 gap-6">
-                  <div className="col-span-1">
+                  <div className="col-span-1 space-y-4">
                     {maidCardWorker.files?.photo ? (
                       <img
                         src={maidCardWorker.files.photo}
@@ -683,6 +792,21 @@ const CVWizardReview = () => {
                     ) : (
                       <div className="w-full aspect-[3/4] bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
                         <span className="text-gray-400 text-sm">No Photo</span>
+                      </div>
+                    )}
+                    
+                    {/* Video Section */}
+                    {maidCardWorker.files?.video && (
+                      <div className="space-y-2">
+                        <h3 className="font-semibold text-sm">Video</h3>
+                        <video 
+                          controls 
+                          className="w-full rounded-lg border-2 border-gray-200"
+                          preload="metadata"
+                        >
+                          <source src={maidCardWorker.files.video} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
                       </div>
                     )}
                   </div>
