@@ -100,11 +100,41 @@
 
   body {
     @apply bg-background text-foreground font-inter;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Smooth scroll behavior */
+  /* Smooth scroll behavior with iOS optimization */
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* iOS-specific scroll fixes */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix for iOS select/dropdown touch events */
+  select, 
+  input, 
+  textarea, 
+  button,
+  [role="button"],
+  [role="combobox"],
+  [role="option"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Ensure scrollable containers work properly on iOS */
+  .overflow-auto,
+  .overflow-y-auto,
+  .overflow-x-auto,
+  [data-radix-select-viewport] {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   /* Custom gradient backgrounds */

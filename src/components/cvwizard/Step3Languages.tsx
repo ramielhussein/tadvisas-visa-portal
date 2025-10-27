@@ -61,10 +61,10 @@ const Step3Languages = ({ formData, updateFormData }: Props) => {
         <div className="space-y-2">
           <Label>Language</Label>
           <Select value={selectedLang} onValueChange={setSelectedLang}>
-            <SelectTrigger>
+            <SelectTrigger className="touch-manipulation">
               <SelectValue placeholder="Select language" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[60vh]">
               {availableLanguages.map((lang) => (
                 <SelectItem key={lang} value={lang}>
                   {lang}
@@ -77,10 +77,10 @@ const Step3Languages = ({ formData, updateFormData }: Props) => {
         <div className="space-y-2">
           <Label>Proficiency Level</Label>
           <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-            <SelectTrigger>
+            <SelectTrigger className="touch-manipulation">
               <SelectValue placeholder="Select level" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[60vh]">
               {proficiencyLevels.map((level) => (
                 <SelectItem key={level} value={level}>
                   {level}
