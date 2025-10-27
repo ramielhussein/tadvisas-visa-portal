@@ -270,6 +270,39 @@ const CVWizardReview = () => {
     }
   };
 
+  const handleUnreject = async (id: string) => {
+    if (!hasPermission('cv', 'edit')) {
+      toast({
+        title: "Permission Denied",
+        description: "You don't have permission to change CV status",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("workers")
+        .update({ status: "Available" })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "CV unrejected and set back to Available",
+      });
+
+      loadWorkers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -394,6 +427,17 @@ const CVWizardReview = () => {
                         Reject
                       </Button>
                     </>
+                  )}
+
+                  {worker.status === "Rejected" && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleUnreject(worker.id)}
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Unreject
+                    </Button>
                   )}
                 </div>
               </CardContent>
