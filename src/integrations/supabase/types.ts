@@ -59,6 +59,7 @@ export type Database = {
       contracts: {
         Row: {
           base_amount: number
+          cancelled_at: string | null
           client_email: string | null
           client_name: string
           client_phone: string
@@ -83,6 +84,7 @@ export type Database = {
         }
         Insert: {
           base_amount: number
+          cancelled_at?: string | null
           client_email?: string | null
           client_name: string
           client_phone: string
@@ -107,6 +109,7 @@ export type Database = {
         }
         Update: {
           base_amount?: number
+          cancelled_at?: string | null
           client_email?: string | null
           client_name?: string
           client_phone?: string
@@ -600,6 +603,8 @@ export type Database = {
           abscond_date: string | null
           abscond_report: boolean | null
           abu_dhabi_insurance_cancelled: boolean | null
+          approved_at: string | null
+          approved_by: string | null
           at_fault: boolean | null
           base_price_ex_vat: number | null
           calculation_details: Json | null
@@ -631,11 +636,13 @@ export type Database = {
           price_incl_vat: number
           reason: string | null
           refund_ex_vat: number | null
+          rejection_reason: string | null
           returned_date: string | null
           salary_aed: number | null
           stage: string | null
           standard_tadbeer_fees_aed: number | null
           status: string
+          supplier_invoice_id: string | null
           total_refund_amount: number
           unpaid_salary_days: number | null
           updated_at: string
@@ -649,6 +656,8 @@ export type Database = {
           abscond_date?: string | null
           abscond_report?: boolean | null
           abu_dhabi_insurance_cancelled?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
           at_fault?: boolean | null
           base_price_ex_vat?: number | null
           calculation_details?: Json | null
@@ -680,11 +689,13 @@ export type Database = {
           price_incl_vat: number
           reason?: string | null
           refund_ex_vat?: number | null
+          rejection_reason?: string | null
           returned_date?: string | null
           salary_aed?: number | null
           stage?: string | null
           standard_tadbeer_fees_aed?: number | null
           status?: string
+          supplier_invoice_id?: string | null
           total_refund_amount: number
           unpaid_salary_days?: number | null
           updated_at?: string
@@ -698,6 +709,8 @@ export type Database = {
           abscond_date?: string | null
           abscond_report?: boolean | null
           abu_dhabi_insurance_cancelled?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
           at_fault?: boolean | null
           base_price_ex_vat?: number | null
           calculation_details?: Json | null
@@ -729,11 +742,13 @@ export type Database = {
           price_incl_vat?: number
           reason?: string | null
           refund_ex_vat?: number | null
+          rejection_reason?: string | null
           returned_date?: string | null
           salary_aed?: number | null
           stage?: string | null
           standard_tadbeer_fees_aed?: number | null
           status?: string
+          supplier_invoice_id?: string | null
           total_refund_amount?: number
           unpaid_salary_days?: number | null
           updated_at?: string
@@ -756,6 +771,13 @@ export type Database = {
             columns: ["prepared_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_supplier_invoice_id_fkey"
+            columns: ["supplier_invoice_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_invoices"
             referencedColumns: ["id"]
           },
         ]

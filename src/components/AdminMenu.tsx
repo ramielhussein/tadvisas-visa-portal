@@ -231,6 +231,22 @@ const AdminMenu = () => {
             Contracts Management
           </DropdownMenuItem>
 
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/refunds-approval')}
+            className={location.pathname === '/refunds-approval' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Refunds Approval
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
+            onClick={() => handleNavigation('/refundslist')}
+            className={location.pathname === '/refundslist' ? 'bg-accent' : ''}
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Refunds List
+          </DropdownMenuItem>
+
           <DropdownMenuSeparator />
           
           {/* Forms & Submissions */}

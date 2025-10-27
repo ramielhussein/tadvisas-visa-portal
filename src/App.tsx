@@ -48,6 +48,7 @@ import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
 import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
+import RefundsApproval from "./pages/RefundsApproval";
 import MyCVs from "./pages/MyCVs";
 
 const queryClient = new QueryClient();
@@ -98,6 +99,7 @@ const App = () => (
           <Route path="/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
+          <Route path="/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
           <Route path="/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
           <Route path="/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
