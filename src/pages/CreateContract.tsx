@@ -9,10 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User, FileText, DollarSign, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, User, FileText, DollarSign, Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 interface Worker {
   id: string;
@@ -44,6 +46,7 @@ const CreateContract = () => {
   const [products, setProducts] = useState<Product[]>([]);
   
   const [selectedWorker, setSelectedWorker] = useState("");
+  const [workerSearchOpen, setWorkerSearchOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [clientData, setClientData] = useState<ClientData>({ name: "", phone: "", email: "" });
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -241,18 +244,50 @@ const CreateContract = () => {
               <CardContent>
                 <div className="space-y-2">
                   <Label>Worker *</Label>
-                  <Select value={selectedWorker} onValueChange={setSelectedWorker}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a worker..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {workers.map((worker) => (
-                        <SelectItem key={worker.id} value={worker.id}>
-                          {worker.name} - {worker.nationality_code} ({worker.job1})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={workerSearchOpen} onOpenChange={setWorkerSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={workerSearchOpen}
+                        className="w-full justify-between"
+                      >
+                        {selectedWorker
+                          ? workers.find((worker) => worker.id === selectedWorker)?.name + 
+                            ` - ${workers.find((worker) => worker.id === selectedWorker)?.nationality_code} (${workers.find((worker) => worker.id === selectedWorker)?.job1})`
+                          : "Search workers..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0 z-50" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search by name, nationality, or job..." />
+                        <CommandList>
+                          <CommandEmpty>No worker found.</CommandEmpty>
+                          <CommandGroup>
+                            {workers.map((worker) => (
+                              <CommandItem
+                                key={worker.id}
+                                value={`${worker.name} ${worker.nationality_code} ${worker.job1}`}
+                                onSelect={() => {
+                                  setSelectedWorker(worker.id);
+                                  setWorkerSearchOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedWorker === worker.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {worker.name} - {worker.nationality_code} ({worker.job1})
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   {workers.length === 0 && (
                     <p className="text-sm text-muted-foreground">No workers available (must be "Ready for Market" or "Available" status, not Reserved or Sold)</p>
                   )}
