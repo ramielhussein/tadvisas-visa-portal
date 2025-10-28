@@ -53,6 +53,7 @@ import MyCVs from "./pages/MyCVs";
 import ExpenseCategoriesManagement from "./pages/ExpenseCategoriesManagement";
 import OwnerEquity from "./pages/OwnerEquity";
 import AuditLogs from "./pages/AuditLogs";
+import InstallApp from "./pages/InstallApp";
 
 const queryClient = new QueryClient();
 
@@ -110,6 +111,7 @@ const App = () => (
           <Route path="/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
           <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+          <Route path="/install" element={<InstallApp />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
