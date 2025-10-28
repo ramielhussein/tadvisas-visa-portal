@@ -32,6 +32,13 @@ interface Product {
   default_duration_months: number | null;
 }
 
+interface Client {
+  id: string;
+  client_name: string;
+  mobile_number: string;
+  email: string;
+}
+
 interface ClientData {
   name: string;
   phone: string;
@@ -44,10 +51,13 @@ const CreateContract = () => {
   const [loading, setLoading] = useState(false);
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
   
   const [selectedWorker, setSelectedWorker] = useState("");
   const [workerSearchOpen, setWorkerSearchOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState("");
+  const [selectedClient, setSelectedClient] = useState("");
+  const [clientSearchOpen, setClientSearchOpen] = useState(false);
   const [clientData, setClientData] = useState<ClientData>({ name: "", phone: "", email: "" });
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [baseAmount, setBaseAmount] = useState<number>(0);
@@ -93,6 +103,38 @@ const CreateContract = () => {
 
     fetchProducts();
   }, []);
+
+  // Fetch clients
+  useEffect(() => {
+    const fetchClients = async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, client_name, mobile_number, email')
+        .order('client_name');
+
+      if (error) {
+        console.error('Error fetching clients:', error);
+      } else {
+        setClients(data || []);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
+  // Handle client selection
+  const handleClientSelect = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
+    if (client) {
+      setSelectedClient(clientId);
+      setClientData({
+        name: client.client_name || "",
+        phone: client.mobile_number || "",
+        email: client.email || ""
+      });
+    }
+    setClientSearchOpen(false);
+  };
 
   const selectedProductData = products.find(p => p.id === selectedProduct);
 
@@ -305,12 +347,58 @@ const CreateContract = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="client-name">Client Name *</Label>
+                  <Label>Client Name *</Label>
+                  <Popover open={clientSearchOpen} onOpenChange={setClientSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={clientSearchOpen}
+                        className="w-full justify-between"
+                      >
+                        {selectedClient
+                          ? clients.find((client) => client.id === selectedClient)?.client_name
+                          : "Search existing clients or type new..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0 z-50" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search by client name, phone, or email..." />
+                        <CommandList>
+                          <CommandEmpty>No client found.</CommandEmpty>
+                          <CommandGroup>
+                            {clients.map((client) => (
+                              <CommandItem
+                                key={client.id}
+                                value={`${client.client_name} ${client.mobile_number} ${client.email}`}
+                                onSelect={() => handleClientSelect(client.id)}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedClient === client.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <div className="flex flex-col">
+                                  <span>{client.client_name}</span>
+                                  <span className="text-xs text-muted-foreground">{client.mobile_number}</span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <Input
-                    id="client-name"
                     value={clientData.name}
-                    onChange={(e) => setClientData({ ...clientData, name: e.target.value })}
-                    placeholder="Enter client name"
+                    onChange={(e) => {
+                      setClientData({ ...clientData, name: e.target.value });
+                      setSelectedClient("");
+                    }}
+                    placeholder="Or type client name manually"
+                    className="mt-2"
                   />
                 </div>
                 <div className="space-y-2">
