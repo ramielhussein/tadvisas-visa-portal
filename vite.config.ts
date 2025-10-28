@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'TADVISAS - Maid Visa Portal',
-        short_name: 'TADVISAS',
+        name: 'TADMAIDS - Maid & Visa',
+        short_name: 'TADMAIDS',
         description: 'Get your 2-year maid visa in UAE with zero monthly admin fees. 100% Tadbeer licensed.',
         theme_color: '#c9a227',
         background_color: '#ffffff',
