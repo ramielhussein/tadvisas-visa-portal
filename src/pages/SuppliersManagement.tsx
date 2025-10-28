@@ -66,6 +66,7 @@ const SuppliersManagement = () => {
     tax_registration: "",
     payment_terms: "On Arrival",
     currency: "AED",
+    opening_balance: 0,
     notes: "",
   });
 
@@ -129,7 +130,10 @@ const SuppliersManagement = () => {
 
       setSubmitting(true);
 
-      const { error } = await supabase.from("suppliers").insert(validated);
+      const { error } = await supabase.from("suppliers").insert({
+        ...validated,
+        account_balance: formData.opening_balance || 0,
+      });
 
       if (error) throw error;
 
@@ -150,6 +154,7 @@ const SuppliersManagement = () => {
         tax_registration: "",
         payment_terms: "On Arrival",
         currency: "AED",
+        opening_balance: 0,
         notes: "",
       });
 
@@ -331,6 +336,19 @@ const SuppliersManagement = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="opening_balance">Opening Balance</Label>
+                    <Input
+                      id="opening_balance"
+                      type="number"
+                      step="0.01"
+                      value={formData.opening_balance || ""}
+                      onChange={(e) => setFormData({ ...formData, opening_balance: parseFloat(e.target.value) || 0 })}
+                      placeholder="0.00"
+                    />
+                    <p className="text-xs text-muted-foreground">Starting balance for this supplier (if any existing debt)</p>
                   </div>
 
                   <div className="space-y-2">

@@ -298,6 +298,48 @@ export type Database = {
           },
         ]
       }
+      equity_accounts: {
+        Row: {
+          account_name: string
+          account_type: string
+          created_at: string
+          currency: string | null
+          current_balance: number | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          opening_balance: number | null
+          owner_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_name: string
+          account_type?: string
+          created_at?: string
+          currency?: string | null
+          current_balance?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          opening_balance?: number | null
+          owner_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string
+          account_type?: string
+          created_at?: string
+          currency?: string | null
+          current_balance?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          opening_balance?: number | null
+          owner_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           balance_due: number
@@ -1094,6 +1136,7 @@ export type Database = {
           credit_account: string | null
           deal_id: string | null
           debit_account: string | null
+          equity_account_id: string | null
           id: string
           invoice_id: string | null
           net_amount: number | null
@@ -1119,6 +1162,7 @@ export type Database = {
           credit_account?: string | null
           deal_id?: string | null
           debit_account?: string | null
+          equity_account_id?: string | null
           id?: string
           invoice_id?: string | null
           net_amount?: number | null
@@ -1144,6 +1188,7 @@ export type Database = {
           credit_account?: string | null
           deal_id?: string | null
           debit_account?: string | null
+          equity_account_id?: string | null
           id?: string
           invoice_id?: string | null
           net_amount?: number | null
@@ -1173,6 +1218,13 @@ export type Database = {
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_equity_account_id_fkey"
+            columns: ["equity_account_id"]
+            isOneToOne: false
+            referencedRelation: "equity_accounts"
             referencedColumns: ["id"]
           },
           {

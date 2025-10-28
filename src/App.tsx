@@ -53,6 +53,8 @@ import MyCVs from "./pages/MyCVs";
 import ExpenseCategoriesManagement from "./pages/ExpenseCategoriesManagement";
 import ExpensesManagement from "./pages/ExpensesManagement";
 import BankTransfers from "./pages/BankTransfers";
+import BankAccountsManagement from "./pages/BankAccountsManagement";
+import EquityAccountsManagement from "./pages/EquityAccountsManagement";
 import OwnerEquity from "./pages/OwnerEquity";
 import AuditLogs from "./pages/AuditLogs";
 import InstallApp from "./pages/InstallApp";
@@ -112,7 +114,9 @@ const App = () => (
           <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
           <Route path="/expenses" element={<ProtectedRoute><ExpensesManagement /></ProtectedRoute>} />
           <Route path="/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
+          <Route path="/bank-accounts" element={<ProtectedRoute><BankAccountsManagement /></ProtectedRoute>} />
           <Route path="/bank-transfers" element={<ProtectedRoute><BankTransfers /></ProtectedRoute>} />
+          <Route path="/equity-accounts" element={<ProtectedRoute><EquityAccountsManagement /></ProtectedRoute>} />
           <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           <Route path="/install" element={<InstallApp />} />
