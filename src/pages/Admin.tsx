@@ -46,7 +46,10 @@ export default function Admin() {
       bgColor: "bg-green-50",
       items: [
         { title: "Financial Dashboard", path: "/financial", icon: Coins, description: "Revenue and accounts receivable" },
+        { title: "Expenses", path: "/expenses", icon: DollarSign, description: "Track business expenses" },
         { title: "Suppliers & A/P", path: "/suppliers", icon: Building2, description: "Supplier accounts payable" },
+        { title: "Bank Transfers", path: "/bank-transfers", icon: DollarSign, description: "Transfer between accounts" },
+        { title: "Owner Equity", path: "/owner-equity", icon: Coins, description: "Capital & drawings" },
         { title: "Contracts Management", path: "/contracts", icon: FileText, description: "View and manage contracts" },
         { title: "Create Contract", path: "/contracts/create", icon: Plus, description: "New client contract" },
       ],
