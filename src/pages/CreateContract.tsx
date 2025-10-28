@@ -60,6 +60,11 @@ const CreateContract = () => {
   const [clientSearchOpen, setClientSearchOpen] = useState(false);
   const [clientData, setClientData] = useState<ClientData>({ name: "", phone: "", email: "" });
   const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(() => {
+    const defaultEnd = new Date();
+    defaultEnd.setFullYear(defaultEnd.getFullYear() + 2);
+    return defaultEnd;
+  });
   const [baseAmount, setBaseAmount] = useState<number>(0);
   const [durationMonths, setDurationMonths] = useState<number | null>(null);
   const [monthlyAmount, setMonthlyAmount] = useState<number | null>(null);
@@ -176,15 +181,15 @@ const CreateContract = () => {
       if (contractNumberError) throw contractNumberError;
 
       // Calculate end date if applicable
-      let endDate = null;
+      let finalEndDate = endDate.toISOString().split('T')[0];
       if (selectedProductData?.default_duration_months) {
         const end = new Date(startDate);
         end.setMonth(end.getMonth() + selectedProductData.default_duration_months);
-        endDate = end.toISOString().split('T')[0];
+        finalEndDate = end.toISOString().split('T')[0];
       } else if (durationMonths) {
         const end = new Date(startDate);
         end.setMonth(end.getMonth() + durationMonths);
-        endDate = end.toISOString().split('T')[0];
+        finalEndDate = end.toISOString().split('T')[0];
       }
 
       // Create contract
@@ -199,7 +204,7 @@ const CreateContract = () => {
           client_email: clientData.email,
           salesman_id: user.id,
           start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate,
+          end_date: finalEndDate,
           duration_months: durationMonths,
           monthly_amount: monthlyAmount,
           base_amount: baseAmount,
@@ -461,7 +466,36 @@ const CreateContract = () => {
                       <Calendar
                         mode="single"
                         selected={startDate}
-                        onSelect={(date) => date && setStartDate(date)}
+                        onSelect={(date) => {
+                          if (date) {
+                            setStartDate(date);
+                            // Auto-update end date to be 2 years from new start date
+                            const newEnd = new Date(date);
+                            newEnd.setFullYear(newEnd.getFullYear() + 2);
+                            setEndDate(newEnd);
+                          }
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>End Date *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(endDate, "PPP")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={(date) => date && setEndDate(date)}
+                        className="pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>
