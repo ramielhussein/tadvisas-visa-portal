@@ -232,6 +232,14 @@ const AdminMenu = () => {
           </DropdownMenuItem>
 
           <DropdownMenuItem 
+            onClick={() => handleNavigation('/audit-logs')}
+            className={location.pathname === '/audit-logs' ? 'bg-accent' : ''}
+          >
+            <Shield className="h-4 w-4 mr-2" />
+            Audit Logs
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
             onClick={() => handleNavigation('/suppliers')}
             className={location.pathname === '/suppliers' ? 'bg-accent' : ''}
           >
