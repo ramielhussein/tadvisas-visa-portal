@@ -33,7 +33,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
-      <FloatingButtons />
+      {!isAuthenticated && <FloatingButtons />}
       <AdminMenu />
     </div>
   );
