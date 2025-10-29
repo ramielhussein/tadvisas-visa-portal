@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [existingLead, setExistingLead] = useState<any>(null);
+  const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
   
   const [formData, setFormData] = useState({
     client_name: "",
@@ -29,6 +30,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     service_required: "",
     nationality_code: "",
     lead_source: "",
+    assigned_to: "",
   });
 
   const [files, setFiles] = useState<{
@@ -40,6 +42,33 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     eidFront: null,
     eidBack: null,
   });
+
+  useEffect(() => {
+    const fetchSalesTeam = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, email, full_name, permissions")
+          .order("email");
+
+        if (error) throw error;
+
+        // Filter for users with leads permissions (create or assign)
+        const salesUsers = (data || []).filter((user: any) => {
+          const permissions = user.permissions as any;
+          return permissions?.leads?.create === true || permissions?.leads?.assign === true;
+        });
+
+        setSalesTeam(salesUsers);
+      } catch (error: any) {
+        console.error("Error fetching sales team:", error);
+      }
+    };
+
+    if (open) {
+      fetchSalesTeam();
+    }
+  }, [open]);
 
   const handleFileChange = (field: keyof typeof files, file: File | null) => {
     setFiles({ ...files, [field]: file });
@@ -251,6 +280,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         service_required: formData.service_required || null,
         nationality_code: formData.nationality_code || null,
         lead_source: formData.lead_source || null,
+        assigned_to: formData.assigned_to || null,
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
@@ -299,6 +329,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         service_required: "",
         nationality_code: "",
         lead_source: "",
+        assigned_to: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
       setExistingLead(null);
@@ -533,6 +564,28 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
                 <SelectItem value="Google Ads">Google Ads</SelectItem>
                 <SelectItem value="Walk-in">Walk-in</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="assigned_to">Assign To</Label>
+            <Select
+              value={formData.assigned_to}
+              onValueChange={(value) =>
+                setFormData({ ...formData, assigned_to: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select sales person (optional)" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="">Unassigned</SelectItem>
+                {salesTeam.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.full_name || user.email}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
