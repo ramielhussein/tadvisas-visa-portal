@@ -47,6 +47,7 @@ export default function Admin() {
       items: [
         { title: "CRM Dashboard", path: "/crm/dashboard", icon: BarChart3, description: "Overview and analytics" },
         { title: "Lead Management", path: "/crm/leads", icon: Shield, description: "View and manage leads" },
+        { title: "Lead Sources", path: "/crm/lead-sources", icon: Settings, description: "Manage lead sources" },
         { title: "Deals & Sales", path: "/deals", icon: Briefcase, description: "Manage deals pipeline" },
         { title: "Create Deal", path: "/deals/create", icon: Plus, description: "Add new deal" },
       ],
