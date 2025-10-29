@@ -205,6 +205,57 @@ export type Database = {
           },
         ]
       }
+      daily_headcount: {
+        Row: {
+          at_accommodation: number
+          at_center: number
+          count_date: string
+          counted_by: string
+          created_at: string
+          discrepancies: Json | null
+          id: string
+          in_transit: number
+          notes: string | null
+          returned_processing: number
+          total_workers: number
+          updated_at: string
+          verified_by: string | null
+          with_clients: number
+        }
+        Insert: {
+          at_accommodation?: number
+          at_center?: number
+          count_date: string
+          counted_by: string
+          created_at?: string
+          discrepancies?: Json | null
+          id?: string
+          in_transit?: number
+          notes?: string | null
+          returned_processing?: number
+          total_workers?: number
+          updated_at?: string
+          verified_by?: string | null
+          with_clients?: number
+        }
+        Update: {
+          at_accommodation?: number
+          at_center?: number
+          count_date?: string
+          counted_by?: string
+          created_at?: string
+          discrepancies?: Json | null
+          id?: string
+          in_transit?: number
+          notes?: string | null
+          returned_processing?: number
+          total_workers?: number
+          updated_at?: string
+          verified_by?: string | null
+          with_clients?: number
+        }
+        Relationships: []
+      }
       deals: {
         Row: {
           assigned_to: string | null
@@ -291,6 +342,75 @@ export type Database = {
           },
           {
             foreignKeyName: "deals_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_orders: {
+        Row: {
+          client_name: string
+          client_phone: string
+          client_signature: string | null
+          contract_id: string | null
+          created_at: string
+          delivered_by: string
+          delivery_date: string
+          delivery_location: string
+          delivery_number: string
+          id: string
+          items_delivered: Json | null
+          notes: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          client_name: string
+          client_phone: string
+          client_signature?: string | null
+          contract_id?: string | null
+          created_at?: string
+          delivered_by: string
+          delivery_date?: string
+          delivery_location: string
+          delivery_number: string
+          id?: string
+          items_delivered?: Json | null
+          notes?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          client_name?: string
+          client_phone?: string
+          client_signature?: string | null
+          contract_id?: string | null
+          created_at?: string
+          delivered_by?: string
+          delivery_date?: string
+          delivery_location?: string
+          delivery_number?: string
+          id?: string
+          items_delivered?: Json | null
+          notes?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_orders_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_orders_worker_id_fkey"
             columns: ["worker_id"]
             isOneToOne: false
             referencedRelation: "workers"
@@ -539,6 +659,80 @@ export type Database = {
           },
         ]
       }
+      nationality_workflows: {
+        Row: {
+          agent_informed_date: string | null
+          arrival_date: string | null
+          created_at: string
+          created_by: string
+          current_step: string
+          documents: Json | null
+          id: string
+          medical_obtained_date: string | null
+          nationality_code: string
+          notes: string | null
+          po_raised_date: string | null
+          ticket_booked_date: string | null
+          travel_date: string | null
+          updated_at: string
+          visa_applied_date: string | null
+          visa_received_date: string | null
+          visa_type: string | null
+          worker_id: string
+          workflow_status: string
+        }
+        Insert: {
+          agent_informed_date?: string | null
+          arrival_date?: string | null
+          created_at?: string
+          created_by: string
+          current_step: string
+          documents?: Json | null
+          id?: string
+          medical_obtained_date?: string | null
+          nationality_code: string
+          notes?: string | null
+          po_raised_date?: string | null
+          ticket_booked_date?: string | null
+          travel_date?: string | null
+          updated_at?: string
+          visa_applied_date?: string | null
+          visa_received_date?: string | null
+          visa_type?: string | null
+          worker_id: string
+          workflow_status?: string
+        }
+        Update: {
+          agent_informed_date?: string | null
+          arrival_date?: string | null
+          created_at?: string
+          created_by?: string
+          current_step?: string
+          documents?: Json | null
+          id?: string
+          medical_obtained_date?: string | null
+          nationality_code?: string
+          notes?: string | null
+          po_raised_date?: string | null
+          ticket_booked_date?: string | null
+          travel_date?: string | null
+          updated_at?: string
+          visa_applied_date?: string | null
+          visa_received_date?: string | null
+          visa_type?: string | null
+          worker_id?: string
+          workflow_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nationality_workflows_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -681,6 +875,148 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      purchase_orders: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payment_terms: string | null
+          po_date: string
+          po_number: string
+          status: Database["public"]["Enums"]["po_status"]
+          supplier_id: string | null
+          total_amount: number
+          updated_at: string
+          worker_id: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_terms?: string | null
+          po_date?: string
+          po_number: string
+          status?: Database["public"]["Enums"]["po_status"]
+          supplier_id?: string | null
+          total_amount?: number
+          updated_at?: string
+          worker_id?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payment_terms?: string | null
+          po_date?: string
+          po_number?: string
+          status?: Database["public"]["Enums"]["po_status"]
+          supplier_id?: string | null
+          total_amount?: number
+          updated_at?: string
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_orders_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receipt_orders: {
+        Row: {
+          condition_notes: string | null
+          created_at: string
+          documents_received: Json | null
+          id: string
+          location: string
+          po_id: string | null
+          receipt_date: string
+          receipt_number: string
+          received_by: string
+          received_from: string
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          worker_id: string
+        }
+        Insert: {
+          condition_notes?: string | null
+          created_at?: string
+          documents_received?: Json | null
+          id?: string
+          location: string
+          po_id?: string | null
+          receipt_date?: string
+          receipt_number: string
+          received_by: string
+          received_from: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          worker_id: string
+        }
+        Update: {
+          condition_notes?: string | null
+          created_at?: string
+          documents_received?: Json | null
+          id?: string
+          location?: string
+          po_id?: string | null
+          receipt_date?: string
+          receipt_number?: string
+          received_by?: string
+          received_from?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipt_orders_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipt_orders_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       refunds: {
         Row: {
@@ -1278,6 +1614,84 @@ export type Database = {
         }
         Relationships: []
       }
+      worker_returns: {
+        Row: {
+          belongings_returned: boolean
+          cleared_at: string | null
+          cleared_by: string | null
+          contract_id: string | null
+          created_at: string
+          evaluation_completed: boolean
+          evaluation_notes: string | null
+          id: string
+          notes: string | null
+          phone_returned: boolean
+          ready_to_redeploy: boolean
+          reason: string
+          return_date: string
+          returned_from: string
+          updated_at: string
+          visa_cancellation_date: string | null
+          visa_cancelled: boolean
+          worker_id: string
+        }
+        Insert: {
+          belongings_returned?: boolean
+          cleared_at?: string | null
+          cleared_by?: string | null
+          contract_id?: string | null
+          created_at?: string
+          evaluation_completed?: boolean
+          evaluation_notes?: string | null
+          id?: string
+          notes?: string | null
+          phone_returned?: boolean
+          ready_to_redeploy?: boolean
+          reason: string
+          return_date?: string
+          returned_from: string
+          updated_at?: string
+          visa_cancellation_date?: string | null
+          visa_cancelled?: boolean
+          worker_id: string
+        }
+        Update: {
+          belongings_returned?: boolean
+          cleared_at?: string | null
+          cleared_by?: string | null
+          contract_id?: string | null
+          created_at?: string
+          evaluation_completed?: boolean
+          evaluation_notes?: string | null
+          id?: string
+          notes?: string | null
+          phone_returned?: boolean
+          ready_to_redeploy?: boolean
+          reason?: string
+          return_date?: string
+          returned_from?: string
+          updated_at?: string
+          visa_cancellation_date?: string | null
+          visa_cancelled?: boolean
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_returns_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worker_returns_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       worker_suppliers: {
         Row: {
           cost_amount: number
@@ -1329,6 +1743,81 @@ export type Database = {
           },
           {
             foreignKeyName: "worker_suppliers_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      worker_transfers: {
+        Row: {
+          client_name: string | null
+          contract_id: string | null
+          created_at: string
+          documents: Json | null
+          driver_name: string | null
+          driver_phone: string | null
+          from_location: string
+          handled_by: string
+          id: string
+          notes: string | null
+          to_location: string
+          transfer_date: string
+          transfer_number: string
+          transfer_type: Database["public"]["Enums"]["transfer_type"]
+          updated_at: string
+          vehicle_number: string | null
+          worker_id: string
+        }
+        Insert: {
+          client_name?: string | null
+          contract_id?: string | null
+          created_at?: string
+          documents?: Json | null
+          driver_name?: string | null
+          driver_phone?: string | null
+          from_location: string
+          handled_by: string
+          id?: string
+          notes?: string | null
+          to_location: string
+          transfer_date?: string
+          transfer_number: string
+          transfer_type: Database["public"]["Enums"]["transfer_type"]
+          updated_at?: string
+          vehicle_number?: string | null
+          worker_id: string
+        }
+        Update: {
+          client_name?: string | null
+          contract_id?: string | null
+          created_at?: string
+          documents?: Json | null
+          driver_name?: string | null
+          driver_phone?: string | null
+          from_location?: string
+          handled_by?: string
+          id?: string
+          notes?: string | null
+          to_location?: string
+          transfer_date?: string
+          transfer_number?: string
+          transfer_type?: Database["public"]["Enums"]["transfer_type"]
+          updated_at?: string
+          vehicle_number?: string | null
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_transfers_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worker_transfers_worker_id_fkey"
             columns: ["worker_id"]
             isOneToOne: false
             referencedRelation: "workers"
@@ -1519,9 +2008,13 @@ export type Database = {
       }
       generate_contract_number: { Args: never; Returns: string }
       generate_deal_number: { Args: never; Returns: string }
+      generate_delivery_number: { Args: never; Returns: string }
       generate_invoice_number: { Args: never; Returns: string }
+      generate_po_number: { Args: never; Returns: string }
+      generate_receipt_number: { Args: never; Returns: string }
       generate_supplier_invoice_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
+      generate_transfer_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1545,6 +2038,21 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       lead_status: "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"
+      order_status: "Pending" | "Completed" | "Cancelled"
+      po_status:
+        | "Draft"
+        | "Pending Approval"
+        | "Approved"
+        | "Paid"
+        | "Cancelled"
+      transfer_type:
+        | "Airport to Accommodation"
+        | "Accommodation to Office"
+        | "Office to Center"
+        | "Center to Client"
+        | "Client to Accommodation"
+        | "Client to Office"
+        | "Between Accommodations"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1674,6 +2182,17 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       lead_status: ["New Lead", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"],
+      order_status: ["Pending", "Completed", "Cancelled"],
+      po_status: ["Draft", "Pending Approval", "Approved", "Paid", "Cancelled"],
+      transfer_type: [
+        "Airport to Accommodation",
+        "Accommodation to Office",
+        "Office to Center",
+        "Center to Client",
+        "Client to Accommodation",
+        "Client to Office",
+        "Between Accommodations",
+      ],
     },
   },
 } as const

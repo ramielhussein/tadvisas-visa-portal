@@ -19,12 +19,25 @@ import {
   ArrowRight,
   UserPlus,
   ListChecks,
+  Package,
 } from "lucide-react";
 
 export default function Admin() {
   const navigate = useNavigate();
 
   const sections = [
+    {
+      title: "Product Management",
+      description: "Worker procurement, tracking, and movement",
+      icon: Package,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      items: [
+        { title: "Product Dashboard", path: "/product/dashboard", icon: Package, description: "Overview of operations" },
+        { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText, description: "Worker procurement POs" },
+        { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users, description: "Worker count tracking" },
+      ],
+    },
     {
       title: "CRM & Sales",
       description: "Lead management and sales pipeline",

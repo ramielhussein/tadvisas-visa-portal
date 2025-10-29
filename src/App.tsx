@@ -49,6 +49,9 @@ import SiteGuide from "./pages/SiteGuide";
 import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
 import RefundsApproval from "./pages/RefundsApproval";
+import ProductDashboard from "./pages/ProductDashboard";
+import PurchaseOrders from "./pages/PurchaseOrders";
+import DailyHeadcount from "./pages/DailyHeadcount";
 import MyCVs from "./pages/MyCVs";
 import ExpenseCategoriesManagement from "./pages/ExpenseCategoriesManagement";
 import ExpensesManagement from "./pages/ExpensesManagement";
@@ -120,6 +123,12 @@ const App = () => (
           <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           <Route path="/install" element={<InstallApp />} />
+          
+          {/* Product Management Routes */}
+          <Route path="/product/dashboard" element={<ProtectedRoute><ProductDashboard /></ProtectedRoute>} />
+          <Route path="/product/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
+          <Route path="/product/daily-headcount" element={<ProtectedRoute><DailyHeadcount /></ProtectedRoute>} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
