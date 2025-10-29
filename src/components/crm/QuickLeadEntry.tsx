@@ -20,6 +20,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   const [isChecking, setIsChecking] = useState(false);
   const [existingLead, setExistingLead] = useState<any>(null);
   const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
+  const [leadSources, setLeadSources] = useState<Array<{ id: string; source_name: string }>>([]);
   
   const [formData, setFormData] = useState({
     client_name: "",
@@ -44,29 +45,42 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   });
 
   useEffect(() => {
-    const fetchSalesTeam = async () => {
+    const fetchData = async () => {
       try {
-        const { data, error } = await supabase
+        // Fetch sales team
+        const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
           .select("id, email, full_name, permissions")
           .order("email");
 
-        if (error) throw error;
+        if (profilesError) throw profilesError;
 
         // Filter for users with leads permissions (create or assign)
-        const salesUsers = (data || []).filter((user: any) => {
+        const salesUsers = (profilesData || []).filter((user: any) => {
           const permissions = user.permissions as any;
           return permissions?.leads?.create === true || permissions?.leads?.assign === true;
         });
 
         setSalesTeam(salesUsers);
+
+        // Fetch lead sources
+        const { data: sourcesData, error: sourcesError } = await supabase
+          .from("lead_sources")
+          .select("id, source_name")
+          .eq("is_active", true)
+          .order("sort_order")
+          .order("source_name");
+
+        if (sourcesError) throw sourcesError;
+
+        setLeadSources(sourcesData || []);
       } catch (error: any) {
-        console.error("Error fetching sales team:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     if (open) {
-      fetchSalesTeam();
+      fetchData();
     }
   }, [open]);
 
@@ -554,16 +568,16 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               <SelectTrigger>
                 <SelectValue placeholder="Select source" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Website">Website</SelectItem>
-                <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                <SelectItem value="Phone">Phone Call</SelectItem>
-                <SelectItem value="Referral">Referral</SelectItem>
-                <SelectItem value="Facebook">Facebook</SelectItem>
-                <SelectItem value="Instagram">Instagram</SelectItem>
-                <SelectItem value="Google Ads">Google Ads</SelectItem>
-                <SelectItem value="Walk-in">Walk-in</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+              <SelectContent className="bg-background z-50">
+                {leadSources.length === 0 ? (
+                  <SelectItem value="" disabled>No lead sources available</SelectItem>
+                ) : (
+                  leadSources.map((source) => (
+                    <SelectItem key={source.id} value={source.source_name}>
+                      {source.source_name}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
