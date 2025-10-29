@@ -87,6 +87,11 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,7 +127,11 @@ const Navbar = () => {
             {user ? (
               <div className="flex items-center gap-4">
                 <NotificationBell />
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div 
+                  onDoubleClick={handleLogout}
+                  className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                  title="Double-click to logout"
+                >
                   <User className="h-4 w-4" />
                   <span className="font-medium">
                     {profile?.full_name || user.email}
@@ -175,7 +184,11 @@ const Navbar = () => {
               {user ? (
                 <div className="px-3 py-2 flex items-center gap-3">
                   <NotificationBell />
-                  <span className="text-sm text-muted-foreground">
+                  <span 
+                    onDoubleClick={handleLogout}
+                    className="text-sm text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
+                    title="Double-click to logout"
+                  >
                     {profile?.full_name || user.email}
                   </span>
                 </div>
