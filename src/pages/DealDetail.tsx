@@ -33,10 +33,11 @@ interface Deal {
   closed_at: string | null;
   assigned_to: string | null;
   attachments: Array<{
-    name: string;
-    url: string;
-    uploaded_at: string;
-    uploaded_by: string;
+    name?: string;
+    url?: string; // legacy public url
+    path?: string; // storage path for private bucket
+    uploaded_at?: string;
+    uploaded_by?: string;
   }> | null;
 }
 
@@ -53,6 +54,7 @@ const DealDetail = () => {
   const [deal, setDeal] = useState<Deal | null>(null);
   const [assignedUser, setAssignedUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [signedAttachments, setSignedAttachments] = useState<{ name: string; url: string }[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -82,6 +84,31 @@ const DealDetail = () => {
       }
 
       setDeal(data as unknown as Deal);
+
+      // Prepare signed URLs for attachments
+      const atts = (data.attachments || []) as any[];
+      const signed: { name: string; url: string }[] = [];
+      for (const att of atts) {
+        let path: string | undefined = att?.path;
+        if (!path && att?.url) {
+          const marker = "/storage/v1/object/public/crm-documents/";
+          const idx = (att.url as string).indexOf(marker);
+          if (idx !== -1) path = (att.url as string).substring(idx + marker.length);
+        }
+        if (path) {
+          const { data: signedData } = await supabase.storage
+            .from("crm-documents")
+            .createSignedUrl(path, 3600);
+          if (signedData?.signedUrl) {
+            signed.push({ name: att.name || path.split("/").pop() || "Attachment", url: signedData.signedUrl });
+            continue;
+          }
+        }
+        if (att?.url) {
+          signed.push({ name: att.name || "Attachment", url: att.url });
+        }
+      }
+      setSignedAttachments(signed);
 
       // Fetch assigned user details if assigned_to exists
       if (data.assigned_to) {
@@ -230,7 +257,7 @@ const DealDetail = () => {
               </Card>
 
               {/* Attachments */}
-              {deal.attachments && deal.attachments.length > 0 && (
+              {signedAttachments.length > 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -240,7 +267,7 @@ const DealDetail = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {deal.attachments.map((attachment, index) => (
+                      {signedAttachments.map((attachment, index) => (
                         <a
                           key={index}
                           href={attachment.url}
@@ -286,57 +313,34 @@ const DealDetail = () => {
                     Financial Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-muted-foreground">Deal Value</span>
-                    <span className="font-medium">AED {Number(deal.deal_value).toLocaleString()}</span>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Deal Value</p>
+                      <p className="font-medium">AED {deal.deal_value.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">VAT ({deal.vat_rate || 0}%)</p>
+                      <p className="font-medium">AED {(deal.vat_amount || 0).toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Total Amount</p>
+                      <p className="font-medium">AED {deal.total_amount.toFixed(2)}</p>
+                    </div>
                   </div>
-                  {deal.vat_rate && (
-                    <>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">VAT ({deal.vat_rate}%)</span>
-                        <span className="font-medium">AED {Number(deal.vat_amount || 0).toLocaleString()}</span>
-                      </div>
-                    </>
-                  )}
                   <Separator />
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Total Amount</span>
-                    <span className="font-bold text-lg">AED {Number(deal.total_amount).toLocaleString()}</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Commission Rate</p>
+                      <p className="font-medium">{deal.commission_rate || 0}%</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Commission Amount</p>
+                      <p className="font-medium">AED {(deal.commission_amount || 0).toFixed(2)}</p>
+                    </div>
                   </div>
-                  {deal.commission_rate && (
-                    <>
-                      <Separator />
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Commission ({deal.commission_rate}%)</span>
-                        <span className="font-medium">AED {Number(deal.commission_amount || 0).toLocaleString()}</span>
-                      </div>
-                    </>
-                  )}
                 </CardContent>
               </Card>
-
-              {/* Deal Owner/Creator */}
-              {assignedUser && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="w-5 h-5" />
-                      Deal Owner
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Assigned To</p>
-                      <p className="font-medium">{assignedUser.full_name || assignedUser.email || "Unknown"}</p>
-                      {assignedUser.email && assignedUser.full_name && (
-                        <p className="text-xs text-muted-foreground mt-1">{assignedUser.email}</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Timeline */}
               <Card>
@@ -346,33 +350,41 @@ const DealDetail = () => {
                     Timeline
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Created</p>
-                    <p className="text-sm font-medium">
-                      {new Date(deal.created_at).toLocaleString('en-GB')}
-                    </p>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>Created</span>
+                    <span>{new Date(deal.created_at).toLocaleString()}</span>
                   </div>
-                  <Separator />
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Last Updated</p>
-                    <p className="text-sm font-medium">
-                      {new Date(deal.updated_at).toLocaleString('en-GB')}
-                    </p>
+                  <div className="flex justify-between">
+                    <span>Updated</span>
+                    <span>{new Date(deal.updated_at).toLocaleString()}</span>
                   </div>
                   {deal.closed_at && (
-                    <>
-                      <Separator />
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Closed</p>
-                        <p className="text-sm font-medium">
-                          {new Date(deal.closed_at).toLocaleString('en-GB')}
-                        </p>
-                      </div>
-                    </>
+                    <div className="flex justify-between">
+                      <span>Closed</span>
+                      <span>{new Date(deal.closed_at).toLocaleString()}</span>
+                    </div>
                   )}
                 </CardContent>
               </Card>
+
+              {/* Assigned To */}
+              {assignedUser && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="w-5 h-5" />
+                      Assigned To
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div>
+                      <p className="font-medium">{assignedUser.full_name || assignedUser.email}</p>
+                      <p className="text-sm text-muted-foreground">{assignedUser.email}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>

@@ -224,13 +224,10 @@ const CreateDeal = () => {
           continue;
         }
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('crm-documents')
-          .getPublicUrl(filePath);
-
+        // Store private path (not public URL)
         uploadedAttachments.push({
           name: file.name,
-          url: publicUrl,
+          path: filePath,
           uploaded_at: new Date().toISOString(),
           uploaded_by: user?.id || '',
         });
