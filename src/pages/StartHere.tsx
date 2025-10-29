@@ -382,24 +382,19 @@ const StartHere = () => {
                       <SelectValue placeholder="Select a package" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="tadvisa">
-                        <div>
-                          <div className="font-semibold">TADVISA</div>
-                          <div className="text-sm text-muted-foreground">8925 AED • Zero monthly fee</div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="tadvisa-plus">
-                        <div>
-                          <div className="font-semibold">TADVISA+</div>
-                          <div className="text-sm text-muted-foreground">8400 AED • 150 AED per month</div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="tadvisa-plus-plus">
-                        <div>
-                          <div className="font-semibold">TADVISA++</div>
-                          <div className="text-sm text-muted-foreground">10500 AED • 168 AED per month</div>
-                        </div>
-                      </SelectItem>
+                      <SelectItem value="P1 Traditional Package">P1 Traditional Package</SelectItem>
+                      <SelectItem value="P4 Monthly">P4 Monthly</SelectItem>
+                      <SelectItem value="P5 Tadvisas">P5 Tadvisas</SelectItem>
+                      <SelectItem value="P5 Tadvisas+">P5 Tadvisas+</SelectItem>
+                      <SelectItem value="P5 Tadvisas++">P5 Tadvisas++</SelectItem>
+                      <SelectItem value="Typing">Typing</SelectItem>
+                      <SelectItem value="P6">P6</SelectItem>
+                      <SelectItem value="Driver">Driver</SelectItem>
+                      <SelectItem value="DIRECT">DIRECT</SelectItem>
+                      <SelectItem value="Cook">Cook</SelectItem>
+                      <SelectItem value="Caregiver">Caregiver</SelectItem>
+                      <SelectItem value="Nurse">Nurse</SelectItem>
+                      <SelectItem value="Skilled">Skilled</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -417,49 +412,6 @@ const StartHere = () => {
                   <CardDescription>Choose optional add-ons for your package</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {formData.package === "tadvisa" && (
-                    <>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="medicalInsurance1Year"
-                          checked={formData.addOns.medicalInsurance1Year}
-                          onCheckedChange={(checked) => 
-                            setFormData({
-                              ...formData, 
-                              addOns: { 
-                                ...formData.addOns, 
-                                medicalInsurance1Year: checked as boolean,
-                                medicalInsurance2Year: checked ? false : formData.addOns.medicalInsurance2Year
-                              }
-                            })
-                          }
-                        />
-                        <Label htmlFor="medicalInsurance1Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          1 Year Medical Insurance - 750 AED
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="medicalInsurance2Year"
-                          checked={formData.addOns.medicalInsurance2Year}
-                          onCheckedChange={(checked) => 
-                            setFormData({
-                              ...formData, 
-                              addOns: { 
-                                ...formData.addOns, 
-                                medicalInsurance2Year: checked as boolean,
-                                medicalInsurance1Year: checked ? false : formData.addOns.medicalInsurance1Year
-                              }
-                            })
-                          }
-                        />
-                        <Label htmlFor="medicalInsurance2Year" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                          2 Year Medical Insurance - 1500 AED
-                        </Label>
-                      </div>
-                    </>
-                  )}
-                  
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="installmentPlan"
