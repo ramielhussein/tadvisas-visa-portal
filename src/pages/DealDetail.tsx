@@ -34,11 +34,18 @@ interface Deal {
   assigned_to: string | null;
 }
 
+interface Profile {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+}
+
 const DealDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [deal, setDeal] = useState<Deal | null>(null);
+  const [assignedUser, setAssignedUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,6 +76,19 @@ const DealDetail = () => {
       }
 
       setDeal(data);
+
+      // Fetch assigned user details if assigned_to exists
+      if (data.assigned_to) {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("id, full_name, email")
+          .eq("id", data.assigned_to)
+          .maybeSingle();
+
+        if (profileData) {
+          setAssignedUser(profileData);
+        }
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -259,6 +279,27 @@ const DealDetail = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Deal Owner/Creator */}
+              {assignedUser && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="w-5 h-5" />
+                      Deal Owner
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Assigned To</p>
+                      <p className="font-medium">{assignedUser.full_name || assignedUser.email || "Unknown"}</p>
+                      {assignedUser.email && assignedUser.full_name && (
+                        <p className="text-xs text-muted-foreground mt-1">{assignedUser.email}</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Timeline */}
               <Card>
