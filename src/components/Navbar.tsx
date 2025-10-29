@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, MessageCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/NotificationBell";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -78,18 +79,29 @@ const Navbar = () => {
   // Backward compat: ensure any leftover call handler points to WhatsApp
   const handleCallClick = handleWhatsAppClick;
 
+  const handleLogoDoubleClick = () => {
+    if (user) {
+      navigate("/admin");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <div 
+            onDoubleClick={handleLogoDoubleClick}
+            className="flex items-center cursor-pointer"
+          >
             <img 
               src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" 
               alt="TADMAIDS" 
               className="h-8 w-auto"
             />
-          </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
