@@ -259,6 +259,7 @@ export type Database = {
       deals: {
         Row: {
           assigned_to: string | null
+          attachments: Json | null
           client_email: string | null
           client_name: string
           client_phone: string
@@ -284,6 +285,7 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
+          attachments?: Json | null
           client_email?: string | null
           client_name: string
           client_phone: string
@@ -309,6 +311,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
+          attachments?: Json | null
           client_email?: string | null
           client_name?: string
           client_phone?: string

@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download } from "lucide-react";
 
 interface Deal {
   id: string;
@@ -32,6 +32,12 @@ interface Deal {
   updated_at: string;
   closed_at: string | null;
   assigned_to: string | null;
+  attachments: Array<{
+    name: string;
+    url: string;
+    uploaded_at: string;
+    uploaded_by: string;
+  }> | null;
 }
 
 interface Profile {
@@ -75,7 +81,7 @@ const DealDetail = () => {
         return;
       }
 
-      setDeal(data);
+      setDeal(data as unknown as Deal);
 
       // Fetch assigned user details if assigned_to exists
       if (data.assigned_to) {
@@ -222,6 +228,37 @@ const DealDetail = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Attachments */}
+              {deal.attachments && deal.attachments.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Paperclip className="w-5 h-5" />
+                      Attachments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {deal.attachments.map((attachment, index) => (
+                        <a
+                          key={index}
+                          href={attachment.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <Paperclip className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                            <span className="text-sm truncate">{attachment.name}</span>
+                          </div>
+                          <Download className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        </a>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Notes */}
               {deal.notes && (

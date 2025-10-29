@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, Paperclip, X } from "lucide-react";
 import { z } from "zod";
 
 const dealSchema = z.object({
@@ -38,6 +38,7 @@ const CreateDeal = () => {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [salesPackages, setSalesPackages] = useState<any[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -171,6 +172,16 @@ const CreateDeal = () => {
     setWorkers([]);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setAttachments([...attachments, ...Array.from(e.target.files)]);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(attachments.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -197,6 +208,34 @@ const CreateDeal = () => {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
 
+      // Upload attachments
+      const uploadedAttachments = [];
+      for (const file of attachments) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${dealNumber}_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `deals/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('crm-documents')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error('Error uploading file:', uploadError);
+          continue;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('crm-documents')
+          .getPublicUrl(filePath);
+
+        uploadedAttachments.push({
+          name: file.name,
+          url: publicUrl,
+          uploaded_at: new Date().toISOString(),
+          uploaded_by: user?.id || '',
+        });
+      }
+
       // Create deal
       const { data: newDeal, error } = await supabase
         .from("deals")
@@ -220,6 +259,7 @@ const CreateDeal = () => {
           notes: validated.notes || null,
           assigned_to: user?.id,
           status: "Draft",
+          attachments: uploadedAttachments,
         })
         .select()
         .single();
@@ -578,6 +618,43 @@ const CreateDeal = () => {
                       <span className="font-medium">AED {calculatedAmounts.commission_amount.toFixed(2)}</span>
                     </div>
                   )}
+                </div>
+
+                {/* Attachments */}
+                <div className="space-y-2">
+                  <Label htmlFor="attachments">Attachments</Label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        id="attachments"
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        className="cursor-pointer"
+                      />
+                      <Paperclip className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                    {attachments.length > 0 && (
+                      <div className="space-y-2">
+                        {attachments.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                          >
+                            <span className="text-sm truncate flex-1">{file.name}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeAttachment(index)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Notes */}
