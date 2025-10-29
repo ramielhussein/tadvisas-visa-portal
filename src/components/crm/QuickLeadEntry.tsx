@@ -55,10 +55,14 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
         if (profilesError) throw profilesError;
 
-        // Filter for users with leads permissions (create or assign)
+        // Filter for users with sales/deals permissions or lead assignment permissions
         const salesUsers = (profilesData || []).filter((user: any) => {
           const permissions = user.permissions as any;
-          return permissions?.leads?.create === true || permissions?.leads?.assign === true;
+          return (
+            permissions?.leads?.assign === true ||
+            permissions?.deals?.create === true ||
+            permissions?.deals?.edit === true
+          );
         });
 
         setSalesTeam(salesUsers);
