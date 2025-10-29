@@ -337,10 +337,15 @@ const CreateDeal = () => {
                       <Label htmlFor="client_phone">Phone *</Label>
                       <Input
                         id="client_phone"
+                        type="tel"
                         required
                         value={formData.client_phone}
                         onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
+                        placeholder="971501234567"
+                        pattern="971[0-9]{9}"
+                        title="Phone format: 971XXXXXXXXX"
                       />
+                      <p className="text-xs text-muted-foreground">Format: 971XXXXXXXXX</p>
                     </div>
                   </div>
 

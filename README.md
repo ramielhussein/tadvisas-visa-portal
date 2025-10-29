@@ -1,6 +1,20 @@
-# Welcome to your Lovable project
+# TADMAIDS - Comprehensive Business Management System
 
-## Project info
+A full-stack web application for managing domestic worker recruitment, CRM, financial operations, and client services in the UAE market.
+
+## Project Overview
+
+TADMAIDS is an integrated business management platform featuring:
+
+- **CRM System**: Lead management, client tracking, and sales pipeline
+- **ERP & Finance**: Deals, contracts, invoicing, refunds, and financial dashboard
+- **CV Wizard**: Worker profile management with multi-step forms and photo albums
+- **Client Portal**: "Start Here & Now" application forms with document uploads
+- **WhatsApp Integration**: Optimized for 971XXXXXXXXX UAE phone format for seamless API connectivity
+- **User Management**: Role-based access control with granular permissions
+- **Reporting & Analytics**: Sales performance, financial metrics, and audit logs
+
+## Project Info
 
 **URL**: https://lovable.dev/projects/a7195519-dd5d-4962-9e4b-b0baeb42f481
 

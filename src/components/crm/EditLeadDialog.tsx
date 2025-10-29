@@ -121,10 +121,15 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
               <Label htmlFor="mobile_number">Mobile Number *</Label>
               <Input
                 id="mobile_number"
+                type="tel"
                 required
                 value={formData.mobile_number}
                 onChange={(e) => setFormData({ ...formData, mobile_number: e.target.value })}
+                placeholder="971501234567"
+                pattern="971[0-9]{9}"
+                title="Phone format: 971XXXXXXXXX"
               />
+              <p className="text-xs text-muted-foreground">Format: 971XXXXXXXXX</p>
             </div>
           </div>
 

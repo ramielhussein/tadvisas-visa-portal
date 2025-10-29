@@ -534,10 +534,14 @@ const CreateContract = () => {
                   <Label htmlFor="client-phone">Client Phone *</Label>
                   <Input
                     id="client-phone"
+                    type="tel"
                     value={clientData.phone}
                     onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
-                    placeholder="Enter phone number"
+                    placeholder="971501234567"
+                    pattern="971[0-9]{9}"
+                    title="Phone format: 971XXXXXXXXX"
                   />
+                  <p className="text-xs text-muted-foreground">Format: 971XXXXXXXXX</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="client-email">Client Email</Label>

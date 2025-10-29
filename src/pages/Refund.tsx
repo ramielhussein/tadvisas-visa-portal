@@ -798,10 +798,14 @@ const Refund = () => {
                         <div className="space-y-2">
                           <Label>Client Phone</Label>
                           <Input 
+                            type="tel"
                             value={formData.clientMobile}
                             onChange={(e) => setFormData({...formData, clientMobile: e.target.value})}
-                            placeholder="Enter phone"
+                            placeholder="971501234567"
+                            pattern="971[0-9]{9}"
+                            title="Phone format: 971XXXXXXXXX"
                           />
+                          <p className="text-xs text-muted-foreground">Format: 971XXXXXXXXX</p>
                         </div>
 
                         <div className="space-y-2">

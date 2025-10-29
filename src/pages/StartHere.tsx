@@ -354,10 +354,11 @@ const StartHere = () => {
                     required
                     value={formData.number}
                     onChange={handleInputChange}
-                    placeholder="e.g., 0502020070"
-                    pattern="[0-9]{10}"
-                    title="Please enter a 10-digit phone number"
+                    placeholder="971501234567"
+                    pattern="971[0-9]{9}"
+                    title="Please enter phone number in format: 971XXXXXXXXX (e.g., 971501234567)"
                   />
+                  <p className="text-xs text-muted-foreground mt-1">Format: 971XXXXXXXXX (12 digits)</p>
                 </div>
                 <div>
                   <Label htmlFor="email">Email Address</Label>
