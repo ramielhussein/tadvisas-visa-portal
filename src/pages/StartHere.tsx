@@ -15,6 +15,7 @@ const StartHere = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const leadId = searchParams.get('lead_id');
+  const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
   const [formData, setFormData] = useState({
     name: "",
     number: "",
@@ -36,6 +37,24 @@ const StartHere = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Fetch inquiry packages
+  useEffect(() => {
+    const fetchInquiryPackages = async () => {
+      const { data, error } = await supabase
+        .from('inquiry_packages')
+        .select('id, package_name')
+        .eq('is_active', true)
+        .order('sort_order')
+        .order('package_name');
+
+      if (!error && data) {
+        setInquiryPackages(data);
+      }
+    };
+
+    fetchInquiryPackages();
+  }, []);
 
   // Prefill data from lead if lead_id is provided
   useEffect(() => {
@@ -379,22 +398,14 @@ const StartHere = () => {
                     });
                   }}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a package" />
+                      <SelectValue placeholder={inquiryPackages.length === 0 ? "Loading packages..." : "Select a package"} />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="P1 Traditional Package">P1 Traditional Package</SelectItem>
-                      <SelectItem value="P4 Monthly">P4 Monthly</SelectItem>
-                      <SelectItem value="P5 Tadvisas">P5 Tadvisas</SelectItem>
-                      <SelectItem value="P5 Tadvisas+">P5 Tadvisas+</SelectItem>
-                      <SelectItem value="P5 Tadvisas++">P5 Tadvisas++</SelectItem>
-                      <SelectItem value="Typing">Typing</SelectItem>
-                      <SelectItem value="P6">P6</SelectItem>
-                      <SelectItem value="Driver">Driver</SelectItem>
-                      <SelectItem value="DIRECT">DIRECT</SelectItem>
-                      <SelectItem value="Cook">Cook</SelectItem>
-                      <SelectItem value="Caregiver">Caregiver</SelectItem>
-                      <SelectItem value="Nurse">Nurse</SelectItem>
-                      <SelectItem value="Skilled">Skilled</SelectItem>
+                    <SelectContent className="bg-background z-50">
+                      {inquiryPackages.map((pkg) => (
+                        <SelectItem key={pkg.id} value={pkg.package_name}>
+                          {pkg.package_name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

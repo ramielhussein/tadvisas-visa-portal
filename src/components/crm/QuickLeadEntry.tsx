@@ -21,6 +21,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   const [existingLead, setExistingLead] = useState<any>(null);
   const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
   const [leadSources, setLeadSources] = useState<Array<{ id: string; source_name: string }>>([]);
+  const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
   
   const [formData, setFormData] = useState({
     client_name: "",
@@ -78,6 +79,18 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         if (sourcesError) throw sourcesError;
 
         setLeadSources(sourcesData || []);
+
+        // Fetch inquiry packages
+        const { data: packagesData, error: packagesError } = await supabase
+          .from("inquiry_packages")
+          .select("id, package_name")
+          .eq("is_active", true)
+          .order("sort_order")
+          .order("package_name");
+
+        if (packagesError) throw packagesError;
+
+        setInquiryPackages(packagesData || []);
       } catch (error: any) {
         console.error("Error fetching data:", error);
       }
@@ -541,22 +554,14 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select service" />
+                <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="P1 Traditional Package">P1 Traditional Package</SelectItem>
-                <SelectItem value="P4 Monthly">P4 Monthly</SelectItem>
-                <SelectItem value="P5 Tadvisas">P5 Tadvisas</SelectItem>
-                <SelectItem value="P5 Tadvisas+">P5 Tadvisas+</SelectItem>
-                <SelectItem value="P5 Tadvisas++">P5 Tadvisas++</SelectItem>
-                <SelectItem value="Typing">Typing</SelectItem>
-                <SelectItem value="P6">P6</SelectItem>
-                <SelectItem value="Driver">Driver</SelectItem>
-                <SelectItem value="DIRECT">DIRECT</SelectItem>
-                <SelectItem value="Cook">Cook</SelectItem>
-                <SelectItem value="Caregiver">Caregiver</SelectItem>
-                <SelectItem value="Nurse">Nurse</SelectItem>
-                <SelectItem value="Skilled">Skilled</SelectItem>
+              <SelectContent className="bg-background z-50">
+                {inquiryPackages.map((pkg) => (
+                  <SelectItem key={pkg.id} value={pkg.package_name}>
+                    {pkg.package_name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
