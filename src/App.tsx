@@ -67,6 +67,9 @@ import InquiryPackagesManagement from "./pages/InquiryPackagesManagement";
 import SalesPackagesManagement from "./pages/SalesPackagesManagement";
 import PaymentsList from "./pages/PaymentsList";
 import ClientStatement from "./pages/ClientStatement";
+import NationalityWorkflows from "./pages/NationalityWorkflows";
+import WorkerReturns from "./pages/WorkerReturns";
+import WorkerTransfers from "./pages/WorkerTransfers";
 
 const queryClient = new QueryClient();
 
@@ -140,6 +143,9 @@ const App = () => (
           <Route path="/product/dashboard" element={<ProtectedRoute><ProductDashboard /></ProtectedRoute>} />
           <Route path="/product/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
           <Route path="/product/daily-headcount" element={<ProtectedRoute><DailyHeadcount /></ProtectedRoute>} />
+          <Route path="/product/nationality-workflows" element={<ProtectedRoute><NationalityWorkflows /></ProtectedRoute>} />
+          <Route path="/product/worker-returns" element={<ProtectedRoute><WorkerReturns /></ProtectedRoute>} />
+          <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
