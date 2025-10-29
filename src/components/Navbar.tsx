@@ -94,12 +94,13 @@ const Navbar = () => {
           {/* Logo */}
           <div 
             onDoubleClick={handleLogoDoubleClick}
-            className="flex items-center cursor-pointer"
+            className="flex items-center cursor-pointer select-none"
           >
             <img 
               src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" 
               alt="TADMAIDS" 
-              className="h-8 w-auto"
+              className="h-8 w-auto pointer-events-none"
+              draggable="false"
             />
           </div>
 
