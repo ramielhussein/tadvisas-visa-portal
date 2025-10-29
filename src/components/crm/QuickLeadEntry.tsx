@@ -566,18 +566,14 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select source" />
+                <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
-                {leadSources.length === 0 ? (
-                  <SelectItem value="" disabled>No lead sources available</SelectItem>
-                ) : (
-                  leadSources.map((source) => (
-                    <SelectItem key={source.id} value={source.source_name}>
-                      {source.source_name}
-                    </SelectItem>
-                  ))
-                )}
+                {leadSources.map((source) => (
+                  <SelectItem key={source.id} value={source.source_name}>
+                    {source.source_name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -591,10 +587,9 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select sales person (optional)" />
+                <SelectValue placeholder="Unassigned (optional)" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
-                <SelectItem value="">Unassigned</SelectItem>
                 {salesTeam.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.full_name || user.email}
