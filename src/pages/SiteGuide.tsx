@@ -98,26 +98,66 @@ const SiteGuide = () => {
                 <h3 className="text-xl font-semibold mb-2">ADMIN PAGES (Login Required)</h3>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Login (/auth) - Auth.tsx</strong>: Admin authentication page</li>
-                  <li><strong>Admin Dashboard (/admin) - Admin.tsx</strong>: Main admin dashboard</li>
+                  <li><strong>Admin Dashboard (/admin) - Admin.tsx</strong>: Main admin dashboard and hub</li>
+                  <li><strong>CRM Dashboard (/crm/dashboard) - Dashboard.tsx</strong>: Sales performance metrics and analytics</li>
                   <li><strong>Lead Management (/crm/leads) - LeadManagement.tsx</strong>: CRM system for managing leads</li>
+                  <li><strong>Lead Detail (/crm/leads/:id) - LeadDetail.tsx</strong>: Individual lead details and activities</li>
                   <li><strong>CV Wizard Review (/admin/cvwizard-review) - CVWizardReview.tsx</strong>: Review and approve worker applications</li>
                   <li><strong>CV Wizard Settings (/admin/cvwizard-settings) - CVWizardSettings.tsx</strong>: Configure CV wizard parameters</li>
                   <li><strong>Wizard Album (/wizardalbum) - WizardAlbum.tsx</strong>: Photo management for worker profiles</li>
-                  <li><strong>User Management (/admin/users) - UserManagement.tsx</strong>: Manage admin users and permissions</li>
-                  <li><strong>User List (/admin/user-list) - UserList.tsx</strong>: List all users in system</li>
+                  <li><strong>My CVs (/my-cvs) - MyCVs.tsx</strong>: View your submitted worker CVs</li>
+                  <li><strong>User Management (/admin/user-management) - UserManagement.tsx</strong>: Create new admin users</li>
+                  <li><strong>User List (/admin/user-list) - UserList.tsx</strong>: Manage users and permissions</li>
                   <li><strong>Refunds List (/refundslist) - RefundsList.tsx</strong>: View finalized refund calculations</li>
-                  <li><strong>Reset Admin (/resetadmin) - ResetAdmin.tsx</strong>: Password reset for admin users</li>
+                  <li><strong>Refunds Approval (/refunds-approval) - RefundsApproval.tsx</strong>: Approve/reject refund requests</li>
+                  <li><strong>Reset Admin (/admin/reset-admin) - ResetAdmin.tsx</strong>: Password reset for admin users</li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-semibold mb-2">ERP & FINANCE (Login Required)</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li><strong>Financial Dashboard (/financial) - FinancialDashboard.tsx</strong>: Overview of revenue, A/R, A/P, and financial metrics</li>
+                  <li><strong>Deals Management (/deals) - DealsManagement.tsx</strong>: View and manage sales deals</li>
+                  <li><strong>Deal Detail (/deals/:id) - DealDetail.tsx</strong>: Individual deal information and timeline</li>
+                  <li><strong>Create Deal (/deals/create) - CreateDeal.tsx</strong>: Create new sales deal from lead</li>
+                  <li><strong>Contracts Management (/contracts) - ContractManagement.tsx</strong>: View all client contracts</li>
+                  <li><strong>Create Contract (/contracts/create) - CreateContract.tsx</strong>: Generate contract from deal</li>
+                  <li><strong>Payments List (/payments) - PaymentsList.tsx</strong>: View all recorded client payments</li>
+                  <li><strong>Client Statement (/client-statement) - ClientStatement.tsx</strong>: Transaction ledger for specific client</li>
+                  <li><strong>Suppliers Management (/suppliers) - SuppliersManagement.tsx</strong>: Manage supplier records and A/P</li>
+                  <li><strong>Purchase Orders (/purchase-orders) - PurchaseOrders.tsx</strong>: Create and manage supplier purchase orders</li>
+                  <li><strong>Bank Accounts (/bank-accounts) - BankAccountsManagement.tsx</strong>: Manage company bank accounts</li>
+                  <li><strong>Bank Transfers (/bank-transfers) - BankTransfers.tsx</strong>: Record inter-bank transfers</li>
+                  <li><strong>Chart of Accounts (/expense-categories) - ExpenseCategoriesManagement.tsx</strong>: Define expense categories</li>
+                  <li><strong>Expenses (/expenses) - ExpensesManagement.tsx</strong>: Record and track business expenses</li>
+                  <li><strong>Equity Accounts (/equity-accounts) - EquityAccountsManagement.tsx</strong>: Owner's capital accounts</li>
+                  <li><strong>Owner Equity (/owner-equity) - OwnerEquity.tsx</strong>: Track owner investments and withdrawals</li>
+                  <li><strong>Audit Logs (/audit-logs) - AuditLogs.tsx</strong>: System activity audit trail</li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-semibold mb-2">CRM & SETTINGS (Login Required)</h3>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li><strong>Lead Sources (/crm/lead-sources) - LeadSourcesManagement.tsx</strong>: Manage lead source options</li>
+                  <li><strong>Inquiry Packages (/crm/inquiry-packages) - InquiryPackagesManagement.tsx</strong>: Packages for lead forms</li>
+                  <li><strong>Sales Packages (/crm/sales-packages) - SalesPackagesManagement.tsx</strong>: Products for deals/contracts</li>
+                  <li><strong>Product Dashboard (/product-dashboard) - ProductDashboard.tsx</strong>: Product team operations hub</li>
+                  <li><strong>Daily Headcount (/daily-headcount) - DailyHeadcount.tsx</strong>: Worker count tracking</li>
                 </ul>
               </section>
 
               <section>
                 <h3 className="text-xl font-semibold mb-2">KEY DATA FLOWS</h3>
                 <ul className="list-disc pl-6 space-y-2">
-                  <li><strong>Client Submission Flow</strong>: Home → Start Here → submissions table → Lead Management (CRM)</li>
-                  <li><strong>Worker Application Flow</strong>: CV Wizard (10 steps) → wizard_submissions table → CV Wizard Review (Admin)</li>
-                  <li><strong>Refund Flow</strong>: Refund Calculator → finalized_refunds table → Refunds List (Admin)</li>
-                  <li><strong>Lead Management Flow</strong>: Quick Lead Entry → leads table → Lead Management → Round-robin assignment</li>
+                  <li><strong>Client Submission Flow</strong>: Home → Start Here → submissions table → Client Submissions (Admin) → Convert to Lead</li>
+                  <li><strong>Lead to Sale Flow</strong>: Lead Entry → leads table → Create Deal → deals table → Create Contract → contracts table → Auto-generate Invoice</li>
+                  <li><strong>Payment Recording Flow</strong>: Invoice created → Record Payment (from Financial Dashboard or Invoices) → payments table → Invoice auto-updated → Client Statement updated</li>
+                  <li><strong>Worker Application Flow</strong>: CV Wizard (10 steps) → wizard_submissions table → CV Wizard Review (Admin) → Approved workers</li>
+                  <li><strong>Refund Flow</strong>: Refund Calculator → refunds table → Refunds Approval (Finance) → Finalized refunds</li>
                   <li><strong>Worker Album Flow</strong>: CV Wizard (photos) → Wizard Album (Admin review) → Country Albums (Public display)</li>
+                  <li><strong>Purchase Order Flow</strong>: Create PO → purchase_orders table → Supplier approval → Payment tracking</li>
                 </ul>
               </section>
 

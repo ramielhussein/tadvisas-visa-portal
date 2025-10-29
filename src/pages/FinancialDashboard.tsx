@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2 } from "lucide-react";
+import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye } from "lucide-react";
 
 interface FinancialStats {
   totalRevenue: number;
@@ -28,6 +30,7 @@ interface AccountBalance {
 }
 
 const FinancialDashboard = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<FinancialStats>({
@@ -224,7 +227,7 @@ const FinancialDashboard = () => {
                         key={index}
                         className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
                       >
-                        <div>
+                        <div className="flex-1">
                           <p className="font-medium">{balance.client_name}</p>
                           <p className="text-sm text-muted-foreground">{balance.client_phone}</p>
                         </div>
@@ -232,7 +235,7 @@ const FinancialDashboard = () => {
                           <p className="text-lg font-bold text-orange-600">
                             AED {Number(balance.total_outstanding).toLocaleString()}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mb-2">
                             {balance.pending_invoices > 0 && (
                               <span className="text-orange-600">{balance.pending_invoices} pending </span>
                             )}
@@ -240,6 +243,14 @@ const FinancialDashboard = () => {
                               <span className="text-red-600">{balance.overdue_invoices} overdue</span>
                             )}
                           </p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => navigate(`/client-statement?phone=${balance.client_phone}&name=${encodeURIComponent(balance.client_name)}`)}
+                          >
+                            <Eye className="h-3 w-3 mr-1" />
+                            View Statement
+                          </Button>
                         </div>
                       </div>
                     ))}

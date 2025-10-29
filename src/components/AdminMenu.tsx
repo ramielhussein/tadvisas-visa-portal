@@ -216,6 +216,14 @@ const AdminMenu = () => {
           </DropdownMenuItem>
 
           <DropdownMenuItem 
+            onClick={() => handleNavigation('/payments')}
+            className={location.pathname === '/payments' ? 'bg-accent' : ''}
+          >
+            <DollarSign className="h-4 w-4 mr-2" />
+            Payments List
+          </DropdownMenuItem>
+
+          <DropdownMenuItem 
             onClick={() => handleNavigation('/expense-categories')}
             className={location.pathname === '/expense-categories' ? 'bg-accent' : ''}
           >

@@ -65,6 +65,8 @@ import InstallApp from "./pages/InstallApp";
 import LeadSourcesManagement from "./pages/LeadSourcesManagement";
 import InquiryPackagesManagement from "./pages/InquiryPackagesManagement";
 import SalesPackagesManagement from "./pages/SalesPackagesManagement";
+import PaymentsList from "./pages/PaymentsList";
+import ClientStatement from "./pages/ClientStatement";
 
 const queryClient = new QueryClient();
 
@@ -115,6 +117,8 @@ const App = () => (
           <Route path="/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
           <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
           <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+          <Route path="/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
+          <Route path="/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
           <Route path="/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
