@@ -62,6 +62,8 @@ import OwnerEquity from "./pages/OwnerEquity";
 import AuditLogs from "./pages/AuditLogs";
 import InstallApp from "./pages/InstallApp";
 import LeadSourcesManagement from "./pages/LeadSourcesManagement";
+import InquiryPackagesManagement from "./pages/InquiryPackagesManagement";
+import SalesPackagesManagement from "./pages/SalesPackagesManagement";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +108,8 @@ const App = () => (
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
           <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
+          <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
+          <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
           <Route path="/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
           <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
           <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
