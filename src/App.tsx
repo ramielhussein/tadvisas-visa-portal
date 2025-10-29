@@ -40,6 +40,7 @@ import LeadManagement from "./pages/LeadManagement";
 import LeadDetail from "./pages/LeadDetail";
 import Dashboard from "./pages/Dashboard";
 import DealsManagement from "./pages/DealsManagement";
+import DealDetail from "./pages/DealDetail";
 import CreateDeal from "./pages/CreateDeal";
 import FinancialDashboard from "./pages/FinancialDashboard";
 import SuppliersManagement from "./pages/SuppliersManagement";
@@ -111,6 +112,7 @@ const App = () => (
           <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
           <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
           <Route path="/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
+          <Route path="/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
           <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
           <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
           <Route path="/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
