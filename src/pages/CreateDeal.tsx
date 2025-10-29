@@ -37,10 +37,12 @@ const CreateDeal = () => {
   const [selectedWorker, setSelectedWorker] = useState<any>(null);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [salesPackages, setSalesPackages] = useState<any[]>([]);
 
   useEffect(() => {
     fetchPaymentMethods();
     fetchBankAccounts();
+    fetchSalesPackages();
   }, []);
 
   const [formData, setFormData] = useState({
@@ -108,6 +110,16 @@ const CreateDeal = () => {
       .order("bank_name");
     
     setBankAccounts(data || []);
+  };
+
+  const fetchSalesPackages = async () => {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("code");
+    
+    setSalesPackages(data || []);
   };
 
   const searchLeads = async (query: string) => {
@@ -398,25 +410,20 @@ const CreateDeal = () => {
                   <h3 className="font-semibold">Service Details</h3>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="service_type">Service Type *</Label>
+                    <Label htmlFor="service_type">Service/Package *</Label>
                     <Select
                       value={formData.service_type}
                       onValueChange={(value) => setFormData({ ...formData, service_type: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select service" />
+                        <SelectValue placeholder="Select sales package" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="P1 Traditional Package">P1 Traditional Package</SelectItem>
-                        <SelectItem value="P4 Monthly">P4 Monthly</SelectItem>
-                        <SelectItem value="P5 Tadvisas">P5 Tadvisas</SelectItem>
-                        <SelectItem value="P5 Tadvisas+">P5 Tadvisas+</SelectItem>
-                        <SelectItem value="P5 Tadvisas++">P5 Tadvisas++</SelectItem>
-                        <SelectItem value="Driver">Driver</SelectItem>
-                        <SelectItem value="Cook">Cook</SelectItem>
-                        <SelectItem value="Caregiver">Caregiver</SelectItem>
-                        <SelectItem value="Nurse">Nurse</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        {salesPackages.map((pkg) => (
+                          <SelectItem key={pkg.id} value={pkg.name}>
+                            {pkg.code} - {pkg.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
