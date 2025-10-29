@@ -45,7 +45,7 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const navItems = [
+  const publicNavItems = [
     { name: "Home", path: "/" },
     { name: "Hire a Maid", path: "/hire-a-maid" },
     { name: "Get a Visa", path: "/get-a-visa" },
@@ -54,6 +54,16 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  const authenticatedNavItems = [
+    { name: "Home", path: "/" },
+    { name: "Browse Workers", path: "/hub" },
+    { name: "My CVs", path: "/my-cvs" },
+    { name: "Dashboard", path: "/crm/dashboard" },
+    { name: "Admin", path: "/admin" },
+    { name: "Site Guide", path: "/siteguide" },
+  ];
+
+  const navItems = user ? authenticatedNavItems : publicNavItems;
   const authenticatedItems = user ? navItems : [...navItems, { name: "Start Here & Now", path: "/start-here" }];
 
   const handleWhatsAppClick = () => {
