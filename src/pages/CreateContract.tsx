@@ -417,8 +417,15 @@ const CreateContract = () => {
                         className="w-full justify-between"
                       >
                         {selectedWorker
-                          ? workers.find((worker) => worker.id === selectedWorker)?.name + 
-                            ` - ${workers.find((worker) => worker.id === selectedWorker)?.nationality_code} (${workers.find((worker) => worker.id === selectedWorker)?.job1})`
+                          ? (() => {
+                              const worker = workers.find((w) => w.id === selectedWorker);
+                              if (worker) {
+                                return `${worker.name} - ${worker.nationality_code} (${worker.job1})`;
+                              }
+                              // If worker not in available list, show from deal data
+                              const deal = deals.find(d => d.id === selectedDeal);
+                              return deal?.worker_name || "Worker selected (not available in list)";
+                            })()
                           : "Search workers..."}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
