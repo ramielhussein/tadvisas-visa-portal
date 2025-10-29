@@ -39,6 +39,20 @@ interface Client {
   email: string;
 }
 
+interface Deal {
+  id: string;
+  deal_number: string;
+  client_name: string;
+  client_phone: string;
+  client_email: string | null;
+  service_type: string;
+  worker_id: string | null;
+  worker_name: string | null;
+  deal_value: number;
+  total_amount: number;
+  status: string;
+}
+
 interface ClientData {
   name: string;
   phone: string;
@@ -52,7 +66,10 @@ const CreateContract = () => {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
   
+  const [selectedDeal, setSelectedDeal] = useState("");
+  const [dealSearchOpen, setDealSearchOpen] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState("");
   const [workerSearchOpen, setWorkerSearchOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState("");
@@ -126,6 +143,43 @@ const CreateContract = () => {
 
     fetchClients();
   }, []);
+
+  // Fetch active deals
+  useEffect(() => {
+    const fetchDeals = async () => {
+      const { data, error } = await supabase
+        .from('deals')
+        .select('*')
+        .in('status', ['Active', 'Draft'])
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching deals:', error);
+      } else {
+        setDeals(data || []);
+      }
+    };
+
+    fetchDeals();
+  }, []);
+
+  // Handle deal selection - auto-fill contract data
+  const handleDealSelect = (dealId: string) => {
+    const deal = deals.find(d => d.id === dealId);
+    if (deal) {
+      setSelectedDeal(dealId);
+      setClientData({
+        name: deal.client_name,
+        phone: deal.client_phone,
+        email: deal.client_email || ""
+      });
+      if (deal.worker_id) {
+        setSelectedWorker(deal.worker_id);
+      }
+      setBaseAmount(deal.deal_value);
+    }
+    setDealSearchOpen(false);
+  };
 
   // Handle client selection
   const handleClientSelect = (clientId: string) => {
@@ -280,6 +334,69 @@ const CreateContract = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Deal Selection (Optional - to pre-fill data) */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Link to Deal (Optional)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Label>Select from Active Deals</Label>
+                  <Popover open={dealSearchOpen} onOpenChange={setDealSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={dealSearchOpen}
+                        className="w-full justify-between"
+                      >
+                        {selectedDeal
+                          ? `${deals.find((deal) => deal.id === selectedDeal)?.deal_number} - ${deals.find((deal) => deal.id === selectedDeal)?.client_name}`
+                          : "Search deals to auto-fill contract data..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0 z-50" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search by deal number or client name..." />
+                        <CommandList>
+                          <CommandEmpty>No active deals found.</CommandEmpty>
+                          <CommandGroup>
+                            {deals.map((deal) => (
+                              <CommandItem
+                                key={deal.id}
+                                value={`${deal.deal_number} ${deal.client_name}`}
+                                onSelect={() => handleDealSelect(deal.id)}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedDeal === deal.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <div className="flex flex-col">
+                                  <span>{deal.deal_number} - {deal.client_name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {deal.service_type} • AED {Number(deal.deal_value).toLocaleString()}
+                                  </span>
+                                </div>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground">
+                    Selecting a deal will auto-fill client info, worker, and amount. You can still modify any field below.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Worker Selection */}
             <Card>
               <CardHeader>
