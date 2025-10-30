@@ -13,9 +13,10 @@ interface QuickLeadEntryProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  lead?: any | null;
 }
 
-const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
+const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
@@ -99,8 +100,38 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
     if (open) {
       fetchData();
+      
+      // Pre-populate form if editing an existing lead
+      if (lead) {
+        setFormData({
+          client_name: lead.client_name || "",
+          email: lead.email || "",
+          mobile_number: lead.mobile_number || "",
+          emirate: lead.emirate || "",
+          status: lead.status || "New Lead",
+          service_required: lead.service_required || "",
+          nationality_code: lead.nationality_code || "",
+          lead_source: lead.lead_source || "",
+          assigned_to: lead.assigned_to || "",
+        });
+        setExistingLead(null); // Clear existing lead check for edit mode
+      } else {
+        // Reset form for new lead
+        setFormData({
+          client_name: "",
+          email: "",
+          mobile_number: "",
+          emirate: "",
+          status: "New Lead",
+          service_required: "",
+          nationality_code: "",
+          lead_source: "",
+          assigned_to: "",
+        });
+        setExistingLead(null);
+      }
     }
-  }, [open]);
+  }, [open, lead]);
 
   const handleFileChange = (field: keyof typeof files, file: File | null) => {
     setFiles({ ...files, [field]: file });
@@ -227,6 +258,46 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // If editing an existing lead, update instead of create
+    if (lead) {
+      setIsSubmitting(true);
+      try {
+        const { error } = await supabase
+          .from("leads")
+          .update({
+            client_name: formData.client_name || null,
+            email: formData.email || null,
+            mobile_number: formData.mobile_number,
+            emirate: formData.emirate || null,
+            status: formData.status,
+            service_required: formData.service_required || null,
+            nationality_code: formData.nationality_code || null,
+            lead_source: formData.lead_source || null,
+            assigned_to: formData.assigned_to || null,
+          })
+          .eq("id", lead.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Lead updated successfully",
+        });
+
+        onSuccess();
+        onClose();
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
     
     // Prevent submission if this is a duplicate lead
     if (existingLead) {
@@ -426,9 +497,9 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Quick Lead Entry (Ctrl+Shift+Q)</DialogTitle>
+          <DialogTitle>{lead ? "Edit Lead" : "Quick Lead Entry (Ctrl+Shift+Q)"}</DialogTitle>
           <DialogDescription>
-            Add a new lead to the CRM system. Phone number is required.
+            {lead ? "Update lead information in the CRM system." : "Add a new lead to the CRM system. Phone number is required."}
           </DialogDescription>
         </DialogHeader>
 

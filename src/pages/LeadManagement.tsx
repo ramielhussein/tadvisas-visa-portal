@@ -12,7 +12,6 @@ import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
-import EditLeadDialog from "@/components/crm/EditLeadDialog";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 import { cn } from "@/lib/utils";
 
@@ -484,7 +483,6 @@ const LeadManagement = () => {
                       <TableHead className="min-w-[80px]">Status</TableHead>
                       {isAdmin && <TableHead className="min-w-[140px]">Assigned</TableHead>}
                       <TableHead className="hidden md:table-cell min-w-[90px]">Remind</TableHead>
-                      <TableHead className="hidden lg:table-cell min-w-[90px]">Created</TableHead>
                       <TableHead className="min-w-[100px]">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -545,9 +543,6 @@ const LeadManagement = () => {
                           )}
                           <TableCell className="hidden md:table-cell text-xs">
                             {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-                          </TableCell>
-                          <TableCell className="hidden lg:table-cell text-xs">
-                            {new Date(lead.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1">
@@ -620,16 +615,13 @@ const LeadManagement = () => {
       </div>
 
       <QuickLeadEntry
-        open={showQuickEntry}
-        onClose={() => setShowQuickEntry(false)}
+        open={showQuickEntry || !!editingLead}
+        onClose={() => {
+          setShowQuickEntry(false);
+          setEditingLead(null);
+        }}
         onSuccess={fetchLeads}
-      />
-      
-      <EditLeadDialog
-        open={!!editingLead}
         lead={editingLead}
-        onClose={() => setEditingLead(null)}
-        onSuccess={fetchLeads}
       />
     </Layout>
   );
