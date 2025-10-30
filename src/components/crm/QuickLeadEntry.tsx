@@ -254,6 +254,11 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     setIsSubmitting(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("You must be logged in to create leads");
+      }
       // Check if phone number already exists as a client
       const { data: existingClient, error: clientCheckError } = await supabase
         .from('submissions')
@@ -301,6 +306,10 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
       await Promise.all(uploadPromises);
 
+      // Determine who to assign the lead to
+      // If no assignee selected, assign to current user
+      const assignedTo = formData.assigned_to || user.id;
+
       // Insert lead into database
       const { data: newLead, error: dbError } = await supabase.from("leads").insert([{
         client_name: formData.client_name || null,
@@ -311,7 +320,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
         service_required: formData.service_required || null,
         nationality_code: formData.nationality_code || null,
         lead_source: formData.lead_source || null,
-        assigned_to: formData.assigned_to || null,
+        assigned_to: assignedTo,
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
@@ -319,15 +328,15 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
 
       if (dbError) throw dbError;
 
-      // Trigger round-robin assignment for the new lead
-      if (newLead) {
+      // Only trigger round-robin if no assignee was explicitly set
+      if (newLead && !formData.assigned_to) {
         try {
           await supabase.functions.invoke("assign-lead-round-robin", {
             body: { leadId: newLead.id },
           });
         } catch (rrError) {
           console.log("Round robin assignment failed (may be disabled):", rrError);
-          // Don't throw - lead was created successfully
+          // Don't throw - lead was created successfully, assigned to creator
         }
       }
 
