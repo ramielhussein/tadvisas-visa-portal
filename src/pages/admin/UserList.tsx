@@ -8,7 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Users, Save, UserPlus } from "lucide-react";
+import { Loader2, Users, Save, UserPlus, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import {
   Dialog,
@@ -49,6 +59,8 @@ export default function UserList() {
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [editedUser, setEditedUser] = useState<UserProfile | null>(null);
   const [saving, setSaving] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -114,6 +126,51 @@ export default function UserList() {
     setSaving(false);
   };
 
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setDeleting(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to delete users",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId: userToDelete.id },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+      
+      loadUsers();
+      setUserToDelete(null);
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Error",
+        description: `Failed to delete user: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (adminLoading || loading) {
     return (
       <Layout>
@@ -171,9 +228,19 @@ export default function UserList() {
                       {user.permissions?.leads?.assign && " Leads-Assign"}
                     </div>
                   </div>
-                  <Button onClick={() => handleEditUser(user)} variant="outline" size="sm" className="ml-2 h-7 text-xs">
-                    Edit
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button onClick={() => handleEditUser(user)} variant="outline" size="sm" className="h-7 text-xs">
+                      Edit
+                    </Button>
+                    <Button 
+                      onClick={() => setUserToDelete(user)} 
+                      variant="destructive" 
+                      size="sm" 
+                      className="h-7 text-xs"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -365,6 +432,29 @@ export default function UserList() {
           )}
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={userToDelete !== null} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {userToDelete?.email}? This action cannot be undone.
+              This will permanently delete the user account and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteUser} 
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 }
