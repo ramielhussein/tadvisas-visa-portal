@@ -527,6 +527,27 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="lead_source">Lead Source</Label>
+            <Select
+              value={formData.lead_source}
+              onValueChange={(value) =>
+                setFormData({ ...formData, lead_source: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                {leadSources.map((source) => (
+                  <SelectItem key={source.id} value={source.source_name}>
+                    {source.source_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="client_name">Client Name</Label>
             <Input
               id="client_name"
@@ -597,27 +618,6 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
                 <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
                 <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lead_source">Lead Source</Label>
-            <Select
-              value={formData.lead_source}
-              onValueChange={(value) =>
-                setFormData({ ...formData, lead_source: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-50">
-                {leadSources.map((source) => (
-                  <SelectItem key={source.id} value={source.source_name}>
-                    {source.source_name}
-                  </SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>
