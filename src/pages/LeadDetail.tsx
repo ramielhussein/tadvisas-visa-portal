@@ -198,6 +198,8 @@ const LeadDetail = () => {
       "Called Engaged": "bg-blue-500 text-white",
       "Called No Answer": "bg-pink-500 text-white",
       "Called COLD": "bg-red-600 text-white",
+      "Called Unanswer 2": "bg-pink-600 text-white",
+      "No Connection": "bg-gray-700 text-white",
       "Warm": "bg-red-300 text-white",
       "HOT": "bg-orange-600 text-white",
       "SOLD": "bg-green-500 text-white",

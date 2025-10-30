@@ -125,7 +125,7 @@ const Dashboard = () => {
   };
 
   const fetchFunnelData = async () => {
-    const statuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Warm", "HOT", "SOLD"];
+    const statuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "SOLD"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Called Unanswer 2", "No Connection", "Warm", "HOT", "SOLD"];
     const counts = await Promise.all(
       statuses.map(async (status) => {
         const { count } = await supabase

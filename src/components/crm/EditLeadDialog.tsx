@@ -41,7 +41,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
     email: "",
     mobile_number: "",
     emirate: "",
-    status: "New Lead" as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
+    status: "New Lead" as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
     service_required: "",
     nationality_code: "",
     lead_source: "",
@@ -112,7 +112,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
         email: lead.email || "",
         mobile_number: lead.mobile_number || "",
         emirate: lead.emirate || "",
-        status: lead.status as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
+        status: lead.status as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
         service_required: lead.service_required || "",
         nationality_code: lead.nationality_code || "",
         lead_source: (lead as any).lead_source || "",
@@ -142,10 +142,25 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
       };
 
       // Set reminder to tomorrow if status is "Called No Answer"
-      if (formData.status === "Called No Answer") {
+      if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         updateData.remind_me = tomorrow.toISOString().split('T')[0];
+      } else if (formData.status === "LOST") {
+        const twoYears = new Date();
+        twoYears.setFullYear(twoYears.getFullYear() + 2);
+        updateData.remind_me = twoYears.toISOString().split('T')[0];
+      }
+
+      // Handle "No Connection" - reassign to next person in round-robin
+      if (formData.status === "No Connection") {
+        try {
+          await supabase.functions.invoke("assign-lead-round-robin", {
+            body: { leadId: lead.id },
+          });
+        } catch (rrError) {
+          console.error("Round-robin reassignment failed:", rrError);
+        }
       }
 
       const { error } = await supabase
@@ -155,11 +170,18 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
 
       if (error) throw error;
 
+      let description = "Lead updated successfully";
+      if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
+        description = "Lead updated and reminder set to tomorrow";
+      } else if (formData.status === "LOST") {
+        description = "Lead updated and reminder set to 2 years from now";
+      } else if (formData.status === "No Connection") {
+        description = "Lead updated and reassigned to next salesperson";
+      }
+
       toast({
         title: "Success",
-        description: formData.status === "Called No Answer" 
-          ? "Lead updated and reminder set to tomorrow"
-          : "Lead updated successfully",
+        description,
       });
 
       onSuccess();
@@ -276,7 +298,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
 
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value: "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM") => setFormData({ ...formData, status: value })}>
+              <Select value={formData.status} onValueChange={(value: "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM") => setFormData({ ...formData, status: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -285,6 +307,8 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
                   <SelectItem value="Called No Answer">Called No Answer</SelectItem>
                   <SelectItem value="Called Engaged">Called Engaged</SelectItem>
                   <SelectItem value="Called COLD">Called COLD</SelectItem>
+                  <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                  <SelectItem value="No Connection">No Connection</SelectItem>
                   <SelectItem value="Warm">Warm</SelectItem>
                   <SelectItem value="HOT">HOT</SelectItem>
                   <SelectItem value="SOLD">SOLD</SelectItem>

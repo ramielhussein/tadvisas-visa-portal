@@ -2177,6 +2177,8 @@ export type Database = {
         | "Called No Answer"
         | "Called Engaged"
         | "Called COLD"
+        | "Called Unanswer 2"
+        | "No Connection"
       order_status: "Pending" | "Completed" | "Cancelled"
       po_status:
         | "Draft"
@@ -2330,6 +2332,8 @@ export const Constants = {
         "Called No Answer",
         "Called Engaged",
         "Called COLD",
+        "Called Unanswer 2",
+        "No Connection",
       ],
       order_status: ["Pending", "Completed", "Cancelled"],
       po_status: ["Draft", "Pending Approval", "Approved", "Paid", "Cancelled"],

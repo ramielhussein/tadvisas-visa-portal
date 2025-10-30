@@ -162,7 +162,7 @@ const LeadManagement = () => {
       setTotalCount(count ?? 0);
 
       // Fetch counts for each status
-      const statuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"];
+      const statuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Called Unanswer 2", "No Connection", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"];
       const statusCountsPromises = statuses.map(
         async (status) => {
           const { count } = await supabase
@@ -242,7 +242,7 @@ const LeadManagement = () => {
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     // Validate status - SOLD cannot be manually selected
-    const validStatuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Warm", "HOT", "LOST", "PROBLEM"];
+    const validStatuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Called Unanswer 2", "No Connection", "Warm", "HOT", "LOST", "PROBLEM"];
     if (!validStatuses.includes(newStatus as any)) {
       toast({
         title: "Error",
@@ -254,14 +254,43 @@ const LeadManagement = () => {
 
     try {
       const updateData: any = { 
-        status: newStatus as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD"
+        status: newStatus as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Called Unanswer 2" | "No Connection" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD"
       };
 
-      // Set reminder to tomorrow if status is "Called No Answer"
-      if (newStatus === "Called No Answer") {
+      // Set reminder based on status
+      if (newStatus === "Called No Answer" || newStatus === "Called Unanswer 2") {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         updateData.remind_me = tomorrow.toISOString().split('T')[0];
+      } else if (newStatus === "LOST") {
+        const twoYears = new Date();
+        twoYears.setFullYear(twoYears.getFullYear() + 2);
+        updateData.remind_me = twoYears.toISOString().split('T')[0];
+      }
+
+      // Handle "No Connection" - reassign to next person in round-robin
+      if (newStatus === "No Connection") {
+        try {
+          // Get current lead to find current assignee
+          const { data: currentLead } = await supabase
+            .from("leads")
+            .select("assigned_to")
+            .eq("id", leadId)
+            .single();
+
+          // Call round-robin assignment
+          const { data: rrData, error: rrError } = await supabase.functions.invoke("assign-lead-round-robin", {
+            body: { leadId },
+          });
+
+          if (rrError) {
+            console.error("Round-robin reassignment failed:", rrError);
+          } else {
+            console.log("Lead reassigned via round-robin:", rrData);
+          }
+        } catch (rrError) {
+          console.error("Exception during round-robin reassignment:", rrError);
+        }
       }
 
       const { error } = await supabase
@@ -271,11 +300,18 @@ const LeadManagement = () => {
 
       if (error) throw error;
 
+      let description = `Lead status updated to ${newStatus}`;
+      if (newStatus === "Called No Answer" || newStatus === "Called Unanswer 2") {
+        description += " and reminder set to tomorrow";
+      } else if (newStatus === "LOST") {
+        description += " and reminder set to 2 years from now";
+      } else if (newStatus === "No Connection") {
+        description += " and reassigned to next salesperson";
+      }
+
       toast({
         title: "Success",
-        description: newStatus === "Called No Answer" 
-          ? `Lead status updated to ${newStatus} and reminder set to tomorrow`
-          : `Lead status updated to ${newStatus}`,
+        description,
       });
 
       fetchLeads();
@@ -309,6 +345,8 @@ const LeadManagement = () => {
       "Called Engaged": "bg-blue-500 text-white",
       "Called No Answer": "bg-pink-500 text-white",
       "Called COLD": "bg-red-600 text-white",
+      "Called Unanswer 2": "bg-pink-600 text-white",
+      "No Connection": "bg-gray-700 text-white",
       "Warm": "bg-red-300 text-white",
       "HOT": "bg-orange-600 text-white",
       "SOLD": "bg-green-500 text-white",
@@ -574,6 +612,8 @@ const LeadManagement = () => {
                                 <SelectItem value="Called No Answer">Called No Answer</SelectItem>
                                 <SelectItem value="Called Engaged">Called Engaged</SelectItem>
                                 <SelectItem value="Called COLD">Called COLD</SelectItem>
+                                <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                                <SelectItem value="No Connection">No Connection</SelectItem>
                                 <SelectItem value="Warm">Warm</SelectItem>
                                 <SelectItem value="HOT">HOT</SelectItem>
                                 <SelectItem value="LOST">LOST</SelectItem>
