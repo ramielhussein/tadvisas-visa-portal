@@ -389,12 +389,13 @@ const LeadManagement = () => {
                       />
                     </label>
                   </Button>
-                  <Button onClick={() => setShowQuickEntry(true)}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Lead (Ctrl+Shift+Q)
-                  </Button>
                 </>
               )}
+              {/* All authenticated users can create leads */}
+              <Button onClick={() => setShowQuickEntry(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Lead (Ctrl+Shift+Q)
+              </Button>
             </div>
           </div>
 
