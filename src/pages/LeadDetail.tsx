@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import EditLeadDialog, { Lead } from "@/components/crm/EditLeadDialog";
+import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import {
   ArrowLeft, 
   Phone, 
@@ -38,6 +38,23 @@ interface Activity {
   profiles?: {
     email: string;
   } | undefined;
+}
+
+interface Lead {
+  id: string;
+  client_name: string;
+  email: string | null;
+  mobile_number: string;
+  emirate: string | null;
+  status: string;
+  service_required: string | null;
+  nationality_code: string | null;
+  remind_me: string;
+  created_at: string;
+  assigned_to: string | null;
+  client_converted: boolean;
+  lead_source?: string | null;
+  comments?: string | null;
 }
 
 const LeadDetail = () => {
@@ -493,7 +510,7 @@ const LeadDetail = () => {
         </div>
       </div>
 
-      <EditLeadDialog
+      <QuickLeadEntry
         open={editingLead}
         lead={lead}
         onClose={() => setEditingLead(false)}

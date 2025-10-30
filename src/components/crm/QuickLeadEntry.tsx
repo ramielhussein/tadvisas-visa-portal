@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +36,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     nationality_code: "",
     lead_source: "",
     assigned_to: "",
+    comments: "",
   });
 
   const [files, setFiles] = useState<{
@@ -119,6 +121,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           nationality_code: lead.nationality_code || "",
           lead_source: lead.lead_source || "",
           assigned_to: lead.assigned_to || "",
+          comments: lead.comments || "",
         });
         setExistingLead(null); // Clear existing lead check for edit mode
       } else {
@@ -133,6 +136,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           nationality_code: "",
           lead_source: "",
           assigned_to: "",
+          comments: "",
         });
         setExistingLead(null);
         setFiles({ passport: null, eidFront: null, eidBack: null });
@@ -280,6 +284,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           nationality_code: formData.nationality_code || null,
           lead_source: formData.lead_source || null,
           assigned_to: formData.assigned_to || null,
+          comments: formData.comments || null,
         };
 
         // Set reminder to tomorrow if status is "Called No Answer"
@@ -454,6 +459,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
+        comments: formData.comments || null,
       };
 
       // Set reminder to tomorrow if status is "Called No Answer"
@@ -544,6 +550,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         nationality_code: "",
         lead_source: "",
         assigned_to: "",
+        comments: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
       setExistingLead(null);
@@ -823,6 +830,19 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                 <SelectItem value="PROBLEM">PROBLEM</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="comments">Comments</Label>
+            <Textarea
+              id="comments"
+              value={formData.comments}
+              onChange={(e) =>
+                setFormData({ ...formData, comments: e.target.value })
+              }
+              placeholder="Add any additional notes or comments..."
+              className="min-h-[100px]"
+            />
           </div>
 
           <div className="border-t pt-4">
