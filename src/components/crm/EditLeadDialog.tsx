@@ -41,7 +41,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
     email: "",
     mobile_number: "",
     emirate: "",
-    status: "New Lead" as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
+    status: "New Lead" as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
     service_required: "",
     nationality_code: "",
     lead_source: "",
@@ -112,7 +112,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
         email: lead.email || "",
         mobile_number: lead.mobile_number || "",
         emirate: lead.emirate || "",
-        status: lead.status as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
+        status: lead.status as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
         service_required: lead.service_required || "",
         nationality_code: lead.nationality_code || "",
         lead_source: (lead as any).lead_source || "",
@@ -265,16 +265,20 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
 
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value: "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM") => setFormData({ ...formData, status: value })}>
+              <Select value={formData.status} onValueChange={(value: "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM") => setFormData({ ...formData, status: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="New Lead">New Lead</SelectItem>
+                  <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                  <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                  <SelectItem value="Called COLD">Called COLD</SelectItem>
                   <SelectItem value="Warm">Warm</SelectItem>
                   <SelectItem value="HOT">HOT</SelectItem>
                   <SelectItem value="SOLD">SOLD</SelectItem>
                   <SelectItem value="LOST">LOST</SelectItem>
+                  <SelectItem value="PROBLEM">PROBLEM</SelectItem>
                 </SelectContent>
               </Select>
             </div>

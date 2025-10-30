@@ -2167,7 +2167,16 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      lead_status: "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"
+      lead_status:
+        | "New Lead"
+        | "Warm"
+        | "HOT"
+        | "SOLD"
+        | "LOST"
+        | "PROBLEM"
+        | "Called No Answer"
+        | "Called Engaged"
+        | "Called COLD"
       order_status: "Pending" | "Completed" | "Cancelled"
       po_status:
         | "Draft"
@@ -2311,7 +2320,17 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      lead_status: ["New Lead", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"],
+      lead_status: [
+        "New Lead",
+        "Warm",
+        "HOT",
+        "SOLD",
+        "LOST",
+        "PROBLEM",
+        "Called No Answer",
+        "Called Engaged",
+        "Called COLD",
+      ],
       order_status: ["Pending", "Completed", "Cancelled"],
       po_status: ["Draft", "Pending Approval", "Approved", "Paid", "Cancelled"],
       transfer_type: [

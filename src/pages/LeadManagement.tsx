@@ -162,7 +162,7 @@ const LeadManagement = () => {
       setTotalCount(count ?? 0);
 
       // Fetch counts for each status
-      const statuses: Array<"New Lead" | "Warm" | "HOT" | "SOLD" | "LOST"> = ["New Lead", "Warm", "HOT", "SOLD", "LOST"];
+      const statuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Warm", "HOT", "SOLD", "LOST", "PROBLEM"];
       const statusCountsPromises = statuses.map(
         async (status) => {
           const { count } = await supabase
@@ -242,7 +242,7 @@ const LeadManagement = () => {
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     // Validate status - SOLD cannot be manually selected
-    const validStatuses: Array<"New Lead" | "Warm" | "HOT" | "LOST" | "PROBLEM"> = ["New Lead", "Warm", "HOT", "LOST", "PROBLEM"];
+    const validStatuses: Array<"New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM"> = ["New Lead", "Called No Answer", "Called Engaged", "Called COLD", "Warm", "HOT", "LOST", "PROBLEM"];
     if (!validStatuses.includes(newStatus as any)) {
       toast({
         title: "Error",
@@ -255,7 +255,7 @@ const LeadManagement = () => {
     try {
       const { error } = await supabase
         .from("leads")
-        .update({ status: newStatus as "New Lead" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD" })
+        .update({ status: newStatus as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD" })
         .eq("id", leadId);
 
       if (error) throw error;
@@ -555,6 +555,9 @@ const LeadManagement = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="New Lead">New Lead</SelectItem>
+                                <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                                <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                                <SelectItem value="Called COLD">Called COLD</SelectItem>
                                 <SelectItem value="Warm">Warm</SelectItem>
                                 <SelectItem value="HOT">HOT</SelectItem>
                                 <SelectItem value="LOST">LOST</SelectItem>

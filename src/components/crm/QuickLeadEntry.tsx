@@ -30,7 +30,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     email: "",
     mobile_number: "",
     emirate: "",
-    status: "New Lead" as "New Lead" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
+    status: "New Lead" as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "SOLD" | "LOST" | "PROBLEM",
     service_required: "",
     nationality_code: "",
     lead_source: "",
@@ -748,6 +748,9 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="New Lead">New Lead</SelectItem>
+                <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                <SelectItem value="Called COLD">Called COLD</SelectItem>
                 <SelectItem value="Warm">Warm</SelectItem>
                 <SelectItem value="HOT">HOT</SelectItem>
                 <SelectItem value="SOLD">SOLD</SelectItem>
