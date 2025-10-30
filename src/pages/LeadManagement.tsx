@@ -25,6 +25,7 @@ interface Lead {
   status: string;
   service_required: string | null;
   nationality_code: string | null;
+  lead_source: string | null;
   remind_me: string;
   created_at: string;
   assigned_to: string | null;
@@ -35,6 +36,7 @@ interface Lead {
 interface User {
   id: string;
   email: string;
+  full_name: string | null;
 }
 
 const LeadManagement = () => {
@@ -192,13 +194,24 @@ const LeadManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, email")
+        .select("id, email, full_name, permissions")
         .order("email");
 
-      if (error) throw error;
-      setUsers(data || []);
+      if (profilesError) throw profilesError;
+
+      // Filter for users with sales/deals permissions or lead assignment permissions
+      const salesUsers = (profilesData || []).filter((user: any) => {
+        const permissions = user.permissions as any;
+        return (
+          permissions?.leads?.assign === true ||
+          permissions?.deals?.create === true ||
+          permissions?.deals?.edit === true
+        );
+      });
+
+      setUsers(salesUsers);
     } catch (error: any) {
       console.error("Error fetching users:", error);
     }
@@ -231,7 +244,7 @@ const LeadManagement = () => {
   const getAssignedEmail = (userId: string | null) => {
     if (!userId) return "Unassigned";
     const user = users.find(u => u.id === userId);
-    return user?.email || "Unknown";
+    return user?.full_name || user?.email || "Unknown";
   };
 
   const handleSort = (column: 'nationality_code' | 'service_required') => {
@@ -522,7 +535,7 @@ const LeadManagement = () => {
                                   </SelectItem>
                                   {users.map((user) => (
                                     <SelectItem key={user.id} value={user.id}>
-                                      {user.email.split('@')[0]}
+                                      {user.full_name || user.email.split('@')[0]}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
