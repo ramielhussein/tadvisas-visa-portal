@@ -615,6 +615,7 @@ const LeadManagement = () => {
       </div>
 
       <QuickLeadEntry
+        key={editingLead ? editingLead.id : (showQuickEntry ? 'new' : 'closed')}
         open={showQuickEntry || !!editingLead}
         onClose={() => {
           setShowQuickEntry(false);
