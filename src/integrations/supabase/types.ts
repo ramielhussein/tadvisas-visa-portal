@@ -649,6 +649,7 @@ export type Database = {
           assigned_to: string | null
           client_converted: boolean | null
           client_name: string | null
+          comments: string | null
           created_at: string
           eid_back_url: string | null
           eid_front_url: string | null
@@ -669,6 +670,7 @@ export type Database = {
           assigned_to?: string | null
           client_converted?: boolean | null
           client_name?: string | null
+          comments?: string | null
           created_at?: string
           eid_back_url?: string | null
           eid_front_url?: string | null
@@ -689,6 +691,7 @@ export type Database = {
           assigned_to?: string | null
           client_converted?: boolean | null
           client_name?: string | null
+          comments?: string | null
           created_at?: string
           eid_back_url?: string | null
           eid_front_url?: string | null
