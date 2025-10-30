@@ -226,21 +226,80 @@ const LeadDetail = () => {
     return colors[status] || "bg-gray-500 text-white";
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
     if (lead?.mobile_number) {
+      // Log the WhatsApp activity first
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("lead_activities").insert({
+            lead_id: lead.id,
+            user_id: user.id,
+            activity_type: "whatsapp",
+            title: "WhatsApp Message",
+            description: `Opened WhatsApp to message ${lead.mobile_number}`,
+          });
+          
+          // Refresh activities
+          fetchActivities();
+        }
+      } catch (error) {
+        console.error("Error logging WhatsApp activity:", error);
+      }
+      
       const cleanNumber = lead.mobile_number.replace(/[^\d+]/g, '');
       window.open(`https://wa.me/${cleanNumber}`, '_blank');
     }
   };
 
-  const handleCall = () => {
+  const handleCall = async () => {
     if (lead?.mobile_number) {
+      // Log the call activity first
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("lead_activities").insert({
+            lead_id: lead.id,
+            user_id: user.id,
+            activity_type: "call",
+            title: "Phone Call",
+            description: `Initiated call to ${lead.mobile_number}`,
+          });
+          
+          // Refresh activities
+          fetchActivities();
+        }
+      } catch (error) {
+        console.error("Error logging call activity:", error);
+      }
+      
+      // Open phone dialer
       window.location.href = `tel:${lead.mobile_number}`;
     }
   };
 
-  const handleEmail = () => {
+  const handleEmail = async () => {
     if (lead?.email) {
+      // Log the email activity first
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from("lead_activities").insert({
+            lead_id: lead.id,
+            user_id: user.id,
+            activity_type: "email",
+            title: "Email Sent",
+            description: `Opened email client to send email to ${lead.email}`,
+          });
+          
+          // Refresh activities
+          fetchActivities();
+        }
+      } catch (error) {
+        console.error("Error logging email activity:", error);
+      }
+      
+      // Open email client
       window.location.href = `mailto:${lead.email}`;
     }
   };
