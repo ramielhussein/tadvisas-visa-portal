@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -165,6 +166,44 @@ const Dashboard = () => {
     }
   };
 
+  const handleReminderDaysChange = async (leadId: string, days: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation when clicking the input
+
+    if (days < 1 || days > 3650) {
+      toast({
+        title: "Invalid Input",
+        description: "Days must be between 1 and 3650",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + days);
+      
+      const { error } = await supabase
+        .from("leads")
+        .update({ remind_me: futureDate.toISOString().split('T')[0] })
+        .eq("id", leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Reminder set to ${days} day${days !== 1 ? 's' : ''} from now`,
+      });
+
+      fetchDashboardData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   if (loading) {
@@ -219,14 +258,33 @@ const Dashboard = () => {
                           <p className="font-medium">{lead.client_name || "Unnamed"}</p>
                           <p className="text-sm text-muted-foreground">{lead.mobile_number}</p>
                         </div>
-                        <div className="text-right">
-                          <Badge variant="destructive" className="mb-1">
-                            {new Date(lead.remind_me).toLocaleDateString('en-GB', {
-                              day: '2-digit',
-                              month: 'short',
-                            })}
-                          </Badge>
-                          <p className="text-xs text-muted-foreground">{lead.status}</p>
+                        <div className="text-right flex items-center gap-2">
+                          <div>
+                            <Badge variant="destructive" className="mb-1">
+                              {new Date(lead.remind_me).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                              })}
+                            </Badge>
+                            <p className="text-xs text-muted-foreground">{lead.status}</p>
+                          </div>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="3650"
+                            placeholder="Days"
+                            className="w-14 h-8 text-xs px-1"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const value = parseInt(e.currentTarget.value);
+                                if (!isNaN(value) && value > 0) {
+                                  handleReminderDaysChange(lead.id, value, e as any);
+                                  e.currentTarget.value = '';
+                                }
+                              }
+                            }}
+                          />
                         </div>
                       </div>
                     ))}
@@ -260,7 +318,26 @@ const Dashboard = () => {
                           <p className="font-medium">{lead.client_name || "Unnamed"}</p>
                           <p className="text-sm text-muted-foreground">{lead.mobile_number}</p>
                         </div>
-                        <Badge variant="outline">{lead.status}</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{lead.status}</Badge>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="3650"
+                            placeholder="Days"
+                            className="w-14 h-8 text-xs px-1"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const value = parseInt(e.currentTarget.value);
+                                if (!isNaN(value) && value > 0) {
+                                  handleReminderDaysChange(lead.id, value, e as any);
+                                  e.currentTarget.value = '';
+                                }
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                     ))}
                   </div>

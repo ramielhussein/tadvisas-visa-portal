@@ -362,6 +362,42 @@ const LeadManagement = () => {
     }
   };
 
+  const handleReminderDaysChange = async (leadId: string, days: number) => {
+    if (days < 1 || days > 3650) {
+      toast({
+        title: "Invalid Input",
+        description: "Days must be between 1 and 3650",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + days);
+      
+      const { error } = await supabase
+        .from("leads")
+        .update({ remind_me: futureDate.toISOString().split('T')[0] })
+        .eq("id", leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Reminder set to ${days} day${days !== 1 ? 's' : ''} from now`,
+      });
+
+      fetchLeads();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getAssignedEmail = (userId: string | null) => {
     if (!userId) return "Unassigned";
     const user = users.find(u => u.id === userId);
@@ -689,8 +725,28 @@ const LeadManagement = () => {
                               </Select>
                             </TableCell>
                           )}
-                          <TableCell className="hidden md:table-cell text-xs">
-                            {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                          <TableCell className="hidden md:table-cell">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs">
+                                {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                              </span>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="3650"
+                                placeholder="Days"
+                                className="w-14 h-7 text-xs px-1"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    const value = parseInt(e.currentTarget.value);
+                                    if (!isNaN(value) && value > 0) {
+                                      handleReminderDaysChange(lead.id, value);
+                                      e.currentTarget.value = '';
+                                    }
+                                  }
+                                }}
+                              />
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1">
