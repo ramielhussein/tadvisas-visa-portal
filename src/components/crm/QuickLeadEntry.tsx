@@ -100,9 +100,15 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
 
     if (open) {
       fetchData();
-      
+    }
+  }, [open]);
+
+  // Separate useEffect for handling lead data population
+  useEffect(() => {
+    if (open) {
       // Pre-populate form if editing an existing lead
       if (lead) {
+        console.log("Editing lead:", lead); // Debug log
         setFormData({
           client_name: lead.client_name || "",
           email: lead.email || "",
@@ -129,6 +135,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           assigned_to: "",
         });
         setExistingLead(null);
+        setFiles({ passport: null, eidFront: null, eidBack: null });
       }
     }
   }, [open, lead]);
