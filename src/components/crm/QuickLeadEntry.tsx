@@ -280,6 +280,21 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
 
         if (error) throw error;
 
+        // Create notification if lead is assigned to someone and assignment changed
+        if (formData.assigned_to && formData.assigned_to !== lead.assigned_to) {
+          try {
+            await supabase.from("notifications").insert({
+              user_id: formData.assigned_to,
+              title: "New Lead Assigned",
+              message: `You have been assigned a lead: ${formData.client_name || formData.mobile_number}`,
+              type: "info",
+              related_lead_id: lead.id,
+            });
+          } catch (notifError) {
+            console.error("Failed to create notification:", notifError);
+          }
+        }
+
         toast({
           title: "Success",
           description: "Lead updated successfully",
@@ -396,6 +411,25 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
       }]).select().single();
 
       if (dbError) throw dbError;
+
+      // Create notification for the assigned user
+      if (newLead && assignedTo) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          // Only send notification if assigned to someone other than the creator
+          if (assignedTo !== user?.id) {
+            await supabase.from("notifications").insert({
+              user_id: assignedTo,
+              title: "New Lead Assigned",
+              message: `You have been assigned a new lead: ${formData.client_name || formData.mobile_number}`,
+              type: "info",
+              related_lead_id: newLead.id,
+            });
+          }
+        } catch (notifError) {
+          console.error("Failed to create notification:", notifError);
+        }
+      }
 
       // Only trigger round-robin if no assignee was explicitly set
       if (newLead && !formData.assigned_to) {

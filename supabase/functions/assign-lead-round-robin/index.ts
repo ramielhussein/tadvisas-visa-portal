@@ -110,6 +110,13 @@ Deno.serve(async (req) => {
 
     console.log(`Assigning lead to user ${assignedUser.email} (index ${currentIndex} of ${activeUsers.length} active users)`);
 
+    // Get lead details for notification
+    const { data: leadData } = await supabase
+      .from('leads')
+      .select('client_name, mobile_number')
+      .eq('id', leadId)
+      .single();
+
     // Assign the lead
     const { error: updateError } = await supabase
       .from('leads')
@@ -119,6 +126,21 @@ Deno.serve(async (req) => {
     if (updateError) {
       console.error('Error updating lead assignment:', updateError);
       throw updateError;
+    }
+
+    // Create notification for the assigned user
+    try {
+      await supabase.from('notifications').insert({
+        user_id: assignedUser.id,
+        title: 'New Lead Assigned (Round Robin)',
+        message: `You have been assigned a new lead via round robin: ${leadData?.client_name || leadData?.mobile_number || 'Unknown'}`,
+        type: 'info',
+        related_lead_id: leadId,
+      });
+      console.log(`Notification created for ${assignedUser.email}`);
+    } catch (notifError) {
+      console.error('Failed to create notification:', notifError);
+      // Don't throw - assignment was successful
     }
 
     // Update the round robin index
