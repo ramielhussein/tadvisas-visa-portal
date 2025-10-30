@@ -240,6 +240,41 @@ const LeadManagement = () => {
     }
   };
 
+  const handleStatusChange = async (leadId: string, newStatus: string) => {
+    // Validate status - SOLD cannot be manually selected
+    const validStatuses: Array<"New Lead" | "Warm" | "HOT" | "LOST" | "PROBLEM"> = ["New Lead", "Warm", "HOT", "LOST", "PROBLEM"];
+    if (!validStatuses.includes(newStatus as any)) {
+      toast({
+        title: "Error",
+        description: "Invalid status selection",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ status: newStatus as "New Lead" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD" })
+        .eq("id", leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Lead status updated to ${newStatus}`,
+      });
+
+      fetchLeads();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getAssignedEmail = (userId: string | null) => {
     if (!userId) return "Unassigned";
     const user = users.find(u => u.id === userId);
@@ -510,9 +545,25 @@ const LeadManagement = () => {
                           <TableCell>{lead.nationality_code || "-"}</TableCell>
                           <TableCell className="hidden xl:table-cell truncate max-w-[120px]">{lead.service_required || "-"}</TableCell>
                           <TableCell>
-                            <Badge className={cn("text-xs px-2 py-0", getStatusColor(lead.status))}>
-                              {lead.status}
-                            </Badge>
+                            <Select
+                              value={lead.status}
+                              onValueChange={(value) => handleStatusChange(lead.id, value)}
+                              disabled={lead.status === "SOLD"}
+                            >
+                              <SelectTrigger className={cn("w-[110px] h-8 text-xs border-none", getStatusColor(lead.status))}>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="New Lead">New Lead</SelectItem>
+                                <SelectItem value="Warm">Warm</SelectItem>
+                                <SelectItem value="HOT">HOT</SelectItem>
+                                <SelectItem value="LOST">LOST</SelectItem>
+                                <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                                {lead.status === "SOLD" && (
+                                  <SelectItem value="SOLD" disabled>SOLD (Auto-set)</SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           {isAdmin && (
                             <TableCell>
