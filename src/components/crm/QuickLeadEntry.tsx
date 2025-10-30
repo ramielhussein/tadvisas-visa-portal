@@ -283,15 +283,21 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         // Create notification if lead is assigned to someone and assignment changed
         if (formData.assigned_to && formData.assigned_to !== lead.assigned_to) {
           try {
-            await supabase.from("notifications").insert({
+            const { error: notifError } = await supabase.from("notifications").insert({
               user_id: formData.assigned_to,
-              title: "New Lead Assigned",
+              title: "Lead Re-assigned",
               message: `You have been assigned a lead: ${formData.client_name || formData.mobile_number}`,
               type: "info",
               related_lead_id: lead.id,
             });
+            
+            if (notifError) {
+              console.error("Failed to create notification:", notifError);
+            } else {
+              console.log("Re-assignment notification created for user:", formData.assigned_to);
+            }
           } catch (notifError) {
-            console.error("Failed to create notification:", notifError);
+            console.error("Exception creating notification:", notifError);
           }
         }
 
@@ -415,19 +421,21 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
       // Create notification for the assigned user
       if (newLead && assignedTo) {
         try {
-          const { data: { user } } = await supabase.auth.getUser();
-          // Only send notification if assigned to someone other than the creator
-          if (assignedTo !== user?.id) {
-            await supabase.from("notifications").insert({
-              user_id: assignedTo,
-              title: "New Lead Assigned",
-              message: `You have been assigned a new lead: ${formData.client_name || formData.mobile_number}`,
-              type: "info",
-              related_lead_id: newLead.id,
-            });
+          const { error: notifError } = await supabase.from("notifications").insert({
+            user_id: assignedTo,
+            title: "New Lead Assigned",
+            message: `You have been assigned a new lead: ${formData.client_name || formData.mobile_number}`,
+            type: "info",
+            related_lead_id: newLead.id,
+          });
+          
+          if (notifError) {
+            console.error("Failed to create notification:", notifError);
+          } else {
+            console.log("Notification created successfully for user:", assignedTo);
           }
         } catch (notifError) {
-          console.error("Failed to create notification:", notifError);
+          console.error("Exception creating notification:", notifError);
         }
       }
 
