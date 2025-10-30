@@ -27,6 +27,7 @@ interface Lead {
   lead_source: string | null;
   remind_me: string;
   created_at: string;
+  updated_at: string;
   assigned_to: string | null;
   client_converted: boolean;
   submission_id: string | null;
@@ -121,7 +122,7 @@ const LeadManagement = () => {
       );
     }
 
-    // Apply sorting
+    // Apply custom sorting if column sort is active
     if (sortColumn) {
       filtered = [...filtered].sort((a, b) => {
         const aVal = a[sortColumn] || "";
@@ -132,6 +133,23 @@ const LeadManagement = () => {
         } else {
           return bVal.localeCompare(aVal);
         }
+      });
+    } else {
+      // Apply default sorting: LOST at bottom, recently updated first
+      filtered = [...filtered].sort((a, b) => {
+        // First priority: LOST status goes to bottom
+        if (a.status === "LOST" && b.status !== "LOST") return 1;
+        if (a.status !== "LOST" && b.status === "LOST") return -1;
+        
+        // Second priority: Sort by updated_at (descending) - recently pinged/updated first
+        const dateA = new Date(a.updated_at).getTime();
+        const dateB = new Date(b.updated_at).getTime();
+        if (dateB !== dateA) return dateB - dateA;
+        
+        // Third priority: Sort by remind_me (ascending) - sooner reminders first
+        const remindA = new Date(a.remind_me).getTime();
+        const remindB = new Date(b.remind_me).getTime();
+        return remindA - remindB;
       });
     }
 
@@ -152,13 +170,33 @@ const LeadManagement = () => {
       }
       
       // Remove default 1000 row limit by setting a high range
+      // Sort by updated_at desc (recently pinged leads first), then remind_me asc (LOST leads with far future dates at bottom)
       const { data, count, error } = await query
-        .order("created_at", { ascending: false })
+        .order("updated_at", { ascending: false })
+        .order("remind_me", { ascending: true })
         .range(0, 99999);
 
       if (error) throw error;
-      setLeads(data || []);
-      setFilteredLeads(data || []);
+      
+      // Additional client-side sorting to ensure LOST leads are at the bottom
+      const sortedData = (data || []).sort((a, b) => {
+        // First priority: LOST status goes to bottom
+        if (a.status === "LOST" && b.status !== "LOST") return 1;
+        if (a.status !== "LOST" && b.status === "LOST") return -1;
+        
+        // Second priority: Sort by updated_at (descending) - recently pinged/updated first
+        const dateA = new Date(a.updated_at).getTime();
+        const dateB = new Date(b.updated_at).getTime();
+        if (dateB !== dateA) return dateB - dateA;
+        
+        // Third priority: Sort by remind_me (ascending) - sooner reminders first
+        const remindA = new Date(a.remind_me).getTime();
+        const remindB = new Date(b.remind_me).getTime();
+        return remindA - remindB;
+      });
+      
+      setLeads(sortedData);
+      setFilteredLeads(sortedData);
       setTotalCount(count ?? 0);
 
       // Fetch counts for each status
