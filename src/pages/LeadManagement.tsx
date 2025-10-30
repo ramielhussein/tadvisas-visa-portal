@@ -341,17 +341,17 @@ const LeadManagement = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      "New Lead": "bg-blue-500 text-white",
-      "Called Engaged": "bg-blue-500 text-white",
-      "Called No Answer": "bg-pink-500 text-white",
-      "Called COLD": "bg-red-600 text-white",
-      "Called Unanswer 2": "bg-pink-600 text-white",
-      "No Connection": "bg-gray-700 text-white",
-      "Warm": "bg-red-300 text-white",
-      "HOT": "bg-orange-600 text-white",
-      "SOLD": "bg-green-500 text-white",
-      "LOST": "bg-red-600 text-white",
-      "PROBLEM": "bg-black text-white",
+      "New Lead": "bg-blue-500 text-white hover:bg-blue-600",
+      "Called Engaged": "bg-blue-500 text-white hover:bg-blue-600",
+      "Called No Answer": "bg-pink-600 text-white hover:bg-pink-700",
+      "Called COLD": "bg-red-600 text-white hover:bg-red-700",
+      "Called Unanswer 2": "bg-pink-700 text-white hover:bg-pink-800",
+      "No Connection": "bg-gray-700 text-white hover:bg-gray-800",
+      "Warm": "bg-red-400 text-white hover:bg-red-500",
+      "HOT": "bg-orange-600 text-white hover:bg-orange-700",
+      "SOLD": "bg-green-600 text-white hover:bg-green-700",
+      "LOST": "bg-red-700 text-white hover:bg-red-800",
+      "PROBLEM": "bg-black text-white hover:bg-gray-900",
     };
     return colors[status] || "bg-gray-500 text-white";
   };
