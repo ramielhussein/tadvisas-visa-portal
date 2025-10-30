@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload } from "lucide-react";
+import { sanitizePhoneInput, validatePhone } from "@/lib/phoneValidation";
 
 interface QuickLeadEntryProps {
   open: boolean;
@@ -106,20 +107,14 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
   };
 
   const validatePhoneNumber = (phone: string) => {
-    // Remove any spaces or dashes
-    const cleaned = phone.replace(/[\s-]/g, "");
+    const sanitized = sanitizePhoneInput(phone);
+    const error = validatePhone(sanitized);
     
-    // Check if it starts with 971
-    if (!cleaned.startsWith("971")) {
-      return { valid: false, formatted: "" };
-    }
-    
-    // Should be 12 digits total (971 + 9 digits)
-    if (cleaned.length !== 12) {
-      return { valid: false, formatted: "" };
-    }
-    
-    return { valid: true, formatted: cleaned };
+    return { 
+      valid: !error, 
+      formatted: sanitized,
+      error: error 
+    };
   };
 
   const checkExistingLead = async (phoneNumber: string) => {
@@ -128,11 +123,14 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
     if (!phoneValidation.valid) {
       toast({
         title: "Invalid Phone Number",
-        description: "Phone number must be in format 971xxxxxxxxx (12 digits total)",
+        description: phoneValidation.error || "Phone number must be in format 971XXXXXXXXX",
         variant: "destructive",
       });
       return;
     }
+
+    // Update form data with sanitized phone number
+    setFormData(prev => ({ ...prev, mobile_number: phoneValidation.formatted }));
 
     setIsChecking(true);
     
@@ -458,8 +456,15 @@ const QuickLeadEntry = ({ open, onClose, onSuccess }: QuickLeadEntryProps) => {
                 // Clear existing lead when user modifies the phone number
                 if (existingLead) setExistingLead(null);
               }}
+              onBlur={(e) => {
+                // Auto-sanitize on blur
+                const sanitized = sanitizePhoneInput(e.target.value);
+                if (sanitized !== e.target.value) {
+                  setFormData({ ...formData, mobile_number: sanitized });
+                }
+              }}
               onKeyDown={handlePhoneKeyDown}
-              placeholder="971501234567"
+              placeholder="971501234567 or +971 50 123 4567"
               required
               disabled={isChecking}
             />
