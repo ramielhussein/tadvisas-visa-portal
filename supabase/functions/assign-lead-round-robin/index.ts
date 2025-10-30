@@ -45,22 +45,28 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get all sales team members (users with email starting with sales) who are active
-    const { data: salesUsers, error: usersError } = await supabase
+    // Get all users with sales permissions
+    const { data: allProfiles, error: usersError } = await supabase
       .from('profiles')
-      .select('id, email')
-      .ilike('email', 'sales%@tadmaids.com')
+      .select('id, email, permissions')
       .order('email');
 
     if (usersError) {
-      console.error('Error fetching sales users:', usersError);
+      console.error('Error fetching profiles:', usersError);
       throw usersError;
     }
 
+    // Filter users who have sales permissions
+    const salesUsers = (allProfiles || []).filter(profile => {
+      const perms = profile.permissions as any;
+      return perms?.leads?.create || perms?.leads?.assign || 
+             perms?.deals?.create || perms?.deals?.edit;
+    });
+
     if (!salesUsers || salesUsers.length === 0) {
-      console.log('No sales users found, skipping assignment');
+      console.log('No users with sales permissions found, skipping assignment');
       return new Response(
-        JSON.stringify({ success: true, message: 'No sales users available' }),
+        JSON.stringify({ success: true, message: 'No users with sales permissions available' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

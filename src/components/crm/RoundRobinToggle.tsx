@@ -27,14 +27,20 @@ const RoundRobinToggle = () => {
 
   const fetchSalesUsers = async () => {
     try {
-      // Get all users with sales emails
+      // Get all users with sales permissions
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, email")
-        .ilike("email", "sales%@tadmaids.com")
+        .select("id, email, permissions")
         .order("email");
 
       if (profilesError) throw profilesError;
+
+      // Filter users who have sales permissions
+      const salesProfiles = (profiles || []).filter(profile => {
+        const perms = profile.permissions as any;
+        return perms?.leads?.create || perms?.leads?.assign || 
+               perms?.deals?.create || perms?.deals?.edit;
+      });
 
       // Get active status for each user
       const { data: activeSettings, error: activeError } = await supabase
@@ -48,7 +54,7 @@ const RoundRobinToggle = () => {
         (activeSettings || []).map(s => [s.key.replace("sales_active_", ""), s.value === "true"])
       );
 
-      const usersWithStatus = (profiles || []).map(user => ({
+      const usersWithStatus = salesProfiles.map(user => ({
         id: user.id,
         email: user.email,
         isActive: activeMap.get(user.id) ?? true, // Default to active
