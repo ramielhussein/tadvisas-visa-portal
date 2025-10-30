@@ -94,7 +94,7 @@ const LeadDetail = () => {
           title: "Lead not found",
           variant: "destructive",
         });
-        navigate("/lead-management");
+        navigate("/crm/leads");
         return;
       }
 
@@ -268,7 +268,7 @@ const LeadDetail = () => {
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
-            <Button variant="ghost" onClick={() => navigate("/lead-management")}>
+            <Button variant="ghost" onClick={() => navigate("/crm/leads")}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Leads
             </Button>
