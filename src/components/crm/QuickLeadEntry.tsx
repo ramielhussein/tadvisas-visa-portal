@@ -777,7 +777,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                   Saving...
                 </>
               ) : (
-                "Add Lead"
+                lead ? "Update Lead" : "Add Lead"
               )}
             </Button>
           </div>
