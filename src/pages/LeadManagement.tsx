@@ -14,7 +14,7 @@ import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 import { cn } from "@/lib/utils";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 
 interface Lead {
   id: string;
@@ -601,27 +601,29 @@ const LeadManagement = () => {
                 </CardHeader>
                 <CardContent>
                   {filteredLeads.length > 0 ? (
-                    <ResponsiveContainer width="100%" height={250}>
-                      <PieChart>
-                        <Pie
-                          data={statusDistribution}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percentage }) => `${name}: ${percentage}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={statusDistribution} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+                        <XAxis 
+                          dataKey="name" 
+                          angle={-45} 
+                          textAnchor="end" 
+                          height={100}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis />
+                        <Tooltip 
+                          formatter={(value: number) => `${value} leads`}
+                          labelFormatter={(label) => `Status: ${label}`}
+                        />
+                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                           {statusDistribution.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
-                        </Pie>
-                        <Tooltip formatter={(value: number) => `${value} leads`} />
-                      </PieChart>
+                        </Bar>
+                      </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex items-center justify-center h-[250px] text-muted-foreground">
+                    <div className="flex items-center justify-center h-[300px] text-muted-foreground">
                       No leads to display
                     </div>
                   )}
