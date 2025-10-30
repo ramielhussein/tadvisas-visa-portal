@@ -263,19 +263,28 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     if (lead) {
       setIsSubmitting(true);
       try {
+        const updateData: any = {
+          client_name: formData.client_name || null,
+          email: formData.email || null,
+          mobile_number: formData.mobile_number,
+          emirate: formData.emirate || null,
+          status: formData.status,
+          service_required: formData.service_required || null,
+          nationality_code: formData.nationality_code || null,
+          lead_source: formData.lead_source || null,
+          assigned_to: formData.assigned_to || null,
+        };
+
+        // Set reminder to tomorrow if status is "Called No Answer"
+        if (formData.status === "Called No Answer") {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          updateData.remind_me = tomorrow.toISOString().split('T')[0];
+        }
+
         const { error } = await supabase
           .from("leads")
-          .update({
-            client_name: formData.client_name || null,
-            email: formData.email || null,
-            mobile_number: formData.mobile_number,
-            emirate: formData.emirate || null,
-            status: formData.status,
-            service_required: formData.service_required || null,
-            nationality_code: formData.nationality_code || null,
-            lead_source: formData.lead_source || null,
-            assigned_to: formData.assigned_to || null,
-          })
+          .update(updateData)
           .eq("id", lead.id);
 
         if (error) throw error;
@@ -400,8 +409,8 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
       // If no assignee selected, assign to current user
       const assignedTo = formData.assigned_to || user.id;
 
-      // Insert lead into database
-      const { data: newLead, error: dbError } = await supabase.from("leads").insert([{
+      // Prepare lead data
+      const leadData: any = {
         client_name: formData.client_name || null,
         email: formData.email || null,
         mobile_number: phoneValidation.formatted,
@@ -414,7 +423,17 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         passport_copy_url: fileUrls.passport || null,
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
-      }]).select().single();
+      };
+
+      // Set reminder to tomorrow if status is "Called No Answer"
+      if (formData.status === "Called No Answer") {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        leadData.remind_me = tomorrow.toISOString().split('T')[0];
+      }
+
+      // Insert lead into database
+      const { data: newLead, error: dbError } = await supabase.from("leads").insert([leadData]).select().single();
 
       if (dbError) throw dbError;
 

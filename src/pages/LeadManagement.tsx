@@ -253,16 +253,29 @@ const LeadManagement = () => {
     }
 
     try {
+      const updateData: any = { 
+        status: newStatus as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD"
+      };
+
+      // Set reminder to tomorrow if status is "Called No Answer"
+      if (newStatus === "Called No Answer") {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        updateData.remind_me = tomorrow.toISOString().split('T')[0];
+      }
+
       const { error } = await supabase
         .from("leads")
-        .update({ status: newStatus as "New Lead" | "Called No Answer" | "Called Engaged" | "Called COLD" | "Warm" | "HOT" | "LOST" | "PROBLEM" | "SOLD" })
+        .update(updateData)
         .eq("id", leadId);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: `Lead status updated to ${newStatus}`,
+        description: newStatus === "Called No Answer" 
+          ? `Lead status updated to ${newStatus} and reminder set to tomorrow`
+          : `Lead status updated to ${newStatus}`,
       });
 
       fetchLeads();
@@ -292,14 +305,17 @@ const LeadManagement = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      "New Lead": "bg-blue-500",
-      "Warm": "bg-yellow-500",
-      "HOT": "bg-red-500",
-      "SOLD": "bg-green-500",
-      "LOST": "bg-gray-500",
-      "PROBLEM": "bg-purple-500",
+      "New Lead": "bg-blue-500 text-white",
+      "Called Engaged": "bg-blue-500 text-white",
+      "Called No Answer": "bg-pink-500 text-white",
+      "Called COLD": "bg-red-600 text-white",
+      "Warm": "bg-red-300 text-white",
+      "HOT": "bg-orange-600 text-white",
+      "SOLD": "bg-green-500 text-white",
+      "LOST": "bg-red-600 text-white",
+      "PROBLEM": "bg-black text-white",
     };
-    return colors[status] || "bg-gray-500";
+    return colors[status] || "bg-gray-500 text-white";
   };
 
   // Pagination calculations

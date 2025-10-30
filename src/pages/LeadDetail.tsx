@@ -194,13 +194,17 @@ const LeadDetail = () => {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      "New Lead": "bg-blue-500",
-      "Warm": "bg-yellow-500",
-      "HOT": "bg-red-500",
-      "SOLD": "bg-green-500",
-      "LOST": "bg-gray-500",
+      "New Lead": "bg-blue-500 text-white",
+      "Called Engaged": "bg-blue-500 text-white",
+      "Called No Answer": "bg-pink-500 text-white",
+      "Called COLD": "bg-red-600 text-white",
+      "Warm": "bg-red-300 text-white",
+      "HOT": "bg-orange-600 text-white",
+      "SOLD": "bg-green-500 text-white",
+      "LOST": "bg-red-600 text-white",
+      "PROBLEM": "bg-black text-white",
     };
-    return colors[status] || "bg-gray-500";
+    return colors[status] || "bg-gray-500 text-white";
   };
 
   const handleWhatsApp = () => {

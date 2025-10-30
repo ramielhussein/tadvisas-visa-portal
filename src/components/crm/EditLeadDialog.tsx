@@ -128,27 +128,38 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
 
     setLoading(true);
     try {
+      const updateData: any = {
+        client_name: formData.client_name || null,
+        email: formData.email || null,
+        mobile_number: formData.mobile_number,
+        emirate: formData.emirate || null,
+        status: formData.status,
+        service_required: formData.service_required || null,
+        nationality_code: formData.nationality_code || null,
+        lead_source: formData.lead_source || null,
+        remind_me: formData.remind_me || null,
+        assigned_to: formData.assigned_to || null,
+      };
+
+      // Set reminder to tomorrow if status is "Called No Answer"
+      if (formData.status === "Called No Answer") {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        updateData.remind_me = tomorrow.toISOString().split('T')[0];
+      }
+
       const { error } = await supabase
         .from("leads")
-        .update({
-          client_name: formData.client_name || null,
-          email: formData.email || null,
-          mobile_number: formData.mobile_number,
-          emirate: formData.emirate || null,
-          status: formData.status,
-          service_required: formData.service_required || null,
-          nationality_code: formData.nationality_code || null,
-          lead_source: formData.lead_source || null,
-          remind_me: formData.remind_me || null,
-          assigned_to: formData.assigned_to || null,
-        })
+        .update(updateData)
         .eq("id", lead.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Lead updated successfully",
+        description: formData.status === "Called No Answer" 
+          ? "Lead updated and reminder set to tomorrow"
+          : "Lead updated successfully",
       });
 
       onSuccess();
