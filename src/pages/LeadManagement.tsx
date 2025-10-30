@@ -135,21 +135,21 @@ const LeadManagement = () => {
         }
       });
     } else {
-      // Apply default sorting: LOST at bottom, recently updated first
+      // Apply default sorting: LOST at bottom, remind_me priority, then updated_at
       filtered = [...filtered].sort((a, b) => {
         // First priority: LOST status goes to bottom
         if (a.status === "LOST" && b.status !== "LOST") return 1;
         if (a.status !== "LOST" && b.status === "LOST") return -1;
         
-        // Second priority: Sort by updated_at (descending) - recently pinged/updated first
+        // Second priority: Sort by remind_me (ascending) - sooner reminders first
+        const remindA = a.remind_me ? new Date(a.remind_me).getTime() : Infinity;
+        const remindB = b.remind_me ? new Date(b.remind_me).getTime() : Infinity;
+        if (remindA !== remindB) return remindA - remindB;
+        
+        // Third priority: Sort by updated_at (descending) - recently pinged/updated first
         const dateA = new Date(a.updated_at).getTime();
         const dateB = new Date(b.updated_at).getTime();
-        if (dateB !== dateA) return dateB - dateA;
-        
-        // Third priority: Sort by remind_me (ascending) - sooner reminders first
-        const remindA = new Date(a.remind_me).getTime();
-        const remindB = new Date(b.remind_me).getTime();
-        return remindA - remindB;
+        return dateB - dateA;
       });
     }
 
@@ -170,10 +170,10 @@ const LeadManagement = () => {
       }
       
       // Remove default 1000 row limit by setting a high range
-      // Sort by updated_at desc (recently pinged leads first), then remind_me asc (LOST leads with far future dates at bottom)
+      // Sort by remind_me asc (sooner dates first), then updated_at desc
       const { data, count, error } = await query
+        .order("remind_me", { ascending: true, nullsFirst: false })
         .order("updated_at", { ascending: false })
-        .order("remind_me", { ascending: true })
         .range(0, 99999);
 
       if (error) throw error;
@@ -184,15 +184,15 @@ const LeadManagement = () => {
         if (a.status === "LOST" && b.status !== "LOST") return 1;
         if (a.status !== "LOST" && b.status === "LOST") return -1;
         
-        // Second priority: Sort by updated_at (descending) - recently pinged/updated first
+        // Second priority: Sort by remind_me (ascending) - sooner reminders first
+        const remindA = a.remind_me ? new Date(a.remind_me).getTime() : Infinity;
+        const remindB = b.remind_me ? new Date(b.remind_me).getTime() : Infinity;
+        if (remindA !== remindB) return remindA - remindB;
+        
+        // Third priority: Sort by updated_at (descending) - recently pinged/updated first
         const dateA = new Date(a.updated_at).getTime();
         const dateB = new Date(b.updated_at).getTime();
-        if (dateB !== dateA) return dateB - dateA;
-        
-        // Third priority: Sort by remind_me (ascending) - sooner reminders first
-        const remindA = new Date(a.remind_me).getTime();
-        const remindB = new Date(b.remind_me).getTime();
-        return remindA - remindB;
+        return dateB - dateA;
       });
       
       setLeads(sortedData);
