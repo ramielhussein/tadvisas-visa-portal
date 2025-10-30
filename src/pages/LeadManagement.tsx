@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 import { cn } from "@/lib/utils";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 interface Lead {
   id: string;
@@ -65,6 +66,35 @@ const LeadManagement = () => {
     "SOLD": 0,
     "LOST": 0,
   });
+
+  // Calculate status distribution for pie chart
+  const statusDistribution = useMemo(() => {
+    const statusCounts: Record<string, number> = {};
+    filteredLeads.forEach(lead => {
+      statusCounts[lead.status] = (statusCounts[lead.status] || 0) + 1;
+    });
+
+    const colors: Record<string, string> = {
+      "New Lead": "#3b82f6",
+      "Called No Answer": "#f59e0b",
+      "Called Engaged": "#10b981",
+      "Called COLD": "#6366f1",
+      "Called Unanswer 2": "#f97316",
+      "No Connection": "#6b7280",
+      "Warm": "#fbbf24",
+      "HOT": "#ef4444",
+      "SOLD": "#22c55e",
+      "LOST": "#dc2626",
+      "PROBLEM": "#991b1b",
+    };
+
+    return Object.entries(statusCounts).map(([status, count]) => ({
+      name: status,
+      value: count,
+      percentage: ((count / filteredLeads.length) * 100).toFixed(1),
+      color: colors[status] || "#94a3b8",
+    }));
+  }, [filteredLeads]);
 
   useEffect(() => {
     // Check initial session
@@ -561,10 +591,42 @@ const LeadManagement = () => {
             </div>
           </div>
 
-          {/* Round Robin Toggle - Admin only */}
+          {/* Round Robin Toggle and Status Chart - Admin only */}
           {isAdmin && (
-            <div className="mb-8">
+            <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <RoundRobinToggle />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Lead Status Distribution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {filteredLeads.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
+                        <Pie
+                          data={statusDistribution}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percentage }) => `${name}: ${percentage}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {statusDistribution.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value: number) => `${value} leads`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-[250px] text-muted-foreground">
+                      No leads to display
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           )}
 
