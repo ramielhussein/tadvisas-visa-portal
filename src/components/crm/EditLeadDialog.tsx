@@ -32,6 +32,10 @@ interface EditLeadDialogProps {
 const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
+  const [leadSources, setLeadSources] = useState<Array<{ id: string; source_name: string }>>([]);
+  const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
+  
   const [formData, setFormData] = useState({
     client_name: "",
     email: "",
@@ -42,7 +46,64 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
     nationality_code: "",
     lead_source: "",
     remind_me: "",
+    assigned_to: "",
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch sales team
+        const { data: profilesData, error: profilesError } = await supabase
+          .from("profiles")
+          .select("id, email, full_name, permissions")
+          .order("email");
+
+        if (profilesError) throw profilesError;
+
+        // Filter for users with sales/deals permissions or lead assignment permissions
+        const salesUsers = (profilesData || []).filter((user: any) => {
+          const permissions = user.permissions as any;
+          return (
+            permissions?.leads?.assign === true ||
+            permissions?.deals?.create === true ||
+            permissions?.deals?.edit === true
+          );
+        });
+
+        setSalesTeam(salesUsers);
+
+        // Fetch lead sources
+        const { data: sourcesData, error: sourcesError } = await supabase
+          .from("lead_sources")
+          .select("id, source_name")
+          .eq("is_active", true)
+          .order("sort_order")
+          .order("source_name");
+
+        if (sourcesError) throw sourcesError;
+
+        setLeadSources(sourcesData || []);
+
+        // Fetch inquiry packages
+        const { data: packagesData, error: packagesError } = await supabase
+          .from("inquiry_packages")
+          .select("id, package_name")
+          .eq("is_active", true)
+          .order("sort_order")
+          .order("package_name");
+
+        if (packagesError) throw packagesError;
+
+        setInquiryPackages(packagesData || []);
+      } catch (error: any) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    if (open) {
+      fetchData();
+    }
+  }, [open]);
 
   useEffect(() => {
     if (lead) {
@@ -56,6 +117,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
         nationality_code: lead.nationality_code || "",
         lead_source: (lead as any).lead_source || "",
         remind_me: lead.remind_me ? lead.remind_me.split('T')[0] : "",
+        assigned_to: lead.assigned_to || "",
       });
     }
   }, [lead]);
@@ -78,6 +140,7 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
           nationality_code: formData.nationality_code || null,
           lead_source: formData.lead_source || null,
           remind_me: formData.remind_me || null,
+          assigned_to: formData.assigned_to || null,
         })
         .eq("id", lead.id);
 
@@ -217,24 +280,50 @@ const EditLeadDialog = ({ open, lead, onClose, onSuccess }: EditLeadDialogProps)
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="lead_source">Lead Source</Label>
-            <Select value={formData.lead_source} onValueChange={(value) => setFormData({ ...formData, lead_source: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Website">Website</SelectItem>
-                <SelectItem value="WhatsApp">WhatsApp</SelectItem>
-                <SelectItem value="Phone">Phone Call</SelectItem>
-                <SelectItem value="Referral">Referral</SelectItem>
-                <SelectItem value="Facebook">Facebook</SelectItem>
-                <SelectItem value="Instagram">Instagram</SelectItem>
-                <SelectItem value="Google Ads">Google Ads</SelectItem>
-                <SelectItem value="Walk-in">Walk-in</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="lead_source">Lead Source</Label>
+              <Select value={formData.lead_source} onValueChange={(value) => setFormData({ ...formData, lead_source: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select source" />
+                </SelectTrigger>
+                <SelectContent>
+                  {leadSources.length > 0 ? (
+                    leadSources.map((source) => (
+                      <SelectItem key={source.id} value={source.source_name}>
+                        {source.source_name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="None" disabled>
+                      No sources available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="assigned_to">Assigned To</Label>
+              <Select value={formData.assigned_to} onValueChange={(value) => setFormData({ ...formData, assigned_to: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select sales person" />
+                </SelectTrigger>
+                <SelectContent>
+                  {salesTeam.length > 0 ? (
+                    salesTeam.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.full_name || user.email}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="None" disabled>
+                      No sales team available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">
