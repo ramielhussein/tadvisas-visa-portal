@@ -11,7 +11,7 @@ import {
   Globe
 } from "lucide-react";
 
-const ProductDashboard = () => {
+const ProductHub = () => {
   const navigate = useNavigate();
 
   const sections = [
@@ -108,4 +108,4 @@ const ProductDashboard = () => {
   );
 };
 
-export default ProductDashboard;
+export default ProductHub;

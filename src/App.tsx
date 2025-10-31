@@ -50,7 +50,11 @@ import SiteGuide from "./pages/SiteGuide";
 import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
 import RefundsApproval from "./pages/RefundsApproval";
-import ProductDashboard from "./pages/ProductDashboard";
+import ProductHub from "./pages/hubs/ProductHub";
+import AdminHub from "./pages/hubs/AdminHub";
+import SalesHub from "./pages/hubs/SalesHub";
+import FinanceHub from "./pages/hubs/FinanceHub";
+import ClientPortal from "./pages/hubs/ClientPortal";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import DailyHeadcount from "./pages/DailyHeadcount";
 import MyCVs from "./pages/MyCVs";
@@ -111,8 +115,13 @@ const App = () => (
           <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
           <Route path="/admin/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
           <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+          <Route path="/admin/client-submissions" element={<ProtectedRoute><ClientSubmissions /></ProtectedRoute>} />
+          <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />
           <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/crm/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
           <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
@@ -122,6 +131,8 @@ const App = () => (
           <Route path="/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
           <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
           <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+          <Route path="/financial-dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+          <Route path="/payments-list" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
           <Route path="/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
           <Route path="/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
           <Route path="/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
@@ -141,8 +152,15 @@ const App = () => (
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           <Route path="/install" element={<InstallApp />} />
           
+          {/* Hub Routes - Role-Based Entry Points */}
+          <Route path="/hub/admin" element={<ProtectedRoute><AdminHub /></ProtectedRoute>} />
+          <Route path="/hub/sales" element={<ProtectedRoute><SalesHub /></ProtectedRoute>} />
+          <Route path="/hub/finance" element={<ProtectedRoute><FinanceHub /></ProtectedRoute>} />
+          <Route path="/hub/client" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
+          <Route path="/product-dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
+          
           {/* Product Management Routes */}
-          <Route path="/product/dashboard" element={<ProtectedRoute><ProductDashboard /></ProtectedRoute>} />
+          <Route path="/product/dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
           <Route path="/product/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
           <Route path="/product/receipt-orders" element={<ProtectedRoute><ReceiptOrders /></ProtectedRoute>} />
           <Route path="/product/delivery-orders" element={<ProtectedRoute><DeliveryOrders /></ProtectedRoute>} />

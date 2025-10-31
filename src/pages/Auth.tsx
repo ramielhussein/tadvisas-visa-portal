@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { UserRole } from "@/hooks/useUserRole";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -15,17 +16,46 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const redirectToHub = async (userId: string) => {
+    // Get user role and redirect to appropriate hub
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+
+    if (roles && roles.length > 0) {
+      const userRoles = roles.map(r => r.role as UserRole);
+      
+      // Priority-based redirect
+      if (userRoles.includes('admin')) {
+        navigate("/hub/admin");
+      } else if (userRoles.includes('finance')) {
+        navigate("/hub/finance");
+      } else if (userRoles.includes('sales')) {
+        navigate("/hub/sales");
+      } else if (userRoles.includes('product')) {
+        navigate("/product-dashboard");
+      } else if (userRoles.includes('client')) {
+        navigate("/hub/client");
+      } else {
+        navigate("/dashboard");
+      }
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/");
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        await redirectToHub(session.user.id);
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        await redirectToHub(session.user.id);
       }
     });
 
@@ -37,7 +67,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -48,6 +78,11 @@ const Auth = () => {
         title: "Success",
         description: "Logged in successfully!",
       });
+
+      // Redirect to appropriate hub based on role
+      if (data.user) {
+        await redirectToHub(data.user.id);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
