@@ -379,15 +379,15 @@ const Refund = () => {
         deductions.push({ label: 'Daily Contract Charges', amount: dailyDed, rule: `${days} days < 5` });
         refundEx -= dailyDed;
       } else if (days >= 30) {
-        // Monthly deduction: 500 AED per full month + proportional days
+        // Monthly deduction: Calculate based on actual base price / 24 months
         const fullMonths = Math.floor(days / 30);
         const remainingDays = days % 30;
-        const monthlyRate = 500;
+        const monthlyRate = exVAT / 24; // Calculate monthly rate from actual base price
         const monthlyDed = (fullMonths * monthlyRate) + ((monthlyRate / 30) * remainingDays);
         deductions.push({
           label: 'Monthly Deduction',
           amount: Math.round(monthlyDed * 100) / 100,
-          rule: `${fullMonths} month(s) + ${remainingDays} day(s) @ ${monthlyRate} AED/month`
+          rule: `${fullMonths} month(s) + ${remainingDays} day(s) @ ${Math.round(monthlyRate * 100) / 100} AED/month`
         });
         refundEx -= monthlyDed;
       } else {
