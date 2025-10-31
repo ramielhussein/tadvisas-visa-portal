@@ -53,6 +53,7 @@ import RefundsApproval from "./pages/RefundsApproval";
 import ProductHub from "./pages/hubs/ProductHub";
 import AdminHub from "./pages/hubs/AdminHub";
 import SalesHub from "./pages/hubs/SalesHub";
+import SalesTargets from "./pages/SalesTargets";
 import FinanceHub from "./pages/hubs/FinanceHub";
 import ClientPortal from "./pages/hubs/ClientPortal";
 import PurchaseOrders from "./pages/PurchaseOrders";
@@ -151,6 +152,7 @@ const App = () => (
           <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           <Route path="/install" element={<InstallApp />} />
+          <Route path="/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
           
           {/* Hub Routes - Role-Based Entry Points */}
           <Route path="/hub/admin" element={<ProtectedRoute><AdminHub /></ProtectedRoute>} />

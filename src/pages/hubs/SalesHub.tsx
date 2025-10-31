@@ -11,6 +11,7 @@ import {
   Briefcase,
   Phone
 } from "lucide-react";
+import { SalesKPIDashboard } from "@/components/kpi/SalesKPIDashboard";
 
 const SalesHub = () => {
   const navigate = useNavigate();
@@ -82,6 +83,11 @@ const SalesHub = () => {
           <p className="text-muted-foreground">
             Manage leads, close deals, and track your performance
           </p>
+        </div>
+
+        {/* KPI Dashboard */}
+        <div className="mb-8">
+          <SalesKPIDashboard />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

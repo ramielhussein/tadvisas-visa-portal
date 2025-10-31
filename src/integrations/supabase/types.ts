@@ -1334,6 +1334,54 @@ export type Database = {
           },
         ]
       }
+      sales_targets: {
+        Row: {
+          activity_target: number
+          conversion_rate_target: number
+          created_at: string
+          created_by: string
+          deals_target: number
+          id: string
+          notes: string | null
+          period_end: string
+          period_start: string
+          period_type: string
+          revenue_target: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_target?: number
+          conversion_rate_target?: number
+          created_at?: string
+          created_by: string
+          deals_target?: number
+          id?: string
+          notes?: string | null
+          period_end: string
+          period_start: string
+          period_type?: string
+          revenue_target?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_target?: number
+          conversion_rate_target?: number
+          created_at?: string
+          created_by?: string
+          deals_target?: number
+          id?: string
+          notes?: string | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          revenue_target?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           created_at: string | null

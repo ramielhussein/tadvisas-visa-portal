@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useUserRole } from "@/hooks/useUserRole";
 import Layout from "@/components/Layout";
+import { SalesKPIDashboard } from "@/components/kpi/SalesKPIDashboard";
 import { 
   Calendar, 
   TrendingUp, 
@@ -47,6 +49,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useAdminCheck();
+  const { isSales, role } = useUserRole();
   
   const [loading, setLoading] = useState(true);
   const [overdueLeads, setOverdueLeads] = useState<Lead[]>([]);
@@ -223,6 +226,13 @@ const Dashboard = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
         <div className="container mx-auto px-4">
+          {/* KPI Dashboard for Sales Users */}
+          {isSales && (
+            <div className="mb-8">
+              <SalesKPIDashboard />
+            </div>
+          )}
+
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">CRM Dashboard</h1>
             <Button onClick={() => navigate("/crm/leads")}>

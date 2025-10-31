@@ -9,7 +9,8 @@ import {
   Settings,
   BarChart3,
   FileText,
-  Shield
+  Shield,
+  Target
 } from "lucide-react";
 
 const AdminHub = () => {
@@ -66,11 +67,18 @@ const AdminHub = () => {
       color: "text-teal-600"
     },
     {
+      title: "Sales Targets",
+      description: "Set and manage sales team KPIs",
+      icon: Target,
+      path: "/sales-targets",
+      color: "text-red-600"
+    },
+    {
       title: "CV Wizard Management",
       description: "Manage CV wizard settings and reviews",
       icon: Shield,
       path: "/admin/cv-wizard-settings",
-      color: "text-red-600"
+      color: "text-indigo-600"
     }
   ];
 
