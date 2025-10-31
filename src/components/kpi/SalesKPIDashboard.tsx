@@ -1,17 +1,29 @@
 import { useSalesKPIs } from "@/hooks/useSalesKPIs";
 import { KPICard } from "./KPICard";
-import { DollarSign, Target, TrendingUp, Phone } from "lucide-react";
+import { LeadFunnelChart } from "./LeadFunnelChart";
+import { PerformanceTrends } from "./PerformanceTrends";
+import { TeamLeaderboard } from "./TeamLeaderboard";
+import { DollarSign, Target, TrendingUp, Activity } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface SalesKPIDashboardProps {
   userId?: string;
   showPeriodSelector?: boolean;
+  showTeamLeaderboard?: boolean;
 }
 
-export const SalesKPIDashboard = ({ userId, showPeriodSelector = false }: SalesKPIDashboardProps) => {
+export const SalesKPIDashboard = ({ 
+  userId, 
+  showPeriodSelector = false,
+  showTeamLeaderboard = false 
+}: SalesKPIDashboardProps) => {
   const { kpis, isLoading, error } = useSalesKPIs(userId);
+  const { role } = useUserRole();
+
+  const isAdmin = role === 'admin';
 
   if (isLoading) {
     return (
@@ -51,17 +63,15 @@ export const SalesKPIDashboard = ({ userId, showPeriodSelector = false }: SalesK
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">Your Performance</h2>
-          <p className="text-sm text-muted-foreground">
-            Period: {new Date(kpis.periodStart).toLocaleDateString()} - {new Date(kpis.periodEnd).toLocaleDateString()}
-          </p>
+    <div className="space-y-6">
+      {showPeriodSelector && (
+        <div className="mb-4">
+          {/* Period selector component can be added here */}
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      )}
+      
+      {/* Main KPI Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Revenue"
           icon={DollarSign}
@@ -70,8 +80,11 @@ export const SalesKPIDashboard = ({ userId, showPeriodSelector = false }: SalesK
           progress={kpis.revenueProgress}
           unit=" AED"
           color="text-green-600"
+          tier={kpis.revenueTier.level}
+          gap={kpis.gap.revenueGap}
+          dailyNeeded={kpis.pacing.dailyRevenueNeeded}
+          projected={kpis.pacing.projectedRevenue}
         />
-        
         <KPICard
           title="Deals Closed"
           icon={Target}
@@ -79,8 +92,11 @@ export const SalesKPIDashboard = ({ userId, showPeriodSelector = false }: SalesK
           actual={kpis.dealsActual}
           progress={kpis.dealsProgress}
           color="text-blue-600"
+          tier={kpis.dealsTier.level}
+          gap={kpis.gap.dealsGap}
+          dailyNeeded={kpis.pacing.dailyDealsNeeded}
+          projected={kpis.pacing.projectedDeals}
         />
-        
         <KPICard
           title="Conversion Rate"
           icon={TrendingUp}
@@ -89,16 +105,28 @@ export const SalesKPIDashboard = ({ userId, showPeriodSelector = false }: SalesK
           progress={kpis.conversionProgress}
           unit="%"
           color="text-purple-600"
+          tier={kpis.conversionTier.level}
+          gap={kpis.gap.conversionGap}
         />
-        
         <KPICard
           title="Activity Count"
-          icon={Phone}
+          icon={Activity}
           target={kpis.activityTarget}
           actual={kpis.activityActual}
           progress={kpis.activityProgress}
           color="text-orange-600"
+          tier={kpis.activityTier.level}
+          gap={kpis.gap.activityGap}
+          dailyNeeded={kpis.pacing.dailyActivityNeeded}
+          projected={kpis.pacing.projectedActivity}
         />
+      </div>
+
+      {/* Secondary Analytics */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <LeadFunnelChart metrics={kpis.leadMetrics} />
+        <PerformanceTrends trends={kpis.trends} />
+        {(showTeamLeaderboard || isAdmin) && <TeamLeaderboard />}
       </div>
     </div>
   );

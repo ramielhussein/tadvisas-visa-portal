@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { SetTargetsDialog } from "@/components/kpi/SetTargetsDialog";
+import { TeamLeaderboard } from "@/components/kpi/TeamLeaderboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Target } from "lucide-react";
 
@@ -70,6 +71,11 @@ const SalesTargets = () => {
           <p className="text-muted-foreground">
             Set and manage monthly and quarterly targets for your sales team
           </p>
+        </div>
+
+        {/* Team Leaderboard */}
+        <div className="mb-8 max-w-2xl mx-auto">
+          <TeamLeaderboard />
         </div>
 
         {isLoading ? (
