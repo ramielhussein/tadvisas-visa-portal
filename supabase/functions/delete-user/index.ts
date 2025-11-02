@@ -83,14 +83,15 @@ serve(async (req) => {
       });
     }
 
-    // Before deleting, unassign all leads assigned to this user
-    const { error: unassignError } = await supabaseAdmin
+    // Before deleting, clean up all references to this user to avoid FK violations
+    // 1) Unassign all leads
+    const { error: unassignLeadsError } = await supabaseAdmin
       .from("leads")
       .update({ assigned_to: null })
       .eq("assigned_to", targetUserId);
 
-    if (unassignError) {
-      console.error("Error unassigning leads:", unassignError);
+    if (unassignLeadsError) {
+      console.error("Error unassigning leads:", unassignLeadsError);
       return new Response(
         JSON.stringify({ error: "Failed to unassign leads before deletion" }),
         {
@@ -98,6 +99,37 @@ serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
+    }
+
+    // 2) Null out other foreign key references to auth.users(id)
+    // Some tables may not have ON DELETE SET NULL configured
+    const cleanupRefs: Array<{ table: string; column: string }> = [
+      { table: "deals", column: "assigned_to" },
+      { table: "transactions", column: "created_by" },
+      { table: "workers", column: "created_by" },
+      { table: "refunds", column: "approved_by" },
+      { table: "payments", column: "recorded_by" },
+    ];
+
+    // Run updates sequentially to capture first failure clearly
+    for (const ref of cleanupRefs) {
+      const { error } = await supabaseAdmin
+        .from(ref.table)
+        .update({ [ref.column]: null as any })
+        .eq(ref.column, targetUserId);
+
+      if (error) {
+        console.error(`Error cleaning reference ${ref.table}.${ref.column}:`, error);
+        return new Response(
+          JSON.stringify({
+            error: `Failed to clean ${ref.table}.${ref.column} references before deletion`,
+          }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
     }
 
     // Delete the user using admin client
