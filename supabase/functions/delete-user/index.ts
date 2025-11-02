@@ -83,6 +83,23 @@ serve(async (req) => {
       });
     }
 
+    // Before deleting, unassign all leads assigned to this user
+    const { error: unassignError } = await supabaseAdmin
+      .from("leads")
+      .update({ assigned_to: null })
+      .eq("assigned_to", targetUserId);
+
+    if (unassignError) {
+      console.error("Error unassigning leads:", unassignError);
+      return new Response(
+        JSON.stringify({ error: "Failed to unassign leads before deletion" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     // Delete the user using admin client
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetUserId);
 
