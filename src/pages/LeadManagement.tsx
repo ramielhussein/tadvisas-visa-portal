@@ -165,7 +165,7 @@ const LeadManagement = () => {
         }
       });
     } else {
-      // Apply default sorting: LOST at bottom, remind_me priority, then updated_at
+      // Apply default sorting: LOST at bottom, remind_me priority, then newest leads first
       filtered = [...filtered].sort((a, b) => {
         // First priority: LOST status goes to bottom
         if (a.status === "LOST" && b.status !== "LOST") return 1;
@@ -176,9 +176,9 @@ const LeadManagement = () => {
         const remindB = b.remind_me ? new Date(b.remind_me).getTime() : Infinity;
         if (remindA !== remindB) return remindA - remindB;
         
-        // Third priority: Sort by updated_at (descending) - recently pinged/updated first
-        const dateA = new Date(a.updated_at).getTime();
-        const dateB = new Date(b.updated_at).getTime();
+        // Third priority: Sort by created_at (descending) - newest leads first
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
         return dateB - dateA;
       });
     }
@@ -219,9 +219,9 @@ const LeadManagement = () => {
         const remindB = b.remind_me ? new Date(b.remind_me).getTime() : Infinity;
         if (remindA !== remindB) return remindA - remindB;
         
-        // Third priority: Sort by updated_at (descending) - recently pinged/updated first
-        const dateA = new Date(a.updated_at).getTime();
-        const dateB = new Date(b.updated_at).getTime();
+        // Third priority: Sort by created_at (descending) - newest leads first
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
         return dateB - dateA;
       });
       

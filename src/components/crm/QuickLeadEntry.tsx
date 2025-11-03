@@ -442,8 +442,8 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
       await Promise.all(uploadPromises);
 
       // Determine who to assign the lead to
-      // If no assignee selected, assign to current user
-      const assignedTo = formData.assigned_to || user.id;
+      // If no assignee selected, leave unassigned
+      const assignedTo = formData.assigned_to || null;
 
       // Prepare lead data
       const leadData: any = {
