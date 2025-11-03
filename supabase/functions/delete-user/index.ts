@@ -101,36 +101,50 @@ serve(async (req) => {
       );
     }
 
-    // 2) Null out other foreign key references to auth.users(id)
-    // Some tables may not have ON DELETE SET NULL configured
-    const cleanupRefs: Array<{ table: string; column: string }> = [
-      { table: "deals", column: "assigned_to" },
-      { table: "transactions", column: "created_by" },
-      { table: "workers", column: "created_by" },
-      { table: "refunds", column: "approved_by" },
-      { table: "payments", column: "recorded_by" },
-    ];
+    // 2) Clean up other references to this user
+    // Reassign non-nullable foreign keys to the requesting admin, and null/delete where appropriate
+    const adminUserId = user.id;
 
-    // Run updates sequentially to capture first failure clearly
-    for (const ref of cleanupRefs) {
-      const { error } = await supabaseAdmin
-        .from(ref.table)
-        .update({ [ref.column]: null as any })
-        .eq(ref.column, targetUserId);
-
+    // Helpers to avoid failing the whole request on a single table error
+    async function safeUpdate(table: string, values: Record<string, any>, filter: { column: string; value: string }) {
+      const { error } = await supabaseAdmin.from(table).update(values).eq(filter.column, filter.value);
       if (error) {
-        console.error(`Error cleaning reference ${ref.table}.${ref.column}:`, error);
-        return new Response(
-          JSON.stringify({
-            error: `Failed to clean ${ref.table}.${ref.column} references before deletion`,
-          }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+        console.error(`Error updating ${table}.${filter.column}:`, error);
       }
     }
+
+    async function safeDelete(table: string, filter: { column: string; value: string }) {
+      const { error } = await supabaseAdmin.from(table).delete().eq(filter.column, filter.value);
+      if (error) {
+        console.error(`Error deleting from ${table} where ${filter.column} = ${filter.value}:`, error);
+      }
+    }
+
+    // Nullable references -> set to null
+    await safeUpdate("deals", { assigned_to: null as any }, { column: "assigned_to", value: targetUserId });
+    await safeUpdate("payments", { recorded_by: null as any }, { column: "recorded_by", value: targetUserId });
+    await safeUpdate("refunds", { approved_by: null as any }, { column: "approved_by", value: targetUserId });
+    await safeUpdate("refunds", { prepared_by: null as any }, { column: "prepared_by", value: targetUserId });
+    await safeUpdate("refunds", { finalized_by: null as any }, { column: "finalized_by", value: targetUserId });
+    await safeUpdate("contracts", { created_by: null as any }, { column: "created_by", value: targetUserId });
+
+    // Non-nullable references -> reassign to admin
+    await safeUpdate("purchase_orders", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
+    await safeUpdate("delivery_orders", { delivered_by: adminUserId }, { column: "delivered_by", value: targetUserId });
+    await safeUpdate("receipt_orders", { received_by: adminUserId }, { column: "received_by", value: targetUserId });
+    await safeUpdate("daily_headcount", { counted_by: adminUserId }, { column: "counted_by", value: targetUserId });
+    await safeUpdate("nationality_workflows", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
+    await safeUpdate("contracts", { salesman_id: adminUserId }, { column: "salesman_id", value: targetUserId });
+    await safeUpdate("sales_targets", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
+
+    // Rows tightly coupled to the user identity -> delete
+    await safeDelete("sales_targets", { column: "user_id", value: targetUserId });
+    await safeDelete("lead_activities", { column: "user_id", value: targetUserId });
+    await safeDelete("notifications", { column: "user_id", value: targetUserId });
+
+    // Clean profile and role rows if they exist
+    await safeDelete("profiles", { column: "id", value: targetUserId });
+    await safeDelete("user_roles", { column: "user_id", value: targetUserId });
 
     // Delete the user using admin client
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetUserId);
