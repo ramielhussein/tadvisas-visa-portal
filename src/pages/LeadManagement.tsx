@@ -459,6 +459,15 @@ const LeadManagement = () => {
   const handleClaimLead = async (leadId: string) => {
     if (!currentUser) return;
     
+    // Optimistic update - update UI immediately
+    setLeads(prevLeads => 
+      prevLeads.map(lead => 
+        lead.id === leadId 
+          ? { ...lead, assigned_to: currentUser.id }
+          : lead
+      )
+    );
+    
     try {
       const { error } = await supabase
         .from('leads')
@@ -471,8 +480,6 @@ const LeadManagement = () => {
         title: "Success",
         description: "Lead claimed successfully!",
       });
-
-      fetchLeads();
     } catch (error: any) {
       console.error('Error claiming lead:', error);
       toast({
@@ -480,10 +487,21 @@ const LeadManagement = () => {
         description: error.message || "Failed to claim lead",
         variant: "destructive",
       });
+      // Revert on error
+      fetchLeads();
     }
   };
 
   const handleUnassignLead = async (leadId: string) => {
+    // Optimistic update - update UI immediately
+    setLeads(prevLeads => 
+      prevLeads.map(lead => 
+        lead.id === leadId 
+          ? { ...lead, assigned_to: null, status: "New Lead" as const }
+          : lead
+      )
+    );
+    
     try {
       const { error } = await supabase
         .from('leads')
@@ -499,8 +517,6 @@ const LeadManagement = () => {
         title: "Success",
         description: "Lead returned to unassigned pool",
       });
-
-      fetchLeads();
     } catch (error: any) {
       console.error('Error unassigning lead:', error);
       toast({
@@ -508,6 +524,8 @@ const LeadManagement = () => {
         description: error.message || "Failed to unassign lead",
         variant: "destructive",
       });
+      // Revert on error
+      fetchLeads();
     }
   };
 
@@ -786,7 +804,7 @@ const LeadManagement = () => {
                             lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
                           )
                           .map((lead) => (
-                            <TableRow key={lead.id} className="hover:bg-muted/50">
+                            <TableRow key={lead.id} className="hover:bg-muted/50 transition-all duration-300 animate-fade-in">
                               <TableCell>
                                 <div>
                                   <div className="font-medium">{lead.client_name}</div>
@@ -875,7 +893,7 @@ const LeadManagement = () => {
                             const isDueToday = reminderDate && reminderDate.getTime() === today.getTime();
 
                             return (
-                              <TableRow key={lead.id} className="hover:bg-muted/50">
+                              <TableRow key={lead.id} className="hover:bg-muted/50 transition-all duration-300 animate-fade-in">
                                 <TableCell>
                                   <div>
                                     <div className="font-medium">
