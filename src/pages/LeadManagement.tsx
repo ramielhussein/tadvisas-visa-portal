@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Anchor } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
@@ -139,53 +139,66 @@ const LeadManagement = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
-  useEffect(() => {
-    let filtered = leads;
-    
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      filtered = leads.filter(
-        (lead) =>
-          (lead.mobile_number?.toLowerCase?.().includes(query) ?? false) ||
-          ((lead.client_name || "").toLowerCase().includes(query)) ||
-          ((lead.email || "").toLowerCase().includes(query))
-      );
-    }
-
-    // Apply custom sorting if column sort is active
-    if (sortColumn) {
-      filtered = [...filtered].sort((a, b) => {
-        const aVal = a[sortColumn] || "";
-        const bVal = b[sortColumn] || "";
-        
-        if (sortDirection === 'asc') {
-          return aVal.localeCompare(bVal);
-        } else {
-          return bVal.localeCompare(aVal);
-        }
-      });
-    } else {
-      // Apply default sorting: LOST at bottom, remind_me priority, then newest leads first
-      filtered = [...filtered].sort((a, b) => {
-        // First priority: LOST status goes to bottom
-        if (a.status === "LOST" && b.status !== "LOST") return 1;
-        if (a.status !== "LOST" && b.status === "LOST") return -1;
-        
-        // Second priority: Sort by remind_me (ascending) - sooner reminders first
-        const remindA = a.remind_me ? new Date(a.remind_me).getTime() : Infinity;
-        const remindB = b.remind_me ? new Date(b.remind_me).getTime() : Infinity;
-        if (remindA !== remindB) return remindA - remindB;
-        
-        // Third priority: Sort by created_at (descending) - newest leads first
+  // Split leads into categories - no filtering yet
+  const newIncomingLeads = useMemo(() => {
+    return leads
+      .filter(lead => lead.status === "New Lead" && !lead.assigned_to)
+      .sort((a, b) => {
+        // Sort newest to oldest
         const dateA = new Date(a.created_at).getTime();
         const dateB = new Date(b.created_at).getTime();
         return dateB - dateA;
       });
-    }
+  }, [leads]);
 
-    setFilteredLeads(filtered);
-    setCurrentPage(1); // Reset to first page when filtering
-  }, [searchQuery, leads, sortColumn, sortDirection]);
+  const myLeads = useMemo(() => {
+    if (!currentUser) return [];
+    return leads
+      .filter(lead => lead.assigned_to === currentUser.id)
+      .sort((a, b) => {
+        // Leads with NO reminder date appear on top
+        const hasRemindA = !!a.remind_me;
+        const hasRemindB = !!b.remind_me;
+        
+        if (!hasRemindA && hasRemindB) return -1;
+        if (hasRemindA && !hasRemindB) return 1;
+        
+        // Both have reminders - sort by reminder date (soonest first)
+        if (hasRemindA && hasRemindB) {
+          const remindA = new Date(a.remind_me!).getTime();
+          const remindB = new Date(b.remind_me!).getTime();
+          return remindA - remindB;
+        }
+        
+        // Both have no reminder - sort by newest first
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA;
+      });
+  }, [leads, currentUser]);
+
+  // Apply search filtering to each category
+  useEffect(() => {
+    const filterLeads = (leadsArray: Lead[]) => {
+      if (!searchQuery.trim()) return leadsArray;
+      const query = searchQuery.toLowerCase();
+      return leadsArray.filter(lead =>
+        (lead.mobile_number?.toLowerCase?.().includes(query) ?? false) ||
+        ((lead.client_name || "").toLowerCase().includes(query)) ||
+        ((lead.email || "").toLowerCase().includes(query)) ||
+        ((lead.nationality_code || "").toLowerCase().includes(query)) ||
+        ((lead.service_required || "").toLowerCase().includes(query))
+      );
+    };
+
+    // For display purposes, combine both categories if admin or just myLeads for users
+    const combinedFiltered = isAdmin 
+      ? [...filterLeads(newIncomingLeads), ...filterLeads(myLeads)]
+      : filterLeads(myLeads);
+
+    setFilteredLeads(combinedFiltered);
+    setCurrentPage(1);
+  }, [searchQuery, newIncomingLeads, myLeads, isAdmin]);
 
   const fetchLeads = async () => {
     try {
@@ -443,6 +456,33 @@ const LeadManagement = () => {
     }
   };
 
+  const handleClaimLead = async (leadId: string) => {
+    if (!currentUser) return;
+    
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ assigned_to: currentUser.id })
+        .eq('id', leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Lead claimed successfully!",
+      });
+
+      fetchLeads();
+    } catch (error: any) {
+      console.error('Error claiming lead:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to claim lead",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       "New Lead": "bg-blue-500 text-white hover:bg-blue-600",
@@ -656,9 +696,9 @@ const LeadManagement = () => {
             ))}
           </div>
 
-          {/* Search and Pagination Info */}
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <div className="relative flex-1">
+          {/* Search */}
+          <div className="mb-6">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search by phone number, name, or email..."
@@ -668,217 +708,237 @@ const LeadManagement = () => {
                 className="pl-10"
               />
             </div>
-            <div className="text-sm text-muted-foreground whitespace-nowrap">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredLeads.length)} of {filteredLeads.length}
-            </div>
           </div>
 
-          {/* Leads Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>{isAdmin ? "All Leads" : "My Leads"}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[120px]">Name</TableHead>
-                      <TableHead className="min-w-[110px]">Mobile</TableHead>
-                      <TableHead className="hidden lg:table-cell">Email</TableHead>
-                      <TableHead className="hidden md:table-cell">Emirate</TableHead>
-                      <TableHead className="min-w-[60px]">
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleSort('nationality_code')}
-                          className="h-8 px-1 hover:bg-accent"
-                        >
-                          Nat.
-                          <ArrowUpDown className="ml-1 h-3 w-3" />
-                        </Button>
-                      </TableHead>
-                      <TableHead className="hidden xl:table-cell">
-                        <Button
-                          variant="ghost"
-                          onClick={() => handleSort('service_required')}
-                          className="h-8 px-1 hover:bg-accent"
-                        >
-                          Service
-                          <ArrowUpDown className="ml-1 h-3 w-3" />
-                        </Button>
-                      </TableHead>
-                      <TableHead className="min-w-[80px]">Status</TableHead>
-                      {isAdmin && <TableHead className="min-w-[140px]">Assigned</TableHead>}
-                      <TableHead className="hidden md:table-cell min-w-[90px]">Remind</TableHead>
-                      <TableHead className="min-w-[100px]">Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedLeads.length === 0 ? (
+          {/* Two-Pane Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* New Incoming Leads */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                  New Incoming Leads ({newIncomingLeads.filter(lead => 
+                    !searchQuery || 
+                    lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-y-auto max-h-[600px]">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
                       <TableRow>
-                        <TableCell colSpan={11} className="text-center py-8">
-                          No leads found. Add your first lead!
-                        </TableCell>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Service</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead></TableHead>
                       </TableRow>
-                    ) : (
-                      paginatedLeads.map((lead) => (
-                        <TableRow key={lead.id} className="text-sm">
-                          <TableCell className="font-medium">
-                            <button
-                              onClick={() => navigate(`/crm/leads/${lead.id}`)}
-                              className="hover:text-primary hover:underline text-left"
-                            >
-                              {lead.client_name || "-"}
-                            </button>
-                          </TableCell>
-                          <TableCell className="font-mono text-xs">{lead.mobile_number}</TableCell>
-                          <TableCell className="hidden lg:table-cell truncate max-w-[150px]">{lead.email || "-"}</TableCell>
-                          <TableCell className="hidden md:table-cell">{lead.emirate || "-"}</TableCell>
-                          <TableCell>{lead.nationality_code || "-"}</TableCell>
-                          <TableCell className="hidden xl:table-cell truncate max-w-[120px]">{lead.service_required || "-"}</TableCell>
-                          <TableCell>
-                            <Select
-                              value={lead.status}
-                              onValueChange={(value) => handleStatusChange(lead.id, value)}
-                              disabled={lead.status === "SOLD"}
-                            >
-                              <SelectTrigger className={cn("w-[110px] h-8 text-xs border-none", getStatusColor(lead.status))}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="New Lead">New Lead</SelectItem>
-                                <SelectItem value="Called No Answer">Called No Answer</SelectItem>
-                                <SelectItem value="Called Engaged">Called Engaged</SelectItem>
-                                <SelectItem value="Called COLD">Called COLD</SelectItem>
-                                <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
-                                <SelectItem value="No Connection">No Connection</SelectItem>
-                                <SelectItem value="Warm">Warm</SelectItem>
-                                <SelectItem value="HOT">HOT</SelectItem>
-                                <SelectItem value="LOST">LOST</SelectItem>
-                                <SelectItem value="PROBLEM">PROBLEM</SelectItem>
-                                {lead.status === "SOLD" && (
-                                  <SelectItem value="SOLD" disabled>SOLD (Auto-set)</SelectItem>
-                                )}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          {isAdmin && (
-                            <TableCell>
-                              <Select
-                                value={lead.assigned_to || "unassigned"}
-                                onValueChange={(value) =>
-                                  handleAssignLead(
-                                    lead.id,
-                                    value === "unassigned" ? null : value
-                                  )
-                                }
-                              >
-                                <SelectTrigger className="w-[130px] h-8 text-xs">
-                                  <SelectValue placeholder="Unassigned" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="unassigned">
-                                    Unassigned
-                                  </SelectItem>
-                                  {users.map((user) => (
-                                    <SelectItem key={user.id} value={user.id}>
-                                      {user.full_name || user.email.split('@')[0]}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          )}
-                          <TableCell className="hidden md:table-cell">
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs">
-                                {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-                              </span>
-                              <Input
-                                type="number"
-                                min="1"
-                                max="3650"
-                                placeholder="Days"
-                                className="w-14 h-7 text-xs px-1"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    const value = parseInt(e.currentTarget.value);
-                                    if (!isNaN(value) && value > 0) {
-                                      handleReminderDaysChange(lead.id, value);
-                                      e.currentTarget.value = '';
-                                    }
-                                  }
-                                }}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-7 w-7 p-0"
-                                onClick={() => setEditingLead(lead)}
-                              >
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              {lead.client_converted ? (
-                                <Badge variant="outline" className="bg-green-50 text-xs whitespace-nowrap">
-                                  ✓ Client
-                                </Badge>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs px-2"
-                                  onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
-                                >
-                                  Convert
-                                </Button>
-                              )}
-                            </div>
+                    </TableHeader>
+                    <TableBody>
+                      {newIncomingLeads
+                        .filter(lead => 
+                          !searchQuery || 
+                          lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                            No new leads
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <Card className="mt-4">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+                      ) : (
+                        newIncomingLeads
+                          .filter(lead => 
+                            !searchQuery || 
+                            lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                          )
+                          .map((lead) => (
+                            <TableRow key={lead.id} className="hover:bg-muted/50">
+                              <TableCell>
+                                <div>
+                                  <div className="font-medium">{lead.client_name}</div>
+                                  <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  <div>{lead.service_required || '-'}</div>
+                                  <div className="text-muted-foreground">{lead.nationality_code || '-'}</div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {new Date(lead.created_at).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleClaimLead(lead.id)}
+                                  title="Claim this lead"
+                                  className="hover:text-primary"
+                                >
+                                  <Anchor className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>
-          )}
+
+            {/* My Leads */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Pencil className="h-5 w-5" />
+                  My Leads ({myLeads.filter(lead => 
+                    !searchQuery || 
+                    lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-y-auto max-h-[600px]">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Reminder</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {myLeads
+                        .filter(lead => 
+                          !searchQuery || 
+                          lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                            No assigned leads
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        myLeads
+                          .filter(lead => 
+                            !searchQuery || 
+                            lead.client_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            lead.mobile_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                          )
+                          .map((lead) => {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const reminderDate = lead.remind_me ? new Date(lead.remind_me) : null;
+                            const isOverdue = reminderDate && reminderDate < today;
+                            const isDueToday = reminderDate && reminderDate.getTime() === today.getTime();
+
+                            return (
+                              <TableRow key={lead.id} className="hover:bg-muted/50">
+                                <TableCell>
+                                  <div>
+                                    <div className="font-medium">
+                                      <button
+                                        onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                                        className="hover:text-primary hover:underline text-left"
+                                      >
+                                        {lead.client_name}
+                                      </button>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Select
+                                    value={lead.status}
+                                    onValueChange={(value) => handleStatusChange(lead.id, value)}
+                                    disabled={lead.status === "SOLD"}
+                                  >
+                                    <SelectTrigger className={cn("w-[110px] h-8 text-xs border-none", getStatusColor(lead.status))}>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="New Lead">New Lead</SelectItem>
+                                      <SelectItem value="Called No Answer">No Answer</SelectItem>
+                                      <SelectItem value="Called Engaged">Engaged</SelectItem>
+                                      <SelectItem value="Called COLD">COLD</SelectItem>
+                                      <SelectItem value="Warm">Warm</SelectItem>
+                                      <SelectItem value="HOT">HOT</SelectItem>
+                                      <SelectItem value="No Connection">No Connection</SelectItem>
+                                      <SelectItem value="LOST">LOST</SelectItem>
+                                      <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                                      {lead.status === "SOLD" && (
+                                        <SelectItem value="SOLD" disabled>SOLD</SelectItem>
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell>
+                                  {!lead.remind_me ? (
+                                    <Badge variant="outline" className="bg-yellow-100 text-yellow-800">No reminder</Badge>
+                                  ) : (
+                                    <div className="flex items-center gap-2">
+                                      <span className={cn(
+                                        "text-xs",
+                                        isOverdue && "text-destructive font-bold",
+                                        isDueToday && "text-orange-600 font-bold"
+                                      )}>
+                                        {new Date(lead.remind_me).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
+                                      </span>
+                                    </div>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      max="3650"
+                                      placeholder="Days"
+                                      className="w-14 h-7 text-xs px-1"
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          const value = parseInt(e.currentTarget.value);
+                                          if (!isNaN(value) && value > 0) {
+                                            handleReminderDaysChange(lead.id, value);
+                                            e.currentTarget.value = '';
+                                          }
+                                        }
+                                      }}
+                                    />
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 w-7 p-0"
+                                      onClick={() => setEditingLead(lead)}
+                                    >
+                                      <Pencil className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
