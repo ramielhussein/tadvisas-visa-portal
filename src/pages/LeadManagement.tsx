@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Anchor } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Anchor, XCircle } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
@@ -483,6 +483,34 @@ const LeadManagement = () => {
     }
   };
 
+  const handleUnassignLead = async (leadId: string) => {
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ 
+          assigned_to: null,
+          status: "New Lead"
+        })
+        .eq('id', leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Lead returned to unassigned pool",
+      });
+
+      fetchLeads();
+    } catch (error: any) {
+      console.error('Error unassigning lead:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to unassign lead",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       "New Lead": "bg-blue-500 text-white hover:bg-blue-600",
@@ -924,8 +952,18 @@ const LeadManagement = () => {
                                       size="sm"
                                       className="h-7 w-7 p-0"
                                       onClick={() => setEditingLead(lead)}
+                                      title="Edit lead details"
                                     >
                                       <Pencil className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 w-7 p-0 hover:text-destructive"
+                                      onClick={() => handleUnassignLead(lead.id)}
+                                      title="Return to unassigned leads"
+                                    >
+                                      <XCircle className="h-3 w-3" />
                                     </Button>
                                   </div>
                                 </TableCell>
