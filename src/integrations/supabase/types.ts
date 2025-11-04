@@ -655,6 +655,7 @@ export type Database = {
           eid_front_url: string | null
           email: string | null
           emirate: string | null
+          hot: boolean | null
           id: string
           lead_source: string | null
           mobile_number: string
@@ -676,6 +677,7 @@ export type Database = {
           eid_front_url?: string | null
           email?: string | null
           emirate?: string | null
+          hot?: boolean | null
           id?: string
           lead_source?: string | null
           mobile_number: string
@@ -697,6 +699,7 @@ export type Database = {
           eid_front_url?: string | null
           email?: string | null
           emirate?: string | null
+          hot?: boolean | null
           id?: string
           lead_source?: string | null
           mobile_number?: string

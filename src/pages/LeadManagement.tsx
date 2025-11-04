@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Anchor, XCircle } from "lucide-react";
+import { Search, Plus, Download, Upload, ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Anchor, XCircle, Flame } from "lucide-react";
 import Layout from "@/components/Layout";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
@@ -32,6 +32,7 @@ interface Lead {
   assigned_to: string | null;
   client_converted: boolean;
   submission_id: string | null;
+  hot: boolean | null;
 }
 
 interface User {
@@ -804,13 +805,16 @@ const LeadManagement = () => {
                             lead.email?.toLowerCase().includes(searchQuery.toLowerCase())
                           )
                           .map((lead) => (
-                            <TableRow key={lead.id} className="hover:bg-muted/50 transition-all duration-300 animate-fade-in">
-                              <TableCell>
-                                <div>
-                                  <div className="font-medium">{lead.client_name}</div>
-                                  <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
-                                </div>
-                              </TableCell>
+                              <TableRow key={lead.id} className="hover:bg-muted/50 transition-all duration-300 animate-fade-in">
+                                <TableCell>
+                                  <div>
+                                    <div className="font-medium flex items-center gap-2">
+                                      {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
+                                      {lead.client_name}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
+                                  </div>
+                                </TableCell>
                               <TableCell>
                                 <div className="text-sm">
                                   <div>{lead.service_required || '-'}</div>
@@ -896,7 +900,8 @@ const LeadManagement = () => {
                               <TableRow key={lead.id} className="hover:bg-muted/50 transition-all duration-300 animate-fade-in">
                                 <TableCell>
                                   <div>
-                                    <div className="font-medium">
+                                    <div className="font-medium flex items-center gap-2">
+                                      {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
                                       <button
                                         onClick={() => navigate(`/crm/leads/${lead.id}`)}
                                         className="hover:text-primary hover:underline text-left"

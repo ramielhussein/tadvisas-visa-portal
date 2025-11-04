@@ -55,6 +55,7 @@ interface Lead {
   client_converted: boolean;
   lead_source?: string | null;
   comments?: string | null;
+  hot?: boolean | null;
 }
 
 const LeadDetail = () => {

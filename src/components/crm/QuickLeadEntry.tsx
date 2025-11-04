@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, Flame } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { sanitizePhoneInput, validatePhone } from "@/lib/phoneValidation";
 
 interface QuickLeadEntryProps {
@@ -37,6 +38,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     lead_source: "",
     assigned_to: "",
     comments: "",
+    hot: false,
   });
 
   const [files, setFiles] = useState<{
@@ -122,6 +124,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           lead_source: lead.lead_source || "",
           assigned_to: lead.assigned_to || "",
           comments: lead.comments || "",
+          hot: lead.hot || false,
         });
         setExistingLead(null); // Clear existing lead check for edit mode
       } else {
@@ -137,6 +140,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           lead_source: "",
           assigned_to: "",
           comments: "",
+          hot: false,
         });
         setExistingLead(null);
         setFiles({ passport: null, eidFront: null, eidBack: null });
@@ -285,6 +289,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           lead_source: formData.lead_source || null,
           assigned_to: formData.assigned_to || null,
           comments: formData.comments || null,
+          hot: formData.hot,
         };
 
         // Set reminder to tomorrow if status is "Called No Answer"
@@ -460,6 +465,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         eid_front_url: fileUrls.eidFront || null,
         eid_back_url: fileUrls.eidBack || null,
         comments: formData.comments || null,
+        hot: formData.hot,
       };
 
       // Set reminder to tomorrow if status is "Called No Answer"
@@ -551,6 +557,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         lead_source: "",
         assigned_to: "",
         comments: "",
+        hot: false,
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
       setExistingLead(null);
@@ -830,6 +837,23 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                 <SelectItem value="PROBLEM">PROBLEM</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
+            <Checkbox
+              id="hot"
+              checked={formData.hot}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, hot: checked === true })
+              }
+            />
+            <Label
+              htmlFor="hot"
+              className="flex items-center gap-2 cursor-pointer font-medium"
+            >
+              <Flame className="w-4 h-4 text-orange-500" />
+              Mark as HOT Lead
+            </Label>
           </div>
 
           <div className="space-y-2">
