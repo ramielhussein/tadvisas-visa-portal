@@ -153,7 +153,15 @@ serve(async (req) => {
     await safeDelete("profiles", { column: "id", value: targetUserId });
 
     // Delete the user using admin client
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetUserId);
+    // Attempt soft delete first to avoid DB constraint issues
+    let { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetUserId, { shouldSoftDelete: true } as any);
+
+    // If soft delete is not supported or still fails, fallback to hard delete
+    if (deleteError) {
+      console.error("Soft delete failed, retrying hard delete:", deleteError);
+      const retry = await supabaseAdmin.auth.admin.deleteUser(targetUserId as string);
+      deleteError = retry.error;
+    }
 
     if (deleteError) {
       console.error("Error deleting user:", deleteError);
