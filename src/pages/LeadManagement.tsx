@@ -810,14 +810,14 @@ const LeadManagement = () => {
                                   <div>
                                     <div className="font-medium flex items-center gap-2">
                                       {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
-                                      <span
-                                        onClick={() => navigate(`/crm/leads/${lead.id}`)}
-                                        className="cursor-pointer hover:text-primary hover:underline"
-                                      >
-                                        {lead.client_name}
-                                      </span>
+                                      {lead.client_name}
                                     </div>
-                                    <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
+                                    <div 
+                                      onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                                      className="text-sm text-primary cursor-pointer hover:underline"
+                                    >
+                                      {lead.mobile_number}
+                                    </div>
                                   </div>
                                 </TableCell>
                               <TableCell>
