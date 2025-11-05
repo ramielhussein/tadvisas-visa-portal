@@ -56,12 +56,10 @@ const Navbar = () => {
   ];
 
   const authenticatedNavItems = [
-    { name: "Home", path: "/" },
-    { name: "Browse Workers", path: "/hub" },
-    { name: "My CVs", path: "/my-cvs" },
-    { name: "Dashboard", path: "/crm/dashboard" },
-    { name: "Admin", path: "/admin" },
-    { name: "Site Guide", path: "/siteguide" },
+    { name: "ADD LEAD", path: "/crm/leads" },
+    { name: "MY LEADS", path: "/crm/leads" },
+    { name: "VIEW CVS", path: "/my-cvs" },
+    { name: "VIEW HUB", path: "/hub" },
   ];
 
   const navItems = user ? authenticatedNavItems : publicNavItems;
