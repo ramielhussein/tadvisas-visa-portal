@@ -141,10 +141,16 @@ serve(async (req) => {
     await safeDelete("sales_targets", { column: "user_id", value: targetUserId });
     await safeDelete("lead_activities", { column: "user_id", value: targetUserId });
     await safeDelete("notifications", { column: "user_id", value: targetUserId });
+    
+    // Delete CV wizard submissions created by this user
+    await safeDelete("cv_wizard_submissions", { column: "created_by", value: targetUserId });
+    
+    // Delete audit logs for this user
+    await safeDelete("audit_logs", { column: "user_id", value: targetUserId });
 
-    // Clean profile and role rows if they exist
-    await safeDelete("profiles", { column: "id", value: targetUserId });
+    // Clean profile and role rows if they exist (MUST be last before auth deletion)
     await safeDelete("user_roles", { column: "user_id", value: targetUserId });
+    await safeDelete("profiles", { column: "id", value: targetUserId });
 
     // Delete the user using admin client
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(targetUserId);
