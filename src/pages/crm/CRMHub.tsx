@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,39 +68,7 @@ const CRMHub = () => {
     "LOST": 0,
   });
 
-  useEffect(() => {
-    if (user) {
-      loadLeads();
-      fetchUsers();
-    }
-  }, [user, sortBy, showOnlyHot]);
-
-  // Real-time subscription for leads
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('leads-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'leads',
-        },
-        (payload) => {
-          console.log('Real-time lead change:', payload);
-          loadLeads();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, sortBy, showOnlyHot]);
-
-  const loadLeads = async () => {
+  const loadLeads = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -166,7 +134,39 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, sortBy, showOnlyHot]);
+
+  useEffect(() => {
+    if (user) {
+      loadLeads();
+      fetchUsers();
+    }
+  }, [user, loadLeads]);
+
+  // Real-time subscription for leads
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('leads-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads',
+        },
+        (payload) => {
+          console.log('Real-time lead change:', payload);
+          loadLeads();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, loadLeads]);
 
   const fetchUsers = async () => {
     try {
