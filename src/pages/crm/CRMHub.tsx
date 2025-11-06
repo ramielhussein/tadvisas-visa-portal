@@ -64,6 +64,8 @@ const CRMHub = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
   const [myLeadsStatusFilter, setMyLeadsStatusFilter] = useState<string>("all");
+  const [unassignedStatusFilter, setUnassignedStatusFilter] = useState<string>("all");
+  const [adminStatusFilter, setAdminStatusFilter] = useState<string>("all");
   const [users, setUsers] = useState<User[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
     "New Lead": 0,
@@ -505,14 +507,25 @@ const CRMHub = () => {
   }, [allLeads]);
 
   const filteredUnassignedLeads = useMemo(() => {
-    if (!searchQuery) return unassignedLeads;
-    const query = searchQuery.toLowerCase();
-    return unassignedLeads.filter(lead =>
-      (lead.mobile_number?.toLowerCase().includes(query)) ||
-      ((lead.client_name || "").toLowerCase().includes(query)) ||
-      ((lead.email || "").toLowerCase().includes(query))
-    );
-  }, [unassignedLeads, searchQuery]);
+    let filtered = unassignedLeads;
+    
+    // Apply status filter
+    if (unassignedStatusFilter !== "all") {
+      filtered = filtered.filter(lead => lead.status === unassignedStatusFilter);
+    }
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(lead =>
+        (lead.mobile_number?.toLowerCase().includes(query)) ||
+        ((lead.client_name || "").toLowerCase().includes(query)) ||
+        ((lead.email || "").toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [unassignedLeads, searchQuery, unassignedStatusFilter]);
 
   const filteredMyLeads = useMemo(() => {
     let filtered = myLeads;
@@ -536,19 +549,30 @@ const CRMHub = () => {
   }, [myLeads, searchQuery, myLeadsStatusFilter]);
 
   const filteredAdminAllLeads = useMemo(() => {
-    if (!adminSearchQuery) return adminAllLeads;
-    const query = adminSearchQuery.toLowerCase();
-    return adminAllLeads.filter(lead =>
-      (lead.mobile_number?.toLowerCase().includes(query)) ||
-      ((lead.client_name || "").toLowerCase().includes(query)) ||
-      ((lead.email || "").toLowerCase().includes(query)) ||
-      ((lead.status || "").toLowerCase().includes(query)) ||
-      ((lead.service_required || "").toLowerCase().includes(query)) ||
-      ((lead.nationality_code || "").toLowerCase().includes(query)) ||
-      ((lead.emirate || "").toLowerCase().includes(query)) ||
-      ((lead.lead_source || "").toLowerCase().includes(query))
-    );
-  }, [adminAllLeads, adminSearchQuery]);
+    let filtered = adminAllLeads;
+    
+    // Apply status filter
+    if (adminStatusFilter !== "all") {
+      filtered = filtered.filter(lead => lead.status === adminStatusFilter);
+    }
+    
+    // Apply search filter
+    if (adminSearchQuery) {
+      const query = adminSearchQuery.toLowerCase();
+      filtered = filtered.filter(lead =>
+        (lead.mobile_number?.toLowerCase().includes(query)) ||
+        ((lead.client_name || "").toLowerCase().includes(query)) ||
+        ((lead.email || "").toLowerCase().includes(query)) ||
+        ((lead.status || "").toLowerCase().includes(query)) ||
+        ((lead.service_required || "").toLowerCase().includes(query)) ||
+        ((lead.nationality_code || "").toLowerCase().includes(query)) ||
+        ((lead.emirate || "").toLowerCase().includes(query)) ||
+        ((lead.lead_source || "").toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [adminAllLeads, adminSearchQuery, adminStatusFilter]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
@@ -826,13 +850,34 @@ const CRMHub = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <Select value={unassignedStatusFilter} onValueChange={setUnassignedStatusFilter}>
+                  <SelectTrigger className="w-full bg-background">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="New Lead">New Lead</SelectItem>
+                    <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                    <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                    <SelectItem value="Called COLD">Called COLD</SelectItem>
+                    <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                    <SelectItem value="No Connection">No Connection</SelectItem>
+                    <SelectItem value="Warm">Warm</SelectItem>
+                    <SelectItem value="HOT">HOT</SelectItem>
+                    <SelectItem value="SOLD">SOLD</SelectItem>
+                    <SelectItem value="LOST">LOST</SelectItem>
+                    <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                {unassignedLeads.length === 0 ? (
+                {filteredUnassignedLeads.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    No unassigned leads
+                    {unassignedStatusFilter !== "all" ? "No leads with this status" : "No unassigned leads"}
                   </p>
                 ) : (
-                  unassignedLeads.map((lead) => (
+                  filteredUnassignedLeads.map((lead) => (
                     <LeadCard key={lead.id} lead={lead} showAssignButton={true} />
                   ))
                 )}
@@ -904,10 +949,31 @@ const CRMHub = () => {
                     className="w-full"
                   />
                 </div>
+                <div className="mb-4">
+                  <Select value={adminStatusFilter} onValueChange={setAdminStatusFilter}>
+                    <SelectTrigger className="w-full bg-background">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover z-50">
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="New Lead">New Lead</SelectItem>
+                      <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                      <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                      <SelectItem value="Called COLD">Called COLD</SelectItem>
+                      <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                      <SelectItem value="No Connection">No Connection</SelectItem>
+                      <SelectItem value="Warm">Warm</SelectItem>
+                      <SelectItem value="HOT">HOT</SelectItem>
+                      <SelectItem value="SOLD">SOLD</SelectItem>
+                      <SelectItem value="LOST">LOST</SelectItem>
+                      <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {filteredAdminAllLeads.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      {adminSearchQuery ? "No leads found matching your search" : "No leads in system"}
+                      {adminSearchQuery || adminStatusFilter !== "all" ? "No leads found matching your criteria" : "No leads in system"}
                     </p>
                   ) : (
                     filteredAdminAllLeads.map((lead) => (
