@@ -56,6 +56,7 @@ import SalesHub from "./pages/hubs/SalesHub";
 import SalesTargets from "./pages/SalesTargets";
 import FinanceHub from "./pages/hubs/FinanceHub";
 import ClientPortal from "./pages/hubs/ClientPortal";
+import CRMHub from "./pages/crm/CRMHub";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import DailyHeadcount from "./pages/DailyHeadcount";
 import MyCVs from "./pages/MyCVs";
@@ -120,39 +121,43 @@ const App = () => (
           <Route path="/admin/client-submissions" element={<ProtectedRoute><ClientSubmissions /></ProtectedRoute>} />
           <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />
+          <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
+          <Route path="/install" element={<InstallApp />} />
+          <Route path="/wizardalbum" element={<WizardAlbum />} />
+          <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
+          <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+          
+          {/* CRM Module - Sales & Customer Management */}
+          <Route path="/crm" element={<ProtectedRoute><CRMHub /></ProtectedRoute>} />
           <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/crm/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
+          <Route path="/crm/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
+          <Route path="/crm/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
+          <Route path="/crm/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
+          <Route path="/crm/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
+          <Route path="/crm/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
+          <Route path="/crm/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
           <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
           <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
           <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
-          <Route path="/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
-          <Route path="/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
-          <Route path="/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
-          <Route path="/financial" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
-          <Route path="/financial-dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
-          <Route path="/payments-list" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
-          <Route path="/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
-          <Route path="/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
-          <Route path="/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
-          <Route path="/wizardalbum" element={<WizardAlbum />} />
-          <Route path="/refundslist" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
-          <Route path="/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
-          <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
-          <Route path="/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
-          <Route path="/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
-          <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
-          <Route path="/expenses" element={<ProtectedRoute><ExpensesManagement /></ProtectedRoute>} />
-          <Route path="/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
-          <Route path="/bank-accounts" element={<ProtectedRoute><BankAccountsManagement /></ProtectedRoute>} />
-          <Route path="/bank-transfers" element={<ProtectedRoute><BankTransfers /></ProtectedRoute>} />
-          <Route path="/equity-accounts" element={<ProtectedRoute><EquityAccountsManagement /></ProtectedRoute>} />
-          <Route path="/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
-          <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
-          <Route path="/install" element={<InstallApp />} />
-          <Route path="/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
+          
+          {/* Finance Module - Financial Management */}
+          <Route path="/finance" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+          <Route path="/finance/dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+          <Route path="/finance/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
+          <Route path="/finance/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
+          <Route path="/finance/bank-accounts" element={<ProtectedRoute><BankAccountsManagement /></ProtectedRoute>} />
+          <Route path="/finance/bank-transfers" element={<ProtectedRoute><BankTransfers /></ProtectedRoute>} />
+          <Route path="/finance/equity-accounts" element={<ProtectedRoute><EquityAccountsManagement /></ProtectedRoute>} />
+          <Route path="/finance/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
+          <Route path="/finance/expenses" element={<ProtectedRoute><ExpensesManagement /></ProtectedRoute>} />
+          <Route path="/finance/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
+          <Route path="/finance/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
+          <Route path="/finance/refunds-list" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
+          
+          {/* Product Module - Operations & Workers */}
+          <Route path="/product/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
           
           {/* Hub Routes - Role-Based Entry Points */}
           <Route path="/hub/admin" element={<ProtectedRoute><AdminHub /></ProtectedRoute>} />

@@ -49,7 +49,7 @@ const SalesHub = () => {
       title: "My Performance",
       description: "View your sales KPIs and targets",
       icon: Target,
-      path: "/dashboard",
+      path: "/crm/dashboard",
       color: "text-indigo-600"
     },
     {
@@ -70,7 +70,7 @@ const SalesHub = () => {
       title: "Sales Reports",
       description: "View your sales performance reports",
       icon: TrendingUp,
-      path: "/dashboard",
+      path: "/crm/dashboard",
       color: "text-amber-600"
     }
   ];
