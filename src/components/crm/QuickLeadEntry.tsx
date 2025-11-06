@@ -39,6 +39,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     assigned_to: "",
     comments: "",
     hot: false,
+    visa_expiry_date: "",
   });
 
   const [files, setFiles] = useState<{
@@ -125,6 +126,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           assigned_to: lead.assigned_to || "",
           comments: lead.comments || "",
           hot: lead.hot || false,
+          visa_expiry_date: lead.visa_expiry_date || "",
         });
         setExistingLead(null); // Clear existing lead check for edit mode
       } else {
@@ -141,6 +143,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           assigned_to: "",
           comments: "",
           hot: false,
+          visa_expiry_date: "",
         });
         setExistingLead(null);
         setFiles({ passport: null, eidFront: null, eidBack: null });
@@ -290,6 +293,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           assigned_to: formData.assigned_to || null,
           comments: formData.comments || null,
           hot: formData.hot,
+          visa_expiry_date: formData.visa_expiry_date || null,
         };
 
         // Set reminder to tomorrow if status is "Called No Answer"
@@ -466,6 +470,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         eid_back_url: fileUrls.eidBack || null,
         comments: formData.comments || null,
         hot: formData.hot,
+        visa_expiry_date: formData.visa_expiry_date || null,
       };
 
       // Set reminder to tomorrow if status is "Called No Answer"
@@ -558,6 +563,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         assigned_to: "",
         comments: "",
         hot: false,
+        visa_expiry_date: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
       setExistingLead(null);
@@ -837,6 +843,18 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                 <SelectItem value="PROBLEM">PROBLEM</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="visa_expiry_date">Visa Expiry Date</Label>
+            <Input
+              id="visa_expiry_date"
+              type="date"
+              value={formData.visa_expiry_date}
+              onChange={(e) =>
+                setFormData({ ...formData, visa_expiry_date: e.target.value })
+              }
+            />
           </div>
 
           <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">

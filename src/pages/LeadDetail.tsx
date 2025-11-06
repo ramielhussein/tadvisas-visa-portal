@@ -52,6 +52,7 @@ interface Lead {
   service_required: string | null;
   nationality_code: string | null;
   remind_me: string;
+  visa_expiry_date: string | null;
   created_at: string;
   assigned_to: string | null;
   client_converted: boolean;
@@ -469,6 +470,22 @@ const LeadDetail = () => {
                         </p>
                       </div>
                     </div>
+
+                    {lead.visa_expiry_date && (
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-muted-foreground" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Visa Expiry</p>
+                          <p className="font-medium">
+                            {new Date(lead.visa_expiry_date).toLocaleDateString('en-GB', { 
+                              day: '2-digit', 
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
