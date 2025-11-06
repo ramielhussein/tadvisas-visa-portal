@@ -157,7 +157,8 @@ export default function UserList() {
         description: "User deleted successfully",
       });
       
-      loadUsers();
+      // Remove user from list without reloading
+      setUsers(users.filter(u => u.id !== userToDelete.id));
       setUserToDelete(null);
     } catch (error: any) {
       console.error('Delete error:', error);
