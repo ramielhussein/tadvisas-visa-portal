@@ -218,8 +218,6 @@ const CRMHub = () => {
         title: "Success",
         description: "Lead assigned to you",
       });
-
-      loadLeads();
     } catch (error: any) {
       console.error("Error assigning lead:", error);
       toast({
@@ -258,8 +256,6 @@ const CRMHub = () => {
         title: "Success",
         description: "Lead unassigned",
       });
-
-      loadLeads();
     } catch (error: any) {
       console.error("Error unassigning lead:", error);
       toast({
@@ -285,8 +281,6 @@ const CRMHub = () => {
         title: "Success",
         description: "Lead assignment updated",
       });
-
-      loadLeads();
     } catch (error: any) {
       toast({
         title: "Error",
