@@ -95,9 +95,10 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.eq("hot", true);
       }
 
-      // Apply sorting
-      unassignedQuery = unassignedQuery.order(sortBy, { ascending: true, nullsFirst: false });
-      myLeadsQuery = myLeadsQuery.order(sortBy, { ascending: true, nullsFirst: false });
+      // Apply sorting - newest first for created_at, earliest first for dates
+      const ascending = sortBy === "created_at" ? false : true;
+      unassignedQuery = unassignedQuery.order(sortBy, { ascending, nullsFirst: false });
+      myLeadsQuery = myLeadsQuery.order(sortBy, { ascending, nullsFirst: false });
 
       const [unassignedResult, myLeadsResult] = await Promise.all([
         unassignedQuery,
