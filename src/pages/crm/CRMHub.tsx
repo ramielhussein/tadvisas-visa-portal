@@ -517,10 +517,16 @@ const CRMHub = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="New Lead">New Lead</SelectItem>
+                    <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                    <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                    <SelectItem value="Called COLD">Called COLD</SelectItem>
+                    <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                    <SelectItem value="No Connection">No Connection</SelectItem>
                     <SelectItem value="Warm">Warm</SelectItem>
                     <SelectItem value="HOT">HOT</SelectItem>
                     <SelectItem value="SOLD">SOLD</SelectItem>
                     <SelectItem value="LOST">LOST</SelectItem>
+                    <SelectItem value="PROBLEM">PROBLEM</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
