@@ -53,6 +53,7 @@ const CRMHub = () => {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [unassignedLeads, setUnassignedLeads] = useState<Lead[]>([]);
   const [myLeads, setMyLeads] = useState<Lead[]>([]);
+  const [adminAllLeads, setAdminAllLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("created_at");
   const [showOnlyHot, setShowOnlyHot] = useState(false);
@@ -73,6 +74,17 @@ const CRMHub = () => {
 
     setLoading(true);
     try {
+      // Admin can see all leads if needed
+      if (isAdmin) {
+        const { data: adminAllData, error: adminAllError } = await supabase
+          .from("leads")
+          .select("*")
+          .order(sortBy, { ascending: sortBy === "created_at" ? false : true, nullsFirst: false });
+
+        if (adminAllError) throw adminAllError;
+        setAdminAllLeads(adminAllData || []);
+      }
+
       // Build the query for unassigned leads
       let unassignedQuery = supabase
         .from("leads")
@@ -760,6 +772,7 @@ const CRMHub = () => {
 
         {/* Card View */}
         {viewMode === "cards" && (
+          <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Unassigned Leads */}
           <Card>
@@ -802,11 +815,45 @@ const CRMHub = () => {
                   myLeads.map((lead) => (
                     <LeadCard key={lead.id} lead={lead} showAssignButton={false} />
                   ))
-                )}
+                 )}
               </div>
             </CardContent>
           </Card>
           </div>
+
+          {/* Admin Only: All Leads System-Wide */}
+          {isAdmin && (
+            <Card className="mt-6">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span>🔐 All Leads (System-Wide)</span>
+                  <Badge variant="secondary">{adminAllLeads.length}</Badge>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Complete visibility of all leads regardless of assignment</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                  {adminAllLeads.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      No leads in system
+                    </p>
+                  ) : (
+                    adminAllLeads.map((lead) => (
+                      <div key={lead.id} className="relative">
+                        <LeadCard lead={lead} showAssignButton={false} />
+                        {lead.assigned_to && (
+                          <Badge variant="outline" className="absolute top-2 right-2 text-xs">
+                            Assigned: {getAssignedEmail(lead.assigned_to)}
+                          </Badge>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          </>
         )}
 
         {/* Table View */}
