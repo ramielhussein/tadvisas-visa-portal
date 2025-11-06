@@ -156,7 +156,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, showOnlyHot]);
+  }, [user, sortBy, showOnlyHot, isAdmin]);
 
   useEffect(() => {
     if (user) {
@@ -687,7 +687,7 @@ const CRMHub = () => {
               <CardTitle className="text-sm">Total</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{isAdmin ? adminAllLeads.length : (unassignedLeads.length + myLeads.length)}</p>
+              <p className="text-2xl font-bold">{isAdmin ? (adminAllLeads.length || (unassignedLeads.length + myLeads.length)) : (unassignedLeads.length + myLeads.length)}</p>
             </CardContent>
           </Card>
           {["New Lead", "Warm", "HOT", "SOLD", "LOST"].map((status) => (
