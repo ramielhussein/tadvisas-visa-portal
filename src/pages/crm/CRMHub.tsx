@@ -62,7 +62,9 @@ const CRMHub = () => {
   const [assigningLeadId, setAssigningLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
+  const [debouncedAdminSearch, setDebouncedAdminSearch] = useState("");
   const [myLeadsStatusFilter, setMyLeadsStatusFilter] = useState<string>("all");
   const [unassignedStatusFilter, setUnassignedStatusFilter] = useState<string>("all");
   const [adminStatusFilter, setAdminStatusFilter] = useState<string>("all");
@@ -75,46 +77,53 @@ const CRMHub = () => {
     "LOST": 0,
   });
 
+  // Debounce search to reduce re-renders
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Debounce admin search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedAdminSearch(adminSearchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [adminSearchQuery]);
+
   const loadLeads = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
     try {
-      // Admin can see all leads if needed (fetch in batches to bypass 1000 row cap)
+      // Optimize: Limit admin leads to 1000 most recent
       let adminAccum: Lead[] | null = null;
       if (isAdmin) {
-        const pageSize = 1000;
-        let from = 0;
-        let done = false;
-        adminAccum = [];
-        const ascending = sortBy === "created_at" ? false : true;
-        while (!done) {
-          const { data, error } = await supabase
-            .from("leads")
-            .select("*")
-            .order(sortBy, { ascending, nullsFirst: false })
-            .range(from, from + pageSize - 1);
-          if (error) throw error;
-          adminAccum.push(...(data || []));
-          if (!data || data.length < pageSize) done = true;
-          from += pageSize;
-        }
+        const { data, error } = await supabase
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(1000);
+        if (error) throw error;
+        adminAccum = data || [];
         setAdminAllLeads(adminAccum);
       }
 
-      // Build the query for unassigned leads
+      // Build the query for unassigned leads - limit to 500
       let unassignedQuery = supabase
         .from("leads")
         .select("*")
         .is("assigned_to", null)
-        .limit(99999);
+        .limit(500);
 
-      // Build the query for my assigned leads
+      // Build the query for my assigned leads - limit to 500
       let myLeadsQuery = supabase
         .from("leads")
         .select("*")
         .eq("assigned_to", user.id)
-        .limit(99999);
+        .limit(500);
 
       // Apply HOT filter if enabled
       if (showOnlyHot) {
@@ -514,9 +523,9 @@ const CRMHub = () => {
       filtered = filtered.filter(lead => lead.status === unassignedStatusFilter);
     }
     
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Apply search filter with debounced search
+    if (debouncedSearch) {
+      const query = debouncedSearch.toLowerCase();
       filtered = filtered.filter(lead =>
         (lead.mobile_number?.toLowerCase().includes(query)) ||
         ((lead.client_name || "").toLowerCase().includes(query)) ||
@@ -525,7 +534,7 @@ const CRMHub = () => {
     }
     
     return filtered;
-  }, [unassignedLeads, searchQuery, unassignedStatusFilter]);
+  }, [unassignedLeads, debouncedSearch, unassignedStatusFilter]);
 
   const filteredMyLeads = useMemo(() => {
     let filtered = myLeads;
@@ -535,9 +544,9 @@ const CRMHub = () => {
       filtered = filtered.filter(lead => lead.status === myLeadsStatusFilter);
     }
     
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Apply search filter with debounced search
+    if (debouncedSearch) {
+      const query = debouncedSearch.toLowerCase();
       filtered = filtered.filter(lead =>
         (lead.mobile_number?.toLowerCase().includes(query)) ||
         ((lead.client_name || "").toLowerCase().includes(query)) ||
@@ -546,7 +555,7 @@ const CRMHub = () => {
     }
     
     return filtered;
-  }, [myLeads, searchQuery, myLeadsStatusFilter]);
+  }, [myLeads, debouncedSearch, myLeadsStatusFilter]);
 
   const filteredAdminAllLeads = useMemo(() => {
     let filtered = adminAllLeads;
@@ -556,9 +565,9 @@ const CRMHub = () => {
       filtered = filtered.filter(lead => lead.status === adminStatusFilter);
     }
     
-    // Apply search filter
-    if (adminSearchQuery) {
-      const query = adminSearchQuery.toLowerCase();
+    // Apply search filter with debounced search
+    if (debouncedAdminSearch) {
+      const query = debouncedAdminSearch.toLowerCase();
       filtered = filtered.filter(lead =>
         (lead.mobile_number?.toLowerCase().includes(query)) ||
         ((lead.client_name || "").toLowerCase().includes(query)) ||
@@ -572,7 +581,7 @@ const CRMHub = () => {
     }
     
     return filtered;
-  }, [adminAllLeads, adminSearchQuery, adminStatusFilter]);
+  }, [adminAllLeads, debouncedAdminSearch, adminStatusFilter]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
