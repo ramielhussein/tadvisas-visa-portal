@@ -174,12 +174,18 @@ const CRMHub = () => {
           const oldLead: any = (payload as any).old || null;
           const id = (newLead && newLead.id) || (oldLead && oldLead.id);
 
-          // Remove the lead from both lists first
+          // Remove the lead from all lists first
           setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
           setMyLeads((prev) => prev.filter((l) => l.id !== id));
+          setAdminAllLeads((prev) => prev.filter((l) => l.id !== id));
 
           // Add back to the appropriate list based on assignment
           if (newLead) {
+            // Always add to admin all leads if admin
+            if (isAdmin) {
+              setAdminAllLeads((prev) => [newLead as any, ...prev]);
+            }
+
             if (newLead.assigned_to === null) {
               setUnassignedLeads((prev) => [newLead as any, ...prev]);
             } else if (user && newLead.assigned_to === user.id) {
@@ -193,7 +199,7 @@ const CRMHub = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, loadLeads]);
+  }, [user, isAdmin, loadLeads]);
 
   const fetchUsers = async () => {
     try {
