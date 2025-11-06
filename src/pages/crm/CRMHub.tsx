@@ -158,7 +158,22 @@ const CRMHub = () => {
         },
         (payload) => {
           console.log('Real-time lead change:', payload);
-          loadLeads();
+          const newLead: any = (payload as any).new || null;
+          const oldLead: any = (payload as any).old || null;
+          const id = (newLead && newLead.id) || (oldLead && oldLead.id);
+
+          // Remove the lead from both lists first
+          setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
+          setMyLeads((prev) => prev.filter((l) => l.id !== id));
+
+          // Add back to the appropriate list based on assignment
+          if (newLead) {
+            if (newLead.assigned_to === null) {
+              setUnassignedLeads((prev) => [newLead as any, ...prev]);
+            } else if (user && newLead.assigned_to === user.id) {
+              setMyLeads((prev) => [newLead as any, ...prev]);
+            }
+          }
         }
       )
       .subscribe();
@@ -322,8 +337,6 @@ const CRMHub = () => {
         title: "Success",
         description,
       });
-
-      loadLeads();
     } catch (error: any) {
       toast({
         title: "Error",
