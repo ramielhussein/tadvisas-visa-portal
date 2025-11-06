@@ -77,16 +77,26 @@ const CRMHub = () => {
 
     setLoading(true);
     try {
-      // Admin can see all leads if needed
+      // Admin can see all leads if needed (fetch in batches to bypass 1000 row cap)
+      let adminAccum: Lead[] | null = null;
       if (isAdmin) {
-        const { data: adminAllData, error: adminAllError } = await supabase
-          .from("leads")
-          .select("*")
-          .limit(99999)
-          .order(sortBy, { ascending: sortBy === "created_at" ? false : true, nullsFirst: false });
-
-        if (adminAllError) throw adminAllError;
-        setAdminAllLeads(adminAllData || []);
+        const pageSize = 1000;
+        let from = 0;
+        let done = false;
+        adminAccum = [];
+        const ascending = sortBy === "created_at" ? false : true;
+        while (!done) {
+          const { data, error } = await supabase
+            .from("leads")
+            .select("*")
+            .order(sortBy, { ascending, nullsFirst: false })
+            .range(from, from + pageSize - 1);
+          if (error) throw error;
+          adminAccum.push(...(data || []));
+          if (!data || data.length < pageSize) done = true;
+          from += pageSize;
+        }
+        setAdminAllLeads(adminAccum);
       }
 
       // Build the query for unassigned leads
@@ -122,7 +132,8 @@ const CRMHub = () => {
       if (unassignedResult.error) throw unassignedResult.error;
       if (myLeadsResult.error) throw myLeadsResult.error;
 
-      const allVisibleLeads = [...(unassignedResult.data || []), ...(myLeadsResult.data || [])];
+      const combined = [...(unassignedResult.data || []), ...(myLeadsResult.data || [])];
+      const allVisibleLeads = isAdmin && adminAccum ? adminAccum : combined;
       setUnassignedLeads(unassignedResult.data || []);
       setMyLeads(myLeadsResult.data || []);
       setAllLeads(allVisibleLeads);
@@ -676,7 +687,7 @@ const CRMHub = () => {
               <CardTitle className="text-sm">Total</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{unassignedLeads.length + myLeads.length}</p>
+              <p className="text-2xl font-bold">{isAdmin ? adminAllLeads.length : (unassignedLeads.length + myLeads.length)}</p>
             </CardContent>
           </Card>
           {["New Lead", "Warm", "HOT", "SOLD", "LOST"].map((status) => (
