@@ -502,9 +502,29 @@ const CRMHub = () => {
           </div>
           <p className="text-xs text-muted-foreground mb-2">{lead.mobile_number}</p>
           <div className="flex flex-wrap gap-1 mb-2">
-            <Badge variant="outline" className="text-xs">
-              {lead.status}
-            </Badge>
+            {showAssignButton ? (
+              <Badge variant="outline" className="text-xs">
+                {lead.status}
+              </Badge>
+            ) : (
+              <div onClick={(e) => e.stopPropagation()}>
+                <Select
+                  value={lead.status}
+                  onValueChange={(value) => handleStatusChange(lead.id, value)}
+                >
+                  <SelectTrigger className="h-6 text-xs w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="New Lead">New Lead</SelectItem>
+                    <SelectItem value="Warm">Warm</SelectItem>
+                    <SelectItem value="HOT">HOT</SelectItem>
+                    <SelectItem value="SOLD">SOLD</SelectItem>
+                    <SelectItem value="LOST">LOST</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {lead.service_required && (
               <Badge variant="secondary" className="text-xs">
                 {lead.service_required}
