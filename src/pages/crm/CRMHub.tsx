@@ -119,25 +119,18 @@ const CRMHub = () => {
       if (unassignedResult.error) throw unassignedResult.error;
       if (myLeadsResult.error) throw myLeadsResult.error;
 
+      const allVisibleLeads = [...(unassignedResult.data || []), ...(myLeadsResult.data || [])];
       setUnassignedLeads(unassignedResult.data || []);
       setMyLeads(myLeadsResult.data || []);
-      setAllLeads([...(unassignedResult.data || []), ...(myLeadsResult.data || [])]);
+      setAllLeads(allVisibleLeads);
 
-      // Fetch status counts
+      // Calculate status counts from visible leads only
       const statuses: Array<"New Lead" | "Warm" | "HOT" | "SOLD" | "LOST"> = ["New Lead", "Warm", "HOT", "SOLD", "LOST"];
-      const statusCountsPromises = statuses.map(async (status) => {
-        const { count } = await supabase
-          .from("leads")
-          .select("*", { count: "exact", head: true })
-          .eq("status", status);
-        return { status, count: count ?? 0 };
-      });
-
-      const statusCountsResults = await Promise.all(statusCountsPromises);
-      const newStatusCounts = statusCountsResults.reduce(
-        (acc, { status, count }) => ({ ...acc, [status]: count }),
-        {} as Record<string, number>
-      );
+      const newStatusCounts = statuses.reduce((acc, status) => {
+        const count = allVisibleLeads.filter(lead => lead.status === status).length;
+        return { ...acc, [status]: count };
+      }, {} as Record<string, number>);
+      
       setStatusCounts(newStatusCounts);
     } catch (error: any) {
       console.error("Error loading leads:", error);
