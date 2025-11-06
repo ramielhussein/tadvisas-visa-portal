@@ -666,6 +666,7 @@ export type Database = {
           status: Database["public"]["Enums"]["lead_status"]
           submission_id: string | null
           updated_at: string
+          visa_expiry_date: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -688,6 +689,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["lead_status"]
           submission_id?: string | null
           updated_at?: string
+          visa_expiry_date?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -710,6 +712,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["lead_status"]
           submission_id?: string | null
           updated_at?: string
+          visa_expiry_date?: string | null
         }
         Relationships: [
           {
