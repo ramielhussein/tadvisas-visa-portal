@@ -743,6 +743,35 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
             </Select>
           </div>
 
+          <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
+            <Checkbox
+              id="hot"
+              checked={formData.hot}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, hot: checked === true })
+              }
+            />
+            <Label
+              htmlFor="hot"
+              className="flex items-center gap-2 cursor-pointer font-medium"
+            >
+              <Flame className="w-4 h-4 text-orange-500" />
+              Mark as HOT Lead
+            </Label>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="visa_expiry_date">Visa Expiry Date</Label>
+            <Input
+              id="visa_expiry_date"
+              type="date"
+              value={formData.visa_expiry_date}
+              onChange={(e) =>
+                setFormData({ ...formData, visa_expiry_date: e.target.value })
+              }
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="client_name">Client Name</Label>
             <Input
@@ -843,35 +872,6 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                 <SelectItem value="PROBLEM">PROBLEM</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="visa_expiry_date">Visa Expiry Date</Label>
-            <Input
-              id="visa_expiry_date"
-              type="date"
-              value={formData.visa_expiry_date}
-              onChange={(e) =>
-                setFormData({ ...formData, visa_expiry_date: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
-            <Checkbox
-              id="hot"
-              checked={formData.hot}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, hot: checked === true })
-              }
-            />
-            <Label
-              htmlFor="hot"
-              className="flex items-center gap-2 cursor-pointer font-medium"
-            >
-              <Flame className="w-4 h-4 text-orange-500" />
-              Mark as HOT Lead
-            </Label>
           </div>
 
           <div className="space-y-2">
