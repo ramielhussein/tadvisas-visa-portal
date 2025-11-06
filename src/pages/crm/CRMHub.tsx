@@ -63,6 +63,7 @@ const CRMHub = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [searchQuery, setSearchQuery] = useState("");
   const [adminSearchQuery, setAdminSearchQuery] = useState("");
+  const [myLeadsStatusFilter, setMyLeadsStatusFilter] = useState<string>("all");
   const [users, setUsers] = useState<User[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
     "New Lead": 0,
@@ -514,14 +515,25 @@ const CRMHub = () => {
   }, [unassignedLeads, searchQuery]);
 
   const filteredMyLeads = useMemo(() => {
-    if (!searchQuery) return myLeads;
-    const query = searchQuery.toLowerCase();
-    return myLeads.filter(lead =>
-      (lead.mobile_number?.toLowerCase().includes(query)) ||
-      ((lead.client_name || "").toLowerCase().includes(query)) ||
-      ((lead.email || "").toLowerCase().includes(query))
-    );
-  }, [myLeads, searchQuery]);
+    let filtered = myLeads;
+    
+    // Apply status filter
+    if (myLeadsStatusFilter !== "all") {
+      filtered = filtered.filter(lead => lead.status === myLeadsStatusFilter);
+    }
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(lead =>
+        (lead.mobile_number?.toLowerCase().includes(query)) ||
+        ((lead.client_name || "").toLowerCase().includes(query)) ||
+        ((lead.email || "").toLowerCase().includes(query))
+      );
+    }
+    
+    return filtered;
+  }, [myLeads, searchQuery, myLeadsStatusFilter]);
 
   const filteredAdminAllLeads = useMemo(() => {
     if (!adminSearchQuery) return adminAllLeads;
@@ -837,13 +849,34 @@ const CRMHub = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-4">
+                <Select value={myLeadsStatusFilter} onValueChange={setMyLeadsStatusFilter}>
+                  <SelectTrigger className="w-full bg-background">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="New Lead">New Lead</SelectItem>
+                    <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                    <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                    <SelectItem value="Called COLD">Called COLD</SelectItem>
+                    <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                    <SelectItem value="No Connection">No Connection</SelectItem>
+                    <SelectItem value="Warm">Warm</SelectItem>
+                    <SelectItem value="HOT">HOT</SelectItem>
+                    <SelectItem value="SOLD">SOLD</SelectItem>
+                    <SelectItem value="LOST">LOST</SelectItem>
+                    <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                {myLeads.length === 0 ? (
+                {filteredMyLeads.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    No assigned leads
+                    {myLeadsStatusFilter !== "all" ? "No leads with this status" : "No assigned leads"}
                   </p>
                 ) : (
-                  myLeads.map((lead) => (
+                  filteredMyLeads.map((lead) => (
                     <LeadCard key={lead.id} lead={lead} showAssignButton={false} />
                   ))
                  )}
