@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -305,6 +307,45 @@ const LeadDetail = () => {
     }
   };
 
+  const handleHotToggle = async (checked: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ hot: checked })
+        .eq("id", lead?.id);
+
+      if (error) throw error;
+
+      // Log the activity
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("lead_activities").insert({
+          lead_id: lead?.id,
+          user_id: user.id,
+          activity_type: "status_change",
+          title: "Hot Status Changed",
+          description: `Lead marked as ${checked ? "HOT" : "not hot"}`,
+        });
+      }
+
+      // Update local state
+      setLead(prev => prev ? { ...prev, hot: checked } : null);
+      
+      toast({
+        title: "Success",
+        description: `Lead marked as ${checked ? "HOT" : "not hot"}`,
+      });
+
+      fetchActivities();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -524,15 +565,27 @@ const LeadDetail = () => {
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={handleCall}
-                  >
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Lead
-                  </Button>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <Label htmlFor="hot-toggle" className="font-medium cursor-pointer">
+                      🔥 Mark as HOT
+                    </Label>
+                    <Switch
+                      id="hot-toggle"
+                      checked={lead.hot || false}
+                      onCheckedChange={handleHotToggle}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={handleCall}
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call Lead
+                    </Button>
                   
                   <Button 
                     className="w-full justify-start" 
@@ -554,15 +607,16 @@ const LeadDetail = () => {
                     </Button>
                   )}
 
-                  {!lead.client_converted && (
-                    <Button
-                      className="w-full justify-start"
-                      onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
-                    >
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
-                      Convert to Client
-                    </Button>
-                  )}
+                    {!lead.client_converted && (
+                      <Button
+                        className="w-full justify-start"
+                        onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                        Convert to Client
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
