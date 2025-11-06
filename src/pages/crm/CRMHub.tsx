@@ -47,6 +47,31 @@ const CRMHub = () => {
     }
   }, [user, sortBy, showOnlyHot]);
 
+  // Real-time subscription for leads
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('leads-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads',
+        },
+        (payload) => {
+          console.log('Real-time lead change:', payload);
+          loadLeads();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, sortBy, showOnlyHot]);
+
   const loadLeads = async () => {
     if (!user) return;
 
