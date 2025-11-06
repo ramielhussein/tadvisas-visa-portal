@@ -82,6 +82,7 @@ const CRMHub = () => {
         const { data: adminAllData, error: adminAllError } = await supabase
           .from("leads")
           .select("*")
+          .limit(99999)
           .order(sortBy, { ascending: sortBy === "created_at" ? false : true, nullsFirst: false });
 
         if (adminAllError) throw adminAllError;
@@ -92,13 +93,15 @@ const CRMHub = () => {
       let unassignedQuery = supabase
         .from("leads")
         .select("*")
-        .is("assigned_to", null);
+        .is("assigned_to", null)
+        .limit(99999);
 
       // Build the query for my assigned leads
       let myLeadsQuery = supabase
         .from("leads")
         .select("*")
-        .eq("assigned_to", user.id);
+        .eq("assigned_to", user.id)
+        .limit(99999);
 
       // Apply HOT filter if enabled
       if (showOnlyHot) {
