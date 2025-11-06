@@ -37,6 +37,8 @@ interface Lead {
   client_converted: boolean;
   submission_id: string | null;
   updated_at: string;
+  lead_source: string | null;
+  comments: string | null;
 }
 
 interface User {
@@ -60,6 +62,7 @@ const CRMHub = () => {
   const [assigningLeadId, setAssigningLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [searchQuery, setSearchQuery] = useState("");
+  const [adminSearchQuery, setAdminSearchQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
     "New Lead": 0,
@@ -513,6 +516,21 @@ const CRMHub = () => {
     );
   }, [myLeads, searchQuery]);
 
+  const filteredAdminAllLeads = useMemo(() => {
+    if (!adminSearchQuery) return adminAllLeads;
+    const query = adminSearchQuery.toLowerCase();
+    return adminAllLeads.filter(lead =>
+      (lead.mobile_number?.toLowerCase().includes(query)) ||
+      ((lead.client_name || "").toLowerCase().includes(query)) ||
+      ((lead.email || "").toLowerCase().includes(query)) ||
+      ((lead.status || "").toLowerCase().includes(query)) ||
+      ((lead.service_required || "").toLowerCase().includes(query)) ||
+      ((lead.nationality_code || "").toLowerCase().includes(query)) ||
+      ((lead.emirate || "").toLowerCase().includes(query)) ||
+      ((lead.lead_source || "").toLowerCase().includes(query))
+    );
+  }, [adminAllLeads, adminSearchQuery]);
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
     return new Date(dateString).toLocaleDateString("en-GB");
@@ -833,18 +851,26 @@ const CRMHub = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center justify-between">
                   <span>🔐 All Leads (System-Wide)</span>
-                  <Badge variant="secondary">{adminAllLeads.length}</Badge>
+                  <Badge variant="secondary">{filteredAdminAllLeads.length}</Badge>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">Complete visibility of all leads regardless of assignment</p>
               </CardHeader>
               <CardContent>
+                <div className="mb-4">
+                  <Input
+                    placeholder="Search by name, phone, email, status, or service..."
+                    value={adminSearchQuery}
+                    onChange={(e) => setAdminSearchQuery(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                  {adminAllLeads.length === 0 ? (
+                  {filteredAdminAllLeads.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      No leads in system
+                      {adminSearchQuery ? "No leads found matching your search" : "No leads in system"}
                     </p>
                   ) : (
-                    adminAllLeads.map((lead) => (
+                    filteredAdminAllLeads.map((lead) => (
                       <div key={lead.id} className="relative">
                         <LeadCard lead={lead} showAssignButton={false} />
                         {lead.assigned_to && (
