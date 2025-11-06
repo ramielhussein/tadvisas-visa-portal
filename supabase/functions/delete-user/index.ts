@@ -136,7 +136,10 @@ serve(async (req) => {
     await safeUpdate("nationality_workflows", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
     await safeUpdate("contracts", { salesman_id: adminUserId }, { column: "salesman_id", value: targetUserId });
     await safeUpdate("sales_targets", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
-
+    // Reassign workers.created_by (FK constraint) to admin to avoid deletion error
+    await safeUpdate("workers", { created_by: adminUserId }, { column: "created_by", value: targetUserId });
+    // Try to reassign optional columns if they exist
+    await safeUpdate("workers", { updated_by: adminUserId }, { column: "updated_by", value: targetUserId });
     // Rows tightly coupled to the user identity -> delete
     await safeDelete("sales_targets", { column: "user_id", value: targetUserId });
     await safeDelete("lead_activities", { column: "user_id", value: targetUserId });
