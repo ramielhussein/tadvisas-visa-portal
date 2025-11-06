@@ -4,12 +4,14 @@ import { Menu, X, MessageCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/NotificationBell";
+import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [showQuickEntry, setShowQuickEntry] = useState(false);
 
   useEffect(() => {
     // Get current user
@@ -56,7 +58,6 @@ const Navbar = () => {
   ];
 
   const authenticatedNavItems = [
-    { name: "ADD LEAD", path: "/crm/leads" },
     { name: "MY LEADS", path: "/crm" },
     { name: "VIEW CVS", path: "/my-cvs" },
     { name: "VIEW HUB", path: "/hub" },
@@ -64,6 +65,14 @@ const Navbar = () => {
 
   const navItems = user ? authenticatedNavItems : publicNavItems;
   const authenticatedItems = user ? navItems : [...navItems, { name: "Start Here & Now", path: "/start-here" }];
+
+  const handleAddLead = () => {
+    setShowQuickEntry(true);
+  };
+
+  const handleQuickEntrySuccess = () => {
+    navigate("/crm");
+  };
 
   const handleWhatsAppClick = () => {
     // Track WhatsApp click conversion
@@ -109,6 +118,14 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            {user && (
+              <button
+                onClick={handleAddLead}
+                className="font-medium text-gray-700 hover:text-primary transition-colors duration-200"
+              >
+                ADD LEAD
+              </button>
+            )}
             {authenticatedItems.map((item) => (
               <Link
                 key={item.name}
@@ -169,6 +186,17 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              {user && (
+                <button
+                  onClick={() => {
+                    handleAddLead();
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 font-medium text-gray-700 hover:text-primary"
+                >
+                  ADD LEAD
+                </button>
+              )}
               {navItems.map((item) => (
                 <Link
                   key={item.name}
@@ -209,6 +237,15 @@ const Navbar = () => {
           </div>
         )}
       </div>
+
+      {/* Quick Lead Entry Dialog */}
+      {user && (
+        <QuickLeadEntry
+          open={showQuickEntry}
+          onClose={() => setShowQuickEntry(false)}
+          onSuccess={handleQuickEntrySuccess}
+        />
+      )}
     </nav>
   );
 };
