@@ -6,7 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, Edit, Plus, FileText } from "lucide-react";
+import { Loader2, Eye, Edit, Plus, FileText, Trash2 } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Worker {
   id: string;
@@ -25,8 +36,11 @@ interface Worker {
 const MyCVs = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState<Worker[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [workerToDelete, setWorkerToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadMyWorkers();
@@ -87,6 +101,40 @@ const MyCVs = () => {
 
   const canEdit = (worker: Worker) => {
     return !['Sold', 'Reserved'].includes(worker.status);
+  };
+
+  const handleDeleteClick = (workerId: string) => {
+    setWorkerToDelete(workerId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!workerToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from("workers")
+        .delete()
+        .eq("id", workerToDelete);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "CV deleted successfully",
+      });
+
+      loadMyWorkers();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete CV",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setWorkerToDelete(null);
+    }
   };
 
   if (loading) {
@@ -167,7 +215,7 @@ const MyCVs = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -188,7 +236,18 @@ const MyCVs = () => {
                       </Button>
                     )}
 
-                    {!canEdit(worker) && (
+                    {isAdmin && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteClick(worker.id)}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </Button>
+                    )}
+
+                    {!canEdit(worker) && !isAdmin && (
                       <p className="text-sm text-muted-foreground py-2">
                         This CV cannot be edited (Status: {worker.status})
                       </p>
@@ -200,6 +259,26 @@ const MyCVs = () => {
           </div>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete CV</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this CV? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteConfirm} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
