@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
+import { ReminderSummaryWidget } from "@/components/crm/ReminderSummaryWidget";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -729,6 +730,11 @@ const CRMHub = () => {
             </Card>
           ))}
         </div>
+
+        {/* Reminder Summary Widget */}
+        {!isAdmin && user && (
+          <ReminderSummaryWidget userId={user.id} />
+        )}
 
         {/* Admin Features */}
         {isAdmin && viewMode === "table" && (
