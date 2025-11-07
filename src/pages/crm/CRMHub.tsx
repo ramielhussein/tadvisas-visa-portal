@@ -98,32 +98,78 @@ const CRMHub = () => {
 
     setLoading(true);
     try {
-      // Optimize: Limit admin leads to 1000 most recent
+      // Admin view with search and status filter
       let adminAccum: Lead[] | null = null;
       if (isAdmin) {
-        const { data, error } = await supabase
+        let adminQuery = supabase
           .from("leads")
           .select("*")
-          .order("created_at", { ascending: false })
-          .limit(1000);
+          .order("created_at", { ascending: false });
+
+        // Apply admin search filter
+        if (debouncedAdminSearch) {
+          adminQuery = adminQuery.or(
+            `mobile_number.ilike.%${debouncedAdminSearch}%,` +
+            `client_name.ilike.%${debouncedAdminSearch}%,` +
+            `email.ilike.%${debouncedAdminSearch}%,` +
+            `status.ilike.%${debouncedAdminSearch}%,` +
+            `service_required.ilike.%${debouncedAdminSearch}%,` +
+            `nationality_code.ilike.%${debouncedAdminSearch}%,` +
+            `emirate.ilike.%${debouncedAdminSearch}%,` +
+            `lead_source.ilike.%${debouncedAdminSearch}%`
+          );
+        }
+
+        // Apply admin status filter
+        if (adminStatusFilter !== "all") {
+          adminQuery = adminQuery.eq("status", adminStatusFilter as any);
+        }
+
+        const { data, error } = await adminQuery;
         if (error) throw error;
         adminAccum = data || [];
         setAdminAllLeads(adminAccum);
       }
 
-      // Build the query for unassigned leads - limit to 500
+      // Build the query for unassigned leads
       let unassignedQuery = supabase
         .from("leads")
         .select("*")
-        .is("assigned_to", null)
-        .limit(500);
+        .is("assigned_to", null);
 
-      // Build the query for my assigned leads - limit to 500
+      // Apply search filter to unassigned
+      if (debouncedSearch) {
+        unassignedQuery = unassignedQuery.or(
+          `mobile_number.ilike.%${debouncedSearch}%,` +
+          `client_name.ilike.%${debouncedSearch}%,` +
+          `email.ilike.%${debouncedSearch}%`
+        );
+      }
+
+      // Apply status filter to unassigned
+      if (unassignedStatusFilter !== "all") {
+        unassignedQuery = unassignedQuery.eq("status", unassignedStatusFilter as any);
+      }
+
+      // Build the query for my assigned leads
       let myLeadsQuery = supabase
         .from("leads")
         .select("*")
-        .eq("assigned_to", user.id)
-        .limit(500);
+        .eq("assigned_to", user.id);
+
+      // Apply search filter to my leads
+      if (debouncedSearch) {
+        myLeadsQuery = myLeadsQuery.or(
+          `mobile_number.ilike.%${debouncedSearch}%,` +
+          `client_name.ilike.%${debouncedSearch}%,` +
+          `email.ilike.%${debouncedSearch}%`
+        );
+      }
+
+      // Apply status filter to my leads
+      if (myLeadsStatusFilter !== "all") {
+        myLeadsQuery = myLeadsQuery.eq("status", myLeadsStatusFilter as any);
+      }
 
       // Apply HOT filter if enabled
       if (showOnlyHot) {
@@ -168,7 +214,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, showOnlyHot, isAdmin]);
+  }, [user, sortBy, showOnlyHot, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
   useEffect(() => {
     if (user) {
@@ -515,73 +561,10 @@ const CRMHub = () => {
     }));
   }, [allLeads]);
 
-  const filteredUnassignedLeads = useMemo(() => {
-    let filtered = unassignedLeads;
-    
-    // Apply status filter
-    if (unassignedStatusFilter !== "all") {
-      filtered = filtered.filter(lead => lead.status === unassignedStatusFilter);
-    }
-    
-    // Apply search filter with debounced search
-    if (debouncedSearch) {
-      const query = debouncedSearch.toLowerCase();
-      filtered = filtered.filter(lead =>
-        (lead.mobile_number?.toLowerCase().includes(query)) ||
-        ((lead.client_name || "").toLowerCase().includes(query)) ||
-        ((lead.email || "").toLowerCase().includes(query))
-      );
-    }
-    
-    return filtered;
-  }, [unassignedLeads, debouncedSearch, unassignedStatusFilter]);
-
-  const filteredMyLeads = useMemo(() => {
-    let filtered = myLeads;
-    
-    // Apply status filter
-    if (myLeadsStatusFilter !== "all") {
-      filtered = filtered.filter(lead => lead.status === myLeadsStatusFilter);
-    }
-    
-    // Apply search filter with debounced search
-    if (debouncedSearch) {
-      const query = debouncedSearch.toLowerCase();
-      filtered = filtered.filter(lead =>
-        (lead.mobile_number?.toLowerCase().includes(query)) ||
-        ((lead.client_name || "").toLowerCase().includes(query)) ||
-        ((lead.email || "").toLowerCase().includes(query))
-      );
-    }
-    
-    return filtered;
-  }, [myLeads, debouncedSearch, myLeadsStatusFilter]);
-
-  const filteredAdminAllLeads = useMemo(() => {
-    let filtered = adminAllLeads;
-    
-    // Apply status filter
-    if (adminStatusFilter !== "all") {
-      filtered = filtered.filter(lead => lead.status === adminStatusFilter);
-    }
-    
-    // Apply search filter with debounced search
-    if (debouncedAdminSearch) {
-      const query = debouncedAdminSearch.toLowerCase();
-      filtered = filtered.filter(lead =>
-        (lead.mobile_number?.toLowerCase().includes(query)) ||
-        ((lead.client_name || "").toLowerCase().includes(query)) ||
-        ((lead.email || "").toLowerCase().includes(query)) ||
-        ((lead.status || "").toLowerCase().includes(query)) ||
-        ((lead.service_required || "").toLowerCase().includes(query)) ||
-        ((lead.nationality_code || "").toLowerCase().includes(query)) ||
-        ((lead.emirate || "").toLowerCase().includes(query)) ||
-        ((lead.lead_source || "").toLowerCase().includes(query))
-      );
-    }
-    
-    return filtered;
-  }, [adminAllLeads, debouncedAdminSearch, adminStatusFilter]);
+  // No client-side filtering needed - all filtering is done server-side now
+  const filteredUnassignedLeads = useMemo(() => unassignedLeads, [unassignedLeads]);
+  const filteredMyLeads = useMemo(() => myLeads, [myLeads]);
+  const filteredAdminAllLeads = useMemo(() => adminAllLeads, [adminAllLeads]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
