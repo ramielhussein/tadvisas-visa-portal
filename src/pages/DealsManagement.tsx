@@ -122,7 +122,7 @@ const DealsManagement = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Deals & Sales</h1>
-            <Button onClick={() => navigate("/deals/create")}>
+            <Button onClick={() => navigate("/crm/deals/create")}>
               <Plus className="w-4 h-4 mr-2" />
               Create Deal
             </Button>

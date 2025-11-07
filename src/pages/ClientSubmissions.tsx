@@ -419,7 +419,7 @@ export default function Admin() {
                 <Button
                   variant="outline"
                   className="h-auto py-4 flex-col items-start"
-                  onClick={() => navigate('/contracts')}
+                  onClick={() => navigate('/crm/contracts')}
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <FileText className="w-5 h-5" />

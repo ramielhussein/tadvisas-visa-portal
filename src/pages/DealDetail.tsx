@@ -79,7 +79,7 @@ const DealDetail = () => {
           description: "The deal you're looking for doesn't exist.",
           variant: "destructive",
         });
-        navigate("/deals");
+        navigate("/crm/deals");
         return;
       }
 
@@ -128,7 +128,7 @@ const DealDetail = () => {
         description: error.message,
         variant: "destructive",
       });
-      navigate("/deals");
+      navigate("/crm/deals");
     } finally {
       setLoading(false);
     }
@@ -171,7 +171,7 @@ const DealDetail = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => navigate("/deals")}
+                onClick={() => navigate("/crm/deals")}
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>

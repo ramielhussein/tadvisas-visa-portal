@@ -148,7 +148,7 @@ const ContractManagement = () => {
       });
       
       // Navigate to refunds approval page
-      navigate('/refunds-approval');
+      navigate('/finance/refunds-approval');
     },
     onError: (error: any) => {
       toast.error("Failed to cancel contract", {
@@ -177,7 +177,7 @@ const ContractManagement = () => {
               <p className="text-muted-foreground">Manage client contracts and agreements</p>
             </div>
             <Button asChild>
-              <Link to="/contracts/create">
+              <Link to="/crm/contracts/create">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Contract
               </Link>
@@ -195,7 +195,7 @@ const ContractManagement = () => {
                 <p className="text-lg font-medium mb-2">No contracts found</p>
                 <p className="text-muted-foreground mb-4">Create your first contract to get started</p>
                 <Button asChild>
-                  <Link to="/contracts/create">
+                  <Link to="/crm/contracts/create">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Contract
                   </Link>

@@ -296,7 +296,7 @@ const CreateDeal = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Button variant="ghost" onClick={() => navigate("/deals")} className="mb-6">
+          <Button variant="ghost" onClick={() => navigate("/crm/deals")} className="mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Deals
           </Button>
@@ -669,7 +669,7 @@ const CreateDeal = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => navigate("/deals")}
+                    onClick={() => navigate("/crm/deals")}
                   >
                     Cancel
                   </Button>

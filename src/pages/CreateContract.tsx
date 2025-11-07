@@ -311,7 +311,7 @@ const CreateContract = () => {
         description: `Contract ${contractNumberData} created successfully with invoice`,
       });
 
-      navigate('/contracts');
+      navigate('/crm/contracts');
     } catch (error: any) {
       console.error('Error creating contract:', error);
       toast({
@@ -720,7 +720,7 @@ const CreateContract = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate('/contracts')}
+                onClick={() => navigate('/crm/contracts')}
                 disabled={loading}
               >
                 Cancel
