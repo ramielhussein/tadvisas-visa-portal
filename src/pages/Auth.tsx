@@ -28,7 +28,7 @@ const Auth = () => {
       
       // Priority-based redirect
       if (userRoles.includes('admin')) {
-        navigate("/hub/admin");
+        navigate("/admin");
       } else if (userRoles.includes('finance')) {
         navigate("/hub/finance");
       } else if (userRoles.includes('sales')) {

@@ -51,7 +51,6 @@ import ContractManagement from "./pages/ContractManagement";
 import CreateContract from "./pages/CreateContract";
 import RefundsApproval from "./pages/RefundsApproval";
 import ProductHub from "./pages/hubs/ProductHub";
-import AdminHub from "./pages/hubs/AdminHub";
 import SalesHub from "./pages/hubs/SalesHub";
 import SalesTargets from "./pages/SalesTargets";
 import FinanceHub from "./pages/hubs/FinanceHub";
@@ -160,7 +159,6 @@ const App = () => (
           <Route path="/product/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
           
           {/* Hub Routes - Role-Based Entry Points */}
-          <Route path="/hub/admin" element={<ProtectedRoute><AdminHub /></ProtectedRoute>} />
           <Route path="/hub/sales" element={<ProtectedRoute><SalesHub /></ProtectedRoute>} />
           <Route path="/hub/finance" element={<ProtectedRoute><FinanceHub /></ProtectedRoute>} />
           <Route path="/hub/client" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
