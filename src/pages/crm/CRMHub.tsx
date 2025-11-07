@@ -109,8 +109,8 @@ const CRMHub = () => {
           .select("*")
           .order("created_at", { ascending: false });
 
-        // Filter archived leads unless toggle is on
-        if (!showArchived) {
+        // Filter archived leads unless toggle is on OR searching (show all when searching)
+        if (!showArchived && !debouncedAdminSearch) {
           adminQuery = adminQuery.eq("archived", false);
         }
 
@@ -144,8 +144,8 @@ const CRMHub = () => {
         .select("*")
         .is("assigned_to", null);
 
-      // Filter archived leads unless toggle is on
-      if (!showArchived) {
+      // Filter archived leads unless toggle is on OR searching (show all when searching)
+      if (!showArchived && !debouncedSearch) {
         unassignedQuery = unassignedQuery.eq("archived", false);
       }
 
@@ -169,8 +169,8 @@ const CRMHub = () => {
         .select("*")
         .eq("assigned_to", user.id);
 
-      // Filter archived leads unless toggle is on
-      if (!showArchived) {
+      // Filter archived leads unless toggle is on OR searching (show all when searching)
+      if (!showArchived && !debouncedSearch) {
         myLeadsQuery = myLeadsQuery.eq("archived", false);
       }
 
