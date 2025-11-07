@@ -120,7 +120,6 @@ const CRMHub = () => {
             `mobile_number.ilike.%${debouncedAdminSearch}%,` +
             `client_name.ilike.%${debouncedAdminSearch}%,` +
             `email.ilike.%${debouncedAdminSearch}%,` +
-            `status.ilike.%${debouncedAdminSearch}%,` +
             `service_required.ilike.%${debouncedAdminSearch}%,` +
             `nationality_code.ilike.%${debouncedAdminSearch}%,` +
             `emirate.ilike.%${debouncedAdminSearch}%,` +
