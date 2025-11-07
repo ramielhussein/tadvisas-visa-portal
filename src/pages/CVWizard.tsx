@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { differenceInMonths, differenceInYears, parseISO } from "date-fns";
 import Step1Identity from "@/components/cvwizard/Step1Identity";
 import Step2Jobs from "@/components/cvwizard/Step2Jobs";
 import Step3Languages from "@/components/cvwizard/Step3Languages";
@@ -175,15 +176,27 @@ const CVWizard = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        return !!(
-          formData.name &&
-          formData.passport_no &&
-          formData.passport_expiry &&
-          formData.nationality_code &&
-          formData.date_of_birth &&
-          formData.religion &&
-          formData.maid_status
-        );
+        if (!formData.name || !formData.passport_no || !formData.passport_expiry || 
+            !formData.nationality_code || !formData.date_of_birth || 
+            !formData.religion || !formData.maid_status) {
+          return false;
+        }
+        
+        // Validate passport expiry is at least 6 months from now
+        const passportExpiry = parseISO(formData.passport_expiry);
+        const monthsUntilExpiry = differenceInMonths(passportExpiry, new Date());
+        if (monthsUntilExpiry < 6) {
+          return false;
+        }
+        
+        // Validate age is at least 18 years
+        const dob = parseISO(formData.date_of_birth);
+        const age = differenceInYears(new Date(), dob);
+        if (age < 18) {
+          return false;
+        }
+        
+        return true;
       case 2:
         return !!formData.job1 && !!formData.marital_status;
       case 3:
@@ -221,8 +234,22 @@ const CVWizard = () => {
         if (!formData.name) missingFields.push("Full Name");
         if (!formData.passport_no) missingFields.push("Passport Number");
         if (!formData.passport_expiry) missingFields.push("Passport Expiry");
+        else {
+          const passportExpiry = parseISO(formData.passport_expiry);
+          const monthsUntilExpiry = differenceInMonths(passportExpiry, new Date());
+          if (monthsUntilExpiry < 6) {
+            missingFields.push("Passport must be valid for at least 6 months");
+          }
+        }
         if (!formData.nationality_code) missingFields.push("Nationality");
         if (!formData.date_of_birth) missingFields.push("Date of Birth");
+        else {
+          const dob = parseISO(formData.date_of_birth);
+          const age = differenceInYears(new Date(), dob);
+          if (age < 18) {
+            missingFields.push("Worker must be at least 18 years old");
+          }
+        }
         if (!formData.religion) missingFields.push("Religion");
         if (!formData.maid_status) missingFields.push("Maid Status");
       } else if (currentStep === 2) {
