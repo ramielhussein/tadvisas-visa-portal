@@ -201,29 +201,55 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         // If lead is archived, unarchive it automatically
         if (existingLeadData.archived) {
           try {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            // Check if lead is assigned or unassigned
+            const isAssigned = existingLeadData.assigned_to !== null;
+            
+            // Unarchive and reset to "New Lead" status
             const { error: unarchiveError } = await supabase
               .from('leads')
-              .update({ archived: false })
+              .update({ 
+                archived: false,
+                status: 'New Lead'
+              })
               .eq('id', existingLeadData.id);
 
             if (unarchiveError) throw unarchiveError;
 
             // Log the activity
-            const { data: { user } } = await supabase.auth.getUser();
             if (user) {
               await supabase.from("lead_activities").insert({
                 lead_id: existingLeadData.id,
                 user_id: user.id,
                 activity_type: "system",
                 title: "Lead Restored from Archive",
-                description: "Lead automatically restored when attempting to re-add",
+                description: isAssigned 
+                  ? "Archived lead restored and assigned salesperson notified"
+                  : "Archived lead restored to incoming pool",
               });
             }
 
-            toast({
-              title: "Lead Restored",
-              description: `Found archived lead for ${existingLeadData.client_name || 'this client'}. Lead has been restored from archive.`,
-            });
+            // If assigned, ping the salesman with a notification
+            if (isAssigned && existingLeadData.assigned_to) {
+              await supabase.from("notifications").insert({
+                user_id: existingLeadData.assigned_to,
+                title: "Archived Lead Restored",
+                message: `Lead ${existingLeadData.client_name || existingLeadData.mobile_number} has been unarchived and assigned back to you`,
+                type: "info",
+                related_lead_id: existingLeadData.id,
+              });
+
+              toast({
+                title: "Lead Pre-Assigned and Archived",
+                description: "PINGING THE SALESMAN - Lead has been restored to their list",
+              });
+            } else {
+              toast({
+                title: "Lead Restored",
+                description: "Archived lead restored to incoming pool",
+              });
+            }
 
             // Navigate to the restored lead after a short delay
             setTimeout(() => {
