@@ -850,16 +850,14 @@ const CRMHub = () => {
               </Label>
             </div>
 
-            {viewMode === "table" && (
-              <div className="relative flex-1 min-w-[200px]">
-                <Input
-                  placeholder="Search leads..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-3"
-                />
-              </div>
-            )}
+            <div className="relative flex-1 min-w-[200px]">
+              <Input
+                placeholder="Search by name, phone, or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-3"
+              />
+            </div>
           </div>
 
           {isAdmin && viewMode === "table" && (
