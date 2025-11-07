@@ -240,7 +240,7 @@ const CRMHub = () => {
     }
   }, [user, loadLeads]);
 
-  // Real-time subscription for leads
+  // Real-time subscription for leads - optimized to reduce re-renders
   useEffect(() => {
     if (!user) return;
 
@@ -254,28 +254,45 @@ const CRMHub = () => {
           table: 'leads',
         },
         (payload) => {
-          console.log('Real-time lead change:', payload);
           const newLead: any = (payload as any).new || null;
           const oldLead: any = (payload as any).old || null;
           const id = (newLead && newLead.id) || (oldLead && oldLead.id);
 
-          // Remove the lead from all lists first
-          setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
-          setMyLeads((prev) => prev.filter((l) => l.id !== id));
-          setAdminAllLeads((prev) => prev.filter((l) => l.id !== id));
+          // Only update if this lead is relevant to the current user
+          const isRelevantToUser = 
+            newLead?.assigned_to === user.id || 
+            oldLead?.assigned_to === user.id || 
+            newLead?.assigned_to === null ||
+            isAdmin;
 
-          // Add back to the appropriate list based on assignment
+          if (!isRelevantToUser) return;
+
+          // Optimized update: only update the specific lead that changed
           if (newLead) {
-            // Always add to admin all leads if admin
+            // Update admin all leads
             if (isAdmin) {
-              setAdminAllLeads((prev) => [newLead as any, ...prev]);
+              setAdminAllLeads((prev) => {
+                const filtered = prev.filter((l) => l.id !== id);
+                return [newLead as any, ...filtered];
+              });
             }
 
-            if (newLead.assigned_to === null) {
-              setUnassignedLeads((prev) => [newLead as any, ...prev]);
-            } else if (user && newLead.assigned_to === user.id) {
-              setMyLeads((prev) => [newLead as any, ...prev]);
-            }
+            // Update unassigned leads
+            setUnassignedLeads((prev) => {
+              const filtered = prev.filter((l) => l.id !== id);
+              return newLead.assigned_to === null ? [newLead as any, ...filtered] : filtered;
+            });
+
+            // Update my leads
+            setMyLeads((prev) => {
+              const filtered = prev.filter((l) => l.id !== id);
+              return newLead.assigned_to === user.id ? [newLead as any, ...filtered] : filtered;
+            });
+          } else {
+            // Lead was deleted
+            setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
+            setMyLeads((prev) => prev.filter((l) => l.id !== id));
+            setAdminAllLeads((prev) => prev.filter((l) => l.id !== id));
           }
         }
       )
@@ -284,7 +301,7 @@ const CRMHub = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, isAdmin, loadLeads]);
+  }, [user, isAdmin]);
 
   const fetchUsers = async () => {
     try {
