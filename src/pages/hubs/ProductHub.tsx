@@ -8,13 +8,22 @@ import {
   Users, 
   ClipboardList, 
   RefreshCw,
-  Globe
+  Globe,
+  FileText
 } from "lucide-react";
 
 const ProductHub = () => {
   const navigate = useNavigate();
 
   const sections = [
+    {
+      title: "Create Worker CV",
+      description: "Add new worker profiles and documentation",
+      icon: FileText,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      path: "/cvwizard",
+    },
     {
       title: "Purchase Orders",
       description: "Manage worker procurement and supplier POs",
