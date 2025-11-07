@@ -19,7 +19,7 @@ interface QuickLeadEntryProps {
   lead?: any | null;
 }
 
-const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps) => {
+  const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,6 +28,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
   const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
   const [leadSources, setLeadSources] = useState<Array<{ id: string; source_name: string }>>([]);
   const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
+  const [formStage, setFormStage] = useState<'number-check' | 'quick-add' | 'full-form'>('number-check');
   
   const [formData, setFormData] = useState({
     client_name: "",
@@ -131,6 +132,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
           visa_expiry_date: lead.visa_expiry_date || "",
         });
         setExistingLead(null); // Clear existing lead check for edit mode
+        setFormStage('full-form'); // Go straight to full form for edits
       } else {
         // Reset form for new lead
         setFormData({
@@ -149,6 +151,7 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         });
         setExistingLead(null);
         setFiles({ passport: null, eidFront: null, eidBack: null });
+        setFormStage('number-check'); // Start at number check for new leads
       }
     }
   }, [open, lead]);
@@ -285,9 +288,10 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         }
       } else {
         setExistingLead(null);
+        setFormStage('quick-add'); // Move to quick add stage
         toast({
           title: "Phone Number Available",
-          description: "No existing lead found. You can proceed with adding this lead.",
+          description: "No existing lead found. Fill in source and service to continue.",
         });
       }
     } catch (error: any) {
@@ -341,6 +345,72 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
     if (e.key === 'Enter') {
       e.preventDefault();
       checkExistingLead(formData.mobile_number);
+    }
+  };
+
+  const handleQuickAdd = async () => {
+    // Validate required fields for quick add
+    if (!formData.mobile_number || !formData.lead_source || !formData.service_required) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Number, Source, and Service are required for Quick Add",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error("You must be logged in to create leads");
+      }
+
+      // Validate phone number
+      const phoneValidation = validatePhoneNumber(formData.mobile_number);
+      if (!phoneValidation.valid) {
+        toast({
+          title: "Invalid Phone Number",
+          description: "Phone number must be in format 971xxxxxxxxx (12 digits total)",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Insert lead with minimal data
+      const { data: newLead, error: insertError } = await supabase
+        .from("leads")
+        .insert({
+          mobile_number: phoneValidation.formatted,
+          lead_source: formData.lead_source,
+          service_required: formData.service_required,
+          status: "New Lead",
+          archived: false,
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      toast({
+        title: "Quick Lead Added",
+        description: "Lead captured successfully with number, source, and service",
+      });
+
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      console.error("Error in quick add:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add lead",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -694,294 +764,447 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
         <DialogHeader>
           <DialogTitle>{lead ? "Edit Lead" : "Quick Lead Entry (Ctrl+Shift+Q)"}</DialogTitle>
           <DialogDescription>
-            {lead ? "Update lead information in the CRM system." : "Add a new lead to the CRM system. Phone number is required."}
+            {formStage === 'number-check' && "Enter mobile number to check if lead exists"}
+            {formStage === 'quick-add' && "Quick Add: Fill source and service, or Expand for full details"}
+            {formStage === 'full-form' && (lead ? "Update lead information" : "Complete lead details")}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+        {/* STAGE 1: Number Check */}
+        {formStage === 'number-check' && !lead && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+                {existingLead && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={pingSalesTeam}
+                    className="text-xs"
+                  >
+                    Ping Sales Team
+                  </Button>
+                )}
+              </div>
+              <Input
+                id="mobile_number"
+                value={formData.mobile_number}
+                onChange={(e) => {
+                  setFormData({ ...formData, mobile_number: e.target.value });
+                  if (existingLead) setExistingLead(null);
+                }}
+                onBlur={(e) => {
+                  const sanitized = sanitizePhoneInput(e.target.value);
+                  if (sanitized !== e.target.value) {
+                    setFormData({ ...formData, mobile_number: sanitized });
+                  }
+                }}
+                onKeyDown={handlePhoneKeyDown}
+                placeholder="971501234567 or +971 50 123 4567"
+                required
+                disabled={isChecking}
+                autoFocus
+              />
+              {isChecking && (
+                <p className="text-sm text-muted-foreground">
+                  <Loader2 className="inline h-3 w-3 animate-spin mr-1" />
+                  Checking for existing lead...
+                </p>
+              )}
               {existingLead && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={pingSalesTeam}
-                  className="text-xs"
+                <div className="space-y-3">
+                  <p className="text-sm text-destructive font-medium">
+                    ⚠️ This lead already exists: {existingLead.client_name || existingLead.mobile_number}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="default"
+                      onClick={pingSalesTeam}
+                      className="flex-1"
+                    >
+                      PING SALES TEAM
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onClose}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Press Enter to check if this number already exists
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* STAGE 2: Quick Add */}
+        {formStage === 'quick-add' && !lead && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Mobile Number</Label>
+              <Input
+                value={formData.mobile_number}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+
+            <div className="space-y-2 border-2 border-primary rounded-md p-4">
+              <Label htmlFor="lead_source" className="text-primary font-semibold">Lead Source *</Label>
+              <Select
+                value={formData.lead_source}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, lead_source: value })
+                }
+                required
+              >
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {leadSources.map((source) => (
+                    <SelectItem key={source.id} value={source.source_name}>
+                      {source.source_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2 border-2 border-primary rounded-md p-4">
+              <Label htmlFor="service_required" className="text-primary font-semibold">Service Required *</Label>
+              <Select
+                value={formData.service_required}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, service_required: value })
+                }
+                required
+              >
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {inquiryPackages.map((pkg) => (
+                    <SelectItem key={pkg.id} value={pkg.package_name}>
+                      {pkg.package_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                onClick={handleQuickAdd}
+                disabled={isSubmitting || !formData.lead_source || !formData.service_required}
+                className="flex-1 h-12 text-lg font-semibold"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "⚡ QUICK ADD"
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setFormStage('full-form')}
+                className="flex-1 h-12 text-lg"
+              >
+                Expand Full Form
+              </Button>
+            </div>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setFormStage('number-check');
+                setFormData({ ...formData, mobile_number: "" });
+              }}
+              className="w-full"
+            >
+              ← Back to Number Check
+            </Button>
+          </div>
+        )}
+
+        {/* STAGE 3: Full Form */}
+        {(formStage === 'full-form' || lead) && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="mobile_number">Mobile Number * (971xxxxxxxxx)</Label>
+              <Input
+                id="mobile_number"
+                value={formData.mobile_number}
+                onChange={(e) => {
+                  setFormData({ ...formData, mobile_number: e.target.value });
+                  if (existingLead) setExistingLead(null);
+                }}
+                onBlur={(e) => {
+                  const sanitized = sanitizePhoneInput(e.target.value);
+                  if (sanitized !== e.target.value) {
+                    setFormData({ ...formData, mobile_number: sanitized });
+                  }
+                }}
+                placeholder="971501234567 or +971 50 123 4567"
+                required
+                disabled={!lead}
+              />
+            </div>
+
+            <div className="space-y-2 border-2 border-primary rounded-md p-4">
+              <Label htmlFor="service_required" className="text-primary font-semibold">Service Required *</Label>
+              <Select
+                value={formData.service_required}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, service_required: value })
+                }
+              >
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {inquiryPackages.map((pkg) => (
+                    <SelectItem key={pkg.id} value={pkg.package_name}>
+                      {pkg.package_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2 border-2 border-primary rounded-md p-4">
+              <Label htmlFor="assigned_to" className="text-primary font-semibold">Assign To</Label>
+              <Select
+                value={formData.assigned_to}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, assigned_to: value })
+                }
+              >
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder="Unassigned (optional)" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {salesTeam.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.full_name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lead_source">Lead Source *</Label>
+              <Select
+                value={formData.lead_source}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, lead_source: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  {leadSources.map((source) => (
+                    <SelectItem key={source.id} value={source.source_name}>
+                      {source.source_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="nationality_code">Nationality</Label>
+              <Select
+                value={formData.nationality_code}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, nationality_code: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select nationality" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
+                  <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
+                  <SelectItem value="IN">🇮🇳 India</SelectItem>
+                  <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
+                  <SelectItem value="UG">🇺🇬 Uganda</SelectItem>
+                  <SelectItem value="ET">🇪🇹 Ethiopia</SelectItem>
+                  <SelectItem value="SR">🇱🇰 Sri Lanka</SelectItem>
+                  <SelectItem value="MY">🇲🇲 Myanmar</SelectItem>
+                  <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
+                  <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
+              <Checkbox
+                id="hot"
+                checked={formData.hot}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, hot: checked === true })
+                }
+              />
+              <Label
+                htmlFor="hot"
+                className="flex items-center gap-2 cursor-pointer font-medium"
+              >
+                <Flame className="w-4 h-4 text-orange-500" />
+                Mark as HOT Lead
+              </Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="visa_expiry_date">Visa Expiry Date</Label>
+              <Input
+                id="visa_expiry_date"
+                type="date"
+                value={formData.visa_expiry_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, visa_expiry_date: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="client_name">Client Name</Label>
+              <Input
+                id="client_name"
+                value={formData.client_name}
+                onChange={(e) =>
+                  setFormData({ ...formData, client_name: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="emirate">Emirate</Label>
+              <Select
+                value={formData.emirate}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, emirate: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select emirate" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Dubai">Dubai</SelectItem>
+                  <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
+                  <SelectItem value="Sharjah">Sharjah</SelectItem>
+                  <SelectItem value="Ajman">Ajman</SelectItem>
+                  <SelectItem value="Ras Al Khaimah">Ras Al Khaimah</SelectItem>
+                  <SelectItem value="Fujairah">Fujairah</SelectItem>
+                  <SelectItem value="Umm Al Quwain">Umm Al Quwain</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value: any) =>
+                  setFormData({ ...formData, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="New Lead">New Lead</SelectItem>
+                  <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                  <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                  <SelectItem value="Called COLD">Called COLD</SelectItem>
+                  <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                  <SelectItem value="No Connection">No Connection</SelectItem>
+                  <SelectItem value="Warm">Warm</SelectItem>
+                  <SelectItem value="HOT">HOT</SelectItem>
+                  <SelectItem value="SOLD">SOLD</SelectItem>
+                  <SelectItem value="LOST">LOST</SelectItem>
+                  <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="comments">Comments</Label>
+              <Textarea
+                id="comments"
+                value={formData.comments}
+                onChange={(e) =>
+                  setFormData({ ...formData, comments: e.target.value })
+                }
+                placeholder="Add any additional notes or comments..."
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <div className="border-t pt-4">
+              <h3 className="font-semibold mb-4">Document Uploads</h3>
+              <div className="space-y-4">
+                <FileUploadField field="passport" label="Passport Copy" />
+                <FileUploadField field="eidFront" label="Emirates ID (Front)" />
+                <FileUploadField field="eidBack" label="Emirates ID (Back)" />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              {formStage === 'full-form' && !lead && (
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setFormStage('quick-add')}
                 >
-                  Ping Sales Team
+                  ← Back to Quick Add
                 </Button>
               )}
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  lead ? "Update Lead" : "Add Lead"
+                )}
+              </Button>
             </div>
-            <Input
-              id="mobile_number"
-              value={formData.mobile_number}
-              onChange={(e) => {
-                setFormData({ ...formData, mobile_number: e.target.value });
-                // Clear existing lead when user modifies the phone number
-                if (existingLead) setExistingLead(null);
-              }}
-              onBlur={(e) => {
-                // Auto-sanitize on blur
-                const sanitized = sanitizePhoneInput(e.target.value);
-                if (sanitized !== e.target.value) {
-                  setFormData({ ...formData, mobile_number: sanitized });
-                }
-              }}
-              onKeyDown={handlePhoneKeyDown}
-              placeholder="971501234567 or +971 50 123 4567"
-              required
-              disabled={isChecking}
-            />
-            {isChecking && (
-              <p className="text-sm text-muted-foreground">
-                <Loader2 className="inline h-3 w-3 animate-spin mr-1" />
-                Checking for existing lead...
-              </p>
-            )}
-            {existingLead && (
-              <p className="text-sm text-destructive font-medium">
-                ⚠️ This lead already exists in the system
-              </p>
-            )}
-            <p className="text-xs text-muted-foreground">
-              Press Enter to check if this number already exists
-            </p>
-          </div>
-
-          <div className="space-y-2 border-2 border-destructive rounded-md p-4">
-            <Label htmlFor="service_required" className="text-destructive font-semibold">Service Required</Label>
-            <Select
-              value={formData.service_required}
-              onValueChange={(value) =>
-                setFormData({ ...formData, service_required: value })
-              }
-            >
-              <SelectTrigger className="border-destructive">
-                <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-50">
-                {inquiryPackages.map((pkg) => (
-                  <SelectItem key={pkg.id} value={pkg.package_name}>
-                    {pkg.package_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2 border-2 border-destructive rounded-md p-4">
-            <Label htmlFor="assigned_to" className="text-destructive font-semibold">Assign To</Label>
-            <Select
-              value={formData.assigned_to}
-              onValueChange={(value) =>
-                setFormData({ ...formData, assigned_to: value })
-              }
-            >
-              <SelectTrigger className="border-destructive">
-                <SelectValue placeholder="Unassigned (optional)" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-50">
-                {salesTeam.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.full_name || user.email}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lead_source">Lead Source</Label>
-            <Select
-              value={formData.lead_source}
-              onValueChange={(value) =>
-                setFormData({ ...formData, lead_source: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-50">
-                {leadSources.map((source) => (
-                  <SelectItem key={source.id} value={source.source_name}>
-                    {source.source_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="nationality_code">Nationality</Label>
-            <Select
-              value={formData.nationality_code}
-              onValueChange={(value) =>
-                setFormData({ ...formData, nationality_code: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select nationality" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
-                <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
-                <SelectItem value="IN">🇮🇳 India</SelectItem>
-                <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
-                <SelectItem value="UG">🇺🇬 Uganda</SelectItem>
-                <SelectItem value="ET">🇪🇹 Ethiopia</SelectItem>
-                <SelectItem value="SR">🇱🇰 Sri Lanka</SelectItem>
-                <SelectItem value="MY">🇲🇲 Myanmar</SelectItem>
-                <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
-                <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
-            <Checkbox
-              id="hot"
-              checked={formData.hot}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, hot: checked === true })
-              }
-            />
-            <Label
-              htmlFor="hot"
-              className="flex items-center gap-2 cursor-pointer font-medium"
-            >
-              <Flame className="w-4 h-4 text-orange-500" />
-              Mark as HOT Lead
-            </Label>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="visa_expiry_date">Visa Expiry Date</Label>
-            <Input
-              id="visa_expiry_date"
-              type="date"
-              value={formData.visa_expiry_date}
-              onChange={(e) =>
-                setFormData({ ...formData, visa_expiry_date: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="client_name">Client Name</Label>
-            <Input
-              id="client_name"
-              value={formData.client_name}
-              onChange={(e) =>
-                setFormData({ ...formData, client_name: e.target.value })
-              }
-              disabled={!!existingLead}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              disabled={!!existingLead}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="emirate">Emirate</Label>
-            <Select
-              value={formData.emirate}
-              onValueChange={(value) =>
-                setFormData({ ...formData, emirate: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select emirate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Dubai">Dubai</SelectItem>
-                <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
-                <SelectItem value="Sharjah">Sharjah</SelectItem>
-                <SelectItem value="Ajman">Ajman</SelectItem>
-                <SelectItem value="Ras Al Khaimah">Ras Al Khaimah</SelectItem>
-                <SelectItem value="Fujairah">Fujairah</SelectItem>
-                <SelectItem value="Umm Al Quwain">Umm Al Quwain</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select
-              value={formData.status}
-              onValueChange={(value: any) =>
-                setFormData({ ...formData, status: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="New Lead">New Lead</SelectItem>
-                <SelectItem value="Called No Answer">Called No Answer</SelectItem>
-                <SelectItem value="Called Engaged">Called Engaged</SelectItem>
-                <SelectItem value="Called COLD">Called COLD</SelectItem>
-                <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
-                <SelectItem value="No Connection">No Connection</SelectItem>
-                <SelectItem value="Warm">Warm</SelectItem>
-                <SelectItem value="HOT">HOT</SelectItem>
-                <SelectItem value="SOLD">SOLD</SelectItem>
-                <SelectItem value="LOST">LOST</SelectItem>
-                <SelectItem value="PROBLEM">PROBLEM</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="comments">Comments</Label>
-            <Textarea
-              id="comments"
-              value={formData.comments}
-              onChange={(e) =>
-                setFormData({ ...formData, comments: e.target.value })
-              }
-              placeholder="Add any additional notes or comments..."
-              className="min-h-[100px]"
-            />
-          </div>
-
-          <div className="border-t pt-4">
-            <h3 className="font-semibold mb-4">Document Uploads</h3>
-            <div className="space-y-4">
-              <FileUploadField field="passport" label="Passport Copy" />
-              <FileUploadField field="eidFront" label="Emirates ID (Front)" />
-              <FileUploadField field="eidBack" label="Emirates ID (Back)" />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting || !!existingLead}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                lead ? "Update Lead" : "Add Lead"
-              )}
-            </Button>
-          </div>
-        </form>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );
