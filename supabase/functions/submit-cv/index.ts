@@ -8,7 +8,7 @@ interface CVFormData {
   passport_no: string;
   passport_expiry: string;
   nationality_code: string;
-  age: number;
+  date_of_birth: string;
   religion: string;
   maid_status: string;
   job1: string;
@@ -147,7 +147,7 @@ Deno.serve(async (req) => {
         passport_expiry: formData.passport_expiry,
         center_ref,
         name: formData.name,
-        age: formData.age,
+        date_of_birth: formData.date_of_birth,
         religion: formData.religion,
         nationality_code: formData.nationality_code,
         maid_status: formData.maid_status,
@@ -185,8 +185,8 @@ Deno.serve(async (req) => {
           errorMessage = 'Weight must be between 35 and 200 kg';
         } else if (errorMessage.includes('height_cm')) {
           errorMessage = 'Height must be within valid range';
-        } else if (errorMessage.includes('age')) {
-          errorMessage = 'Age must be within valid range';
+        } else if (errorMessage.includes('date_of_birth')) {
+          errorMessage = 'Date of birth must be valid';
         }
       }
       
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
         passport_no: formData.passport_no,
         passport_expiry: formData.passport_expiry,
         name: formData.name,
-        age: formData.age,
+        date_of_birth: formData.date_of_birth,
         religion: formData.religion,
         nationality_code: formData.nationality_code,
         maid_status: formData.maid_status,
