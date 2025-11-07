@@ -39,12 +39,13 @@ const MyCVs = () => {
   const { isAdmin } = useUserRole();
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState<Worker[]>([]);
+  const [showAll, setShowAll] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [workerToDelete, setWorkerToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadMyWorkers();
-  }, []);
+  }, [showAll, isAdmin]);
 
   const loadMyWorkers = async () => {
     try {
@@ -60,11 +61,16 @@ const MyCVs = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("workers")
         .select("*")
-        .eq("created_by", user.id)
         .order("created_at", { ascending: false });
+
+      if (!(isAdmin && showAll)) {
+        query = query.eq("created_by", user.id);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -152,13 +158,23 @@ const MyCVs = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">My CVs</h1>
-            <p className="text-muted-foreground">View and manage your submitted worker CVs</p>
+            <h1 className="text-3xl font-bold">{isAdmin && showAll ? 'All CVs' : 'My CVs'}</h1>
+            <p className="text-muted-foreground">
+              {isAdmin && showAll ? 'Viewing all CVs in the system (admin)' : 'View and manage your submitted worker CVs'}
+            </p>
           </div>
-          <Button onClick={() => navigate('/cvwizard')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create New CV
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <div className="flex rounded-md border">
+                <Button variant={showAll ? 'outline' : 'default'} size="sm" onClick={() => setShowAll(false)}>My CVs</Button>
+                <Button variant={showAll ? 'default' : 'outline'} size="sm" onClick={() => setShowAll(true)}>All CVs</Button>
+              </div>
+            )}
+            <Button onClick={() => navigate('/cvwizard')}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create New CV
+            </Button>
+          </div>
         </div>
 
         {workers.length === 0 ? (
