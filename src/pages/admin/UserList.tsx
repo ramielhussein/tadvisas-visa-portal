@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Users, Save, UserPlus, Trash2 } from "lucide-react";
+import { Loader2, Users, Save, UserPlus, Trash2, Key } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +61,9 @@ export default function UserList() {
   const [saving, setSaving] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [userToReset, setUserToReset] = useState<UserProfile | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -172,6 +175,63 @@ export default function UserList() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!userToReset || !newPassword) return;
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResetting(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to reset passwords",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('reset-user-password', {
+        body: { 
+          userId: userToReset.id,
+          newPassword: newPassword
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Password reset successfully for ${userToReset.email}`,
+      });
+      
+      setUserToReset(null);
+      setNewPassword("");
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      toast({
+        title: "Error",
+        description: `Failed to reset password: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setResetting(false);
+    }
+  };
+
   if (adminLoading || loading) {
     return (
       <Layout>
@@ -232,6 +292,14 @@ export default function UserList() {
                   <div className="flex gap-1">
                     <Button onClick={() => handleEditUser(user)} variant="outline" size="sm" className="h-7 text-xs">
                       Edit
+                    </Button>
+                    <Button 
+                      onClick={() => setUserToReset(user)} 
+                      variant="outline" 
+                      size="sm" 
+                      className="h-7 text-xs"
+                    >
+                      <Key className="h-3 w-3" />
                     </Button>
                     <Button 
                       onClick={() => setUserToDelete(user)} 
@@ -431,6 +499,57 @@ export default function UserList() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={userToReset !== null} onOpenChange={(open) => {
+        if (!open) {
+          setUserToReset(null);
+          setNewPassword("");
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {userToReset?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input
+                id="new-password"
+                type="password"
+                placeholder="Enter new password (min 6 characters)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                disabled={resetting}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleResetPassword} 
+                disabled={resetting || !newPassword}
+                className="flex-1"
+              >
+                {resetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Reset Password
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setUserToReset(null);
+                  setNewPassword("");
+                }}
+                disabled={resetting}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
