@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import HireAMaid from "./pages/HireAMaid";
 import GetAVisa from "./pages/GetAVisa";
@@ -126,6 +126,13 @@ const App = () => (
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+          
+          {/* Legacy redirects for backward compatibility */}
+          <Route path="/deals" element={<Navigate to="/crm/deals" replace />} />
+          <Route path="/deals/create" element={<Navigate to="/crm/deals/create" replace />} />
+          <Route path="/deals/:id" element={<Navigate to="/crm/deals/:id" replace />} />
+          <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
+          <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
           
           {/* CRM Module - Sales & Customer Management */}
           <Route path="/crm" element={<ProtectedRoute><CRMHub /></ProtectedRoute>} />
