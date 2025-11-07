@@ -38,10 +38,10 @@ const Auth = () => {
       } else if (userRoles.includes('client')) {
         navigate("/hub/client");
       } else {
-        navigate("/dashboard");
+        navigate("/hub");
       }
     } else {
-      navigate("/dashboard");
+      navigate("/hub");
     }
   };
 
