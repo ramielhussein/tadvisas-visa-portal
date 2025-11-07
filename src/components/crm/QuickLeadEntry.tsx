@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ interface QuickLeadEntryProps {
 
 const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [existingLead, setExistingLead] = useState<any>(null);
@@ -196,23 +198,65 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
       }
 
       if (existingLeadData) {
-        setExistingLead(existingLeadData);
-        setFormData({
-          ...formData,
-          client_name: existingLeadData.client_name || "",
-          email: existingLeadData.email || "",
-          mobile_number: phoneValidation.formatted,
-          emirate: existingLeadData.emirate || "",
-          status: existingLeadData.status || "New Lead",
-          service_required: existingLeadData.service_required || "",
-          nationality_code: existingLeadData.nationality_code || "",
-          lead_source: existingLeadData.lead_source || "",
-        });
-        toast({
-          title: "Lead Already Exists",
-          description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}. Cannot add duplicate.`,
-          variant: "destructive",
-        });
+        // If lead is archived, unarchive it automatically
+        if (existingLeadData.archived) {
+          try {
+            const { error: unarchiveError } = await supabase
+              .from('leads')
+              .update({ archived: false })
+              .eq('id', existingLeadData.id);
+
+            if (unarchiveError) throw unarchiveError;
+
+            // Log the activity
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              await supabase.from("lead_activities").insert({
+                lead_id: existingLeadData.id,
+                user_id: user.id,
+                activity_type: "system",
+                title: "Lead Restored from Archive",
+                description: "Lead automatically restored when attempting to re-add",
+              });
+            }
+
+            toast({
+              title: "Lead Restored",
+              description: `Found archived lead for ${existingLeadData.client_name || 'this client'}. Lead has been restored from archive.`,
+            });
+
+            // Navigate to the restored lead after a short delay
+            setTimeout(() => {
+              navigate(`/crm/leads/${existingLeadData.id}`);
+            }, 1500);
+          } catch (error: any) {
+            console.error("Error unarchiving lead:", error);
+            toast({
+              title: "Error",
+              description: "Failed to restore archived lead",
+              variant: "destructive",
+            });
+          }
+        } else {
+          // Lead exists and is not archived - show duplicate error
+          setExistingLead(existingLeadData);
+          setFormData({
+            ...formData,
+            client_name: existingLeadData.client_name || "",
+            email: existingLeadData.email || "",
+            mobile_number: phoneValidation.formatted,
+            emirate: existingLeadData.emirate || "",
+            status: existingLeadData.status || "New Lead",
+            service_required: existingLeadData.service_required || "",
+            nationality_code: existingLeadData.nationality_code || "",
+            lead_source: existingLeadData.lead_source || "",
+          });
+          toast({
+            title: "Lead Already Exists",
+            description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}. Cannot add duplicate.`,
+            variant: "destructive",
+          });
+        }
       } else {
         setExistingLead(null);
         toast({
