@@ -646,6 +646,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          archived: boolean
           assigned_to: string | null
           client_converted: boolean | null
           client_name: string | null
@@ -669,6 +670,7 @@ export type Database = {
           visa_expiry_date: string | null
         }
         Insert: {
+          archived?: boolean
           assigned_to?: string | null
           client_converted?: boolean | null
           client_name?: string | null
@@ -692,6 +694,7 @@ export type Database = {
           visa_expiry_date?: string | null
         }
         Update: {
+          archived?: boolean
           assigned_to?: string | null
           client_converted?: boolean | null
           client_name?: string | null

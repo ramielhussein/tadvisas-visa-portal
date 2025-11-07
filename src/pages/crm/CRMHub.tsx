@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -40,6 +40,7 @@ interface Lead {
   updated_at: string;
   lead_source: string | null;
   comments: string | null;
+  archived: boolean;
 }
 
 interface User {
@@ -60,6 +61,7 @@ const CRMHub = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("created_at");
   const [showOnlyHot, setShowOnlyHot] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
   const [assigningLeadId, setAssigningLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,6 +109,11 @@ const CRMHub = () => {
           .select("*")
           .order("created_at", { ascending: false });
 
+        // Filter archived leads unless toggle is on
+        if (!showArchived) {
+          adminQuery = adminQuery.eq("archived", false);
+        }
+
         // Apply admin search filter
         if (debouncedAdminSearch) {
           adminQuery = adminQuery.or(
@@ -138,6 +145,11 @@ const CRMHub = () => {
         .select("*")
         .is("assigned_to", null);
 
+      // Filter archived leads unless toggle is on
+      if (!showArchived) {
+        unassignedQuery = unassignedQuery.eq("archived", false);
+      }
+
       // Apply search filter to unassigned
       if (debouncedSearch) {
         unassignedQuery = unassignedQuery.or(
@@ -157,6 +169,11 @@ const CRMHub = () => {
         .from("leads")
         .select("*")
         .eq("assigned_to", user.id);
+
+      // Filter archived leads unless toggle is on
+      if (!showArchived) {
+        myLeadsQuery = myLeadsQuery.eq("archived", false);
+      }
 
       // Apply search filter to my leads
       if (debouncedSearch) {
@@ -215,7 +232,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, showOnlyHot, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
+  }, [user, sortBy, showOnlyHot, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
   useEffect(() => {
     if (user) {
@@ -802,6 +819,18 @@ const CRMHub = () => {
               />
               <Label htmlFor="hot-filter" className="text-sm cursor-pointer">
                 🔥 Hot Leads Only
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                id="archived-toggle"
+                checked={showArchived}
+                onCheckedChange={setShowArchived}
+              />
+              <Label htmlFor="archived-toggle" className="text-sm cursor-pointer flex items-center gap-1">
+                <Archive className="h-4 w-4" />
+                Show Archived
               </Label>
             </div>
 

@@ -26,7 +26,9 @@ import {
   FileText,
   PhoneCall,
   Video,
-  CheckCircle2
+  CheckCircle2,
+  Archive,
+  ArchiveRestore
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +61,7 @@ interface Lead {
   lead_source?: string | null;
   comments?: string | null;
   hot?: boolean | null;
+  archived?: boolean;
 }
 
 const LeadDetail = () => {
@@ -347,6 +350,49 @@ const LeadDetail = () => {
     }
   };
 
+  const handleArchiveToggle = async () => {
+    try {
+      const newArchivedState = !lead?.archived;
+      
+      const { error } = await supabase
+        .from("leads")
+        .update({ archived: newArchivedState })
+        .eq("id", lead?.id);
+
+      if (error) throw error;
+
+      // Log the activity
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("lead_activities").insert({
+          lead_id: lead?.id,
+          user_id: user.id,
+          activity_type: "system",
+          title: newArchivedState ? "Lead Archived" : "Lead Restored",
+          description: newArchivedState 
+            ? "Lead moved to archive" 
+            : "Lead restored from archive",
+        });
+      }
+
+      // Update local state
+      setLead(prev => prev ? { ...prev, archived: newArchivedState } : null);
+      
+      toast({
+        title: "Success",
+        description: newArchivedState ? "Lead archived" : "Lead restored",
+      });
+
+      fetchActivities();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -393,6 +439,12 @@ const LeadDetail = () => {
                           ✓ Converted
                         </Badge>
                       )}
+                      {lead.archived && (
+                        <Badge variant="outline" className="bg-gray-100">
+                          <Archive className="w-3 h-3 mr-1" />
+                          Archived
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       Created {new Date(lead.created_at).toLocaleDateString('en-GB', { 
@@ -402,10 +454,29 @@ const LeadDetail = () => {
                       })}
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => setEditingLead(true)}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleArchiveToggle}
+                      title={lead.archived ? "Restore from archive" : "Archive this lead"}
+                    >
+                      {lead.archived ? (
+                        <>
+                          <ArchiveRestore className="w-4 h-4 mr-2" />
+                          Restore
+                        </>
+                      ) : (
+                        <>
+                          <Archive className="w-4 h-4 mr-2" />
+                          Archive
+                        </>
+                      )}
+                    </Button>
+                    <Button variant="outline" onClick={() => setEditingLead(true)}>
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
