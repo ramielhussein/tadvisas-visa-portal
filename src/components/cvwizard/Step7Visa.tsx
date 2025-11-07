@@ -30,13 +30,14 @@ const Step7Visa = ({ formData, updateFormData }: Props) => {
           <SelectTrigger>
             <SelectValue placeholder="Select visa status" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover z-50">
             <SelectItem value="Entry Tourist">Entry Tourist</SelectItem>
             <SelectItem value="Entry Employment">Entry Employment</SelectItem>
             <SelectItem value="Cancelled">Cancelled</SelectItem>
             <SelectItem value="Overstay">Overstay</SelectItem>
             <SelectItem value="Blacklisted">Blacklisted</SelectItem>
             <SelectItem value="Outside Country">Outside Country</SelectItem>
+            <SelectItem value="Under Tadbeer Visa">Under Tadbeer Visa</SelectItem>
           </SelectContent>
         </Select>
       </div>
