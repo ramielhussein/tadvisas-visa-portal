@@ -77,6 +77,7 @@ import WorkerReturns from "./pages/WorkerReturns";
 import WorkerTransfers from "./pages/WorkerTransfers";
 import ReceiptOrders from "./pages/ReceiptOrders";
 import DeliveryOrders from "./pages/DeliveryOrders";
+import DailySalesReport from "./pages/DailySalesReport";
 
 const queryClient = new QueryClient();
 
@@ -140,6 +141,7 @@ const App = () => (
           <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
           <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
           <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
+          <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
           <Route path="/finance" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />

@@ -9,7 +9,8 @@ import {
   Calendar,
   FileText,
   Briefcase,
-  Phone
+  Phone,
+  BarChart3
 } from "lucide-react";
 import { SalesKPIDashboard } from "@/components/kpi/SalesKPIDashboard";
 
@@ -67,11 +68,18 @@ const SalesHub = () => {
       color: "text-pink-600"
     },
     {
+      title: "Daily Sales Report",
+      description: "View daily activity and closures",
+      icon: BarChart3,
+      path: "/crm/daily-sales-report",
+      color: "text-amber-600"
+    },
+    {
       title: "Sales Reports",
       description: "View your sales performance reports",
       icon: TrendingUp,
       path: "/crm/dashboard",
-      color: "text-amber-600"
+      color: "text-emerald-600"
     }
   ];
 
