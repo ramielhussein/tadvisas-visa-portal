@@ -36,7 +36,7 @@ interface Worker {
 const MyCVs = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isProduct } = useUserRole();
   const [loading, setLoading] = useState(true);
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [showAll, setShowAll] = useState(false);
@@ -45,7 +45,7 @@ const MyCVs = () => {
 
   useEffect(() => {
     loadMyWorkers();
-  }, [showAll, isAdmin]);
+  }, [showAll, isAdmin, isProduct]);
 
   const loadMyWorkers = async () => {
     try {
@@ -66,7 +66,7 @@ const MyCVs = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (!(isAdmin && showAll)) {
+      if (!((isAdmin || isProduct) && showAll)) {
         query = query.eq("created_by", user.id);
       }
 
@@ -158,13 +158,13 @@ const MyCVs = () => {
       <div className="container mx-auto py-8 px-4">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{isAdmin && showAll ? 'All CVs' : 'My CVs'}</h1>
+            <h1 className="text-3xl font-bold">{(isAdmin || isProduct) && showAll ? 'All CVs' : 'My CVs'}</h1>
             <p className="text-muted-foreground">
-              {isAdmin && showAll ? 'Viewing all CVs in the system (admin)' : 'View and manage your submitted worker CVs'}
+              {(isAdmin || isProduct) && showAll ? 'Viewing all CVs in the system' : 'View and manage your submitted worker CVs'}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {isAdmin && (
+            {(isAdmin || isProduct) && (
               <div className="flex rounded-md border">
                 <Button variant={showAll ? 'outline' : 'default'} size="sm" onClick={() => setShowAll(false)}>My CVs</Button>
                 <Button variant={showAll ? 'default' : 'outline'} size="sm" onClick={() => setShowAll(true)}>All CVs</Button>
@@ -252,7 +252,7 @@ const MyCVs = () => {
                       </Button>
                     )}
 
-                    {isAdmin && (
+                    {(isAdmin || isProduct) && (
                       <Button
                         variant="destructive"
                         size="sm"
@@ -263,7 +263,7 @@ const MyCVs = () => {
                       </Button>
                     )}
 
-                    {!canEdit(worker) && !isAdmin && (
+                    {!canEdit(worker) && !(isAdmin || isProduct) && (
                       <p className="text-sm text-muted-foreground py-2">
                         This CV cannot be edited (Status: {worker.status})
                       </p>
