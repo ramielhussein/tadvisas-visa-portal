@@ -813,6 +813,33 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="nationality_code">Nationality</Label>
+            <Select
+              value={formData.nationality_code}
+              onValueChange={(value) =>
+                setFormData({ ...formData, nationality_code: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select nationality" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
+                <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
+                <SelectItem value="IN">🇮🇳 India</SelectItem>
+                <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
+                <SelectItem value="UG">🇺🇬 Uganda</SelectItem>
+                <SelectItem value="ET">🇪🇹 Ethiopia</SelectItem>
+                <SelectItem value="SR">🇱🇰 Sri Lanka</SelectItem>
+                <SelectItem value="MY">🇲🇲 Myanmar</SelectItem>
+                <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
+                <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="flex items-center space-x-2 p-3 border rounded-lg bg-orange-50/50 dark:bg-orange-950/20">
             <Checkbox
               id="hot"
@@ -886,33 +913,6 @@ const QuickLeadEntry = ({ open, onClose, onSuccess, lead }: QuickLeadEntryProps)
                 <SelectItem value="Ras Al Khaimah">Ras Al Khaimah</SelectItem>
                 <SelectItem value="Fujairah">Fujairah</SelectItem>
                 <SelectItem value="Umm Al Quwain">Umm Al Quwain</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="nationality_code">Nationality</Label>
-            <Select
-              value={formData.nationality_code}
-              onValueChange={(value) =>
-                setFormData({ ...formData, nationality_code: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select nationality" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
-                <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
-                <SelectItem value="IN">🇮🇳 India</SelectItem>
-                <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
-                <SelectItem value="UG">🇺🇬 Uganda</SelectItem>
-                <SelectItem value="ET">🇪🇹 Ethiopia</SelectItem>
-                <SelectItem value="SR">🇱🇰 Sri Lanka</SelectItem>
-                <SelectItem value="MY">🇲🇲 Myanmar</SelectItem>
-                <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
-                <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
