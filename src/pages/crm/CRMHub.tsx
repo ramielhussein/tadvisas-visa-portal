@@ -1022,7 +1022,107 @@ const CRMHub = () => {
 
         {/* Table View */}
         {viewMode === "table" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <>
+            {/* Admin Only: All Leads Table */}
+            {isAdmin && (
+              <Card className="mb-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    🔐 All Leads - System View ({filteredAdminAllLeads.length})
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">Complete visibility of all leads with assignments</p>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="overflow-y-auto max-h-[600px]">
+                    <Table>
+                      <TableHeader className="sticky top-0 bg-background z-10">
+                        <TableRow>
+                          <TableHead>Client</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Service</TableHead>
+                          <TableHead>Assigned To</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredAdminAllLeads.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                              No leads found
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredAdminAllLeads.map((lead) => (
+                            <TableRow key={lead.id} className="hover:bg-muted/50">
+                              <TableCell>
+                                <div>
+                                  <div className="font-medium flex items-center gap-2">
+                                    {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
+                                    {lead.archived && <Archive className="h-4 w-4 text-muted-foreground" />}
+                                    <button
+                                      onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                                      className="hover:text-primary hover:underline text-left"
+                                    >
+                                      {lead.client_name || "Unnamed"}
+                                    </button>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">{lead.mobile_number}</div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={`text-xs ${getStatusColor(lead.status)}`}>
+                                  {lead.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  <div>{lead.service_required || '-'}</div>
+                                  <div className="text-muted-foreground text-xs">{lead.nationality_code || '-'}</div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  value={lead.assigned_to || "unassigned"}
+                                  onValueChange={(value) => handleAssignLead(lead.id, value === "unassigned" ? null : value)}
+                                >
+                                  <SelectTrigger className="w-[140px] h-8 text-xs">
+                                    <SelectValue placeholder="Unassigned" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                                    {users.map((u) => (
+                                      <SelectItem key={u.id} value={u.id}>
+                                        {u.full_name || u.email}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell className="text-xs text-muted-foreground">
+                                {new Date(lead.created_at).toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                                  className="h-7"
+                                >
+                                  View
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* My Leads Table */}
             <Card>
               <CardHeader>
@@ -1240,6 +1340,7 @@ const CRMHub = () => {
               </CardContent>
             </Card>
           </div>
+          </>
         )}
       </div>
     </Layout>
