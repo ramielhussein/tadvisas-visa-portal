@@ -833,51 +833,7 @@ const CRMHub = () => {
         {viewMode === "cards" && (
           <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Unassigned Leads */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center justify-between">
-                <span>Incoming Leads</span>
-                <Badge variant="secondary">{unassignedLeads.length}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <Select value={unassignedStatusFilter} onValueChange={setUnassignedStatusFilter}>
-                  <SelectTrigger className="w-full bg-background">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover z-50">
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="New Lead">New Lead</SelectItem>
-                    <SelectItem value="Called No Answer">Called No Answer</SelectItem>
-                    <SelectItem value="Called Engaged">Called Engaged</SelectItem>
-                    <SelectItem value="Called COLD">Called COLD</SelectItem>
-                    <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
-                    <SelectItem value="No Connection">No Connection</SelectItem>
-                    <SelectItem value="Warm">Warm</SelectItem>
-                    <SelectItem value="HOT">HOT</SelectItem>
-                    <SelectItem value="SOLD">SOLD</SelectItem>
-                    <SelectItem value="LOST">LOST</SelectItem>
-                    <SelectItem value="PROBLEM">PROBLEM</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                {filteredUnassignedLeads.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {unassignedStatusFilter !== "all" ? "No leads with this status" : "No unassigned leads"}
-                  </p>
-                ) : (
-                  filteredUnassignedLeads.map((lead) => (
-                    <LeadCard key={lead.id} lead={lead} showAssignButton={true} />
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Right: My Assigned Leads */}
+          {/* Left: My Assigned Leads */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center justify-between">
@@ -917,6 +873,50 @@ const CRMHub = () => {
                     <LeadCard key={lead.id} lead={lead} showAssignButton={false} />
                   ))
                  )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Right: Incoming Leads */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span>Incoming Leads</span>
+                <Badge variant="secondary">{unassignedLeads.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <Select value={unassignedStatusFilter} onValueChange={setUnassignedStatusFilter}>
+                  <SelectTrigger className="w-full bg-background">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="New Lead">New Lead</SelectItem>
+                    <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                    <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                    <SelectItem value="Called COLD">Called COLD</SelectItem>
+                    <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                    <SelectItem value="No Connection">No Connection</SelectItem>
+                    <SelectItem value="Warm">Warm</SelectItem>
+                    <SelectItem value="HOT">HOT</SelectItem>
+                    <SelectItem value="SOLD">SOLD</SelectItem>
+                    <SelectItem value="LOST">LOST</SelectItem>
+                    <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {filteredUnassignedLeads.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {unassignedStatusFilter !== "all" ? "No leads with this status" : "No unassigned leads"}
+                  </p>
+                ) : (
+                  filteredUnassignedLeads.map((lead) => (
+                    <LeadCard key={lead.id} lead={lead} showAssignButton={true} />
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -989,82 +989,6 @@ const CRMHub = () => {
         {/* Table View */}
         {viewMode === "table" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Unassigned Leads Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-                  Incoming Leads ({filteredUnassignedLeads.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-y-auto max-h-[600px]">
-                  <Table>
-                    <TableHeader className="sticky top-0 bg-background z-10">
-                      <TableRow>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Service</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUnassignedLeads.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                            No incoming leads
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filteredUnassignedLeads.map((lead) => (
-                          <TableRow key={lead.id} className="hover:bg-muted/50">
-                            <TableCell>
-                              <div>
-                                <div className="font-medium flex items-center gap-2">
-                                  {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
-                                  {lead.client_name || "Unnamed"}
-                                </div>
-                                <div 
-                                  onClick={() => navigate(`/crm/leads/${lead.id}`)}
-                                  className="text-sm text-primary cursor-pointer hover:underline"
-                                >
-                                  {lead.mobile_number}
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="text-sm">
-                                <div>{lead.service_required || '-'}</div>
-                                <div className="text-muted-foreground">{lead.nationality_code || '-'}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">
-                              {new Date(lead.created_at).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleAssignToMe(lead.id)}
-                                disabled={assigningLeadId === lead.id}
-                                title="Claim this lead"
-                              >
-                                {assigningLeadId === lead.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <Anchor className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* My Leads Table */}
             <Card>
               <CardHeader>
@@ -1199,6 +1123,82 @@ const CRMHub = () => {
                             </TableRow>
                           );
                         })
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Unassigned Leads Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                  Incoming Leads ({filteredUnassignedLeads.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-y-auto max-h-[600px]">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Service</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredUnassignedLeads.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                            No incoming leads
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredUnassignedLeads.map((lead) => (
+                          <TableRow key={lead.id} className="hover:bg-muted/50">
+                            <TableCell>
+                              <div>
+                                <div className="font-medium flex items-center gap-2">
+                                  {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
+                                  {lead.client_name || "Unnamed"}
+                                </div>
+                                <div 
+                                  onClick={() => navigate(`/crm/leads/${lead.id}`)}
+                                  className="text-sm text-primary cursor-pointer hover:underline"
+                                >
+                                  {lead.mobile_number}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="text-sm">
+                                <div>{lead.service_required || '-'}</div>
+                                <div className="text-muted-foreground">{lead.nationality_code || '-'}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {new Date(lead.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleAssignToMe(lead.id)}
+                                disabled={assigningLeadId === lead.id}
+                                title="Claim this lead"
+                              >
+                                {assigningLeadId === lead.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Anchor className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
                       )}
                     </TableBody>
                   </Table>
