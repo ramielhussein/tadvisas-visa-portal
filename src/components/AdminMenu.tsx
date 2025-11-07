@@ -1,16 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut, ArrowLeftRight, Folder, TrendingUp } from "lucide-react";
+import { Shield, FileText, Settings, Users, X, Plus, Images, DollarSign, FileSpreadsheet, MapPin, BarChart3, Briefcase, Coins, Building2, LogOut, ArrowLeftRight, TrendingUp, Package } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 
@@ -136,286 +128,157 @@ const AdminMenu = () => {
     );
   }
 
-  // Full admin menu
+  // Full admin menu - card-based structure
+  const sections = [
+    {
+      title: "Product Management",
+      items: [
+        { title: "Create Worker CV", path: "/cvwizard", icon: FileText },
+        { title: "Product Dashboard", path: "/product/dashboard", icon: Package },
+        { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText },
+        { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users },
+      ],
+    },
+    {
+      title: "CRM & Sales",
+      items: [
+        { title: "CRM Dashboard", path: "/crm/dashboard", icon: BarChart3 },
+        { title: "Lead Management", path: "/crm/leads", icon: Shield },
+        { title: "Quick Lead Entry", action: "quick-lead", icon: Plus },
+        { title: "Lead Sources", path: "/crm/lead-sources", icon: Settings },
+        { title: "Inquiry Packages", path: "/crm/inquiry-packages", icon: Package },
+        { title: "Sales Packages", path: "/crm/sales-packages", icon: Package },
+        { title: "Deals & Sales", path: "/deals", icon: Briefcase },
+      ],
+    },
+    {
+      title: "Finance & Accounting",
+      items: [
+        { title: "Financial Dashboard", path: "/financial", icon: Coins },
+        { title: "Payments List", path: "/payments", icon: DollarSign },
+        { title: "Expenses", path: "/expenses", icon: DollarSign },
+        { title: "Suppliers & A/P", path: "/product/suppliers", icon: Building2 },
+        { title: "Bank Accounts", path: "/bank-accounts", icon: DollarSign },
+        { title: "Owner's Equity", path: "/owner-equity", icon: TrendingUp },
+        { title: "Contracts", path: "/contracts", icon: FileText },
+        { title: "Refunds", path: "/refunds-approval", icon: ArrowLeftRight },
+      ],
+    },
+    {
+      title: "Forms & Submissions",
+      items: [
+        { title: "Client Submissions", path: "/client-submissions", icon: FileText },
+        { title: "Refund Calculator", path: "/refund", icon: DollarSign },
+        { title: "Finalized Refunds", path: "/refundslist", icon: FileSpreadsheet },
+      ],
+    },
+    {
+      title: "Worker Management",
+      items: [
+        { title: "My CVs", path: "/my-cvs", icon: FileText },
+        { title: "CV Review", path: "/admin/cvwizard-review", icon: Users },
+        { title: "Worker Album", path: "/wizardalbum", icon: Images },
+        { title: "CV Settings", path: "/admin/cvwizard-settings", icon: Settings },
+      ],
+    },
+    {
+      title: "User Management",
+      items: [
+        { title: "Create User", path: "/admin/user-management", icon: Users },
+        { title: "Manage Users", path: "/admin/user-list", icon: Users },
+      ],
+    },
+    {
+      title: "System",
+      items: [
+        { title: "Country Albums", path: "/hub", icon: MapPin },
+        { title: "Site Guide", path: "/siteguide", icon: FileText },
+        { title: "Reset Admin", path: "/admin/reset-admin", icon: Settings },
+      ],
+    },
+  ];
+
   return (
     <div className="fixed bottom-4 left-4 z-50">
-      <DropdownMenu open={isVisible} onOpenChange={setIsVisible}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            variant="default"
-            className="h-10 px-3 rounded-full shadow-lg"
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Admin Menu
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 bg-background border-2 max-h-[80vh] overflow-y-auto">
-          <DropdownMenuLabel className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
-            Admin Controls
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          
-          {/* Main Admin Hub */}
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin')}
-            className={location.pathname === '/admin' ? 'bg-accent font-semibold' : ''}
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Admin Hub (Main Menu)
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          
-          {/* CRM Section */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">CRM & Leads</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/crm/dashboard')}
-            className={location.pathname === '/crm/dashboard' ? 'bg-accent' : ''}
-          >
-            <BarChart3 className="h-4 w-4 mr-2" />
-            CRM Dashboard
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/crm/leads')}
-            className={location.pathname === '/crm/leads' ? 'bg-accent' : ''}
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            TADCRM - Leads
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            onClick={(e) => {
-              e.preventDefault();
-              setShowQuickEntry(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Quick Lead Entry (Ctrl+Shift+Q)
-          </DropdownMenuItem>
+      <Button
+        size="sm"
+        variant="default"
+        onClick={() => setIsVisible(!isVisible)}
+        className="h-10 px-3 rounded-full shadow-lg"
+      >
+        <Shield className="h-4 w-4 mr-2" />
+        Admin Menu
+      </Button>
 
-          <DropdownMenuSeparator />
-          
-          {/* ERP & Finance Section */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">ERP & Finance</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/deals')}
-            className={location.pathname === '/deals' ? 'bg-accent' : ''}
-          >
-            <Briefcase className="h-4 w-4 mr-2" />
-            Deals & Sales
-          </DropdownMenuItem>
+      {isVisible && (
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="container mx-auto px-4 py-8 max-w-6xl">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-3xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent flex items-center gap-2">
+                  <Shield className="h-8 w-8 text-primary" />
+                  Admin Hub
+                </h1>
+                <p className="text-muted-foreground">Quick access to all system features</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsVisible(false)}
+                className="rounded-full"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
 
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/financial')}
-            className={location.pathname === '/financial' ? 'bg-accent' : ''}
-          >
-            <Coins className="h-4 w-4 mr-2" />
-            Financial Dashboard
-          </DropdownMenuItem>
+            {/* Sections Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {sections.map((section) => (
+                <div key={section.title} className="bg-card border rounded-lg p-4 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-3 text-primary">{section.title}</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {section.items.map((item) => (
+                      <Button
+                        key={item.title}
+                        variant="outline"
+                        size="sm"
+                        className="h-auto py-3 flex flex-col items-start gap-1 hover:bg-accent text-left justify-start"
+                        onClick={() => {
+                          if (item.action === "quick-lead") {
+                            setShowQuickEntry(true);
+                          } else if (item.path) {
+                            handleNavigation(item.path);
+                            setIsVisible(false);
+                          }
+                        }}
+                      >
+                        <item.icon className="h-4 w-4 mb-1" />
+                        <span className="text-xs font-medium leading-tight">{item.title}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
 
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/payments')}
-            className={location.pathname === '/payments' ? 'bg-accent' : ''}
-          >
-            <DollarSign className="h-4 w-4 mr-2" />
-            Payments List
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/expense-categories')}
-            className={location.pathname === '/expense-categories' ? 'bg-accent' : ''}
-          >
-            <Folder className="h-4 w-4 mr-2" />
-            Chart of Accounts
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/owner-equity')}
-            className={location.pathname === '/owner-equity' ? 'bg-accent' : ''}
-          >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Owner's Equity
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/audit-logs')}
-            className={location.pathname === '/audit-logs' ? 'bg-accent' : ''}
-          >
-            <Shield className="h-4 w-4 mr-2" />
-            Audit Logs
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/suppliers')}
-            className={location.pathname === '/suppliers' ? 'bg-accent' : ''}
-          >
-            <Building2 className="h-4 w-4 mr-2" />
-            Suppliers & A/P
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/contracts')}
-            className={location.pathname === '/contracts' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Contracts Management
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/refunds-approval')}
-            className={location.pathname === '/refunds-approval' ? 'bg-accent' : ''}
-          >
-            <ArrowLeftRight className="h-4 w-4 mr-2" />
-            Refunds Management
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-          
-          {/* Forms & Submissions */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">Forms & Submissions</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/client-submissions')}
-            className={location.pathname === '/client-submissions' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Client Submissions (Start Here)
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/refund')}
-            className={location.pathname === '/refund' ? 'bg-accent' : ''}
-          >
-            <DollarSign className="h-4 w-4 mr-2" />
-            Refund Calculator
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/refundslist')}
-            className={location.pathname === '/refundslist' ? 'bg-accent' : ''}
-          >
-            <FileSpreadsheet className="h-4 w-4 mr-2" />
-            Finalized Refunds
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/cvwizard')}
-            className={location.pathname === '/cvwizard' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            CV Wizard Form
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {/* CV Wizard Management */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">CV Wizard</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/my-cvs')}
-            className={location.pathname === '/my-cvs' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            My CVs
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/cvwizard-review')}
-            className={location.pathname === '/admin/cvwizard-review' ? 'bg-accent' : ''}
-          >
-            <Users className="h-4 w-4 mr-2" />
-            CV Review & Approval
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/cvwizard-settings')}
-            className={location.pathname === '/admin/cvwizard-settings' ? 'bg-accent' : ''}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            CV Wizard Settings
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/wizardalbum')}
-            className={location.pathname === '/wizardalbum' ? 'bg-accent' : ''}
-          >
-            <Images className="h-4 w-4 mr-2" />
-            Wizard Album (Photos)
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {/* User Management */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">User Management</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/user-management')}
-            className={location.pathname === '/admin/user-management' ? 'bg-accent' : ''}
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Create User
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/user-list')}
-            className={location.pathname === '/admin/user-list' ? 'bg-accent' : ''}
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Manage Users & Permissions
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {/* System */}
-          <DropdownMenuLabel className="text-xs text-muted-foreground">System</DropdownMenuLabel>
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/admin/reset-admin')}
-            className={location.pathname === '/admin/reset-admin' ? 'bg-accent' : ''}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Reset Admin Password
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/hub')}
-            className={location.pathname === '/hub' ? 'bg-accent' : ''}
-          >
-            <MapPin className="h-4 w-4 mr-2" />
-            Country Albums Hub
-          </DropdownMenuItem>
-
-          <DropdownMenuItem 
-            onClick={() => handleNavigation('/siteguide')}
-            className={location.pathname === '/siteguide' ? 'bg-accent' : ''}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Site Guide (PDF)
-          </DropdownMenuItem>
-          
-          <DropdownMenuSeparator />
-          
-          <DropdownMenuItem 
-            onClick={() => setIsVisible(false)}
-            className="text-muted-foreground"
-          >
-            <X className="h-4 w-4 mr-2" />
-            Hide Menu
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem 
-            onClick={handleLogout}
-            className="text-destructive focus:text-destructive"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Log Out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      
-      <div className="text-xs text-muted-foreground mt-2 text-center">
-        Press Ctrl+Shift+A
-      </div>
+            {/* Footer Actions */}
+            <div className="mt-6 flex items-center justify-between border-t pt-4">
+              <div className="text-sm text-muted-foreground">
+                Press <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+Shift+A</kbd> to toggle
+              </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Log Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <QuickLeadEntry
         open={showQuickEntry}
