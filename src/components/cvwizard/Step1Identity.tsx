@@ -109,6 +109,7 @@ const Step1Identity = ({ formData, updateFormData }: Props) => {
           <SelectContent>
             <SelectItem value="ABROAD">ABROAD</SelectItem>
             <SelectItem value="IN COUNTRY DEPLOYED">IN COUNTRY DEPLOYED</SelectItem>
+            <SelectItem value="IN COUNTRY WITH AGENT">IN COUNTRY WITH AGENT</SelectItem>
             <SelectItem value="IN COUNTRY RETURNED AWAIT CANCEL">IN COUNTRY RETURNED AWAIT CANCEL</SelectItem>
             <SelectItem value="IN COUNTRY CANCELLED READY FOR MARKET">IN COUNTRY CANCELLED READY FOR MARKET</SelectItem>
             <SelectItem value="RUNAWAY">RUNAWAY</SelectItem>
