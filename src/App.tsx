@@ -133,6 +133,7 @@ const App = () => (
           <Route path="/deals/:id" element={<Navigate to="/crm/deals/:id" replace />} />
           <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
           <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
+          <Route path="/daily-sales-report" element={<Navigate to="/crm/daily-sales-report" replace />} />
           
           {/* CRM Module - Sales & Customer Management */}
           <Route path="/crm" element={<ProtectedRoute><CRMHub /></ProtectedRoute>} />
