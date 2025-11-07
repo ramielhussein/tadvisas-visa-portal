@@ -33,6 +33,7 @@ export default function Admin() {
       color: "text-purple-600",
       bgColor: "bg-purple-50",
       items: [
+        { title: "Create Worker CV", path: "/cvwizard", icon: FileText, description: "Add new worker profiles" },
         { title: "Product Dashboard", path: "/product/dashboard", icon: Package, description: "Overview of operations" },
         { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText, description: "Worker procurement POs" },
         { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users, description: "Worker count tracking" },
