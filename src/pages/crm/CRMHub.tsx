@@ -84,17 +84,13 @@ const CRMHub = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
+      // For admins, sync the main search to admin search
+      if (isAdmin) {
+        setDebouncedAdminSearch(searchQuery);
+      }
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Debounce admin search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedAdminSearch(adminSearchQuery);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [adminSearchQuery]);
+  }, [searchQuery, isAdmin]);
 
   const loadLeads = useCallback(async () => {
     if (!user) return;
@@ -983,12 +979,9 @@ const CRMHub = () => {
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
-                  <Input
-                    placeholder="Search by name, phone, email, status, or service..."
-                    value={adminSearchQuery}
-                    onChange={(e) => setAdminSearchQuery(e.target.value)}
-                    className="w-full"
-                  />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    💡 Use the search box at the top to search across all leads system-wide
+                  </p>
                 </div>
                 <div className="mb-4">
                   <Select value={adminStatusFilter} onValueChange={setAdminStatusFilter}>
