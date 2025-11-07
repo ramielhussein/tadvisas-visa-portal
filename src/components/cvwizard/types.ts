@@ -4,7 +4,7 @@ export interface CVFormData {
   passport_no: string;
   passport_expiry: string;
   nationality_code: string;
-  age?: number;
+  date_of_birth: string;
   religion: string;
   maid_status: string;
   

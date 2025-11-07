@@ -70,14 +70,12 @@ const Step1Identity = ({ formData, updateFormData }: Props) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="age">Age * (18-60)</Label>
+        <Label htmlFor="date_of_birth">Date of Birth *</Label>
         <Input
-          id="age"
-          type="number"
-          min={18}
-          max={60}
-          value={formData.age}
-          onChange={(e) => updateFormData({ age: parseInt(e.target.value) || 18 })}
+          id="date_of_birth"
+          type="date"
+          value={formData.date_of_birth}
+          onChange={(e) => updateFormData({ date_of_birth: e.target.value })}
           required
         />
       </div>

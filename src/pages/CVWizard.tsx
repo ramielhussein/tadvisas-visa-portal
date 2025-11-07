@@ -36,7 +36,7 @@ const CVWizard = () => {
     passport_no: "",
     passport_expiry: "",
     nationality_code: "",
-    age: undefined,
+    date_of_birth: "",
     religion: "",
     maid_status: "",
     job1: "",
@@ -109,7 +109,7 @@ const CVWizard = () => {
               passport_no: worker.passport_no || "",
               passport_expiry: worker.passport_expiry || "",
               nationality_code: worker.nationality_code || "",
-              age: worker.age || undefined,
+              date_of_birth: worker.date_of_birth || "",
               religion: worker.religion || "",
               maid_status: worker.maid_status || "",
               job1: worker.job1 || "",
@@ -180,8 +180,7 @@ const CVWizard = () => {
           formData.passport_no &&
           formData.passport_expiry &&
           formData.nationality_code &&
-          formData.age >= 18 &&
-          formData.age <= 60 &&
+          formData.date_of_birth &&
           formData.religion &&
           formData.maid_status
         );
@@ -223,9 +222,9 @@ const CVWizard = () => {
         if (!formData.passport_no) missingFields.push("Passport Number");
         if (!formData.passport_expiry) missingFields.push("Passport Expiry");
         if (!formData.nationality_code) missingFields.push("Nationality");
+        if (!formData.date_of_birth) missingFields.push("Date of Birth");
         if (!formData.religion) missingFields.push("Religion");
         if (!formData.maid_status) missingFields.push("Maid Status");
-        if (formData.age < 18 || formData.age > 60) missingFields.push("Valid Age (18-60)");
       } else if (currentStep === 2) {
         if (!formData.job1) missingFields.push("Primary Job");
         if (!formData.marital_status) missingFields.push("Marital Status");
@@ -302,7 +301,7 @@ const CVWizard = () => {
             passport_no: formData.passport_no,
             passport_expiry: formData.passport_expiry,
             nationality_code: formData.nationality_code,
-            age: formData.age,
+            date_of_birth: formData.date_of_birth,
             religion: formData.religion,
             maid_status: formData.maid_status,
             job1: formData.job1,

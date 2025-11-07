@@ -2013,11 +2013,11 @@ export type Database = {
       }
       workers: {
         Row: {
-          age: number
           center_ref: string | null
           children: number | null
           created_at: string | null
           created_by: string | null
+          date_of_birth: string | null
           education: Json | null
           employer_count: number | null
           employers: Json | null
@@ -2044,11 +2044,11 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
-          age: number
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
           created_by?: string | null
+          date_of_birth?: string | null
           education?: Json | null
           employer_count?: number | null
           employers?: Json | null
@@ -2075,11 +2075,11 @@ export type Database = {
           weight_kg?: number | null
         }
         Update: {
-          age?: number
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
           created_by?: string | null
+          date_of_birth?: string | null
           education?: Json | null
           employer_count?: number | null
           employers?: Json | null
