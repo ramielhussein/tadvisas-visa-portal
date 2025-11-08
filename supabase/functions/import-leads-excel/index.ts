@@ -1,5 +1,4 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
-import * as XLSX from 'https://esm.sh/xlsx@0.20.1?target=deno&bundle';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -72,18 +71,55 @@ Deno.serve(async (req) => {
 
     console.log('Processing file:', file.name, 'Size:', file.size);
 
-    // Read the Excel file
-    const arrayBuffer = await file.arrayBuffer();
-    const workbook = XLSX.read(arrayBuffer);
-    
-    // Get the first sheet
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    
-    // Convert to JSON
-    const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
-    
-    console.log(`Found ${jsonData.length} rows in Excel file`);
+    // Parse CSV (fallback) or reject non-CSV to avoid external XLSX dependency
+    const isCSV = file.name?.toLowerCase().endsWith('.csv') || (file.type && file.type.includes('csv'));
+    let jsonData: any[] = [];
+
+    if (isCSV) {
+      const text = await file.text();
+
+      const smartSplit = (line: string): string[] => {
+        const res: string[] = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+          } else if (ch === ',' && !inQuotes) {
+            res.push(cur); cur = '';
+          } else {
+            cur += ch;
+          }
+        }
+        res.push(cur);
+        return res;
+      };
+
+      const parseCSV = (text: string): any[] => {
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length === 0) return [];
+        const headers = smartSplit(lines[0]).map(h => h.trim());
+        const rows: any[] = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = smartSplit(lines[i]);
+          const obj: any = {};
+          headers.forEach((h, idx) => {
+            const val = cols[idx] ?? '';
+            obj[h] = val.replace(/^"|"$/g, '').replace(/""/g, '"').trim();
+          });
+          rows.push(obj);
+        }
+        return rows;
+      };
+
+      jsonData = parseCSV(text);
+    } else {
+      throw new Error('Unsupported file format. Please upload a CSV file exported from Excel.');
+    }
+
+    console.log(`Found ${jsonData.length} rows in uploaded file`);
 
     const result: ImportResult = {
       total: jsonData.length,
