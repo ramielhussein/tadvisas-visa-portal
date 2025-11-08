@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
-import * as XLSX from 'https://cdn.jsdelivr.net/npm/xlsx@0.20.3/+esm';
+import * as XLSX from 'https://deno.land/x/sheetjs@v0.20.1/xlsx.mjs';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
