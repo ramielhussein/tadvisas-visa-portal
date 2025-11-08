@@ -280,9 +280,26 @@ interface QuickLeadEntryProps {
             nationality_code: existingLeadData.nationality_code || "",
             lead_source: existingLeadData.lead_source || "",
           });
+
+          // Fetch assignee information if lead is assigned
+          let assigneeInfo = "";
+          if (existingLeadData.assigned_to) {
+            const { data: assigneeData } = await supabase
+              .from("profiles")
+              .select("full_name, email")
+              .eq("id", existingLeadData.assigned_to)
+              .maybeSingle();
+            
+            if (assigneeData) {
+              assigneeInfo = ` Lead is assigned to ${assigneeData.full_name || assigneeData.email}.`;
+            }
+          } else {
+            assigneeInfo = " Lead is currently unassigned.";
+          }
+
           toast({
             title: "Lead Already Exists",
-            description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}. Cannot add duplicate.`,
+            description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}.${assigneeInfo}`,
             variant: "destructive",
           });
         }
