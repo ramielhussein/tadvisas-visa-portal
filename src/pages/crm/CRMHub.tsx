@@ -704,7 +704,7 @@ const CRMHub = () => {
                 </>
               )}
             </Button>
-          ) : (
+          ) : isAdmin ? (
             <Button
               size="sm"
               variant="outline"
@@ -721,7 +721,7 @@ const CRMHub = () => {
                 </>
               )}
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
@@ -1281,20 +1281,6 @@ const CRMHub = () => {
                                         ))}
                                       </SelectContent>
                                     </Select>
-                                  )}
-                                  {!isAdmin && (
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleUnassign(lead.id)}
-                                      disabled={assigningLeadId === lead.id}
-                                    >
-                                      {assigningLeadId === lead.id ? (
-                                        <Loader2 className="h-3 w-3 animate-spin" />
-                                      ) : (
-                                        <XCircle className="h-3 w-3" />
-                                      )}
-                                    </Button>
                                   )}
                                 </div>
                               </TableCell>
