@@ -397,6 +397,24 @@ interface QuickLeadEntryProps {
         return;
       }
 
+      // Double-check for existing lead right before insert
+      const { data: existingCheck } = await supabase
+        .from('leads')
+        .select('id, client_name, assigned_to, archived')
+        .eq('mobile_number', phoneValidation.formatted)
+        .maybeSingle();
+
+      if (existingCheck) {
+        toast({
+          title: "Lead Already Exists",
+          description: `This number is already in the system${existingCheck.client_name ? ` for ${existingCheck.client_name}` : ''}. Please search again.`,
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        setFormStage('number-check'); // Reset to search stage
+        return;
+      }
+
       // Insert lead with minimal data
       const { data: newLead, error: insertError } = await supabase
         .from("leads")
