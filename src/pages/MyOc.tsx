@@ -198,7 +198,7 @@ const MyOc = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">Myanmar Workers Outside Country</h1>
+              <h1 className="text-4xl font-bold mb-2">Myanmar / India Workers Outside Country</h1>
               <p className="text-muted-foreground">Upload and manage your daily photos and videos</p>
             </div>
             
