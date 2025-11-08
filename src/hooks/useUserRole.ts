@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type UserRole = 'admin' | 'sales' | 'finance' | 'product' | 'client' | 'user' | null;
+export type UserRole = 'super_admin' | 'admin' | 'sales' | 'finance' | 'product' | 'client' | 'user' | null;
 
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   useEffect(() => {
     checkUserRole();
@@ -43,10 +44,15 @@ export const useUserRole = () => {
         return;
       }
 
-      // Priority order: admin > finance > sales > product > client > user
+      // Check if user is super admin (only rami@tadmaids.com)
+      const superAdmin = user.email === 'rami@tadmaids.com';
+      setIsSuperAdmin(superAdmin);
+
+      // Priority order: super_admin > admin > finance > sales > product > client > user
       if (roles && roles.length > 0) {
         const userRoles = roles.map(r => r.role);
-        if (userRoles.includes('admin')) setRole('admin');
+        if (userRoles.includes('super_admin') && superAdmin) setRole('super_admin');
+        else if (userRoles.includes('admin')) setRole('admin');
         else if (userRoles.includes('finance')) setRole('finance');
         else if (userRoles.includes('sales')) setRole('sales');
         else if (userRoles.includes('product')) setRole('product');
@@ -67,7 +73,7 @@ export const useUserRole = () => {
     return role === checkRole;
   };
 
-  const isAdmin = role === 'admin';
+  const isAdmin = role === 'admin' || role === 'super_admin';
   const isSales = role === 'sales' || isAdmin;
   const isFinance = role === 'finance' || isAdmin;
   const isProduct = role === 'product' || isAdmin;
@@ -79,6 +85,7 @@ export const useUserRole = () => {
     user,
     hasRole,
     isAdmin,
+    isSuperAdmin,
     isSales,
     isFinance,
     isProduct,

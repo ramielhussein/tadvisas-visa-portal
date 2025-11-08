@@ -53,6 +53,14 @@ const CRMHub = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin, user } = useAdminCheck();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  // Check if user is super admin
+  useEffect(() => {
+    if (user) {
+      setIsSuperAdmin(user.email === 'rami@tadmaids.com');
+    }
+  }, [user]);
   
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [unassignedLeads, setUnassignedLeads] = useState<Lead[]>([]);
@@ -550,6 +558,100 @@ const CRMHub = () => {
     }
   };
 
+  const handleExportLeads = () => {
+    if (!isSuperAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only super admin can export leads",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Get the leads to export based on admin view
+      const leadsToExport = adminAllLeads.length > 0 ? adminAllLeads : allLeads;
+      
+      if (leadsToExport.length === 0) {
+        toast({
+          title: "No Data",
+          description: "No leads to export",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Add watermark info
+      const timestamp = new Date().toISOString();
+      const exporterEmail = user?.email || "unknown";
+      
+      // Create CSV content
+      const headers = [
+        "Client Name",
+        "Mobile Number",
+        "Email",
+        "Status",
+        "Service Required",
+        "Nationality",
+        "Emirate",
+        "Hot",
+        "Lead Source",
+        "Assigned To",
+        "Created At",
+        "Remind Me",
+        "Visa Expiry",
+        "Comments",
+        "Exported By",
+        "Export Timestamp"
+      ];
+
+      const csvContent = [
+        headers.join(","),
+        ...leadsToExport.map(lead => [
+          `"${lead.client_name || ""}"`,
+          `"${lead.mobile_number || ""}"`,
+          `"${lead.email || ""}"`,
+          `"${lead.status || ""}"`,
+          `"${lead.service_required || ""}"`,
+          `"${lead.nationality_code || ""}"`,
+          `"${lead.emirate || ""}"`,
+          lead.hot ? "Yes" : "No",
+          `"${lead.lead_source || ""}"`,
+          `"${getAssignedEmail(lead.assigned_to)}"`,
+          `"${lead.created_at || ""}"`,
+          `"${lead.remind_me || ""}"`,
+          `"${lead.visa_expiry_date || ""}"`,
+          `"${(lead.comments || "").replace(/"/g, '""')}"`,
+          `"${exporterEmail}"`,
+          `"${timestamp}"`
+        ].join(","))
+      ].join("\n");
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `leads_export_${timestamp.split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Export Successful",
+        description: `Exported ${leadsToExport.length} leads with watermark`,
+      });
+    } catch (error: any) {
+      console.error("Error exporting leads:", error);
+      toast({
+        title: "Export Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getAssignedEmail = (userId: string | null) => {
     if (!userId) return "Unassigned";
     const user = users.find(u => u.id === userId);
@@ -894,6 +996,12 @@ const CRMHub = () => {
 
           {isAdmin && viewMode === "table" && (
             <div className="flex gap-2">
+              {isSuperAdmin && (
+                <Button variant="outline" onClick={handleExportLeads}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Leads
+                </Button>
+              )}
               <Button variant="outline" asChild>
                 <label className="cursor-pointer">
                   <Upload className="w-4 h-4 mr-2" />

@@ -2212,6 +2212,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
           p_action: string
@@ -2226,7 +2227,14 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user" | "sales" | "finance" | "product" | "client"
+      app_role:
+        | "admin"
+        | "user"
+        | "sales"
+        | "finance"
+        | "product"
+        | "client"
+        | "super_admin"
       lead_status:
         | "New Lead"
         | "Warm"
@@ -2381,7 +2389,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user", "sales", "finance", "product", "client"],
+      app_role: [
+        "admin",
+        "user",
+        "sales",
+        "finance",
+        "product",
+        "client",
+        "super_admin",
+      ],
       lead_status: [
         "New Lead",
         "Warm",
