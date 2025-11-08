@@ -601,6 +601,16 @@ const CRMHub = () => {
     return new Date(dateString).toLocaleDateString("en-GB");
   };
 
+  const isCreatedToday = (createdAt: string) => {
+    const today = new Date();
+    const created = new Date(createdAt);
+    return (
+      created.getDate() === today.getDate() &&
+      created.getMonth() === today.getMonth() &&
+      created.getFullYear() === today.getFullYear()
+    );
+  };
+
   const LeadCard = ({ lead, showAssignButton }: { lead: Lead; showAssignButton: boolean }) => (
     <div
       className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer bg-card"
@@ -612,6 +622,11 @@ const CRMHub = () => {
             <h3 className="font-semibold text-sm truncate">
               {lead.client_name || "Unnamed Client"}
             </h3>
+            {isCreatedToday(lead.created_at) && (
+              <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                TODAY
+              </Badge>
+            )}
             {lead.hot && <Flame className="h-4 w-4 text-orange-500 flex-shrink-0" />}
           </div>
           <p className="text-xs text-muted-foreground mb-2">{lead.mobile_number}</p>
