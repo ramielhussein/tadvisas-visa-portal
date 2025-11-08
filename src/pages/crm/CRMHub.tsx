@@ -17,6 +17,9 @@ import RoundRobinToggle from "@/components/crm/RoundRobinToggle";
 import { ReminderSummaryWidget } from "@/components/crm/ReminderSummaryWidget";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
+import { AssignPreviouslyLostDialog } from "@/components/crm/AssignPreviouslyLostDialog";
+import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
 
 type SortOption = "remind_me" | "visa_expiry_date" | "created_at";
 type ViewMode = "cards" | "table";
@@ -41,6 +44,10 @@ interface Lead {
   lead_source: string | null;
   comments: string | null;
   archived: boolean;
+  previously_lost: boolean | null;
+  lost_reason: string | null;
+  lost_by: string | null;
+  lost_at: string | null;
 }
 
 interface User {
@@ -88,6 +95,12 @@ const CRMHub = () => {
     "SOLD": 0,
     "LOST": 0,
   });
+  const [lostDialogOpen, setLostDialogOpen] = useState(false);
+  const [lostLeadId, setLostLeadId] = useState<string | null>(null);
+  const [lostLeadName, setLostLeadName] = useState<string>("");
+  const [assignPreviouslyLostDialogOpen, setAssignPreviouslyLostDialogOpen] = useState(false);
+  const [previouslyLostLead, setPreviouslyLostLead] = useState<Lead | null>(null);
+  const [lostByUser, setLostByUser] = useState<string>("");
 
   // Debounce search to reduce re-renders
   useEffect(() => {
@@ -344,6 +357,34 @@ const CRMHub = () => {
   const handleAssignToMe = async (leadId: string) => {
     if (!user) return;
     
+    // Check if the lead was previously lost
+    const lead = [...unassignedLeads, ...myLeads].find(l => l.id === leadId);
+    
+    if (lead?.previously_lost) {
+      // Fetch the user who marked it as lost
+      if (lead.lost_by) {
+        const { data: lostByProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", lead.lost_by)
+          .maybeSingle();
+        
+        if (lostByProfile) {
+          setLostByUser(lostByProfile.full_name || lostByProfile.email || "Unknown");
+        }
+      }
+      
+      setPreviouslyLostLead(lead);
+      setAssignPreviouslyLostDialogOpen(true);
+      return;
+    }
+    
+    await assignLeadToUser(leadId);
+  };
+
+  const assignLeadToUser = async (leadId: string) => {
+    if (!user) return;
+    
     setAssigningLeadId(leadId);
     try {
       const { error } = await supabase
@@ -440,6 +481,15 @@ const CRMHub = () => {
   };
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
+    if (newStatus === "LOST") {
+      // Find the lead to get its name
+      const lead = [...myLeads, ...unassignedLeads, ...adminAllLeads].find(l => l.id === leadId);
+      setLostLeadId(leadId);
+      setLostLeadName(lead?.client_name || "this lead");
+      setLostDialogOpen(true);
+      return;
+    }
+
     try {
       const updateData: any = { status: newStatus };
 
@@ -447,10 +497,6 @@ const CRMHub = () => {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         updateData.remind_me = tomorrow.toISOString().split('T')[0];
-      } else if (newStatus === "LOST") {
-        const twoYears = new Date();
-        twoYears.setFullYear(twoYears.getFullYear() + 2);
-        updateData.remind_me = twoYears.toISOString().split('T')[0];
       }
 
       const { error } = await supabase
@@ -463,14 +509,60 @@ const CRMHub = () => {
       let description = `Lead status updated to ${newStatus}`;
       if (newStatus === "Called No Answer" || newStatus === "Called Unanswer 2") {
         description += " and reminder set to tomorrow";
-      } else if (newStatus === "LOST") {
-        description += " and reminder set to 2 years from now";
       }
 
       toast({
         title: "Success",
         description,
       });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLostConfirm = async (reason: string) => {
+    if (!lostLeadId || !user) return;
+
+    try {
+      const twoYears = new Date();
+      twoYears.setFullYear(twoYears.getFullYear() + 2);
+
+      const { error } = await supabase
+        .from("leads")
+        .update({
+          status: "LOST",
+          remind_me: twoYears.toISOString().split('T')[0],
+          assigned_to: null, // Unassign the lead
+          previously_lost: true,
+          lost_reason: reason,
+          lost_by: user.id,
+          lost_at: new Date().toISOString(),
+        })
+        .eq("id", lostLeadId);
+
+      if (error) throw error;
+
+      // Log the activity
+      await supabase.from("lead_activities").insert({
+        lead_id: lostLeadId,
+        user_id: user.id,
+        activity_type: "status_change",
+        title: "Lead Marked as LOST",
+        description: `Lead marked as LOST and unassigned. Reason: ${reason}`,
+      });
+
+      toast({
+        title: "Success",
+        description: "Lead marked as LOST and unassigned",
+      });
+      
+      setLostDialogOpen(false);
+      setLostLeadId(null);
+      setLostLeadName("");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -723,14 +815,20 @@ const CRMHub = () => {
     );
   };
 
-  const LeadCard = ({ lead, showAssignButton }: { lead: Lead; showAssignButton: boolean }) => (
+  const LeadCard = ({ lead, showAssignButton }: { lead: Lead; showAssignButton: boolean }) => {
+    // Get the lost_by user's name from the users array
+    const lostByUserName = lead.lost_by 
+      ? users.find(u => u.id === lead.lost_by)?.full_name || users.find(u => u.id === lead.lost_by)?.email || "Unknown"
+      : undefined;
+
+    return (
     <div
       className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer bg-card"
       onClick={() => navigate(`/crm/leads/${lead.id}`)}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="font-semibold text-sm truncate">
               {lead.client_name || "Unnamed Client"}
             </h3>
@@ -740,6 +838,13 @@ const CRMHub = () => {
               </Badge>
             )}
             {lead.hot && <Flame className="h-4 w-4 text-orange-500 flex-shrink-0" />}
+            {lead.previously_lost && (
+              <PreviouslyLostBadge
+                lostBy={lostByUserName}
+                lostAt={lead.lost_at || undefined}
+                lostReason={lead.lost_reason || undefined}
+              />
+            )}
           </div>
           <p className="text-xs text-muted-foreground mb-2">{lead.mobile_number}</p>
           <div className="flex flex-wrap gap-1 mb-2">
@@ -827,7 +932,8 @@ const CRMHub = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   if (loading) {
     return (
@@ -1481,6 +1587,31 @@ const CRMHub = () => {
           </>
         )}
       </div>
+
+      {/* Lost Reason Dialog */}
+      <LostReasonDialog
+        open={lostDialogOpen}
+        onOpenChange={setLostDialogOpen}
+        onConfirm={handleLostConfirm}
+        leadName={lostLeadName}
+      />
+
+      {/* Assign Previously Lost Dialog */}
+      <AssignPreviouslyLostDialog
+        open={assignPreviouslyLostDialogOpen}
+        onOpenChange={setAssignPreviouslyLostDialogOpen}
+        onConfirm={() => {
+          if (previouslyLostLead) {
+            assignLeadToUser(previouslyLostLead.id);
+          }
+          setAssignPreviouslyLostDialogOpen(false);
+          setPreviouslyLostLead(null);
+        }}
+        leadName={previouslyLostLead?.client_name || "this lead"}
+        lostBy={lostByUser}
+        lostAt={previouslyLostLead?.lost_at || undefined}
+        lostReason={previouslyLostLead?.lost_reason || undefined}
+      />
     </Layout>
   );
 };

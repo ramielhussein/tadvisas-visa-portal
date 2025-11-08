@@ -31,6 +31,8 @@ import {
   ArchiveRestore
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
+import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
 
 interface Activity {
   id: string;
@@ -62,6 +64,10 @@ interface Lead {
   comments?: string | null;
   hot?: boolean | null;
   archived?: boolean;
+  previously_lost?: boolean | null;
+  lost_reason?: string | null;
+  lost_by?: string | null;
+  lost_at?: string | null;
 }
 
 const LeadDetail = () => {
@@ -77,6 +83,8 @@ const LeadDetail = () => {
   const [newNote, setNewNote] = useState("");
   const [activityType, setActivityType] = useState<string>("note");
   const [addingActivity, setAddingActivity] = useState(false);
+  const [lostDialogOpen, setLostDialogOpen] = useState(false);
+  const [lostByUser, setLostByUser] = useState<string>("");
 
   useEffect(() => {
     if (id) {
@@ -84,6 +92,24 @@ const LeadDetail = () => {
       fetchActivities();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchLostByUser = async () => {
+      if (lead?.lost_by) {
+        const { data: lostByProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", lead.lost_by)
+          .maybeSingle();
+        
+        if (lostByProfile) {
+          setLostByUser(lostByProfile.full_name || lostByProfile.email || "Unknown");
+        }
+      }
+    };
+
+    fetchLostByUser();
+  }, [lead?.lost_by]);
 
   const fetchLeadDetails = async () => {
     try {
@@ -393,6 +419,72 @@ const LeadDetail = () => {
     }
   };
 
+  const handleLostConfirm = async (reason: string) => {
+    if (!lead?.id) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const twoYears = new Date();
+      twoYears.setFullYear(twoYears.getFullYear() + 2);
+
+      const { error } = await supabase
+        .from("leads")
+        .update({
+          status: "LOST",
+          remind_me: twoYears.toISOString().split('T')[0],
+          assigned_to: null, // Unassign the lead
+          previously_lost: true,
+          lost_reason: reason,
+          lost_by: user.id,
+          lost_at: new Date().toISOString(),
+        })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      // Log the activity
+      await supabase.from("lead_activities").insert({
+        lead_id: lead.id,
+        user_id: user.id,
+        activity_type: "status_change",
+        title: "Lead Marked as LOST",
+        description: `Lead marked as LOST and unassigned. Reason: ${reason}`,
+      });
+
+      // Update local state
+      setLead(prev => prev ? {
+        ...prev,
+        status: "LOST",
+        assigned_to: null,
+        previously_lost: true,
+        lost_reason: reason,
+        lost_by: user.id,
+        lost_at: new Date().toISOString(),
+      } : null);
+
+      toast({
+        title: "Success",
+        description: "Lead marked as LOST and unassigned",
+      });
+      
+      setLostDialogOpen(false);
+      fetchActivities();
+      
+      // Navigate back to CRM after 2 seconds
+      setTimeout(() => {
+        navigate("/crm/leads");
+      }, 2000);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -444,6 +536,13 @@ const LeadDetail = () => {
                           <Archive className="w-3 h-3 mr-1" />
                           Archived
                         </Badge>
+                      )}
+                      {lead.previously_lost && (
+                        <PreviouslyLostBadge
+                          lostBy={lostByUser}
+                          lostAt={lead.lost_at}
+                          lostReason={lead.lost_reason || undefined}
+                        />
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
@@ -711,6 +810,13 @@ const LeadDetail = () => {
           </div>
         </div>
       </div>
+
+      <LostReasonDialog
+        open={lostDialogOpen}
+        onOpenChange={setLostDialogOpen}
+        onConfirm={handleLostConfirm}
+        leadName={lead?.client_name || "this lead"}
+      />
 
       <QuickLeadEntry
         open={editingLead}

@@ -659,9 +659,13 @@ export type Database = {
           hot: boolean | null
           id: string
           lead_source: string | null
+          lost_at: string | null
+          lost_by: string | null
+          lost_reason: string | null
           mobile_number: string
           nationality_code: string | null
           passport_copy_url: string | null
+          previously_lost: boolean | null
           remind_me: string | null
           service_required: string | null
           status: Database["public"]["Enums"]["lead_status"]
@@ -683,9 +687,13 @@ export type Database = {
           hot?: boolean | null
           id?: string
           lead_source?: string | null
+          lost_at?: string | null
+          lost_by?: string | null
+          lost_reason?: string | null
           mobile_number: string
           nationality_code?: string | null
           passport_copy_url?: string | null
+          previously_lost?: boolean | null
           remind_me?: string | null
           service_required?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
@@ -707,9 +715,13 @@ export type Database = {
           hot?: boolean | null
           id?: string
           lead_source?: string | null
+          lost_at?: string | null
+          lost_by?: string | null
+          lost_reason?: string | null
           mobile_number?: string
           nationality_code?: string | null
           passport_copy_url?: string | null
+          previously_lost?: boolean | null
           remind_me?: string | null
           service_required?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
