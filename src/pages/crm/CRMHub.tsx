@@ -61,6 +61,7 @@ const CRMHub = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("created_at");
   const [showOnlyHot, setShowOnlyHot] = useState(false);
+  const [showOnlyToday, setShowOnlyToday] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   const [assigningLeadId, setAssigningLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
@@ -190,6 +191,15 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.eq("hot", true);
       }
 
+      // Apply TODAY filter if enabled
+      if (showOnlyToday) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayStr = today.toISOString();
+        unassignedQuery = unassignedQuery.gte("created_at", todayStr);
+        myLeadsQuery = myLeadsQuery.gte("created_at", todayStr);
+      }
+
       // Apply sorting - newest first for created_at, earliest first for dates
       const ascending = sortBy === "created_at" ? false : true;
       unassignedQuery = unassignedQuery.order(sortBy, { ascending, nullsFirst: false });
@@ -227,7 +237,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, showOnlyHot, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
+  }, [user, sortBy, showOnlyHot, showOnlyToday, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
   useEffect(() => {
     if (user) {
@@ -846,6 +856,17 @@ const CRMHub = () => {
               />
               <Label htmlFor="hot-filter" className="text-sm cursor-pointer">
                 🔥 Hot Leads Only
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                id="today-filter"
+                checked={showOnlyToday}
+                onCheckedChange={setShowOnlyToday}
+              />
+              <Label htmlFor="today-filter" className="text-sm cursor-pointer">
+                📅 Today's Leads
               </Label>
             </div>
 
