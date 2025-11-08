@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
-import { read, utils } from 'https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs';
+import * as XLSX from 'https://esm.sh/xlsx@0.20.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -74,14 +74,14 @@ Deno.serve(async (req) => {
 
     // Read the Excel file
     const arrayBuffer = await file.arrayBuffer();
-    const workbook = read(arrayBuffer);
+    const workbook = XLSX.read(arrayBuffer);
     
     // Get the first sheet
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
     
     // Convert to JSON
-    const jsonData = utils.sheet_to_json(worksheet) as any[];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet) as any[];
     
     console.log(`Found ${jsonData.length} rows in Excel file`);
 
