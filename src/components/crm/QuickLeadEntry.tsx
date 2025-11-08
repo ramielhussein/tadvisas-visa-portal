@@ -853,20 +853,109 @@ interface QuickLeadEntryProps {
                   <p className="text-sm text-destructive font-medium">
                     ⚠️ This lead already exists: {existingLead.client_name || existingLead.mobile_number}
                   </p>
-                  <div className="flex gap-2">
+                  
+                  {/* Reassign Section */}
+                  <div className="border rounded-lg p-3 bg-muted space-y-3">
+                    <Label htmlFor="reassign_to" className="text-sm font-semibold">
+                      Reassign Lead To:
+                    </Label>
+                    <Select
+                      value={formData.assigned_to}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, assigned_to: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select new assignee" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background z-50">
+                        <SelectItem value="unassigned">Unassign (Send to Incoming)</SelectItem>
+                        {salesTeam.map((person) => (
+                          <SelectItem key={person.id} value={person.id}>
+                            {person.full_name || person.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
                     <Button
                       type="button"
                       variant="default"
-                      onClick={pingSalesTeam}
-                      className="flex-1"
+                      onClick={() => navigate(`/crm/leads/${existingLead.id}`)}
+                      className="w-full"
                     >
-                      PING SALES TEAM
+                      View Lead Details
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={async () => {
+                        if (!formData.assigned_to) {
+                          toast({
+                            title: "Select Assignee",
+                            description: "Please select who to reassign this lead to",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+
+                        try {
+                          const newAssignee = formData.assigned_to === "unassigned" ? null : formData.assigned_to;
+                          
+                          const { error } = await supabase
+                            .from("leads")
+                            .update({ assigned_to: newAssignee })
+                            .eq("id", existingLead.id);
+
+                          if (error) throw error;
+
+                          // Create notification if reassigned to someone
+                          if (newAssignee) {
+                            await supabase.from("notifications").insert({
+                              user_id: newAssignee,
+                              title: "Lead Re-assigned",
+                              message: `You have been assigned lead: ${existingLead.client_name || existingLead.mobile_number}`,
+                              type: "info",
+                              related_lead_id: existingLead.id,
+                            });
+                          }
+
+                          toast({
+                            title: "Lead Reassigned",
+                            description: newAssignee 
+                              ? "Lead has been reassigned successfully"
+                              : "Lead has been unassigned and moved to incoming pool",
+                          });
+
+                          onSuccess();
+                          onClose();
+                        } catch (error: any) {
+                          toast({
+                            title: "Reassignment Failed",
+                            description: error.message,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      Reassign Lead
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
+                      onClick={pingSalesTeam}
+                      className="w-full"
+                    >
+                      Ping Sales Team
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
                       onClick={onClose}
-                      className="flex-1"
+                      className="w-full"
                     >
                       Cancel
                     </Button>
