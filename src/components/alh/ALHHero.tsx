@@ -12,7 +12,7 @@ const ALHHero = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentHeadline((prev) => (prev + 1) % headlines.length);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
