@@ -28,11 +28,22 @@ import {
   Video,
   CheckCircle2,
   Archive,
-  ArchiveRestore
+  ArchiveRestore,
+  Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
 import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Activity {
   id: string;
@@ -85,6 +96,8 @@ const LeadDetail = () => {
   const [addingActivity, setAddingActivity] = useState(false);
   const [lostDialogOpen, setLostDialogOpen] = useState(false);
   const [lostByUser, setLostByUser] = useState<string>("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -485,6 +498,37 @@ const LeadDetail = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!lead?.id) return;
+
+    try {
+      setDeleting(true);
+
+      const { error } = await supabase
+        .from("leads")
+        .delete()
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Lead deleted successfully",
+      });
+
+      navigate("/crm/leads");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -575,6 +619,16 @@ const LeadDetail = () => {
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
+                    {isAdmin && (
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => setDeleteDialogOpen(true)}
+                        title="Delete this lead permanently"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -817,6 +871,28 @@ const LeadDetail = () => {
         onConfirm={handleLostConfirm}
         leadName={lead?.client_name || "this lead"}
       />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Lead?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently delete "{lead?.client_name || 'this lead'}"? 
+              This action cannot be undone and will remove all associated activities.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Delete Lead"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <QuickLeadEntry
         open={editingLead}
