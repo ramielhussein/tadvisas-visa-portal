@@ -6,7 +6,8 @@ const ALHHero = () => {
   const [currentHeadline, setCurrentHeadline] = useState(0);
   const headlines = [
     "FROM MOVE-IN TO\nLIVE-IN IN 72 HOURS",
-    "Warmer Homes by ALH"
+    "Warmer Homes by ALH",
+    "Delivering Comfort With keys"
   ];
 
   useEffect(() => {
