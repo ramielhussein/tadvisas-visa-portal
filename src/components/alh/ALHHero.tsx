@@ -1,7 +1,21 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 
 const ALHHero = () => {
+  const [currentHeadline, setCurrentHeadline] = useState(0);
+  const headlines = [
+    "FROM MOVE-IN TO\nLIVE-IN IN 72 HOURS",
+    "Warmer Homes by ALH"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeadline((prev) => (prev + 1) % headlines.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   const scrollToForm = () => {
     document.getElementById('book')?.scrollIntoView({ behavior: 'smooth' });
     if ((window as any).gtag) {
@@ -26,9 +40,13 @@ const ALHHero = () => {
           ALH PROPERTIES PRESENTS
         </div>
         
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-          FROM MOVE-IN TO<br />
-          LIVE-IN IN 72 HOURS
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight transition-opacity duration-500">
+          {headlines[currentHeadline].split('\n').map((line, i) => (
+            <span key={i}>
+              {line}
+              {i < headlines[currentHeadline].split('\n').length - 1 && <br />}
+            </span>
+          ))}
         </h1>
         
         <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
