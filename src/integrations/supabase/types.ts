@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      alh_pilot_requests: {
+        Row: {
+          community: string
+          company_name: string
+          contact_person: string
+          created_at: string
+          email: string
+          id: string
+          mobile: string
+          monthly_handovers: string
+          notes: string | null
+          preferred_start: string | null
+          source: string | null
+          tracks: string[]
+        }
+        Insert: {
+          community: string
+          company_name: string
+          contact_person: string
+          created_at?: string
+          email: string
+          id?: string
+          mobile: string
+          monthly_handovers: string
+          notes?: string | null
+          preferred_start?: string | null
+          source?: string | null
+          tracks: string[]
+        }
+        Update: {
+          community?: string
+          company_name?: string
+          contact_person?: string
+          created_at?: string
+          email?: string
+          id?: string
+          mobile?: string
+          monthly_handovers?: string
+          notes?: string | null
+          preferred_start?: string | null
+          source?: string | null
+          tracks?: string[]
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
