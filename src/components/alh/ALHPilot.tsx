@@ -29,7 +29,7 @@ const ALHPilot = () => {
     {
       icon: Target,
       title: "Scope",
-      description: "100 units across 2 communities"
+      description: "30 units across multiple communities"
     },
     {
       icon: BarChart3,
