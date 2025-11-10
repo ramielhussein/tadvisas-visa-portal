@@ -469,7 +469,7 @@ interface QuickLeadEntryProps {
           service_required: formData.service_required || null,
           nationality_code: formData.nationality_code || null,
           lead_source: formData.lead_source || null,
-          assigned_to: formData.assigned_to || null,
+          assigned_to: (formData.assigned_to && formData.assigned_to !== "unassigned") ? formData.assigned_to : null,
           comments: formData.comments || null,
           hot: formData.hot,
           visa_expiry_date: formData.visa_expiry_date || null,
@@ -633,8 +633,8 @@ interface QuickLeadEntryProps {
       await Promise.all(uploadPromises);
 
       // Determine who to assign the lead to
-      // If no assignee selected, leave unassigned
-      const assignedTo = formData.assigned_to || null;
+      // If no assignee selected or "unassigned" explicitly chosen, leave unassigned
+      const assignedTo = (formData.assigned_to && formData.assigned_to !== "unassigned") ? formData.assigned_to : null;
 
       // Prepare lead data
       const leadData: any = {
@@ -695,8 +695,8 @@ interface QuickLeadEntryProps {
         }
       }
 
-      // Only trigger round-robin if no assignee was explicitly set OR if status is "No Connection"
-      if (newLead && (!formData.assigned_to || formData.status === "No Connection")) {
+      // Only trigger round-robin if no assignee was explicitly set OR explicitly unassigned OR if status is "No Connection"
+      if (newLead && (!formData.assigned_to || formData.assigned_to === "unassigned" || formData.status === "No Connection")) {
         try {
           await supabase.functions.invoke("assign-lead-round-robin", {
             body: { leadId: newLead.id },
@@ -1128,6 +1128,9 @@ interface QuickLeadEntryProps {
                   <SelectValue placeholder="Unassigned (optional)" />
                 </SelectTrigger>
                 <SelectContent className="bg-background z-50">
+                  <SelectItem key="unassigned" value="unassigned">
+                    Unassigned
+                  </SelectItem>
                   {salesTeam.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.full_name || user.email}
