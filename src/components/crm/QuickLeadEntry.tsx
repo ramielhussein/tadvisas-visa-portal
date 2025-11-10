@@ -902,6 +902,7 @@ interface QuickLeadEntryProps {
                     <Button
                       type="button"
                       variant="secondary"
+                      disabled={!formData.assigned_to}
                       onClick={async () => {
                         // Allow empty selection to mean keep current assignment
                         const willUnassign = formData.assigned_to === "unassigned";
