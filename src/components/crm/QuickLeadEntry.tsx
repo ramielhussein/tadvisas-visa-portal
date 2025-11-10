@@ -282,6 +282,7 @@ interface QuickLeadEntryProps {
             service_required: existingLeadData.service_required || "",
             nationality_code: existingLeadData.nationality_code || "",
             lead_source: existingLeadData.lead_source || "",
+            assigned_to: existingLeadData.assigned_to || "", // Add current assignment
           });
 
           // Fetch assignee information if lead is assigned
@@ -902,18 +903,11 @@ interface QuickLeadEntryProps {
                       type="button"
                       variant="secondary"
                       onClick={async () => {
-                        if (!formData.assigned_to) {
-                          toast({
-                            title: "Select Assignee",
-                            description: "Please select who to reassign this lead to",
-                            variant: "destructive",
-                          });
-                          return;
-                        }
+                        // Allow empty selection to mean keep current assignment
+                        const willUnassign = formData.assigned_to === "unassigned";
+                        const newAssignee = willUnassign ? null : (formData.assigned_to || existingLead.assigned_to);
 
                         try {
-                          const newAssignee = formData.assigned_to === "unassigned" ? null : formData.assigned_to;
-                          
                           const { error } = await supabase
                             .from("leads")
                             .update({ assigned_to: newAssignee })
@@ -921,8 +915,8 @@ interface QuickLeadEntryProps {
 
                           if (error) throw error;
 
-                          // Create notification if reassigned to someone
-                          if (newAssignee) {
+                          // Create notification if reassigned to someone new
+                          if (newAssignee && newAssignee !== existingLead.assigned_to) {
                             await supabase.from("notifications").insert({
                               user_id: newAssignee,
                               title: "Lead Re-assigned",
@@ -934,9 +928,11 @@ interface QuickLeadEntryProps {
 
                           toast({
                             title: "Lead Reassigned",
-                            description: newAssignee 
+                            description: willUnassign 
+                              ? "Lead has been unassigned and moved to incoming pool"
+                              : newAssignee !== existingLead.assigned_to
                               ? "Lead has been reassigned successfully"
-                              : "Lead has been unassigned and moved to incoming pool",
+                              : "Lead assignment unchanged",
                           });
 
                           onSuccess();
