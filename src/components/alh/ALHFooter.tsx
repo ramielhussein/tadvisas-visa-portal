@@ -44,7 +44,7 @@ const ALHFooter = () => {
           </div>
 
           <p className="text-xs text-[#B6BBC4] mt-6 text-center max-w-5xl mx-auto">
-            Buyer perk delivered as a service credit redeemable against eligible services (P1 Direct-Hire / P4 monthly). 
+            Buyer perk delivered as a service credit redeemable against eligible services (Monthly or 2 Years Contract or Maid visa service). 
             Not a promise to employ or sponsor a worker. Services are subject to scheduling, availability, and PDPL-compliant consent.
           </p>
         </div>
