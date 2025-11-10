@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -98,6 +99,8 @@ const LeadDetail = () => {
   const [lostByUser, setLostByUser] = useState<string>("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [reminderDate, setReminderDate] = useState<string>("");
+  const [updatingReminder, setUpdatingReminder] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -105,6 +108,12 @@ const LeadDetail = () => {
       fetchActivities();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (lead?.remind_me) {
+      setReminderDate(lead.remind_me);
+    }
+  }, [lead?.remind_me]);
 
   useEffect(() => {
     const fetchLostByUser = async () => {
@@ -529,6 +538,51 @@ const LeadDetail = () => {
     }
   };
 
+  const handleUpdateReminder = async () => {
+    if (!lead?.id || !reminderDate) return;
+
+    try {
+      setUpdatingReminder(true);
+
+      const { error } = await supabase
+        .from("leads")
+        .update({ remind_me: reminderDate })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      // Log the activity
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("lead_activities").insert({
+          lead_id: lead.id,
+          user_id: user.id,
+          activity_type: "system",
+          title: "Reminder Updated",
+          description: `Reminder date set to ${new Date(reminderDate).toLocaleDateString('en-GB')}`,
+        });
+      }
+
+      // Update local state
+      setLead(prev => prev ? { ...prev, remind_me: reminderDate } : null);
+
+      toast({
+        title: "Success",
+        description: "Reminder date updated",
+      });
+
+      fetchActivities();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingReminder(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -816,6 +870,38 @@ const LeadDetail = () => {
                       checked={lead.hot || false}
                       onCheckedChange={handleHotToggle}
                     />
+                  </div>
+
+                  {/* Reminder Date Setter */}
+                  <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+                    <Label htmlFor="reminder-date" className="font-medium">
+                      Set Reminder Date
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="reminder-date"
+                        type="date"
+                        value={reminderDate}
+                        onChange={(e) => setReminderDate(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button 
+                        size="sm"
+                        onClick={handleUpdateReminder}
+                        disabled={updatingReminder || !reminderDate || reminderDate === lead.remind_me}
+                      >
+                        {updatingReminder ? "Saving..." : "Save"}
+                      </Button>
+                    </div>
+                    {lead.remind_me && (
+                      <p className="text-xs text-muted-foreground">
+                        Current: {new Date(lead.remind_me).toLocaleDateString('en-GB', { 
+                          day: '2-digit', 
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
