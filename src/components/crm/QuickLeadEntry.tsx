@@ -43,6 +43,7 @@ interface QuickLeadEntryProps {
     comments: "",
     hot: false,
     visa_expiry_date: "",
+    remind_me: "",
   });
 
   const [files, setFiles] = useState<{
@@ -130,6 +131,7 @@ interface QuickLeadEntryProps {
           comments: lead.comments || "",
           hot: lead.hot || false,
           visa_expiry_date: lead.visa_expiry_date || "",
+          remind_me: lead.remind_me || "",
         });
         setExistingLead(null); // Clear existing lead check for edit mode
         setFormStage('full-form'); // Go straight to full form for edits
@@ -148,6 +150,7 @@ interface QuickLeadEntryProps {
           comments: "",
           hot: false,
           visa_expiry_date: "",
+          remind_me: "",
         });
         setExistingLead(null);
         setFiles({ passport: null, eidFront: null, eidBack: null });
@@ -469,17 +472,20 @@ interface QuickLeadEntryProps {
           comments: formData.comments || null,
           hot: formData.hot,
           visa_expiry_date: formData.visa_expiry_date || null,
+          remind_me: formData.remind_me || null,
         };
 
-        // Set reminder to tomorrow if status is "Called No Answer"
-        if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          updateData.remind_me = tomorrow.toISOString().split('T')[0];
-        } else if (formData.status === "LOST") {
-          const twoYears = new Date();
-          twoYears.setFullYear(twoYears.getFullYear() + 2);
-          updateData.remind_me = twoYears.toISOString().split('T')[0];
+        // Auto-set reminder based on status if no manual reminder is set
+        if (!formData.remind_me) {
+          if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            updateData.remind_me = tomorrow.toISOString().split('T')[0];
+          } else if (formData.status === "LOST") {
+            const twoYears = new Date();
+            twoYears.setFullYear(twoYears.getFullYear() + 2);
+            updateData.remind_me = twoYears.toISOString().split('T')[0];
+          }
         }
 
         // Handle "No Connection" - reassign to next person in round-robin
@@ -646,17 +652,20 @@ interface QuickLeadEntryProps {
         comments: formData.comments || null,
         hot: formData.hot,
         visa_expiry_date: formData.visa_expiry_date || null,
+        remind_me: formData.remind_me || null,
       };
 
-      // Set reminder to tomorrow if status is "Called No Answer"
-      if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        leadData.remind_me = tomorrow.toISOString().split('T')[0];
-      } else if (formData.status === "LOST") {
-        const twoYears = new Date();
-        twoYears.setFullYear(twoYears.getFullYear() + 2);
-        leadData.remind_me = twoYears.toISOString().split('T')[0];
+      // Auto-set reminder based on status if no manual reminder is set
+      if (!formData.remind_me) {
+        if (formData.status === "Called No Answer" || formData.status === "Called Unanswer 2") {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          leadData.remind_me = tomorrow.toISOString().split('T')[0];
+        } else if (formData.status === "LOST") {
+          const twoYears = new Date();
+          twoYears.setFullYear(twoYears.getFullYear() + 2);
+          leadData.remind_me = twoYears.toISOString().split('T')[0];
+        }
       }
 
       // Insert lead into database
@@ -739,6 +748,7 @@ interface QuickLeadEntryProps {
         comments: "",
         hot: false,
         visa_expiry_date: "",
+        remind_me: "",
       });
       setFiles({ passport: null, eidFront: null, eidBack: null });
       setExistingLead(null);
@@ -1206,6 +1216,22 @@ interface QuickLeadEntryProps {
                   setFormData({ ...formData, visa_expiry_date: e.target.value })
                 }
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="remind_me">Remind Me On</Label>
+              <Input
+                id="remind_me"
+                type="date"
+                value={formData.remind_me}
+                onChange={(e) =>
+                  setFormData({ ...formData, remind_me: e.target.value })
+                }
+                placeholder="Set a reminder date"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave empty to use automatic reminders based on status
+              </p>
             </div>
 
             <div className="space-y-2">
