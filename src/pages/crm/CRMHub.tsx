@@ -21,7 +21,7 @@ import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
 import { AssignPreviouslyLostDialog } from "@/components/crm/AssignPreviouslyLostDialog";
 import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
 
-type SortOption = "remind_me" | "visa_expiry_date" | "created_at";
+type SortOption = "remind_me" | "visa_expiry_date" | "created_at" | "updated_at";
 type ViewMode = "cards" | "table";
 
 interface Lead {
@@ -122,10 +122,13 @@ const CRMHub = () => {
       // Admin view with search and status filter
       let adminAccum: Lead[] | null = null;
       if (isAdmin) {
+        // Determine sort order based on sortBy
+        const adminAscending = (sortBy === "created_at" || sortBy === "updated_at") ? false : true;
+        
         let adminQuery = supabase
           .from("leads")
           .select("*")
-          .order("created_at", { ascending: false });
+          .order(sortBy, { ascending: adminAscending, nullsFirst: false });
 
         // Filter archived leads unless toggle is on OR searching (show all when searching)
         if (!showArchived && !debouncedAdminSearch) {
@@ -221,8 +224,8 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.gte("created_at", todayStr);
       }
 
-      // Apply sorting - newest first for created_at, earliest first for dates
-      const ascending = sortBy === "created_at" ? false : true;
+      // Apply sorting - newest first for created_at and updated_at, earliest first for other dates
+      const ascending = (sortBy === "created_at" || sortBy === "updated_at") ? false : true;
       unassignedQuery = unassignedQuery.order(sortBy, { ascending, nullsFirst: false });
       myLeadsQuery = myLeadsQuery.order(sortBy, { ascending, nullsFirst: false });
 
@@ -815,6 +818,16 @@ const CRMHub = () => {
     );
   };
 
+  const isUpdatedToday = (updatedAt: string) => {
+    const today = new Date();
+    const updated = new Date(updatedAt);
+    return (
+      updated.getDate() === today.getDate() &&
+      updated.getMonth() === today.getMonth() &&
+      updated.getFullYear() === today.getFullYear()
+    );
+  };
+
   const LeadCard = ({ lead, showAssignButton }: { lead: Lead; showAssignButton: boolean }) => {
     // Get the lost_by user's name from the users array
     const lostByUserName = lead.lost_by 
@@ -832,7 +845,7 @@ const CRMHub = () => {
             <h3 className="font-semibold text-sm truncate">
               {lead.client_name || "Unnamed Client"}
             </h3>
-            {isCreatedToday(lead.created_at) && (
+            {(isCreatedToday(lead.created_at) || isUpdatedToday(lead.updated_at)) && (
               <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
                 TODAY
               </Badge>
@@ -1052,6 +1065,7 @@ const CRMHub = () => {
                   <SelectItem value="remind_me">Due Date</SelectItem>
                   <SelectItem value="visa_expiry_date">Visa Expiry</SelectItem>
                   <SelectItem value="created_at">Date Added</SelectItem>
+                  <SelectItem value="updated_at">Last Updated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1318,6 +1332,11 @@ const CRMHub = () => {
                                   <div className="font-medium flex items-center gap-2">
                                     {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
                                     {lead.archived && <Archive className="h-4 w-4 text-muted-foreground" />}
+                                    {(isCreatedToday(lead.created_at) || isUpdatedToday(lead.updated_at)) && (
+                                      <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                        TODAY
+                                      </Badge>
+                                    )}
                                     <button
                                       onClick={() => navigate(`/crm/leads/${lead.id}`)}
                                       className="hover:text-primary hover:underline text-left"
@@ -1421,6 +1440,11 @@ const CRMHub = () => {
                                 <div>
                                   <div className="font-medium flex items-center gap-2">
                                     {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
+                                    {(isCreatedToday(lead.created_at) || isUpdatedToday(lead.updated_at)) && (
+                                      <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                        TODAY
+                                      </Badge>
+                                    )}
                                     <button
                                       onClick={() => navigate(`/crm/leads/${lead.id}`)}
                                       className="hover:text-primary hover:underline text-left"
@@ -1541,6 +1565,11 @@ const CRMHub = () => {
                               <div>
                                 <div className="font-medium flex items-center gap-2">
                                   {lead.hot && <Flame className="h-4 w-4 text-orange-500" />}
+                                  {(isCreatedToday(lead.created_at) || isUpdatedToday(lead.updated_at)) && (
+                                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                                      TODAY
+                                    </Badge>
+                                  )}
                                   {lead.client_name || "Unnamed"}
                                 </div>
                                 <div 
