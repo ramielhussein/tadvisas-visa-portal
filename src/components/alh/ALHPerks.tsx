@@ -36,7 +36,7 @@ const ALHPerks = () => {
     {
       icon: CreditCard,
       title: "AED 3,000 Service Credit",
-      description: "Redeemable toward P1 Direct-Hire or 2 weeks of P4 monthly system",
+      description: "Redeemable toward monthly domestic worker services",
       value: "Credit included"
     },
     {
