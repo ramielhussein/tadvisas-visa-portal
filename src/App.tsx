@@ -80,6 +80,7 @@ import DeliveryOrders from "./pages/DeliveryOrders";
 import DailySalesReport from "./pages/DailySalesReport";
 import SalesReportsCenter from "./pages/SalesReportsCenter";
 import ALH from "./pages/ALH";
+import FCG from "./pages/FCG";
 
 const queryClient = new QueryClient();
 
@@ -99,6 +100,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/start-here" element={<StartHere />} />
           <Route path="/ALH" element={<ALH />} />
+          <Route path="/fcg" element={<FCG />} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
           <Route path="/client-submissions" element={<ClientSubmissions />} />
           <Route path="/refund" element={<Refund />} />
