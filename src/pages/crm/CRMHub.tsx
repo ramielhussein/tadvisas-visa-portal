@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -961,6 +961,26 @@ const CRMHub = () => {
   return (
     <Layout>
       <div className="container mx-auto py-6 px-4">
+        {/* Sales Reports Center Banner */}
+        <Card className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 border-0 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate("/crm/sales-reports")}>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-1">Sales Reports Center</h3>
+                  <p className="text-sm text-white/90">Access all sales reports, analytics, KPIs, and team performance in one place</p>
+                </div>
+              </div>
+              <Button variant="secondary" size="sm" className="font-semibold">
+                View Reports →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="mb-6 flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-bold mb-2">CRM Dashboard</h1>

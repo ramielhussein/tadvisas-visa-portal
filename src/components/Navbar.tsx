@@ -59,6 +59,7 @@ const Navbar = () => {
 
   const authenticatedNavItems = [
     { name: "MY LEADS", path: "/crm" },
+    { name: "REPORTS", path: "/crm/sales-reports" },
     { name: "VIEW CVS", path: "/my-cvs" },
     { name: "VIEW HUB", path: "/hub" },
   ];
