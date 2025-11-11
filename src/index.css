@@ -151,8 +151,14 @@
   }
 
   .bg-gradient-gold {
-    background: linear-gradient(135deg, #0f73bd 0%, #0d5fa0 100%);
+    background: linear-gradient(135deg, #D4AF37 0%, #B8941E 100%);
   }
+
+  /* FCG Brand Colors */
+  --fcg-navy: 220 80% 25%;
+  --fcg-gold: 43 74% 50%;
+  --fcg-gold-light: 43 74% 65%;
+  --fcg-navy-dark: 220 80% 15%;
 }
 
 @layer utilities {

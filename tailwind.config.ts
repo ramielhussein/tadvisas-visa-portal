@@ -88,6 +88,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				fcg: {
+					navy: 'hsl(var(--fcg-navy))',
+					'navy-dark': 'hsl(var(--fcg-navy-dark))',
+					gold: 'hsl(var(--fcg-gold))',
+					'gold-light': 'hsl(var(--fcg-gold-light))'
 				}
 			},
 			borderRadius: {
