@@ -1,4 +1,3 @@
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Sparkles, GraduationCap, Building2, Users, Award, Phone, Mail, MapPin, Clock, CheckCircle2, Target, Eye, Heart } from "lucide-react";
@@ -15,7 +14,7 @@ const FCG = () => {
   };
 
   return (
-    <Layout>
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center text-white overflow-hidden">
         <div 
@@ -461,7 +460,7 @@ const FCG = () => {
           <p className="text-sm opacity-90">Licensed by SIRA & PSBD</p>
         </div>
       </footer>
-    </Layout>
+    </div>
   );
 };
 
