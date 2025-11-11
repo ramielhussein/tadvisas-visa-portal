@@ -75,10 +75,10 @@ const SalesHub = () => {
       color: "text-amber-600"
     },
     {
-      title: "Sales Reports",
-      description: "View your sales performance reports",
+      title: "Sales Reports Center",
+      description: "Access all sales reports and analytics",
       icon: TrendingUp,
-      path: "/crm/dashboard",
+      path: "/crm/sales-reports",
       color: "text-emerald-600"
     }
   ];

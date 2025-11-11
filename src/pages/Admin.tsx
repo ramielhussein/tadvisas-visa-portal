@@ -51,6 +51,7 @@ export default function Admin() {
         { title: "Lead Sources", path: "/crm/lead-sources", icon: Settings, description: "Manage lead sources" },
         { title: "Inquiry Packages", path: "/crm/inquiry-packages", icon: Package, description: "Lead service interests" },
         { title: "Sales Packages", path: "/crm/sales-packages", icon: Package, description: "Products you sell" },
+        { title: "Sales Reports Center", path: "/crm/sales-reports", icon: BarChart3, description: "All sales reports & analytics" },
         { title: "Deals & Sales", path: "/deals", icon: Briefcase, description: "Manage deals pipeline" },
         { title: "Create Deal", path: "/deals/create", icon: Plus, description: "Add new deal" },
       ],
