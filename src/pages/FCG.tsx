@@ -16,15 +16,8 @@ const FCG = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Logo Bar */}
-      <div className="bg-fcg-navy py-4">
-        <div className="container mx-auto px-4">
-          <img src={fcgLogo} alt="First Choice Group" className="h-16 object-contain" />
-        </div>
-      </div>
-
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center text-white overflow-hidden">
+      <section className="relative h-[700px] flex items-center justify-center text-white overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -32,6 +25,11 @@ const FCG = () => {
           <div className="absolute inset-0 bg-black/50" />
         </div>
         <div className="relative z-10 container mx-auto px-4 text-center">
+          <img 
+            src={fcgLogo} 
+            alt="First Choice Group" 
+            className="h-24 md:h-32 object-contain mx-auto mb-8 animate-fade-in" 
+          />
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Protecting What Matters.
           </h1>
