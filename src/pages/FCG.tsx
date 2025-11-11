@@ -16,8 +16,57 @@ const FCG = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Sticky Navigation Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-fcg-navy/95 backdrop-blur-sm border-b border-fcg-gold/20">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <img 
+              src={fcgLogo} 
+              alt="First Choice Group" 
+              className="h-10 object-contain cursor-pointer" 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            />
+            
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center gap-8">
+              <button 
+                onClick={() => scrollToSection('about')}
+                className="text-white hover:text-fcg-gold transition-colors font-medium"
+              >
+                About
+              </button>
+              <button 
+                onClick={() => scrollToSection('security')}
+                className="text-white hover:text-fcg-gold transition-colors font-medium"
+              >
+                Security
+              </button>
+              <button 
+                onClick={() => scrollToSection('cleaning')}
+                className="text-white hover:text-fcg-gold transition-colors font-medium"
+              >
+                Cleaning
+              </button>
+              <button 
+                onClick={() => scrollToSection('careers')}
+                className="text-white hover:text-fcg-gold transition-colors font-medium"
+              >
+                Careers
+              </button>
+              <Button 
+                onClick={() => scrollToSection('contact')}
+                className="bg-fcg-gold hover:bg-fcg-gold-light text-fcg-navy"
+              >
+                Contact Us
+              </Button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center text-white overflow-hidden">
+      <section className="relative h-[600px] flex items-center justify-center text-white overflow-hidden pt-16">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -68,7 +117,7 @@ const FCG = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-background">
+      <section id="about" className="py-12 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -454,16 +503,11 @@ const FCG = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-fcg-navy text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center space-y-6">
-            <img src={fcgLogo} alt="First Choice Group" className="h-20 object-contain" />
-            <div className="space-y-2">
-              <p className="text-lg">© 2025 First Choice Group LLC - All Rights Reserved</p>
-              <p className="text-sm opacity-90">Member of Mohammed Bin Rashid Establishment for SME Development</p>
-              <p className="text-sm opacity-90">Licensed by SIRA & PSBD</p>
-            </div>
-          </div>
+      <footer className="bg-fcg-navy text-white py-8">
+        <div className="container mx-auto px-4 text-center">
+          <p className="mb-2">© 2025 First Choice Group LLC - All Rights Reserved</p>
+          <p className="text-sm opacity-90">Member of Mohammed Bin Rashid Establishment for SME Development</p>
+          <p className="text-sm opacity-90">Licensed by SIRA & PSBD</p>
         </div>
       </footer>
     </div>
