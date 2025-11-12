@@ -55,13 +55,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (leadsError) throw leadsError;
 
-    // Fetch leads updated today
+    // Fetch leads updated today (but not created today)
     const { data: leadsUpdated, error: updatedError } = await supabase
       .from("leads")
-      .select("id")
+      .select("id, created_at, updated_at")
       .gte("updated_at", todayStart)
       .lte("updated_at", todayEnd)
-      .neq("created_at", "updated_at");
+      .lt("created_at", todayStart);
 
     if (updatedError) throw updatedError;
 
@@ -111,14 +111,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Fetch leads by source
     const { data: leadsBySource, error: sourceError } = await supabase
       .from("leads")
-      .select("source")
+      .select("lead_source")
       .gte("created_at", todayStart)
       .lte("created_at", todayEnd);
 
     if (sourceError) throw sourceError;
 
     const sourceCount = leadsBySource.reduce((acc: any, lead: any) => {
-      const source = lead.source || "Unknown";
+      const source = lead.lead_source || "Unknown";
       acc[source] = (acc[source] || 0) + 1;
       return acc;
     }, {});
@@ -126,14 +126,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Fetch leads by service
     const { data: leadsByService, error: serviceError } = await supabase
       .from("leads")
-      .select("service")
+      .select("service_required")
       .gte("created_at", todayStart)
       .lte("created_at", todayEnd);
 
     if (serviceError) throw serviceError;
 
     const serviceCount = leadsByService.reduce((acc: any, lead: any) => {
-      const service = lead.service || "Unknown";
+      const service = lead.service_required || "Unknown";
       acc[service] = (acc[service] || 0) + 1;
       return acc;
     }, {});
