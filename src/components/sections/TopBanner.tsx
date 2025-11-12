@@ -30,7 +30,7 @@ const TopBanner = () => {
             {/* Right side - Call to action */}
             <div className="w-full lg:w-1/2 text-center lg:text-left space-y-4">
               <h2 className="text-3xl lg:text-4xl font-bold text-foreground">
-                Apply for Your Maid's Visa in <span className="text-primary">5 Minutes</span>
+                Apply for Your Maid's Visa in<br /><span className="text-primary">5 Minutes</span>
               </h2>
               <p className="text-muted-foreground text-base">
                 Just send us your maid's passport through WhatsApp and get it done in 1 week!
