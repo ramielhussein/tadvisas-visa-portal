@@ -13,6 +13,10 @@ interface PersonalReportData {
   salesPersonName: string;
   salesPersonEmail: string;
   todayDate: string;
+  leadMetrics: {
+    totalLeadsTaken: number;
+    totalLeadsAssignedNotTaken: number;
+  };
   activities: {
     callsMade: number;
     messagesSent: number;
@@ -29,6 +33,13 @@ interface PersonalReportData {
     days_until: number;
     mobile_number: string;
     last_activity: string;
+  }>;
+  untakenLeads: Array<{
+    lead_name: string;
+    mobile_number: string;
+    assigned_date: string;
+    status: string;
+    lead_source: string;
   }>;
 }
 
@@ -60,6 +71,29 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate report for each sales person
     for (const person of salesPeople || []) {
       try {
+        // Fetch all assigned leads to calculate metrics
+        const { data: allAssignedLeads, error: leadsError } = await supabase
+          .from("leads")
+          .select("id, client_name, mobile_number, created_at, status, lead_source")
+          .eq("assigned_to", person.id)
+          .eq("archived", false);
+
+        if (leadsError) throw leadsError;
+
+        // Get all activity lead IDs for this person to determine engagement
+        const { data: allActivities, error: allActError } = await supabase
+          .from("lead_activities")
+          .select("lead_id")
+          .eq("user_id", person.id);
+
+        if (allActError) throw allActError;
+
+        const engagedLeadIds = new Set(allActivities?.map(a => a.lead_id) || []);
+        
+        // Separate leads into taken and not taken
+        const totalLeadsTaken = allAssignedLeads?.filter(lead => engagedLeadIds.has(lead.id)).length || 0;
+        const untakenLeadsData = allAssignedLeads?.filter(lead => !engagedLeadIds.has(lead.id)) || [];
+
         // Fetch today's activities for this person
         const { data: activities, error: actError } = await supabase
           .from("lead_activities")
@@ -128,6 +162,10 @@ const handler = async (req: Request): Promise<Response> => {
             month: "long",
             day: "numeric",
           }),
+          leadMetrics: {
+            totalLeadsTaken,
+            totalLeadsAssignedNotTaken: untakenLeadsData.length,
+          },
           activities: {
             callsMade,
             messagesSent,
@@ -138,6 +176,13 @@ const handler = async (req: Request): Promise<Response> => {
             remindersSet,
           },
           upcomingReminders,
+          untakenLeads: untakenLeadsData.map(lead => ({
+            lead_name: lead.client_name || "Unknown",
+            mobile_number: lead.mobile_number,
+            assigned_date: new Date(lead.created_at).toLocaleDateString(),
+            status: lead.status,
+            lead_source: lead.lead_source || "Unknown",
+          })),
         };
 
         // Generate HTML email
@@ -199,12 +244,19 @@ function generateEmailHTML(data: PersonalReportData): string {
           .container { max-width: 800px; margin: 0 auto; padding: 20px; }
           .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .greeting { font-size: 18px; margin-bottom: 10px; }
+          .metrics { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
+          .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+          .metric-card { background: white; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #2563eb; }
+          .metric-card.warning { border-left-color: #f59e0b; background: #fffbeb; }
+          .metric-card h3 { margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; }
+          .metric-card p { margin: 10px 0 0 0; font-size: 36px; font-weight: bold; color: #2563eb; }
+          .metric-card.warning p { color: #f59e0b; }
           .summary { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
           .summary h2 { margin: 0 0 15px 0; color: #1f2937; }
           .activity-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-          .activity-card { background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #2563eb; }
+          .activity-card { background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; }
           .activity-card h3 { margin: 0; font-size: 14px; color: #6b7280; }
-          .activity-card p { margin: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #2563eb; }
+          .activity-card p { margin: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #10b981; }
           .section { margin: 20px 0; }
           .section h2 { color: #1f2937; border-bottom: 2px solid #2563eb; padding-bottom: 8px; }
           table { width: 100%; border-collapse: collapse; margin: 10px 0; }
@@ -212,6 +264,7 @@ function generateEmailHTML(data: PersonalReportData): string {
           th { background: #f9fafb; font-weight: 600; }
           .urgent { color: #dc2626; font-weight: bold; }
           .soon { color: #f59e0b; }
+          .untaken-warning { background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; border-radius: 8px; margin: 10px 0; }
           .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; }
           .no-data { text-align: center; padding: 20px; color: #6b7280; font-style: italic; }
         </style>
@@ -224,6 +277,22 @@ function generateEmailHTML(data: PersonalReportData): string {
             <p>${data.todayDate}</p>
           </div>
           
+          <div class="metrics">
+            <h2>📊 Lead Pipeline Overview</h2>
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <h3>Total Leads Taken</h3>
+                <p>${data.leadMetrics.totalLeadsTaken}</p>
+                <small style="color: #6b7280;">Leads you've engaged with</small>
+              </div>
+              <div class="metric-card warning">
+                <h3>Leads Assigned But Not Taken</h3>
+                <p>${data.leadMetrics.totalLeadsAssignedNotTaken}</p>
+                <small style="color: #92400e;">Need your attention!</small>
+              </div>
+            </div>
+          </div>
+
           <div class="summary">
             <h2>Today's Activity Summary</h2>
             <p style="font-size: 16px; margin-bottom: 15px;">
@@ -291,10 +360,39 @@ function generateEmailHTML(data: PersonalReportData): string {
               </table>
             ` : `
               <div class="no-data">
-                No upcoming reminders for the next 3 days. Great job staying on top of your leads!
+                No upcoming reminders for the next 3 days.
               </div>
             `}
           </div>
+
+          ${data.untakenLeads.length > 0 ? `
+          <div class="section">
+            <h2>⚠️ Leads Assigned But Not Yet Engaged (${data.untakenLeads.length})</h2>
+            <p style="color: #dc2626; margin-bottom: 15px;">These leads have been assigned to you but haven't been contacted yet. Take action soon!</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Lead Name</th>
+                  <th>Phone</th>
+                  <th>Assigned Date</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.untakenLeads.map(lead => `
+                  <tr>
+                    <td>${lead.lead_name}</td>
+                    <td>${lead.mobile_number}</td>
+                    <td>${lead.assigned_date}</td>
+                    <td>${lead.status}</td>
+                    <td>${lead.lead_source}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
 
           <div class="footer">
             <p>This is an automated daily report generated by your CRM system.</p>

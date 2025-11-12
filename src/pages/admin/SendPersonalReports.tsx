@@ -94,6 +94,15 @@ const SendPersonalReports = () => {
 
               <div className="bg-muted p-4 rounded-lg space-y-2">
                 <h3 className="font-semibold text-sm">Report Contents:</h3>
+                
+                <div className="mt-2">
+                  <strong className="text-sm">Lead Pipeline Metrics:</strong>
+                  <ul className="text-sm space-y-1 ml-4 mt-1">
+                    <li>• Total Leads Taken (engaged with)</li>
+                    <li>• Total Leads Assigned But Not Taken</li>
+                  </ul>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2 text-sm ml-4">
                   <div>
                     <strong>Daily Activities:</strong>
@@ -113,9 +122,15 @@ const SendPersonalReports = () => {
                     </ul>
                   </div>
                 </div>
+                
                 <div className="mt-2">
                   <strong className="text-sm">Upcoming Reminders:</strong>
                   <p className="text-sm ml-4 mt-1">Shows leads scheduled for follow-up in the next 3 days</p>
+                </div>
+
+                <div className="mt-2">
+                  <strong className="text-sm">Leads Needing Attention:</strong>
+                  <p className="text-sm ml-4 mt-1">Lists all assigned leads that haven't been engaged with yet</p>
                 </div>
               </div>
 
