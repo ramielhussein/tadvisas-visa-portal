@@ -801,15 +801,47 @@ interface QuickLeadEntryProps {
     </div>
   );
 
+  // Keyboard shortcut handler for status selection
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Only handle number keys 1-9
+    const key = e.key;
+    const statusMap: Record<string, string> = {
+      '1': 'New Lead',
+      '2': 'Called No Answer',
+      '3': 'Called Engaged',
+      '4': 'Called COLD',
+      '5': 'Called Unanswer 2',
+      '6': 'No Connection',
+      '7': 'Warm',
+      '8': 'HOT',
+      '9': 'SOLD',
+    };
+
+    if (statusMap[key]) {
+      e.preventDefault();
+      setFormData({ ...formData, status: statusMap[key] as any });
+      toast({
+        title: "Status Updated",
+        description: `Status set to: ${statusMap[key]}`,
+      });
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] overflow-y-auto"
+        onKeyDown={handleKeyDown}
+      >
         <DialogHeader>
           <DialogTitle>{lead ? "Edit Lead" : "Quick Lead Entry (Ctrl+Shift+Q)"}</DialogTitle>
           <DialogDescription>
             {formStage === 'number-check' && "Enter mobile number to check if lead exists"}
             {formStage === 'quick-add' && "Quick Add: Fill source and service, or Expand for full details"}
             {formStage === 'full-form' && (lead ? "Update lead information" : "Complete lead details")}
+            <div className="text-xs text-muted-foreground mt-2">
+              💡 Press 1-9 to quickly set status: 1=New Lead, 2=Called No Answer, 3=Called Engaged, 4=COLD, 5=Unanswer 2, 6=No Connection, 7=Warm, 8=HOT, 9=SOLD
+            </div>
           </DialogDescription>
         </DialogHeader>
 
