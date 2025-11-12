@@ -801,10 +801,43 @@ interface QuickLeadEntryProps {
     </div>
   );
 
-  // Keyboard shortcut handler for status selection
+  // Keyboard shortcut handler for status selection and actions
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Only handle number keys 1-9
     const key = e.key;
+    
+    // Ctrl+S: Save/Submit form
+    if (e.ctrlKey && key === 's') {
+      e.preventDefault();
+      if (formStage === 'quick-add' && formData.lead_source && formData.service_required) {
+        handleQuickAdd();
+      } else if (formStage === 'full-form' || lead) {
+        const form = e.currentTarget.querySelector('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+      return;
+    }
+    
+    // Ctrl+H: Toggle hot status
+    if (e.ctrlKey && key === 'h') {
+      e.preventDefault();
+      setFormData({ ...formData, hot: !formData.hot });
+      toast({
+        title: formData.hot ? "Removed HOT Flag" : "Marked as HOT",
+        description: formData.hot ? "Lead is no longer marked as hot" : "Lead is now marked as HOT 🔥",
+      });
+      return;
+    }
+    
+    // Escape: Close dialog
+    if (key === 'Escape') {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    
+    // Number keys 1-9: Quick status selection
     const statusMap: Record<string, string> = {
       '1': 'New Lead',
       '2': 'Called No Answer',
@@ -839,8 +872,10 @@ interface QuickLeadEntryProps {
             {formStage === 'number-check' && "Enter mobile number to check if lead exists"}
             {formStage === 'quick-add' && "Quick Add: Fill source and service, or Expand for full details"}
             {formStage === 'full-form' && (lead ? "Update lead information" : "Complete lead details")}
-            <div className="text-xs text-muted-foreground mt-2">
-              💡 Press 1-9 to quickly set status: 1=New Lead, 2=Called No Answer, 3=Called Engaged, 4=COLD, 5=Unanswer 2, 6=No Connection, 7=Warm, 8=HOT, 9=SOLD
+            <div className="text-xs text-muted-foreground mt-2 space-y-1">
+              <div>⌨️ <strong>Keyboard Shortcuts:</strong></div>
+              <div>• Press <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">1-9</kbd> to set status (1=New, 2=No Answer, 3=Engaged, 4=COLD, 5=Unanswer 2, 6=No Connection, 7=Warm, 8=HOT, 9=SOLD)</div>
+              <div>• <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+S</kbd> Save • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+H</kbd> Toggle HOT 🔥 • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Esc</kbd> Close</div>
             </div>
           </DialogDescription>
         </DialogHeader>
