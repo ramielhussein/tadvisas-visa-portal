@@ -7,7 +7,8 @@ import {
   Users, 
   BarChart3,
   FileBarChart,
-  Award
+  Award,
+  ClipboardCheck
 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -30,6 +31,14 @@ const SalesReportsCenter = () => {
       icon: BarChart3,
       path: "/crm/daily-sales-report",
       color: "text-amber-600",
+      adminOnly: false
+    },
+    {
+      title: "Lead Attendance Report",
+      description: "View all leads added today, updated today, and breakdown by staff member activity",
+      icon: ClipboardCheck,
+      path: "/crm/lead-attendance-report",
+      color: "text-rose-600",
       adminOnly: false
     },
     {

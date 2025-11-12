@@ -79,6 +79,7 @@ import ReceiptOrders from "./pages/ReceiptOrders";
 import DeliveryOrders from "./pages/DeliveryOrders";
 import DailySalesReport from "./pages/DailySalesReport";
 import SalesReportsCenter from "./pages/SalesReportsCenter";
+import LeadAttendanceReport from "./pages/LeadAttendanceReport";
 import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
 
@@ -162,6 +163,7 @@ const App = () => (
           <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
           <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
           <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
+          <Route path="/crm/lead-attendance-report" element={<ProtectedRoute><LeadAttendanceReport /></ProtectedRoute>} />
           <Route path="/crm/sales-reports" element={<ProtectedRoute><SalesReportsCenter /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
