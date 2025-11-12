@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload, Flame } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { sanitizePhoneInput, validatePhone } from "@/lib/phoneValidation";
+import { useSalesTeam, useLeadSources, useInquiryPackages } from "@/hooks/useCRMData";
 
 interface QuickLeadEntryProps {
   open: boolean;
@@ -25,10 +26,12 @@ interface QuickLeadEntryProps {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [existingLead, setExistingLead] = useState<any>(null);
-  const [salesTeam, setSalesTeam] = useState<Array<{ id: string; email: string; full_name: string | null }>>([]);
-  const [leadSources, setLeadSources] = useState<Array<{ id: string; source_name: string }>>([]);
-  const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
   const [formStage, setFormStage] = useState<'number-check' | 'quick-add' | 'full-form'>('number-check');
+  
+  // Use cached data hooks
+  const { data: salesTeam = [], isLoading: loadingSalesTeam } = useSalesTeam();
+  const { data: leadSources = [], isLoading: loadingLeadSources } = useLeadSources();
+  const { data: inquiryPackages = [], isLoading: loadingInquiryPackages } = useInquiryPackages();
   
   const [formData, setFormData] = useState({
     client_name: "",
@@ -56,61 +59,7 @@ interface QuickLeadEntryProps {
     eidBack: null,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch sales team
-        const { data: profilesData, error: profilesError } = await supabase
-          .from("profiles")
-          .select("id, email, full_name, permissions")
-          .order("email");
-
-        if (profilesError) throw profilesError;
-
-        // Filter for users with sales/deals permissions or lead assignment permissions
-        const salesUsers = (profilesData || []).filter((user: any) => {
-          const permissions = user.permissions as any;
-          return (
-            permissions?.leads?.assign === true ||
-            permissions?.deals?.create === true ||
-            permissions?.deals?.edit === true
-          );
-        });
-
-        setSalesTeam(salesUsers);
-
-        // Fetch lead sources
-        const { data: sourcesData, error: sourcesError } = await supabase
-          .from("lead_sources")
-          .select("id, source_name")
-          .eq("is_active", true)
-          .order("sort_order")
-          .order("source_name");
-
-        if (sourcesError) throw sourcesError;
-
-        setLeadSources(sourcesData || []);
-
-        // Fetch inquiry packages
-        const { data: packagesData, error: packagesError } = await supabase
-          .from("inquiry_packages")
-          .select("id, package_name")
-          .eq("is_active", true)
-          .order("sort_order")
-          .order("package_name");
-
-        if (packagesError) throw packagesError;
-
-        setInquiryPackages(packagesData || []);
-      } catch (error: any) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    if (open) {
-      fetchData();
-    }
-  }, [open]);
+  // Data is now loaded via React Query hooks - no need for useEffect fetch
 
   // Initialize form data when dialog opens or lead changes
   useEffect(() => {

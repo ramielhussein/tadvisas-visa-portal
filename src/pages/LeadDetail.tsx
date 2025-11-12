@@ -167,32 +167,41 @@ const LeadDetail = () => {
 
   const fetchActivities = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch activities
+      const { data: activitiesData, error: activitiesError } = await supabase
         .from("lead_activities")
         .select("*")
         .eq("lead_id", id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (activitiesError) throw activitiesError;
       
-      // Fetch user emails separately
-      if (data) {
-        const activitiesWithProfiles = await Promise.all(
-          data.map(async (activity) => {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("email")
-              .eq("id", activity.user_id)
-              .maybeSingle();
-            
-            return {
-              ...activity,
-              profiles: profile || undefined,
-            };
-          })
-        );
-        setActivities(activitiesWithProfiles as Activity[]);
+      if (!activitiesData || activitiesData.length === 0) {
+        setActivities([]);
+        return;
       }
+
+      // Optimized: Fetch all profiles in a single query instead of N queries
+      const userIds = [...new Set(activitiesData.map(a => a.user_id))];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email")
+        .in("id", userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map for quick lookup
+      const profilesMap = new Map(
+        (profilesData || []).map(p => [p.id, p])
+      );
+
+      // Merge data
+      const activitiesWithProfiles = activitiesData.map(activity => ({
+        ...activity,
+        profiles: profilesMap.get(activity.user_id),
+      }));
+
+      setActivities(activitiesWithProfiles as Activity[]);
     } catch (error: any) {
       console.error("Error fetching activities:", error);
     }

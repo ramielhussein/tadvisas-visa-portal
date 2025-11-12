@@ -82,7 +82,14 @@ import SalesReportsCenter from "./pages/SalesReportsCenter";
 import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
