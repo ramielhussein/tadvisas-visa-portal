@@ -264,24 +264,14 @@ const LeadAttendanceReport = () => {
   };
 
   const handleScheduleEmail = async () => {
-    if (!emailRecipients.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter at least one email recipient",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const emails = emailRecipients.split(',').map(e => e.trim()).filter(e => e);
-    
+    // Display current schedule information
     toast({
-      title: "Email Schedule Configured",
-      description: `Report will be sent to ${emails.length} recipient(s) daily at ${scheduleTime}`,
+      title: "Email Schedule Active",
+      description: "Daily reports are automatically sent at 8:00 AM UAE time to sales1@tadmaids.com, rami@tadmaids.com, nour@tadmaids.com, and nawar@tadmaids.com",
+      duration: 8000,
     });
     
     setEmailDialogOpen(false);
-    // TODO: Implement backend email scheduling
   };
 
   return (
@@ -318,49 +308,40 @@ const LeadAttendanceReport = () => {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Schedule Daily Report Email</DialogTitle>
+                  <DialogTitle>Email Schedule Status</DialogTitle>
                   <DialogDescription>
-                    Configure automatic daily delivery of this report to email recipients
+                    Current configuration for automated daily report emails
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="emails">Email Recipients</Label>
-                    <Input
-                      id="emails"
-                      placeholder="email1@example.com, email2@example.com"
-                      value={emailRecipients}
-                      onChange={(e) => setEmailRecipients(e.target.value)}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Separate multiple emails with commas
-                    </p>
+                    <Label>Email Recipients</Label>
+                    <div className="text-sm bg-muted p-3 rounded-md">
+                      <p>• sales1@tadmaids.com</p>
+                      <p>• rami@tadmaids.com</p>
+                      <p>• nour@tadmaids.com</p>
+                      <p>• nawar@tadmaids.com</p>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="time">Delivery Time</Label>
-                    <Select value={scheduleTime} onValueChange={setScheduleTime}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="06:00">6:00 AM</SelectItem>
-                        <SelectItem value="07:00">7:00 AM</SelectItem>
-                        <SelectItem value="08:00">8:00 AM</SelectItem>
-                        <SelectItem value="09:00">9:00 AM</SelectItem>
-                        <SelectItem value="10:00">10:00 AM</SelectItem>
-                        <SelectItem value="11:00">11:00 AM</SelectItem>
-                        <SelectItem value="12:00">12:00 PM</SelectItem>
-                        <SelectItem value="18:00">6:00 PM</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label>Delivery Time</Label>
+                    <div className="text-sm bg-muted p-3 rounded-md">
+                      8:00 AM UAE Time (Daily)
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-500">Active</Badge>
+                      <span className="text-xs text-muted-foreground">
+                        Automated emails are running
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setEmailDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleScheduleEmail}>
-                    Save Schedule
+                  <Button onClick={() => setEmailDialogOpen(false)}>
+                    Close
                   </Button>
                 </DialogFooter>
               </DialogContent>
