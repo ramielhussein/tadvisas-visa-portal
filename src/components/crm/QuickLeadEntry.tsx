@@ -12,6 +12,7 @@ import { Loader2, Upload, Flame } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { sanitizePhoneInput, validatePhone } from "@/lib/phoneValidation";
 import { useSalesTeam, useLeadSources, useInquiryPackages } from "@/hooks/useCRMData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface QuickLeadEntryProps {
   open: boolean;
@@ -882,24 +883,28 @@ interface QuickLeadEntryProps {
                     <Label htmlFor="reassign_to" className="text-sm font-semibold">
                       Reassign Lead To:
                     </Label>
-                    <Select
-                      value={formData.assigned_to}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, assigned_to: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select new assignee" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-background z-50">
-                        <SelectItem value="unassigned">Unassign (Send to Incoming)</SelectItem>
-                        {salesTeam.map((person) => (
-                          <SelectItem key={person.id} value={person.id}>
-                            {person.full_name || person.email}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {loadingSalesTeam ? (
+                      <Skeleton className="h-10 w-full" />
+                    ) : (
+                      <Select
+                        value={formData.assigned_to}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, assigned_to: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select new assignee" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background z-50">
+                          <SelectItem value="unassigned">Unassign (Send to Incoming)</SelectItem>
+                          {salesTeam.map((person) => (
+                            <SelectItem key={person.id} value={person.id}>
+                              {person.full_name || person.email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -1002,46 +1007,54 @@ interface QuickLeadEntryProps {
 
             <div className="space-y-2 border-2 border-primary rounded-md p-4">
               <Label htmlFor="lead_source" className="text-primary font-semibold">Lead Source *</Label>
-              <Select
-                value={formData.lead_source}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, lead_source: value })
-                }
-                required
-              >
-                <SelectTrigger className="border-primary">
-                  <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  {leadSources.map((source) => (
-                    <SelectItem key={source.id} value={source.source_name}>
-                      {source.source_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {loadingLeadSources ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select
+                  value={formData.lead_source}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, lead_source: value })
+                  }
+                  required
+                >
+                  <SelectTrigger className="border-primary">
+                    <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    {leadSources.map((source) => (
+                      <SelectItem key={source.id} value={source.source_name}>
+                        {source.source_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2 border-2 border-primary rounded-md p-4">
               <Label htmlFor="service_required" className="text-primary font-semibold">Service Required *</Label>
-              <Select
-                value={formData.service_required}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, service_required: value })
-                }
-                required
-              >
-                <SelectTrigger className="border-primary">
-                  <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  {inquiryPackages.map((pkg) => (
-                    <SelectItem key={pkg.id} value={pkg.package_name}>
-                      {pkg.package_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {loadingInquiryPackages ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select
+                  value={formData.service_required}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, service_required: value })
+                  }
+                  required
+                >
+                  <SelectTrigger className="border-primary">
+                    <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    {inquiryPackages.map((pkg) => (
+                      <SelectItem key={pkg.id} value={pkg.package_name}>
+                        {pkg.package_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="flex gap-3 pt-4">
@@ -1110,68 +1123,80 @@ interface QuickLeadEntryProps {
 
             <div className="space-y-2 border-2 border-primary rounded-md p-4">
               <Label htmlFor="service_required" className="text-primary font-semibold">Service Required *</Label>
-              <Select
-                value={formData.service_required}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, service_required: value })
-                }
-              >
-                <SelectTrigger className="border-primary">
-                  <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  {inquiryPackages.map((pkg) => (
-                    <SelectItem key={pkg.id} value={pkg.package_name}>
-                      {pkg.package_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {loadingInquiryPackages ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select
+                  value={formData.service_required}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, service_required: value })
+                  }
+                >
+                  <SelectTrigger className="border-primary">
+                    <SelectValue placeholder={inquiryPackages.length === 0 ? "No packages available" : "Select service"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    {inquiryPackages.map((pkg) => (
+                      <SelectItem key={pkg.id} value={pkg.package_name}>
+                        {pkg.package_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2 border-2 border-primary rounded-md p-4">
               <Label htmlFor="assigned_to" className="text-primary font-semibold">Assign To</Label>
-              <Select
-                value={formData.assigned_to}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, assigned_to: value })
-                }
-              >
-                <SelectTrigger className="border-primary">
-                  <SelectValue placeholder="Unassigned (optional)" />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  <SelectItem key="unassigned" value="unassigned">
-                    Unassigned
-                  </SelectItem>
-                  {salesTeam.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.full_name || user.email}
+              {loadingSalesTeam ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select
+                  value={formData.assigned_to}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, assigned_to: value })
+                  }
+                >
+                  <SelectTrigger className="border-primary">
+                    <SelectValue placeholder="Unassigned (optional)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    <SelectItem key="unassigned" value="unassigned">
+                      Unassigned
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {salesTeam.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.full_name || user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="lead_source">Lead Source *</Label>
-              <Select
-                value={formData.lead_source}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, lead_source: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  {leadSources.map((source) => (
-                    <SelectItem key={source.id} value={source.source_name}>
-                      {source.source_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {loadingLeadSources ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Select
+                  value={formData.lead_source}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, lead_source: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={leadSources.length === 0 ? "No lead sources available" : "Select source"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    {leadSources.map((source) => (
+                      <SelectItem key={source.id} value={source.source_name}>
+                        {source.source_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
