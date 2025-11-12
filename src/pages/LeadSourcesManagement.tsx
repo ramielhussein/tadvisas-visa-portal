@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ export default function LeadSourcesManagement() {
     sort_order: 0,
   });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     fetchSources();
@@ -102,6 +104,7 @@ export default function LeadSourcesManagement() {
       setIsDialogOpen(false);
       resetForm();
       fetchSources();
+      queryClient.invalidateQueries({ queryKey: ["leadSources"] });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -137,6 +140,7 @@ export default function LeadSourcesManagement() {
         description: "Lead source deleted successfully",
       });
       fetchSources();
+      queryClient.invalidateQueries({ queryKey: ["leadSources"] });
     } catch (error: any) {
       toast({
         title: "Error",

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,7 @@ export default function InquiryPackagesManagement() {
     sort_order: 0,
   });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     fetchPackages();
@@ -102,6 +104,7 @@ export default function InquiryPackagesManagement() {
       setIsDialogOpen(false);
       resetForm();
       fetchPackages();
+      queryClient.invalidateQueries({ queryKey: ["inquiryPackages"] });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -137,6 +140,7 @@ export default function InquiryPackagesManagement() {
         description: "Inquiry package deleted successfully",
       });
       fetchPackages();
+      queryClient.invalidateQueries({ queryKey: ["inquiryPackages"] });
     } catch (error: any) {
       toast({
         title: "Error",
