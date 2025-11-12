@@ -1170,7 +1170,7 @@ interface QuickLeadEntryProps {
                 <SelectTrigger>
                   <SelectValue placeholder="Select nationality" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
                   <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
                   <SelectItem value="IN">🇮🇳 India</SelectItem>
@@ -1265,7 +1265,7 @@ interface QuickLeadEntryProps {
                 <SelectTrigger>
                   <SelectValue placeholder="Select emirate" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="Dubai">Dubai</SelectItem>
                   <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
                   <SelectItem value="Sharjah">Sharjah</SelectItem>
@@ -1288,7 +1288,7 @@ interface QuickLeadEntryProps {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background z-50">
                   <SelectItem value="New Lead">New Lead</SelectItem>
                   <SelectItem value="Called No Answer">Called No Answer</SelectItem>
                   <SelectItem value="Called Engaged">Called Engaged</SelectItem>
