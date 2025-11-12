@@ -8,7 +8,8 @@ import {
   BarChart3,
   FileBarChart,
   Award,
-  ClipboardCheck
+  ClipboardCheck,
+  Mail
 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -72,6 +73,14 @@ const SalesReportsCenter = () => {
       path: "/crm/deals",
       color: "text-teal-600",
       adminOnly: false
+    },
+    {
+      title: "Personal Sales Reports",
+      description: "Generate and email daily activity reports for all sales team members",
+      icon: Mail,
+      path: "/admin/send-personal-reports",
+      color: "text-cyan-600",
+      adminOnly: true
     }
   ];
 
