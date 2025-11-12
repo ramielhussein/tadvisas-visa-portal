@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus } from "lucide-react";
+import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus, PieChart } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 
 interface StaffActivity {
   staff_id: string;
@@ -17,6 +18,11 @@ interface StaffActivity {
   leads_picked: number;
   leads_updated: number;
   total_activity: number;
+}
+
+interface LeadSourceData {
+  source: string;
+  count: number;
 }
 
 const LeadAttendanceReport = () => {
@@ -28,6 +34,7 @@ const LeadAttendanceReport = () => {
   const [leadsUpdatedToday, setLeadsUpdatedToday] = useState(0);
   const [staffActivities, setStaffActivities] = useState<StaffActivity[]>([]);
   const [totalLeadsTaken, setTotalLeadsTaken] = useState(0);
+  const [leadsBySource, setLeadsBySource] = useState<LeadSourceData[]>([]);
 
   useEffect(() => {
     fetchAttendanceData();
@@ -150,6 +157,28 @@ const LeadAttendanceReport = () => {
       setStaffActivities(activities);
       setTotalLeadsTaken(activities.reduce((sum, a) => sum + a.leads_picked, 0));
 
+      // Fetch leads by source for today
+      const { data: leadsWithSource, error: sourceError } = await supabase
+        .from("leads")
+        .select("lead_source")
+        .gte("created_at", startOfDay)
+        .lte("created_at", endOfDay);
+
+      if (sourceError) throw sourceError;
+
+      // Group by source
+      const sourceMap = new Map<string, number>();
+      for (const lead of leadsWithSource || []) {
+        const source = lead.lead_source || "No Source";
+        sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
+      }
+
+      const sourceData: LeadSourceData[] = Array.from(sourceMap.entries())
+        .map(([source, count]) => ({ source, count }))
+        .sort((a, b) => b.count - a.count);
+
+      setLeadsBySource(sourceData);
+
     } catch (error: any) {
       console.error("Error fetching attendance data:", error);
       toast({
@@ -161,6 +190,8 @@ const LeadAttendanceReport = () => {
       setLoading(false);
     }
   };
+
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
   return (
     <Layout>
@@ -254,6 +285,56 @@ const LeadAttendanceReport = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Lead by Source Chart */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChart className="h-5 w-5" />
+              Leads by Source
+            </CardTitle>
+            <CardDescription>
+              Breakdown of today's leads by their source
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : leadsBySource.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No leads added today</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={leadsBySource}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis 
+                    dataKey="source" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                    className="text-xs"
+                  />
+                  <YAxis />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
+                    {leadsBySource.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Staff Activity Table */}
         <Card>
