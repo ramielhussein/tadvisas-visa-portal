@@ -325,8 +325,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
-      from: "CRM Reports <onboarding@resend.dev>",
-      to: ["sales1@tadmaids.com", "rami@tadmaids.com", "nour@tadmaids.com", "nawar@tadmaids.com"],
+      from: "CRM Reports <reports@tadmaids.com>",
+      to: ["ramielhussein@gmail.com"],
       subject: `Lead Attendance Report - ${reportData.todayDate}`,
       html: htmlContent,
     });
