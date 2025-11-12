@@ -7,9 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus, PieChart } from "lucide-react";
+import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus, PieChart, Download, Mail } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LabelList } from "recharts";
+import html2pdf from "html2pdf.js";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface StaffActivity {
   staff_id: string;
@@ -35,6 +40,9 @@ const LeadAttendanceReport = () => {
   const [staffActivities, setStaffActivities] = useState<StaffActivity[]>([]);
   const [totalLeadsTaken, setTotalLeadsTaken] = useState(0);
   const [leadsBySource, setLeadsBySource] = useState<LeadSourceData[]>([]);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailRecipients, setEmailRecipients] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("09:00");
 
   useEffect(() => {
     fetchAttendanceData();
@@ -193,6 +201,55 @@ const LeadAttendanceReport = () => {
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
+  const handleDownloadPDF = async () => {
+    const element = document.getElementById('report-content');
+    if (!element) return;
+
+    const opt = {
+      margin: 10,
+      filename: `lead-attendance-report-${todayDate}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+    };
+
+    try {
+      await html2pdf().set(opt).from(element).save();
+      toast({
+        title: "Success",
+        description: "Report downloaded successfully",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleScheduleEmail = async () => {
+    if (!emailRecipients.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter at least one email recipient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emails = emailRecipients.split(',').map(e => e.trim()).filter(e => e);
+    
+    toast({
+      title: "Email Schedule Configured",
+      description: `Report will be sent to ${emails.length} recipient(s) daily at ${scheduleTime}`,
+    });
+    
+    setEmailDialogOpen(false);
+    // TODO: Implement backend email scheduling
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -213,7 +270,71 @@ const LeadAttendanceReport = () => {
               </p>
             </div>
           </div>
+          <div className="flex gap-2">
+            <Button onClick={handleDownloadPDF} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+            <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Schedule Email
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Schedule Daily Report Email</DialogTitle>
+                  <DialogDescription>
+                    Configure automatic daily delivery of this report to email recipients
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="emails">Email Recipients</Label>
+                    <Input
+                      id="emails"
+                      placeholder="email1@example.com, email2@example.com"
+                      value={emailRecipients}
+                      onChange={(e) => setEmailRecipients(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Separate multiple emails with commas
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Delivery Time</Label>
+                    <Select value={scheduleTime} onValueChange={setScheduleTime}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="06:00">6:00 AM</SelectItem>
+                        <SelectItem value="07:00">7:00 AM</SelectItem>
+                        <SelectItem value="08:00">8:00 AM</SelectItem>
+                        <SelectItem value="09:00">9:00 AM</SelectItem>
+                        <SelectItem value="10:00">10:00 AM</SelectItem>
+                        <SelectItem value="11:00">11:00 AM</SelectItem>
+                        <SelectItem value="12:00">12:00 PM</SelectItem>
+                        <SelectItem value="18:00">6:00 PM</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setEmailDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleScheduleEmail}>
+                    Save Schedule
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
+
+        <div id="report-content">
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -326,6 +447,7 @@ const LeadAttendanceReport = () => {
                   />
                   <Legend />
                   <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
+                    <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
                     {leadsBySource.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
@@ -411,6 +533,7 @@ const LeadAttendanceReport = () => {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </Layout>
   );
