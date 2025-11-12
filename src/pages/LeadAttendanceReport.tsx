@@ -483,11 +483,15 @@ const LeadAttendanceReport = () => {
               {loading ? (
                 <Skeleton className="h-8 w-20" />
               ) : (
-                <div className="text-2xl font-bold">{totalLeadsTaken}</div>
+                <>
+                  <div className="text-2xl font-bold">{totalLeadsTaken}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {leadsAddedToday + leadsUpdatedToday > 0 
+                      ? `${((totalLeadsTaken / (leadsAddedToday + leadsUpdatedToday)) * 100).toFixed(1)}% of total leads`
+                      : 'No leads to calculate'}
+                  </p>
+                </>
               )}
-              <p className="text-xs text-muted-foreground mt-1">
-                Picked up by staff
-              </p>
             </CardContent>
           </Card>
 
@@ -590,7 +594,7 @@ const LeadAttendanceReport = () => {
                       data={leadsByService}
                       dataKey="count"
                       nameKey="service"
-                      cx="50%"
+                      cx="30%"
                       cy="50%"
                       outerRadius={60}
                       label={({ service, count, percent }) => 
