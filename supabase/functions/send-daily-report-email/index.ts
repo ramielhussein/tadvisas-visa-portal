@@ -282,8 +282,8 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email via Resend
     const emailResponse = await resend.emails.send({
       from: "CRM Reports <onboarding@resend.dev>",
-      to: ["your-email@example.com"], // Replace with actual recipient email
-      subject: `Daily Lead Report - ${reportData.todayDate}`,
+      to: ["sales1@tadmaids.com", "rami@tadmaids.com", "nour@tadmaids.com", "nawar@tadmaids.com"],
+      subject: `Lead Attendance Report - ${reportData.todayDate}`,
       html: htmlContent,
     });
 
