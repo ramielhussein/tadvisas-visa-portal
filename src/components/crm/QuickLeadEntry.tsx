@@ -873,9 +873,8 @@ interface QuickLeadEntryProps {
             {formStage === 'quick-add' && "Quick Add: Fill source and service, or Expand for full details"}
             {formStage === 'full-form' && (lead ? "Update lead information" : "Complete lead details")}
             <div className="text-xs text-muted-foreground mt-2 space-y-1">
-              <div>⌨️ <strong>Keyboard Shortcuts:</strong></div>
-              <div>• Press <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">1-9</kbd> to set status (1=New, 2=No Answer, 3=Engaged, 4=COLD, 5=Unanswer 2, 6=No Connection, 7=Warm, 8=HOT, 9=SOLD)</div>
-              <div>• <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+S</kbd> Save • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+H</kbd> Toggle HOT 🔥 • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Esc</kbd> Close</div>
+              <div>⌨️ <strong>Keyboard Shortcuts:</strong> Press <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">?</kbd> for full list</div>
+              <div>• <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">1-9</kbd> Status • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+S</kbd> Save • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+H</kbd> HOT 🔥 • <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded">Esc</kbd> Close</div>
             </div>
           </DialogDescription>
         </DialogHeader>

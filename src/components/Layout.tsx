@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
 import AdminMenu from "./AdminMenu";
+import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import { supabase } from "@/integrations/supabase/client";
 
 interface LayoutProps {
@@ -11,6 +12,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
   useEffect(() => {
     // Check initial auth state
@@ -26,6 +28,28 @@ const Layout = ({ children }: LayoutProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Global keyboard shortcuts listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for '?' key (Shift + /)
+      if (e.key === '?' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        setShowShortcutsHelp(true);
+        return;
+      }
+      
+      // Check for Ctrl + /
+      if (e.ctrlKey && e.key === '/' && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        setShowShortcutsHelp(true);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className={`min-h-screen flex flex-col ${isAuthenticated ? 'bg-cyan-50' : 'bg-white'}`}>
       <Navbar />
@@ -35,6 +59,10 @@ const Layout = ({ children }: LayoutProps) => {
       <Footer />
       {!isAuthenticated && <FloatingButtons />}
       <AdminMenu />
+      <KeyboardShortcutsHelp 
+        open={showShortcutsHelp} 
+        onClose={() => setShowShortcutsHelp(false)} 
+      />
     </div>
   );
 };
