@@ -537,7 +537,7 @@ const LeadAttendanceReport = () => {
                       data={leadsBySource}
                       dataKey="count"
                       nameKey="source"
-                      cx="50%"
+                      cx="30%"
                       cy="50%"
                       outerRadius={60}
                       label={({ source, count, percent }) => 
@@ -590,7 +590,7 @@ const LeadAttendanceReport = () => {
                       data={leadsByService}
                       dataKey="count"
                       nameKey="service"
-                      cx="50%"
+                      cx="70%"
                       cy="50%"
                       outerRadius={60}
                       label={({ service, count, percent }) => 
