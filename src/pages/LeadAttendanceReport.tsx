@@ -233,11 +233,14 @@ const LeadAttendanceReport = () => {
     const element = document.getElementById('report-content');
     if (!element) return;
 
+    // Add PDF-specific class to optimize layout
+    element.classList.add('pdf-export');
+
     const opt = {
-      margin: 10,
+      margin: 5,
       filename: `lead-attendance-report-${todayDate}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2 },
+      image: { type: 'jpeg' as const, quality: 0.95 },
+      html2canvas: { scale: 1.5 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
 
@@ -254,6 +257,9 @@ const LeadAttendanceReport = () => {
         description: "Failed to generate PDF",
         variant: "destructive",
       });
+    } finally {
+      // Remove PDF class after generation
+      element.classList.remove('pdf-export');
     }
   };
 
@@ -362,10 +368,33 @@ const LeadAttendanceReport = () => {
           </div>
         </div>
 
-        <div id="report-content">
+        <div id="report-content" className="relative">
+        <style>{`
+          #report-content.pdf-export {
+            font-size: 11px;
+          }
+          #report-content.pdf-export .card-header {
+            padding: 8px 12px;
+          }
+          #report-content.pdf-export .card-content {
+            padding: 8px 12px;
+          }
+          #report-content.pdf-export h3 {
+            font-size: 13px;
+          }
+          #report-content.pdf-export .text-2xl {
+            font-size: 18px;
+          }
+          #report-content.pdf-export table {
+            font-size: 10px;
+          }
+          #report-content.pdf-export td, #report-content.pdf-export th {
+            padding: 4px 8px;
+          }
+        `}</style>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Leads Added Today</CardTitle>
@@ -436,7 +465,7 @@ const LeadAttendanceReport = () => {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           {/* Lead by Source Chart */}
           <Card>
             <CardHeader>
@@ -457,14 +486,15 @@ const LeadAttendanceReport = () => {
                   <p>No leads added today</p>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={leadsBySource}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
                       dataKey="source" 
                       angle={-45}
                       textAnchor="end"
-                      height={100}
+                      height={80}
+                      tick={{ fontSize: 11 }}
                       className="text-xs"
                     />
                     <YAxis />
@@ -501,21 +531,22 @@ const LeadAttendanceReport = () => {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <Skeleton className="h-[300px] w-full" />
+                <Skeleton className="h-[200px] w-full" />
               ) : leadsByService.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No leads added today</p>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={leadsByService}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis 
                       dataKey="service" 
                       angle={-45}
                       textAnchor="end"
-                      height={100}
+                      height={80}
+                      tick={{ fontSize: 11 }}
                       className="text-xs"
                     />
                     <YAxis />
