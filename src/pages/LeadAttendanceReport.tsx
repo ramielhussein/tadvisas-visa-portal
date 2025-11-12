@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus, PieChart, Download, Mail } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LabelList } from "recharts";
+import { PieChart as RechartsPieChart, Pie, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import html2pdf from "html2pdf.js";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -351,26 +351,47 @@ const LeadAttendanceReport = () => {
 
         <div id="report-content" className="relative">
         <style>{`
-          #report-content.pdf-export {
+          #report-content {
+            font-size: 12px;
+          }
+          #report-content .card-header {
+            padding: 12px;
+          }
+          #report-content .card-content {
+            padding: 12px;
+          }
+          #report-content h3 {
+            font-size: 14px;
+          }
+          #report-content .text-2xl {
+            font-size: 20px;
+          }
+          #report-content table {
             font-size: 11px;
           }
-          #report-content.pdf-export .card-header {
-            padding: 8px 12px;
+          #report-content td, #report-content th {
+            padding: 6px 8px;
           }
-          #report-content.pdf-export .card-content {
-            padding: 8px 12px;
-          }
-          #report-content.pdf-export h3 {
-            font-size: 13px;
-          }
-          #report-content.pdf-export .text-2xl {
-            font-size: 18px;
-          }
-          #report-content.pdf-export table {
+          #report-content.pdf-export {
             font-size: 10px;
           }
+          #report-content.pdf-export .card-header {
+            padding: 8px;
+          }
+          #report-content.pdf-export .card-content {
+            padding: 8px;
+          }
+          #report-content.pdf-export h3 {
+            font-size: 12px;
+          }
+          #report-content.pdf-export .text-2xl {
+            font-size: 16px;
+          }
+          #report-content.pdf-export table {
+            font-size: 9px;
+          }
           #report-content.pdf-export td, #report-content.pdf-export th {
-            padding: 4px 8px;
+            padding: 4px 6px;
           }
         `}</style>
 
@@ -480,33 +501,34 @@ const LeadAttendanceReport = () => {
                   <p>No leads added today</p>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={leadsBySource}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis 
-                      dataKey="source" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                      tick={{ fontSize: 11 }}
-                      className="text-xs"
-                    />
-                    <YAxis />
+                <ResponsiveContainer width="100%" height={180}>
+                  <RechartsPieChart>
+                    <Pie
+                      data={leadsBySource}
+                      dataKey="count"
+                      nameKey="source"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={60}
+                      label={({ source, count, percent }) => 
+                        `${source}: ${count} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      labelLine={{ stroke: 'hsl(var(--foreground))', strokeWidth: 1 }}
+                      style={{ fontSize: '10px' }}
+                    >
+                      {leadsBySource.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
                     <Tooltip 
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--background))',
                         border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
+                        borderRadius: '8px',
+                        fontSize: '11px'
                       }}
                     />
-                    <Legend />
-                    <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
-                      <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
-                      {leadsBySource.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                  </RechartsPieChart>
                 </ResponsiveContainer>
               )}
             </CardContent>
@@ -532,33 +554,34 @@ const LeadAttendanceReport = () => {
                   <p>No leads added today</p>
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={leadsByService}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis 
-                      dataKey="service" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                      tick={{ fontSize: 11 }}
-                      className="text-xs"
-                    />
-                    <YAxis />
+                <ResponsiveContainer width="100%" height={180}>
+                  <RechartsPieChart>
+                    <Pie
+                      data={leadsByService}
+                      dataKey="count"
+                      nameKey="service"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={60}
+                      label={({ service, count, percent }) => 
+                        `${service}: ${count} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      labelLine={{ stroke: 'hsl(var(--foreground))', strokeWidth: 1 }}
+                      style={{ fontSize: '10px' }}
+                    >
+                      {leadsByService.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
                     <Tooltip 
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--background))',
                         border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
+                        borderRadius: '8px',
+                        fontSize: '11px'
                       }}
                     />
-                    <Legend />
-                    <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
-                      <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
-                      {leadsByService.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                  </RechartsPieChart>
                 </ResponsiveContainer>
               )}
             </CardContent>
