@@ -75,38 +75,82 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (takenError) throw takenError;
 
-    // Fetch staff activities
-    const { data: staffActivities, error: staffError } = await supabase
+    // Build staff activity stats without FK joins
+    const { data: createdLeadsByStaff, error: createdLeadsByStaffError } = await supabase
+      .from("leads")
+      .select("assigned_to")
+      .not("assigned_to", "is", null)
+      .gte("created_at", todayStart)
+      .lte("created_at", todayEnd);
+
+    if (createdLeadsByStaffError) throw createdLeadsByStaffError;
+
+    const { data: updatedLeadsByStaff, error: updatedLeadsByStaffError } = await supabase
+      .from("leads")
+      .select("assigned_to, created_at")
+      .not("assigned_to", "is", null)
+      .gte("updated_at", todayStart)
+      .lte("updated_at", todayEnd)
+      .lt("created_at", todayStart);
+
+    if (updatedLeadsByStaffError) throw updatedLeadsByStaffError;
+
+    const { data: takenLeadsByStaff, error: takenLeadsByStaffError } = await supabase
+      .from("leads")
+      .select("assigned_to")
+      .not("assigned_to", "is", null)
+      .gte("updated_at", todayStart)
+      .lte("updated_at", todayEnd);
+
+    if (takenLeadsByStaffError) throw takenLeadsByStaffError;
+
+    const staffCounts = new Map<string, { added: number; updated: number; taken: number }>();
+
+    for (const row of createdLeadsByStaff || []) {
+      const id = row.assigned_to as string | null;
+      if (!id) continue;
+      const c = staffCounts.get(id) || { added: 0, updated: 0, taken: 0 };
+      c.added += 1;
+      staffCounts.set(id, c);
+    }
+
+    for (const row of updatedLeadsByStaff || []) {
+      const id = row.assigned_to as string | null;
+      if (!id) continue;
+      const c = staffCounts.get(id) || { added: 0, updated: 0, taken: 0 };
+      c.updated += 1;
+      staffCounts.set(id, c);
+    }
+
+    for (const row of takenLeadsByStaff || []) {
+      const id = row.assigned_to as string | null;
+      if (!id) continue;
+      const c = staffCounts.get(id) || { added: 0, updated: 0, taken: 0 };
+      c.taken += 1;
+      staffCounts.set(id, c);
+    }
+
+    const staffIds = Array.from(staffCounts.keys());
+
+    const { data: profiles, error: profilesError } = await supabase
       .from("profiles")
-      .select(`
-        id,
-        full_name,
-        leads!leads_assigned_to_fkey(id, created_at, updated_at)
-      `);
+      .select("id, full_name")
+      .in("id", staffIds);
 
-    if (staffError) throw staffError;
+    if (profilesError) throw profilesError;
 
-    // Process staff activities
-    const processedStaff = staffActivities
-      .map((staff: any) => {
-        const added = staff.leads.filter(
-          (l: any) => l.created_at >= todayStart && l.created_at <= todayEnd
-        ).length;
-        const updated = staff.leads.filter(
-          (l: any) => l.updated_at >= todayStart && l.updated_at <= todayEnd && l.created_at !== l.updated_at
-        ).length;
-        const taken = staff.leads.filter(
-          (l: any) => l.updated_at >= todayStart && l.updated_at <= todayEnd
-        ).length;
-
+    const processedStaff = staffIds
+      .map((id) => {
+        const profile = profiles?.find((p: any) => p.id === id);
+        const counts = staffCounts.get(id)!;
         return {
-          staff_name: staff.full_name || "Unknown",
-          leads_added: added,
-          leads_updated: updated,
-          leads_taken: taken,
+          staff_name: profile?.full_name || "Unknown",
+          leads_added: counts.added,
+          leads_updated: counts.updated,
+          leads_taken: counts.taken,
         };
       })
-      .filter((s: any) => s.leads_added > 0 || s.leads_updated > 0 || s.leads_taken > 0);
+      .filter((s) => s.leads_added > 0 || s.leads_updated > 0 || s.leads_taken > 0);
 
     // Fetch leads by source
     const { data: leadsBySource, error: sourceError } = await supabase
