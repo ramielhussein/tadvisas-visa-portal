@@ -13,7 +13,8 @@ interface DailyReportData {
   todayDate: string;
   leadsAdded: number;
   leadsUpdated: number;
-  leadsTaken: number;
+  freshLeadsTaken: number;
+  totalLeadsTaken: number;
   activeStaff: number;
   staffActivities: Array<{
     staff_name: string;
@@ -191,7 +192,8 @@ const handler = async (req: Request): Promise<Response> => {
       }),
       leadsAdded: leadsAdded?.length || 0,
       leadsUpdated: leadsUpdated?.length || 0,
-      leadsTaken: leadsTaken?.length || 0,
+      freshLeadsTaken: createdLeadsByStaff?.length || 0,
+      totalLeadsTaken: takenLeadsByStaff?.length || 0,
       activeStaff: processedStaff.length,
       staffActivities: processedStaff,
       leadsBySource: Object.entries(sourceCount).map(([source, count]) => ({
@@ -213,10 +215,11 @@ const handler = async (req: Request): Promise<Response> => {
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 800px; margin: 0 auto; padding: 20px; }
             .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-            .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+            .summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin: 20px 0; }
             .summary-card { background: #f3f4f6; padding: 15px; border-radius: 8px; text-align: center; }
             .summary-card h3 { margin: 0; color: #6b7280; font-size: 14px; }
             .summary-card p { margin: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #2563eb; }
+            .summary-card small { display: block; margin-top: 5px; font-size: 11px; color: #6b7280; }
             .section { margin: 20px 0; }
             .section h2 { color: #1f2937; border-bottom: 2px solid #2563eb; padding-bottom: 8px; }
             table { width: 100%; border-collapse: collapse; margin: 10px 0; }
@@ -242,8 +245,14 @@ const handler = async (req: Request): Promise<Response> => {
                 <p>${reportData.leadsUpdated}</p>
               </div>
               <div class="summary-card">
-                <h3>Leads Taken</h3>
-                <p>${reportData.leadsTaken}</p>
+                <h3>Fresh Leads Taken</h3>
+                <p>${reportData.freshLeadsTaken}</p>
+                <small>${reportData.leadsAdded > 0 ? ((reportData.freshLeadsTaken / reportData.leadsAdded) * 100).toFixed(1) : '0'}% of new leads</small>
+              </div>
+              <div class="summary-card">
+                <h3>Total Leads Taken</h3>
+                <p>${reportData.totalLeadsTaken}</p>
+                <small>${(reportData.leadsAdded + reportData.leadsUpdated) > 0 ? ((reportData.totalLeadsTaken / (reportData.leadsAdded + reportData.leadsUpdated)) * 100).toFixed(1) : '0'}% of all leads</small>
               </div>
               <div class="summary-card">
                 <h3>Active Staff</h3>

@@ -44,6 +44,7 @@ const LeadAttendanceReport = () => {
   const [leadsUpdatedToday, setLeadsUpdatedToday] = useState(0);
   const [staffActivities, setStaffActivities] = useState<StaffActivity[]>([]);
   const [totalLeadsTaken, setTotalLeadsTaken] = useState(0);
+  const [freshLeadsTaken, setFreshLeadsTaken] = useState(0);
   const [leadsBySource, setLeadsBySource] = useState<LeadSourceData[]>([]);
   const [leadsByService, setLeadsByService] = useState<LeadServiceData[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -169,7 +170,13 @@ const LeadAttendanceReport = () => {
       activities.sort((a, b) => b.total_activity - a.total_activity);
 
       setStaffActivities(activities);
-      setTotalLeadsTaken(activities.reduce((sum, a) => sum + a.leads_picked, 0));
+      
+      // Fresh leads taken - only new leads created today with assignment
+      const freshTaken = activities.reduce((sum, a) => sum + a.leads_picked, 0);
+      setFreshLeadsTaken(freshTaken);
+      
+      // Total leads taken - all leads with assignment activity today
+      setTotalLeadsTaken(assignedLeads?.length || 0);
 
       // Fetch leads by source for today
       const { data: leadsWithSource, error: sourceError } = await supabase
@@ -439,7 +446,7 @@ const LeadAttendanceReport = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Leads Added Today</CardTitle>
@@ -476,6 +483,27 @@ const LeadAttendanceReport = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Fresh Leads Taken</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-8 w-20" />
+              ) : (
+                <>
+                  <div className="text-2xl font-bold">{freshLeadsTaken}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {leadsAddedToday > 0 
+                      ? `${((freshLeadsTaken / leadsAddedToday) * 100).toFixed(1)}% of new leads`
+                      : 'No new leads'}
+                  </p>
+                </>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Leads Taken</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -487,7 +515,7 @@ const LeadAttendanceReport = () => {
                   <div className="text-2xl font-bold">{totalLeadsTaken}</div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {leadsAddedToday + leadsUpdatedToday > 0 
-                      ? `${((totalLeadsTaken / (leadsAddedToday + leadsUpdatedToday)) * 100).toFixed(1)}% of total leads`
+                      ? `${((totalLeadsTaken / (leadsAddedToday + leadsUpdatedToday)) * 100).toFixed(1)}% of all leads`
                       : 'No leads to calculate'}
                   </p>
                 </>
