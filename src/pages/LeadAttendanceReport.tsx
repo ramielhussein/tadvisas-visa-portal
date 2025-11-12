@@ -274,6 +274,32 @@ const LeadAttendanceReport = () => {
     setEmailDialogOpen(false);
   };
 
+  const handleTestEmail = async () => {
+    try {
+      toast({
+        title: "Sending Email",
+        description: "Please wait...",
+      });
+      
+      const { data, error } = await supabase.functions.invoke('send-daily-report-email');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Success",
+        description: "Test email sent successfully! Check your inbox.",
+      });
+      console.log("Email sent:", data);
+    } catch (error: any) {
+      console.error("Error sending test email:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send test email: " + error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -299,11 +325,15 @@ const LeadAttendanceReport = () => {
               <Download className="h-4 w-4 mr-2" />
               Download PDF
             </Button>
+            <Button onClick={handleTestEmail}>
+              <Mail className="h-4 w-4 mr-2" />
+              Test Email Now
+            </Button>
             <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Schedule Email
+                <Button variant="outline">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Email Schedule
                 </Button>
               </DialogTrigger>
               <DialogContent>
