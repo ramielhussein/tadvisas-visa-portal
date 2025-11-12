@@ -617,6 +617,7 @@ export type Database = {
       }
       lead_activities: {
         Row: {
+          activity_subtype: string | null
           activity_type: string
           created_at: string
           description: string | null
@@ -628,6 +629,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activity_subtype?: string | null
           activity_type: string
           created_at?: string
           description?: string | null
@@ -639,6 +641,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activity_subtype?: string | null
           activity_type?: string
           created_at?: string
           description?: string | null

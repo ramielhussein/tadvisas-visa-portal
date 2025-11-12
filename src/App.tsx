@@ -1,4 +1,5 @@
 
+import SendPersonalReports from "./pages/admin/SendPersonalReports";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -131,6 +132,7 @@ const App = () => (
           <Route path="/admin/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
           <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+          <Route path="/admin/send-personal-reports" element={<ProtectedRoute><SendPersonalReports /></ProtectedRoute>} />
           <Route path="/admin/client-submissions" element={<ProtectedRoute><ClientSubmissions /></ProtectedRoute>} />
           <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />

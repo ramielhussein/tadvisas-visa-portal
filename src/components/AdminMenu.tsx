@@ -145,6 +145,7 @@ const AdminMenu = () => {
         { title: "CRM Dashboard", path: "/crm/dashboard", icon: BarChart3 },
         { title: "Lead Management", path: "/crm/leads", icon: Shield },
         { title: "Quick Lead Entry", action: "quick-lead", icon: Plus },
+        { title: "Send Personal Reports", path: "/admin/send-personal-reports", icon: FileText },
         { title: "Lead Sources", path: "/crm/lead-sources", icon: Settings },
         { title: "Inquiry Packages", path: "/crm/inquiry-packages", icon: Package },
         { title: "Sales Packages", path: "/crm/sales-packages", icon: Package },
