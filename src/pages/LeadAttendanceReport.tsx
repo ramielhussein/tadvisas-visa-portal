@@ -30,6 +30,11 @@ interface LeadSourceData {
   count: number;
 }
 
+interface LeadServiceData {
+  service: string;
+  count: number;
+}
+
 const LeadAttendanceReport = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,6 +45,7 @@ const LeadAttendanceReport = () => {
   const [staffActivities, setStaffActivities] = useState<StaffActivity[]>([]);
   const [totalLeadsTaken, setTotalLeadsTaken] = useState(0);
   const [leadsBySource, setLeadsBySource] = useState<LeadSourceData[]>([]);
+  const [leadsByService, setLeadsByService] = useState<LeadServiceData[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailRecipients, setEmailRecipients] = useState("");
   const [scheduleTime, setScheduleTime] = useState("09:00");
@@ -186,6 +192,28 @@ const LeadAttendanceReport = () => {
         .sort((a, b) => b.count - a.count);
 
       setLeadsBySource(sourceData);
+
+      // Fetch leads by service for today
+      const { data: leadsWithService, error: serviceError } = await supabase
+        .from("leads")
+        .select("service_required")
+        .gte("created_at", startOfDay)
+        .lte("created_at", endOfDay);
+
+      if (serviceError) throw serviceError;
+
+      // Group by service
+      const serviceMap = new Map<string, number>();
+      for (const lead of leadsWithService || []) {
+        const service = lead.service_required || "No Service";
+        serviceMap.set(service, (serviceMap.get(service) || 0) + 1);
+      }
+
+      const serviceData: LeadServiceData[] = Array.from(serviceMap.entries())
+        .map(([service, count]) => ({ service, count }))
+        .sort((a, b) => b.count - a.count);
+
+      setLeadsByService(serviceData);
 
     } catch (error: any) {
       console.error("Error fetching attendance data:", error);
@@ -407,56 +435,110 @@ const LeadAttendanceReport = () => {
           </Card>
         </div>
 
-        {/* Lead by Source Chart */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
-              Leads by Source
-            </CardTitle>
-            <CardDescription>
-              Breakdown of today's leads by their source
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-[300px] w-full" />
-            ) : leadsBySource.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No leads added today</p>
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={leadsBySource}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis 
-                    dataKey="source" 
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                    className="text-xs"
-                  />
-                  <YAxis />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--background))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
-                    <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
-                    {leadsBySource.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Lead by Source Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5" />
+                Leads by Source
+              </CardTitle>
+              <CardDescription>
+                Breakdown of today's leads by their source
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : leadsBySource.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No leads added today</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={leadsBySource}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="source" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      className="text-xs"
+                    />
+                    <YAxis />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
+                      <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
+                      {leadsBySource.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Lead by Service Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5" />
+                Services Needed
+              </CardTitle>
+              <CardDescription>
+                Breakdown of today's leads by service type
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : leadsByService.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <PieChart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No leads added today</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={leadsByService}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis 
+                      dataKey="service" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      className="text-xs"
+                    />
+                    <YAxis />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="count" name="Leads" radius={[8, 8, 0, 0]}>
+                      <LabelList dataKey="count" position="top" style={{ fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} />
+                      {leadsByService.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Staff Activity Table */}
         <Card>
