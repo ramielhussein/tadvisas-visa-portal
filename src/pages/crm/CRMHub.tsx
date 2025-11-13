@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -101,6 +101,10 @@ const CRMHub = () => {
   const [assignPreviouslyLostDialogOpen, setAssignPreviouslyLostDialogOpen] = useState(false);
   const [previouslyLostLead, setPreviouslyLostLead] = useState<Lead | null>(null);
   const [lostByUser, setLostByUser] = useState<string>("");
+  
+  // Throttle real-time updates
+  const lastUpdateTimeRef = useRef(0);
+  const pendingUpdateRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce search to reduce re-renders
   useEffect(() => {
@@ -263,14 +267,44 @@ const CRMHub = () => {
     }
   }, [user, sortBy, showOnlyHot, showOnlyToday, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const { data: profilesData, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email, full_name, permissions")
+        .order("email");
+
+      if (profilesError) throw profilesError;
+
+      const salesUsers = (profilesData || []).filter((user: any) => {
+        const permissions = user.permissions as any;
+        return (
+          permissions?.leads?.assign === true ||
+          permissions?.deals?.create === true ||
+          permissions?.deals?.edit === true
+        );
+      });
+
+      setUsers(salesUsers);
+    } catch (error: any) {
+      console.error("Error fetching users:", error);
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadLeads();
-      fetchUsers();
     }
   }, [user, loadLeads]);
+  
+  // Fetch users only once on mount
+  useEffect(() => {
+    if (user) {
+      fetchUsers();
+    }
+  }, [user, fetchUsers]);
 
-  // Real-time subscription for leads - optimized to reduce re-renders
+  // Real-time subscription for leads - throttled to reduce re-renders
   useEffect(() => {
     if (!user) return;
 
@@ -284,6 +318,21 @@ const CRMHub = () => {
           table: 'leads',
         },
         (payload) => {
+          // Throttle updates to max once per second
+          const now = Date.now();
+          if (now - lastUpdateTimeRef.current < 1000) {
+            // Queue update for later
+            if (pendingUpdateRef.current) {
+              clearTimeout(pendingUpdateRef.current);
+            }
+            pendingUpdateRef.current = setTimeout(() => {
+              loadLeads();
+              lastUpdateTimeRef.current = Date.now();
+            }, 1000);
+            return;
+          }
+          
+          lastUpdateTimeRef.current = now;
           const newLead: any = (payload as any).new || null;
           const oldLead: any = (payload as any).old || null;
           const id = (newLead && newLead.id) || (oldLead && oldLead.id);
@@ -332,30 +381,6 @@ const CRMHub = () => {
       supabase.removeChannel(channel);
     };
   }, [user, isAdmin]);
-
-  const fetchUsers = async () => {
-    try {
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, email, full_name, permissions")
-        .order("email");
-
-      if (profilesError) throw profilesError;
-
-      const salesUsers = (profilesData || []).filter((user: any) => {
-        const permissions = user.permissions as any;
-        return (
-          permissions?.leads?.assign === true ||
-          permissions?.deals?.create === true ||
-          permissions?.deals?.edit === true
-        );
-      });
-
-      setUsers(salesUsers);
-    } catch (error: any) {
-      console.error("Error fetching users:", error);
-    }
-  };
 
   const handleAssignToMe = async (leadId: string) => {
     if (!user) return;
