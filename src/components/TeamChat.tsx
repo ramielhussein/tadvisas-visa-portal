@@ -31,13 +31,14 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [currentUserName, setCurrentUserName] = useState<string>("You");
+  const [onlineCount, setOnlineCount] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
     loadMessages();
     getCurrentUser();
     
-    const channel = supabase
+    const chatChannel = supabase
       .channel('chat-messages')
       .on(
         'postgres_changes',
@@ -61,16 +62,40 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
       )
       .subscribe();
 
+    const presenceChannel = supabase.channel('team-presence')
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        setOnlineCount(Object.keys(state).length);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED' && currentUserId) {
+          await presenceChannel.track({
+            user_id: currentUserId,
+            user_name: currentUserName,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(chatChannel);
+      supabase.removeChannel(presenceChannel);
     };
-  }, [currentUserId]);
+  }, [currentUserId, currentUserName]);
 
   const getCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setCurrentUserId(user.id);
-      setCurrentUserName(user.email?.split('@')[0] || "You");
+      
+      // Get full name from profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+      
+      setCurrentUserName(profile?.full_name || user.email?.split('@')[0] || "You");
     }
   };
 
@@ -87,9 +112,19 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
 
     if (data) {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // Fetch all user profiles to get full names
+      const userIds = [...new Set(data.map(msg => msg.user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
+      
       const formattedMessages: Message[] = data.map(msg => ({
         id: msg.id,
-        user: msg.user_name,
+        user: profileMap.get(msg.user_id) || msg.user_name,
         avatar: "",
         text: msg.message,
         timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -167,7 +202,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
               </div>
               <div>
                 <h3 className="font-semibold">Sales Team</h3>
-                <p className="text-xs text-muted-foreground">5 members online</p>
+                <p className="text-xs text-muted-foreground">{onlineCount} {onlineCount === 1 ? 'member' : 'members'} online</p>
               </div>
             </div>
             <div className="flex gap-1">
