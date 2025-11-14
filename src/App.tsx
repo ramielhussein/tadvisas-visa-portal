@@ -83,6 +83,7 @@ import SalesReportsCenter from "./pages/SalesReportsCenter";
 import LeadAttendanceReport from "./pages/LeadAttendanceReport";
 import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
+import ChatTest from "./pages/ChatTest";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -200,6 +201,9 @@ const App = () => (
           <Route path="/product/nationality-workflows" element={<ProtectedRoute><NationalityWorkflows /></ProtectedRoute>} />
           <Route path="/product/worker-returns" element={<ProtectedRoute><WorkerReturns /></ProtectedRoute>} />
           <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
+          
+          {/* Test Routes */}
+          <Route path="/chattest" element={<ProtectedRoute><ChatTest /></ProtectedRoute>} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>
