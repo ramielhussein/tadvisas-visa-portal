@@ -1082,6 +1082,26 @@ interface QuickLeadEntryProps {
               )}
             </div>
 
+            <div className="space-y-2 border-2 border-primary rounded-md p-4">
+              <Label htmlFor="nationality_code_quick" className="text-primary font-semibold">Nationality</Label>
+              <Select
+                value={formData.nationality_code}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, nationality_code: value })
+                }
+              >
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder="Select nationality" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="PH">Philippines</SelectItem>
+                  <SelectItem value="ID">Indonesia</SelectItem>
+                  <SelectItem value="ET">Ethiopia</SelectItem>
+                  <SelectItem value="AF">Afghanistan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex gap-3 pt-4">
               <Button
                 type="button"
