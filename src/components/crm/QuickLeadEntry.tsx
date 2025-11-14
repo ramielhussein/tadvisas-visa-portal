@@ -141,7 +141,7 @@ interface QuickLeadEntryProps {
     try {
       // Use security definer function to check if phone exists (bypasses RLS)
       const { data: checkResult, error: checkError } = await supabase
-        .rpc('check_phone_exists', { phone_number: phoneValidation.formatted });
+        .rpc('check_phone_exists' as any, { phone_number: phoneValidation.formatted });
 
       if (checkError) {
         throw checkError;
