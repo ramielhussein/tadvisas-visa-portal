@@ -143,6 +143,30 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       contracts: {
         Row: {
           base_amount: number
@@ -2254,6 +2278,17 @@ export type Database = {
       calculate_net_amount: {
         Args: { commission_rate: number; gross_amount: number }
         Returns: number
+      }
+      check_phone_exists: {
+        Args: { phone_number: string }
+        Returns: {
+          archived: boolean
+          assigned_to: string
+          client_name: string
+          lead_id: string
+          phone_exists: boolean
+          status: string
+        }[]
       }
       generate_contract_number: { Args: never; Returns: string }
       generate_deal_number: { Args: never; Returns: string }
