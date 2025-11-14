@@ -13,7 +13,6 @@ const FloatingButtons = () => {
   const [isChatMinimized, setIsChatMinimized] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
-  const isTestRoute = window.location.pathname === '/chattest';
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -57,8 +56,8 @@ const FloatingButtons = () => {
     setUnreadCount(0);
   };
 
-  // Show authenticated buttons when logged in or on test route
-  if (isAuthenticated || isTestRoute) {
+  // Show authenticated buttons when logged in
+  if (isAuthenticated) {
     return (
       <>
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex flex-nowrap gap-3 whitespace-nowrap">
