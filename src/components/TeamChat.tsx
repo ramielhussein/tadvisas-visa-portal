@@ -287,7 +287,32 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                   key={msg.id}
                   className={`flex gap-3 ${msg.isOwn ? "flex-row-reverse" : ""}`}
                 >
-...
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={msg.avatar} alt={msg.user} />
+                    <AvatarFallback>{getInitials(msg.user)}</AvatarFallback>
+                  </Avatar>
+                  <div className={`flex flex-col gap-1 ${msg.isOwn ? "items-end" : "items-start"}`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{msg.user}</span>
+                      <span className="text-xs text-muted-foreground">{msg.timestamp}</span>
+                    </div>
+                    <div className={`rounded-lg px-3 py-2 max-w-xs ${
+                      msg.isOwn
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    }`}>
+                      <p className="text-sm">{msg.text}</p>
+                    </div>
+                    {msg.leadId && msg.leadName && (
+                      <Link 
+                        to={`/crm/leads/${msg.leadId}`}
+                        className="flex items-center gap-1 text-xs text-primary hover:underline"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        {msg.leadName}
+                      </Link>
+                    )}
+                  </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
