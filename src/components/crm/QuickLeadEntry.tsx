@@ -754,6 +754,13 @@ interface QuickLeadEntryProps {
   // Keyboard shortcut handler for status selection and actions
   const handleKeyDown = (e: React.KeyboardEvent) => {
     const key = e.key;
+    const target = e.target as HTMLElement;
+    
+    // Don't trigger shortcuts if user is typing in an input field
+    const isTypingInField = target.tagName === 'INPUT' || 
+                           target.tagName === 'TEXTAREA' || 
+                           target.tagName === 'SELECT' ||
+                           target.isContentEditable;
     
     // Ctrl+S: Save/Submit form
     if (e.ctrlKey && key === 's') {
@@ -787,26 +794,28 @@ interface QuickLeadEntryProps {
       return;
     }
     
-    // Number keys 1-9: Quick status selection
-    const statusMap: Record<string, string> = {
-      '1': 'New Lead',
-      '2': 'Called No Answer',
-      '3': 'Called Engaged',
-      '4': 'Called COLD',
-      '5': 'Called Unanswer 2',
-      '6': 'No Connection',
-      '7': 'Warm',
-      '8': 'HOT',
-      '9': 'SOLD',
-    };
+    // Number keys 1-9: Quick status selection (only when NOT typing in a field)
+    if (!isTypingInField) {
+      const statusMap: Record<string, string> = {
+        '1': 'New Lead',
+        '2': 'Called No Answer',
+        '3': 'Called Engaged',
+        '4': 'Called COLD',
+        '5': 'Called Unanswer 2',
+        '6': 'No Connection',
+        '7': 'Warm',
+        '8': 'HOT',
+        '9': 'SOLD',
+      };
 
-    if (statusMap[key]) {
-      e.preventDefault();
-      setFormData({ ...formData, status: statusMap[key] as any });
-      toast({
-        title: "Status Updated",
-        description: `Status set to: ${statusMap[key]}`,
-      });
+      if (statusMap[key]) {
+        e.preventDefault();
+        setFormData({ ...formData, status: statusMap[key] as any });
+        toast({
+          title: "Status Updated",
+          description: `Status set to: ${statusMap[key]}`,
+        });
+      }
     }
   };
 
