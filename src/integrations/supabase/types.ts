@@ -147,6 +147,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          lead_id: string | null
           message: string
           user_id: string
           user_name: string
@@ -154,6 +155,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          lead_id?: string | null
           message: string
           user_id: string
           user_name: string
@@ -161,11 +163,20 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          lead_id?: string | null
           message?: string
           user_id?: string
           user_name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contracts: {
         Row: {
