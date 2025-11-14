@@ -74,7 +74,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
 
   return (
     <div 
-      className={`fixed right-0 top-0 h-screen bg-background border-l shadow-xl transition-all duration-300 z-50 ${
+      className={`fixed right-0 top-0 h-screen bg-background border-l shadow-xl transition-all duration-300 z-[70] ${
         isMinimized ? 'w-16' : 'w-96'
       }`}
     >
