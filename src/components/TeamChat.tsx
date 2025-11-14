@@ -7,7 +7,7 @@ import { Send, X, Minus, Link as LinkIcon, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import LeadSelectorDialog from "./chat/LeadSelectorDialog";
 
 interface Message {
@@ -303,6 +303,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                       <p className="text-sm">{msg.text}</p>
                       {msg.leadId && msg.leadName && (
                         <Button
+                          asChild
                           variant="ghost"
                           size="sm"
                           className={`mt-2 h-auto py-1 px-2 ${
@@ -310,10 +311,11 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                               ? "text-primary-foreground hover:bg-primary-foreground/20"
                               : "hover:bg-muted-foreground/20"
                           }`}
-                          onClick={() => navigate(`/crm/leads/${msg.leadId}`)}
                         >
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          <span className="text-xs">{msg.leadName}</span>
+                          <Link to={`/crm/leads/${msg.leadId}`} aria-label={`Open lead ${msg.leadName}`}>
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            <span className="text-xs">{msg.leadName}</span>
+                          </Link>
                         </Button>
                       )}
                     </div>
