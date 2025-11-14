@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,15 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
   const [leadSelectorOpen, setLeadSelectorOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     loadMessages();
@@ -278,50 +287,10 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                   key={msg.id}
                   className={`flex gap-3 ${msg.isOwn ? "flex-row-reverse" : ""}`}
                 >
-                  <Avatar className="h-8 w-8 flex-shrink-0">
-                    <AvatarImage src={msg.avatar} />
-                    <AvatarFallback className={msg.isOwn ? "bg-primary text-primary-foreground" : "bg-secondary"}>
-                      {getInitials(msg.user)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className={`flex flex-col ${msg.isOwn ? "items-end" : ""}`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-medium text-foreground">
-                        {msg.user}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {msg.timestamp}
-                      </span>
-                    </div>
-                    <div
-                      className={`rounded-lg px-4 py-2 max-w-[250px] ${
-                        msg.isOwn
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <p className="text-sm">{msg.text}</p>
-                      {msg.leadId && msg.leadName && (
-                        <Button
-                          asChild
-                          variant="ghost"
-                          size="sm"
-                          className={`mt-2 h-auto py-1 px-2 ${
-                            msg.isOwn
-                              ? "text-primary-foreground hover:bg-primary-foreground/20"
-                              : "hover:bg-muted-foreground/20"
-                          }`}
-                        >
-                          <Link to={`/crm/leads/${msg.leadId}`} aria-label={`Open lead ${msg.leadName}`}>
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            <span className="text-xs">{msg.leadName}</span>
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+...
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
 
