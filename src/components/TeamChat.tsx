@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import LeadSelectorDialog from "./chat/LeadSelectorDialog";
 
 interface Message {
   id: string;
@@ -36,6 +37,8 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
   const [currentUserName, setCurrentUserName] = useState<string>("You");
   const [onlineCount, setOnlineCount] = useState(0);
   const [linkedLeadId, setLinkedLeadId] = useState<string | null>(null);
+  const [linkedLeadName, setLinkedLeadName] = useState<string | null>(null);
+  const [leadSelectorOpen, setLeadSelectorOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -188,14 +191,16 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
 
       setMessage("");
       setLinkedLeadId(null);
+      setLinkedLeadName(null);
     }
   };
 
-  const handleLinkLead = () => {
-    // Open quick lead entry or lead selector
+  const handleSelectLead = (leadId: string, leadName: string) => {
+    setLinkedLeadId(leadId);
+    setLinkedLeadName(leadName);
     toast({
-      title: "Link a Lead",
-      description: "Use the 'Add Lead' button to create a new lead, then it will be linked to your next message",
+      title: "Lead Linked",
+      description: `${leadName} will be linked to your next message`,
     });
   };
 
@@ -319,13 +324,16 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
           </ScrollArea>
 
           <div className="p-4 border-t bg-card">
-            {linkedLeadId && (
+            {linkedLeadId && linkedLeadName && (
               <div className="mb-2 p-2 bg-primary/10 rounded-md flex items-center justify-between">
-                <span className="text-xs text-primary">Lead will be linked to next message</span>
+                <span className="text-xs text-primary">Linked: {linkedLeadName}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setLinkedLeadId(null)}
+                  onClick={() => {
+                    setLinkedLeadId(null);
+                    setLinkedLeadName(null);
+                  }}
                   className="h-6 px-2"
                 >
                   <X className="h-3 w-3" />
@@ -336,7 +344,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleLinkLead}
+                onClick={() => setLeadSelectorOpen(true)}
                 className="flex-shrink-0"
                 title="Link to lead"
               >
@@ -360,6 +368,11 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
           </div>
         </div>
       )}
+      <LeadSelectorDialog
+        open={leadSelectorOpen}
+        onOpenChange={setLeadSelectorOpen}
+        onSelectLead={handleSelectLead}
+      />
     </div>
   );
 };
