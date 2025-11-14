@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, X, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -26,49 +28,98 @@ interface TeamChatProps {
 
 const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCount }: TeamChatProps) => {
   const [message, setMessage] = useState("");
-  
-  // Mock data for testing
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      user: "Sarah Johnson",
-      avatar: "",
-      text: "Hey team! I just spoke with the client, they're interested in the 3-month package.",
-      timestamp: "10:30 AM",
-      isOwn: false,
-    },
-    {
-      id: "2",
-      user: "Mike Chen",
-      avatar: "",
-      text: "Great! Did you mention the ALH program benefits?",
-      timestamp: "10:32 AM",
-      isOwn: false,
-    },
-    {
-      id: "3",
-      user: "You",
-      avatar: "",
-      text: "Yes, and they're very interested. Can someone send me the latest pricing sheet?",
-      timestamp: "10:35 AM",
-      isOwn: true,
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+  const [currentUserName, setCurrentUserName] = useState<string>("You");
+  const { toast } = useToast();
 
-  const handleSend = () => {
-    if (message.trim()) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        user: "You",
+  useEffect(() => {
+    loadMessages();
+    getCurrentUser();
+    
+    const channel = supabase
+      .channel('chat-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages'
+        },
+        (payload) => {
+          const newMsg = payload.new as any;
+          const formattedMessage: Message = {
+            id: newMsg.id,
+            user: newMsg.user_name,
+            avatar: "",
+            text: newMsg.message,
+            timestamp: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isOwn: newMsg.user_id === currentUserId,
+          };
+          setMessages(prev => [...prev, formattedMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUserId]);
+
+  const getCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      setCurrentUserId(user.id);
+      setCurrentUserName(user.email?.split('@')[0] || "You");
+    }
+  };
+
+  const loadMessages = async () => {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error loading messages:', error);
+      return;
+    }
+
+    if (data) {
+      const { data: { user } } = await supabase.auth.getUser();
+      const formattedMessages: Message[] = data.map(msg => ({
+        id: msg.id,
+        user: msg.user_name,
         avatar: "",
-        text: message.trim(),
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isOwn: true,
-      };
-      
-      setMessages(prev => [...prev, newMessage]);
+        text: msg.message,
+        timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isOwn: msg.user_id === user?.id,
+      }));
+      setMessages(formattedMessages);
+    }
+  };
+
+  const handleSend = async () => {
+    if (message.trim() && currentUserId) {
+      const { error } = await supabase
+        .from('chat_messages')
+        .insert({
+          user_id: currentUserId,
+          user_name: currentUserName,
+          message: message.trim(),
+        });
+
+      if (error) {
+        console.error('Error sending message:', error);
+        toast({
+          title: "Error",
+          description: "Failed to send message",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setMessage("");
-      console.log("Sent:", message);
     }
   };
 
