@@ -60,7 +60,7 @@ const FloatingButtons = () => {
   if (isAuthenticated) {
     return (
       <>
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 flex flex-nowrap gap-3 whitespace-nowrap">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[60] flex flex-nowrap gap-3 whitespace-nowrap">
           <button
             onClick={handleChatOpen}
             className="group shrink-0 flex items-center gap-2 bg-primary text-primary-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all transform hover:scale-105 whitespace-nowrap relative"
@@ -108,7 +108,7 @@ const FloatingButtons = () => {
 
   // Show public WhatsApp buttons when not logged in
   return (
-    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-nowrap gap-3 whitespace-nowrap">
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[60] flex flex-nowrap gap-3 whitespace-nowrap">
       <button
         onClick={handleMaidVisaClick}
         className="group shrink-0 flex items-center gap-2 bg-white backdrop-blur-sm border border-[#c9a227]/30 text-[#c9a227] px-3 py-2 md:px-5 md:py-3 rounded-none md:rounded-full shadow-lg hover:shadow-xl hover:bg-[#c9a227]/10 transition-all transform hover:scale-105 whitespace-nowrap"
