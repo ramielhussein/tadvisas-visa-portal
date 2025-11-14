@@ -57,7 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
-      {!isAuthenticated && <FloatingButtons />}
+      <FloatingButtons />
       <AdminMenu />
       <KeyboardShortcutsHelp 
         open={showShortcutsHelp} 
