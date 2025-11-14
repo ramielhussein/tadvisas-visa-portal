@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Bell } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Bell, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -27,6 +27,38 @@ export const NotificationBell = () => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // Initialize audio context
+  useEffect(() => {
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
+
+  // Function to play notification sound
+  const playNotificationSound = () => {
+    if (!audioContextRef.current) return;
+    
+    const context = audioContextRef.current;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    
+    // Pleasant notification sound: two-tone chime
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(800, context.currentTime);
+    oscillator.frequency.setValueAtTime(600, context.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
+    
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + 0.3);
+  };
 
   useEffect(() => {
     fetchNotifications();
@@ -45,6 +77,9 @@ export const NotificationBell = () => {
           console.log("New notification received:", payload);
           setNotifications((prev) => [payload.new as Notification, ...prev]);
           setUnreadCount((prev) => prev + 1);
+          
+          // Play notification sound
+          playNotificationSound();
           
           // Show toast for new notification
           const newNotif = payload.new as Notification;
@@ -167,16 +202,27 @@ export const NotificationBell = () => {
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">Notifications</h3>
-          {unreadCount > 0 && (
+          <div className="flex gap-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={markAllAsRead}
+              onClick={playNotificationSound}
               className="text-xs"
+              title="Test notification sound"
             >
-              Mark all read
+              <Volume2 className="h-4 w-4" />
             </Button>
-          )}
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={markAllAsRead}
+                className="text-xs"
+              >
+                Mark all read
+              </Button>
+            )}
+          </div>
         </div>
         <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
