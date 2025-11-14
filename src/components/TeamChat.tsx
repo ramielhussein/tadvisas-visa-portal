@@ -3,10 +3,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, X, Minus } from "lucide-react";
+import { Send, X, Minus, Link as LinkIcon, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -15,6 +16,8 @@ interface Message {
   text: string;
   timestamp: string;
   isOwn: boolean;
+  leadId?: string;
+  leadName?: string;
 }
 
 interface TeamChatProps {
@@ -32,7 +35,9 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [currentUserName, setCurrentUserName] = useState<string>("You");
   const [onlineCount, setOnlineCount] = useState(0);
+  const [linkedLeadId, setLinkedLeadId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadMessages();
@@ -47,8 +52,19 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
           schema: 'public',
           table: 'chat_messages'
         },
-        (payload) => {
+        async (payload) => {
           const newMsg = payload.new as any;
+          
+          let leadName = undefined;
+          if (newMsg.lead_id) {
+            const { data: lead } = await supabase
+              .from('leads')
+              .select('client_name')
+              .eq('id', newMsg.lead_id)
+              .single();
+            leadName = lead?.client_name;
+          }
+          
           const formattedMessage: Message = {
             id: newMsg.id,
             user: newMsg.user_name,
@@ -56,6 +72,8 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
             text: newMsg.message,
             timestamp: new Date(newMsg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isOwn: newMsg.user_id === currentUserId,
+            leadId: newMsg.lead_id,
+            leadName,
           };
           setMessages(prev => [...prev, formattedMessage]);
         }
@@ -122,6 +140,17 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
       
       const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
       
+      // Fetch lead names for messages with lead_id
+      const leadIds = [...new Set(data.filter(msg => msg.lead_id).map(msg => msg.lead_id))];
+      let leadMap = new Map();
+      if (leadIds.length > 0) {
+        const { data: leads } = await supabase
+          .from('leads')
+          .select('id, client_name')
+          .in('id', leadIds);
+        leadMap = new Map(leads?.map(l => [l.id, l.client_name]) || []);
+      }
+      
       const formattedMessages: Message[] = data.map(msg => ({
         id: msg.id,
         user: profileMap.get(msg.user_id) || msg.user_name,
@@ -129,6 +158,8 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
         text: msg.message,
         timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isOwn: msg.user_id === user?.id,
+        leadId: msg.lead_id,
+        leadName: msg.lead_id ? leadMap.get(msg.lead_id) : undefined,
       }));
       setMessages(formattedMessages);
     }
@@ -142,6 +173,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
           user_id: currentUserId,
           user_name: currentUserName,
           message: message.trim(),
+          lead_id: linkedLeadId,
         });
 
       if (error) {
@@ -155,7 +187,16 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
       }
 
       setMessage("");
+      setLinkedLeadId(null);
     }
+  };
+
+  const handleLinkLead = () => {
+    // Open quick lead entry or lead selector
+    toast({
+      title: "Link a Lead",
+      description: "Use the 'Add Lead' button to create a new lead, then it will be linked to your next message",
+    });
   };
 
   const getInitials = (name: string) => {
@@ -255,6 +296,21 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                       }`}
                     >
                       <p className="text-sm">{msg.text}</p>
+                      {msg.leadId && msg.leadName && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={`mt-2 h-auto py-1 px-2 ${
+                            msg.isOwn
+                              ? "text-primary-foreground hover:bg-primary-foreground/20"
+                              : "hover:bg-muted-foreground/20"
+                          }`}
+                          onClick={() => navigate(`/crm/leads/${msg.leadId}`)}
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          <span className="text-xs">{msg.leadName}</span>
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -263,7 +319,29 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
           </ScrollArea>
 
           <div className="p-4 border-t bg-card">
+            {linkedLeadId && (
+              <div className="mb-2 p-2 bg-primary/10 rounded-md flex items-center justify-between">
+                <span className="text-xs text-primary">Lead will be linked to next message</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLinkedLeadId(null)}
+                  className="h-6 px-2"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
             <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLinkLead}
+                className="flex-shrink-0"
+                title="Link to lead"
+              >
+                <LinkIcon className="h-4 w-4" />
+              </Button>
               <Input
                 placeholder="Type a message..."
                 value={message}
@@ -275,7 +353,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                 }}
                 className="flex-1"
               />
-              <Button onClick={handleSend} size="icon">
+              <Button onClick={handleSend} size="icon" className="flex-shrink-0">
                 <Send className="h-4 w-4" />
               </Button>
             </div>
