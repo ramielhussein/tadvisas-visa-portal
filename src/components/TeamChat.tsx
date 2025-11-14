@@ -28,7 +28,7 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
   const [message, setMessage] = useState("");
   
   // Mock data for testing
-  const [messages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
       user: "Sarah Johnson",
@@ -57,8 +57,18 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
 
   const handleSend = () => {
     if (message.trim()) {
-      console.log("Sending:", message);
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        user: "You",
+        avatar: "",
+        text: message.trim(),
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isOwn: true,
+      };
+      
+      setMessages(prev => [...prev, newMessage]);
       setMessage("");
+      console.log("Sent:", message);
     }
   };
 
