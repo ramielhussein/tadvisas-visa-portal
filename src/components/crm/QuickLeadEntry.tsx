@@ -139,15 +139,31 @@ interface QuickLeadEntryProps {
     setIsChecking(true);
     
     try {
-      // Check if phone number exists in leads table
-      const { data: existingLeadData, error } = await supabase
-        .from('leads')
-        .select('*')
-        .eq('mobile_number', phoneValidation.formatted)
-        .maybeSingle();
+      // Use security definer function to check if phone exists (bypasses RLS)
+      const { data: checkResult, error: checkError } = await supabase
+        .rpc('check_phone_exists', { phone_number: phoneValidation.formatted });
 
-      if (error && error.code !== 'PGRST116') {
-        throw error;
+      if (checkError) {
+        throw checkError;
+      }
+
+      // Get the first result (function returns array)
+      const phoneCheck = checkResult?.[0];
+
+      // If phone exists, fetch the full lead data
+      let existingLeadData = null;
+      if (phoneCheck?.phone_exists && phoneCheck?.lead_id) {
+        const { data: leadData, error: leadError } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('id', phoneCheck.lead_id)
+          .maybeSingle();
+
+        if (leadError && leadError.code !== 'PGRST116') {
+          throw leadError;
+        }
+
+        existingLeadData = leadData;
       }
 
       if (existingLeadData) {
