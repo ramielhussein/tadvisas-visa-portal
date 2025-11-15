@@ -85,8 +85,9 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Extract service type from custom fields if available
-    const serviceRequired = leadData.custom_fields?.service || 'ManyChat Inquiry'
+    // Fixed values for consistency
+    const serviceRequired = 'P1 Traditional Package'
+    const leadSource = 'Many Chat Braodcast'
 
     // Create new lead
     const { data: newLead, error: insertError } = await supabaseClient
@@ -95,7 +96,7 @@ Deno.serve(async (req) => {
         client_name: clientName,
         mobile_number: cleanPhone,
         email: leadData.email || null,
-        lead_source: 'ManyChat',
+        lead_source: leadSource,
         service_required: serviceRequired,
         status: 'New Lead',
         comments: leadData.custom_fields ? 
