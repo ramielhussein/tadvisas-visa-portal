@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
         email: leadData.email || null,
         lead_source: 'ManyChat',
         service_required: serviceRequired,
-        status: 'new',
+        status: 'New Lead',
         comments: leadData.custom_fields ? 
           JSON.stringify(leadData.custom_fields, null, 2) : null,
       })
