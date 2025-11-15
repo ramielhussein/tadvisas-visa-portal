@@ -140,8 +140,130 @@ const DealDetail = () => {
       Active: "bg-blue-500",
       Closed: "bg-green-500",
       Cancelled: "bg-red-500",
+      Void: "bg-orange-500",
     };
     return colors[status] || "bg-gray-500";
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("deals")
+        .update({ 
+          status: newStatus,
+          ...(newStatus === 'Closed' ? { closed_at: new Date().toISOString() } : {})
+        })
+        .eq("id", deal?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Deal status updated to ${newStatus}`,
+      });
+      
+      fetchDeal(); // Refresh deal data
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVoidDeal = async () => {
+    if (!confirm("Are you sure you want to void this deal? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("deals")
+        .update({ status: "Void" })
+        .eq("id", deal?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Deal has been voided",
+      });
+      
+      fetchDeal();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const renderActionButtons = () => {
+    if (!deal) return null;
+
+    switch (deal.status) {
+      case "Draft":
+        return (
+          <>
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/crm/deals/edit/${deal.id}`)}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleStatusChange("Active")}
+            >
+              Activate Deal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleVoidDeal}
+            >
+              Void
+            </Button>
+          </>
+        );
+      
+      case "Active":
+        return (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/crm/deals/edit/${deal.id}`)}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleStatusChange("Closed")}
+            >
+              Close Deal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleVoidDeal}
+            >
+              Void
+            </Button>
+          </>
+        );
+      
+      case "Closed":
+      case "Void":
+        return (
+          <Button
+            variant="outline"
+            onClick={() => navigate("/crm/deals")}
+          >
+            Back to Deals
+          </Button>
+        );
+      
+      default:
+        return null;
+    }
   };
 
   if (loading) {
@@ -180,9 +302,12 @@ const DealDetail = () => {
                 <p className="text-muted-foreground">Deal Details</p>
               </div>
             </div>
-            <Badge className={getStatusColor(deal.status)}>
-              {deal.status}
-            </Badge>
+            <div className="flex items-center gap-3">
+              <Badge className={getStatusColor(deal.status)}>
+                {deal.status}
+              </Badge>
+              {renderActionButtons()}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
