@@ -1094,10 +1094,17 @@ interface QuickLeadEntryProps {
                   <SelectValue placeholder="Select nationality" />
                 </SelectTrigger>
                 <SelectContent className="bg-background z-50">
-                  <SelectItem value="PH">Philippines</SelectItem>
-                  <SelectItem value="ID">Indonesia</SelectItem>
-                  <SelectItem value="ET">Ethiopia</SelectItem>
-                  <SelectItem value="AF">Afghanistan</SelectItem>
+                  <SelectItem value="PH">🇵🇭 Philippines</SelectItem>
+                  <SelectItem value="ID">🇮🇩 Indonesia</SelectItem>
+                  <SelectItem value="IN">🇮🇳 India</SelectItem>
+                  <SelectItem value="KE">🇰🇪 Kenya</SelectItem>
+                  <SelectItem value="UG">🇺🇬 Uganda</SelectItem>
+                  <SelectItem value="ET">🇪🇹 Ethiopia</SelectItem>
+                  <SelectItem value="SR">🇱🇰 Sri Lanka</SelectItem>
+                  <SelectItem value="MY">🇲🇲 Myanmar</SelectItem>
+                  <SelectItem value="NP">🇳🇵 Nepal</SelectItem>
+                  <SelectItem value="VN">🇻🇳 Vietnam</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
