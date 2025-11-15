@@ -137,6 +137,11 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
 
     if (error) {
       console.error('Error loading messages:', error);
+      toast({
+        title: "Chat error",
+        description: "Unable to load messages. Please ensure you are signed in and have access.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -350,8 +355,9 @@ const TeamChat = ({ isOpen, isMinimized, onClose, onMinimize, onExpand, unreadCo
                 placeholder="Type a message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
                     handleSend();
                   }
                 }}
