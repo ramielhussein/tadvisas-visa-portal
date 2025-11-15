@@ -53,10 +53,32 @@ Deno.serve(async (req) => {
 
     if (existingLead) {
       console.log('Lead already exists:', existingLead.id)
+      
+      // Get full lead details including assignment
+      const { data: fullLead } = await supabaseClient
+        .from('leads')
+        .select('id, client_name, assigned_to')
+        .eq('id', existingLead.id)
+        .single()
+      
+      // If lead is assigned, notify the salesman
+      if (fullLead?.assigned_to) {
+        await supabaseClient
+          .from('notifications')
+          .insert({
+            user_id: fullLead.assigned_to,
+            title: 'Repeat Contact via ManyChat',
+            message: `${fullLead.client_name || 'Lead'} (${cleanPhone}) contacted again via ManyChat`,
+            type: 'lead_update',
+            related_lead_id: fullLead.id
+          })
+        console.log('Notified assigned salesman:', fullLead.assigned_to)
+      }
+      
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'Lead already exists',
+          message: 'Lead already exists - salesman notified',
           leadId: existingLead.id 
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
