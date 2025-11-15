@@ -1,5 +1,8 @@
 project_id = "uwncpnveatbwnsgepjlb"
 
+[functions.manychat-webhook]
+verify_jwt = false
+
 [functions.submit-cv]
 verify_jwt = true
 
