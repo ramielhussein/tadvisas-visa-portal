@@ -99,6 +99,7 @@ const DealsManagement = () => {
       Active: "bg-blue-500",
       Closed: "bg-green-500",
       Cancelled: "bg-red-500",
+      Void: "bg-orange-500",
     };
     return colors[status] || "bg-gray-500";
   };
