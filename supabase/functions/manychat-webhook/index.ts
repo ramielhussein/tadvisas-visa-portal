@@ -6,8 +6,10 @@ const corsHeaders = {
 }
 
 interface ManyChatLead {
-  full: string
-  phone: string
+  full?: string
+  phone?: string
+  first_name?: string
+  last_name?: string
 }
 
 Deno.serve(async (req) => {
@@ -28,13 +30,23 @@ Deno.serve(async (req) => {
     // Extract lead data from ManyChat payload
     const leadData: ManyChatLead = payload
 
-    // Validate required fields
-    if (!leadData.phone || !leadData.full) {
-      throw new Error('Phone and full name are required')
+    // Get phone number (support both formats)
+    const rawPhone = leadData.phone || ''
+    
+    // Skip if phone is a template variable (not replaced by ManyChat)
+    if (!rawPhone || rawPhone.includes('{{')) {
+      throw new Error('Phone number not provided or is a template variable')
     }
 
     // Clean phone number (remove spaces, dashes, etc)
-    const cleanPhone = leadData.phone.replace(/[^\d+]/g, '')
+    const cleanPhone = rawPhone.replace(/[^\d+]/g, '')
+
+    // Get full name (support both formats)
+    const fullName = leadData.full || 
+      [leadData.first_name, leadData.last_name]
+        .filter(n => n && !n.includes('{{')) // Filter out template variables
+        .join(' ') || 
+      'ManyChat Lead'
 
     // Check if lead already exists
     const { data: existingLead } = await supabaseClient
@@ -85,7 +97,7 @@ Deno.serve(async (req) => {
     const { data: newLead, error: insertError } = await supabaseClient
       .from('leads')
       .insert({
-        client_name: leadData.full,
+        client_name: fullName,
         mobile_number: cleanPhone,
         lead_source: leadSource,
         service_required: serviceRequired,
