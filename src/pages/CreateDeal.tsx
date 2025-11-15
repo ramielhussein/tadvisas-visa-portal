@@ -129,11 +129,21 @@ const CreateDeal = () => {
       return;
     }
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("leads")
       .select("*")
-      .or(`client_name.ilike.%${query}%,mobile_number.ilike.%${query}%`)
+      .or(`client_name.ilike.%${query}%,mobile_number.ilike.%${query}%,email.ilike.%${query}%`)
+      .order("created_at", { ascending: false })
       .limit(10);
+
+    if (error) {
+      console.error("Error searching leads:", error);
+      toast({
+        title: "Error",
+        description: "Failed to search leads",
+        variant: "destructive",
+      });
+    }
 
     setLeads(data || []);
   };
@@ -345,10 +355,28 @@ const CreateDeal = () => {
                               className="p-3 hover:bg-accent cursor-pointer border-b last:border-0"
                               onClick={() => selectLead(lead)}
                             >
-                              <p className="font-medium">{lead.client_name || "Unnamed"}</p>
-                              <p className="text-sm text-muted-foreground">{lead.mobile_number}</p>
+                              <p className="font-medium">{lead.client_name || "No Name Set"}</p>
+                              <p className="text-sm text-muted-foreground">
+                                📱 {lead.mobile_number}
+                                {lead.email && ` • 📧 ${lead.email}`}
+                              </p>
+                              {lead.service_required && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Service: {lead.service_required}
+                                </p>
+                              )}
+                              {lead.emirate && (
+                                <p className="text-xs text-muted-foreground">
+                                  Location: {lead.emirate}
+                                </p>
+                              )}
                             </div>
                           ))}
+                        </div>
+                      )}
+                      {searchLeadQuery.length >= 2 && leads.length === 0 && (
+                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg p-3 text-sm text-muted-foreground">
+                          No leads found matching "{searchLeadQuery}"
                         </div>
                       )}
                     </div>
