@@ -10,6 +10,9 @@ interface ManyChatLead {
   phone?: string
   first_name?: string
   last_name?: string
+  id?: string // ManyChat subscriber id (may be phone on WhatsApp)
+  wa_id?: string // WhatsApp Cloud style id
+  whatsapp_id?: string // possible custom mapping
 }
 
 Deno.serve(async (req) => {
@@ -29,24 +32,50 @@ Deno.serve(async (req) => {
 
     // Extract lead data from ManyChat payload
     const leadData: ManyChatLead = payload
+    const payloadAny: any = payload
 
-    // Get phone number (support both formats)
-    const rawPhone = leadData.phone || ''
-    
-    // Skip if phone is a template variable (not replaced by ManyChat)
-    if (!rawPhone || rawPhone.includes('{{')) {
-      throw new Error('Phone number not provided or is a template variable')
+    // Helper to sanitize to UAE 971 format
+    const sanitizeToUAE = (input: string): string => {
+      let cleaned = input.replace(/[^\d+]/g, '')
+      if (cleaned.startsWith('+971')) cleaned = cleaned.slice(1)
+      else if (cleaned.startsWith('00971')) cleaned = cleaned.slice(2)
+      else if (cleaned.startsWith('0') && cleaned.length === 10) cleaned = '971' + cleaned.slice(1)
+      return cleaned
     }
 
-    // Clean phone number (remove spaces, dashes, etc)
-    const cleanPhone = rawPhone.replace(/[^\d+]/g, '')
+    // Prefer WhatsApp phone/id only
+    const candidates: Array<{ value?: string; source: string }> = [
+      { value: leadData.phone, source: 'phone' },
+      { value: payloadAny?.wa_id, source: 'wa_id' },
+      { value: payloadAny?.whatsapp_id, source: 'whatsapp_id' },
+      { value: payloadAny?.contact?.wa_id, source: 'contact.wa_id' },
+      { value: leadData.id, source: 'id' },
+      { value: leadData.first_name, source: 'first_name' }, // some tests had phone here
+      { value: leadData.last_name, source: 'last_name' },
+    ]
+
+    const picked = candidates.find(c => typeof c.value === 'string' && c.value && !c.value.includes('{{'))
+    const rawPhone = picked?.value || ''
+
+    if (!rawPhone) {
+      throw new Error('No WhatsApp ID/phone provided')
+    }
+
+    const cleanPhone = sanitizeToUAE(rawPhone)
+
+    // Validate UAE format 971XXXXXXXXX
+    if (!/^971\d{9}$/.test(cleanPhone)) {
+      throw new Error('Invalid phone format. Expect 971XXXXXXXXX')
+    }
+
+    console.log('Using phone from:', picked?.source, '->', cleanPhone)
 
     // Get full name (support both formats)
     const fullName = leadData.full || 
       [leadData.first_name, leadData.last_name]
-        .filter(n => n && !n.includes('{{')) // Filter out template variables
+        .filter((n) => typeof n === 'string' && !n.includes('{{')) // Filter out template variables
         .join(' ') || 
-      'ManyChat Lead'
+      'ManyChat WhatsApp Lead'
 
     // Check if lead already exists
     const { data: existingLead } = await supabaseClient
