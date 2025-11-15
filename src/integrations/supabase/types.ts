@@ -340,6 +340,7 @@ export type Database = {
         Row: {
           assigned_to: string | null
           attachments: Json | null
+          balance_due: number | null
           client_email: string | null
           client_name: string
           client_phone: string
@@ -352,6 +353,7 @@ export type Database = {
           id: string
           lead_id: string | null
           notes: string | null
+          paid_amount: number
           payment_terms: string | null
           service_description: string | null
           service_type: string
@@ -366,6 +368,7 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           attachments?: Json | null
+          balance_due?: number | null
           client_email?: string | null
           client_name: string
           client_phone: string
@@ -378,6 +381,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           notes?: string | null
+          paid_amount?: number
           payment_terms?: string | null
           service_description?: string | null
           service_type: string
@@ -392,6 +396,7 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           attachments?: Json | null
+          balance_due?: number | null
           client_email?: string | null
           client_name?: string
           client_phone?: string
@@ -404,6 +409,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           notes?: string | null
+          paid_amount?: number
           payment_terms?: string | null
           service_description?: string | null
           service_type?: string
@@ -981,6 +987,7 @@ export type Database = {
           client_name: string
           client_phone: string
           created_at: string
+          deal_id: string | null
           id: string
           invoice_id: string | null
           notes: string | null
@@ -997,6 +1004,7 @@ export type Database = {
           client_name: string
           client_phone: string
           created_at?: string
+          deal_id?: string | null
           id?: string
           invoice_id?: string | null
           notes?: string | null
@@ -1013,6 +1021,7 @@ export type Database = {
           client_name?: string
           client_phone?: string
           created_at?: string
+          deal_id?: string | null
           id?: string
           invoice_id?: string | null
           notes?: string | null
@@ -1029,6 +1038,13 @@ export type Database = {
             columns: ["bank_account_id"]
             isOneToOne: false
             referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
             referencedColumns: ["id"]
           },
           {

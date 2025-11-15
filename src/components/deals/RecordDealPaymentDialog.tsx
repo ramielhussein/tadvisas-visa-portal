@@ -1,0 +1,303 @@
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, DollarSign } from "lucide-react";
+
+interface Deal {
+  id: string;
+  deal_number: string;
+  client_name: string;
+  client_phone: string;
+  total_amount: number;
+  paid_amount: number;
+  balance_due: number;
+  status: string;
+}
+
+interface RecordDealPaymentDialogProps {
+  open: boolean;
+  deal: Deal | null;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealPaymentDialogProps) => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    amount: "",
+    payment_date: new Date().toISOString().split('T')[0],
+    payment_method: "",
+    bank_account_id: "",
+    reference_number: "",
+    notes: "",
+  });
+
+  useEffect(() => {
+    if (open) {
+      fetchPaymentMethods();
+      fetchBankAccounts();
+      
+      // Pre-fill amount with balance due
+      if (deal) {
+        setFormData(prev => ({
+          ...prev,
+          amount: deal.balance_due.toString()
+        }));
+      }
+    }
+  }, [open, deal]);
+
+  const fetchPaymentMethods = async () => {
+    const { data } = await supabase
+      .from("payment_methods")
+      .select("*")
+      .eq("is_active", true)
+      .order("method_name");
+    
+    setPaymentMethods(data || []);
+  };
+
+  const fetchBankAccounts = async () => {
+    const { data } = await supabase
+      .from("bank_accounts")
+      .select("*")
+      .eq("status", "Active")
+      .order("account_name");
+    
+    setBankAccounts(data || []);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!deal) return;
+
+    const amount = parseFloat(formData.amount);
+    
+    if (amount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Payment amount must be greater than zero",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (amount > deal.balance_due) {
+      toast({
+        title: "Amount Too High",
+        description: `Payment cannot exceed balance due (${deal.balance_due.toLocaleString()} AED)`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.bank_account_id) {
+      toast({
+        title: "Bank Account Required",
+        description: "Please select which bank account received the payment",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // Generate payment number
+      const { data: paymentNumber, error: numberError } = await supabase.rpc('generate_payment_number');
+      if (numberError) throw numberError;
+
+      // Create payment record
+      const { error: paymentError } = await supabase
+        .from("payments")
+        .insert({
+          payment_number: paymentNumber,
+          deal_id: deal.id,
+          client_name: deal.client_name,
+          client_phone: deal.client_phone,
+          amount: amount,
+          payment_date: formData.payment_date,
+          payment_method: formData.payment_method || null,
+          bank_account_id: formData.bank_account_id,
+          reference_number: formData.reference_number || null,
+          notes: formData.notes || null,
+          recorded_by: user.id,
+        });
+
+      if (paymentError) throw paymentError;
+
+      toast({
+        title: "Payment Recorded",
+        description: `Payment of ${amount.toLocaleString()} AED has been recorded successfully`,
+      });
+
+      onSuccess();
+      handleClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setFormData({
+      amount: "",
+      payment_date: new Date().toISOString().split('T')[0],
+      payment_method: "",
+      bank_account_id: "",
+      reference_number: "",
+      notes: "",
+    });
+    onClose();
+  };
+
+  if (!deal) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5" />
+            Record Payment - {deal.deal_number}
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Payment Summary */}
+        <div className="bg-muted/50 rounded-lg p-4 mb-4">
+          <div className="grid grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground mb-1">Total Amount</p>
+              <p className="font-semibold text-lg">{deal.total_amount.toLocaleString()} AED</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Paid</p>
+              <p className="font-semibold text-lg text-green-600">{deal.paid_amount.toLocaleString()} AED</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground mb-1">Balance Due</p>
+              <p className="font-semibold text-lg text-orange-600">{deal.balance_due.toLocaleString()} AED</p>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="amount">Payment Amount (AED) *</Label>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                required
+                placeholder="Enter amount"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="payment_date">Payment Date *</Label>
+              <Input
+                id="payment_date"
+                type="date"
+                value={formData.payment_date}
+                onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="bank_account">Bank Account * (Where was the money received?)</Label>
+            <Select 
+              value={formData.bank_account_id} 
+              onValueChange={(value) => setFormData({ ...formData, bank_account_id: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select bank account that received payment" />
+              </SelectTrigger>
+              <SelectContent>
+                {bankAccounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    {account.bank_name} - {account.account_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="payment_method">Payment Method</Label>
+              <Select 
+                value={formData.payment_method} 
+                onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select method" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentMethods.map((method) => (
+                    <SelectItem key={method.id} value={method.method_name}>
+                      {method.method_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="reference_number">Reference Number</Label>
+              <Input
+                id="reference_number"
+                value={formData.reference_number}
+                onChange={(e) => setFormData({ ...formData, reference_number: e.target.value })}
+                placeholder="Check/Transaction #"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Additional notes..."
+              rows={3}
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Record Payment
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default RecordDealPaymentDialog;
