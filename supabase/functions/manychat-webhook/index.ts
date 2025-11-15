@@ -6,11 +6,8 @@ const corsHeaders = {
 }
 
 interface ManyChatLead {
-  first_name?: string
-  last_name?: string
-  phone?: string
-  email?: string
-  custom_fields?: Record<string, any>
+  full: string
+  phone: string
 }
 
 Deno.serve(async (req) => {
@@ -31,14 +28,9 @@ Deno.serve(async (req) => {
     // Extract lead data from ManyChat payload
     const leadData: ManyChatLead = payload
 
-    // Build client name
-    const clientName = [leadData.first_name, leadData.last_name]
-      .filter(Boolean)
-      .join(' ') || 'ManyChat Lead'
-
-    // Validate phone number
-    if (!leadData.phone) {
-      throw new Error('Phone number is required')
+    // Validate required fields
+    if (!leadData.phone || !leadData.full) {
+      throw new Error('Phone and full name are required')
     }
 
     // Clean phone number (remove spaces, dashes, etc)
@@ -93,14 +85,11 @@ Deno.serve(async (req) => {
     const { data: newLead, error: insertError } = await supabaseClient
       .from('leads')
       .insert({
-        client_name: clientName,
+        client_name: leadData.full,
         mobile_number: cleanPhone,
-        email: leadData.email || null,
         lead_source: leadSource,
         service_required: serviceRequired,
         status: 'New Lead',
-        comments: leadData.custom_fields ? 
-          JSON.stringify(leadData.custom_fields, null, 2) : null,
       })
       .select()
       .single()
