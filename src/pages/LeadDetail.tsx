@@ -592,6 +592,47 @@ const LeadDetail = () => {
     }
   };
 
+  const handleStatusChange = async (newStatus: string) => {
+    if (!lead?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ status: newStatus as any })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      // Log the activity
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("lead_activities").insert({
+          lead_id: lead.id,
+          user_id: user.id,
+          activity_type: "status_change",
+          title: "Status Changed",
+          description: `Status changed from ${lead.status} to ${newStatus}`,
+        });
+      }
+
+      // Update local state
+      setLead(prev => prev ? { ...prev, status: newStatus } : null);
+
+      toast({
+        title: "Success",
+        description: "Lead status updated",
+      });
+
+      fetchActivities();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -630,9 +671,24 @@ const LeadDetail = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <CardTitle className="text-3xl">{lead.client_name || "Unnamed Lead"}</CardTitle>
-                      <Badge className={cn("text-xs", getStatusColor(lead.status))}>
-                        {lead.status}
-                      </Badge>
+                      <Select value={lead.status} onValueChange={handleStatusChange}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="New Lead">New Lead</SelectItem>
+                          <SelectItem value="Warm">Warm</SelectItem>
+                          <SelectItem value="HOT">HOT</SelectItem>
+                          <SelectItem value="Called Engaged">Called Engaged</SelectItem>
+                          <SelectItem value="Called No Answer">Called No Answer</SelectItem>
+                          <SelectItem value="Called Unanswer 2">Called Unanswer 2</SelectItem>
+                          <SelectItem value="Called COLD">Called COLD</SelectItem>
+                          <SelectItem value="No Connection">No Connection</SelectItem>
+                          <SelectItem value="PROBLEM">PROBLEM</SelectItem>
+                          <SelectItem value="SOLD">SOLD</SelectItem>
+                          <SelectItem value="LOST">LOST</SelectItem>
+                        </SelectContent>
+                      </Select>
                       {lead.client_converted && (
                         <Badge variant="outline" className="bg-green-50">
                           ✓ Converted
