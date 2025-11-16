@@ -20,10 +20,40 @@ import {
   UserPlus,
   ListChecks,
   Package,
+  Download,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Admin() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [importing, setImporting] = useState(false);
+
+  const handleTrelloImport = async () => {
+    setImporting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("import-trello-leads", {
+        body: { boardId: "Q0g7eEjZ" },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Import Complete",
+        description: `${data.imported} leads imported, ${data.skipped} skipped (already exist)`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Import Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const sections = [
     {
@@ -48,6 +78,7 @@ export default function Admin() {
       items: [
         { title: "CRM Dashboard", path: "/crm/dashboard", icon: BarChart3, description: "Overview and analytics" },
         { title: "Lead Management", path: "/crm/leads", icon: Shield, description: "View and manage leads" },
+        { title: "Import from Trello", action: handleTrelloImport, icon: Download, description: "Import leads from Trello board", loading: importing },
         { title: "Lead Sources", path: "/crm/lead-sources", icon: Settings, description: "Manage lead sources" },
         { title: "Inquiry Packages", path: "/crm/inquiry-packages", icon: Package, description: "Lead service interests" },
         { title: "Sales Packages", path: "/crm/sales-packages", icon: Package, description: "Products you sell" },
@@ -158,17 +189,22 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {section.items.map((item) => (
+                    {section.items.map((item, idx) => (
                       <Button
-                        key={item.path}
+                        key={item.path || idx}
                         variant="outline"
                         className="h-auto py-4 flex flex-col items-start gap-2 hover:bg-accent hover:shadow-md transition-all group"
-                        onClick={() => navigate(item.path)}
+                        onClick={() => item.action ? item.action() : navigate(item.path)}
+                        disabled={item.loading}
                       >
                         <div className="flex items-center gap-2 w-full">
                           <item.icon className={`h-5 w-5 ${section.color}`} />
                           <span className="font-semibold text-left flex-1">{item.title}</span>
-                          <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {item.loading ? (
+                            <span className="text-xs">Loading...</span>
+                          ) : !item.action && (
+                            <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground text-left w-full">
                           {item.description}
