@@ -1148,14 +1148,39 @@ const CRMHub = () => {
               </Label>
             </div>
 
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1 min-w-[200px] flex gap-2">
               <Input
-                placeholder="Search by name, phone, or email (Press Enter)"
+                placeholder="Search by name, phone, or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
                 className="pl-3"
               />
+              <Button 
+                onClick={() => {
+                  setDebouncedSearch(searchQuery);
+                  if (isAdmin) {
+                    setDebouncedAdminSearch(searchQuery);
+                  }
+                }}
+                variant="secondary"
+                size="sm"
+              >
+                Search
+              </Button>
+              {(debouncedSearch || debouncedAdminSearch) && (
+                <Button 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setDebouncedSearch("");
+                    setDebouncedAdminSearch("");
+                  }}
+                  variant="ghost"
+                  size="sm"
+                >
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
 
