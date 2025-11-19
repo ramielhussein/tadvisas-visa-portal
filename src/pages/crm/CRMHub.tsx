@@ -106,17 +106,15 @@ const CRMHub = () => {
   const lastUpdateTimeRef = useRef(0);
   const pendingUpdateRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce search to reduce re-renders
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  // Handle search on Enter key
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
       setDebouncedSearch(searchQuery);
-      // For admins, sync the main search to admin search
       if (isAdmin) {
         setDebouncedAdminSearch(searchQuery);
       }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery, isAdmin]);
+    }
+  };
 
   const loadLeads = useCallback(async () => {
     if (!user) return;
@@ -1152,9 +1150,10 @@ const CRMHub = () => {
 
             <div className="relative flex-1 min-w-[200px]">
               <Input
-                placeholder="Search by name, phone, or email..."
+                placeholder="Search by name, phone, or email (Press Enter)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
                 className="pl-3"
               />
             </div>
