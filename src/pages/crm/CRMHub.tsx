@@ -1312,10 +1312,37 @@ const CRMHub = () => {
                 <p className="text-sm text-muted-foreground">Complete visibility of all leads regardless of assignment</p>
               </CardHeader>
               <CardContent>
-                <div className="mb-4">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    💡 Use the search box at the top to search across all leads system-wide
-                  </p>
+                <div className="mb-4 flex gap-2">
+                  <Input
+                    placeholder="Search all leads by name, phone, or email..."
+                    value={adminSearchQuery}
+                    onChange={(e) => setAdminSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        setDebouncedAdminSearch(adminSearchQuery);
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={() => setDebouncedAdminSearch(adminSearchQuery)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    Search
+                  </Button>
+                  {debouncedAdminSearch && (
+                    <Button 
+                      onClick={() => {
+                        setAdminSearchQuery("");
+                        setDebouncedAdminSearch("");
+                      }}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      Clear
+                    </Button>
+                  )}
                 </div>
                 <div className="mb-4">
                   <Select value={adminStatusFilter} onValueChange={setAdminStatusFilter}>
@@ -1373,6 +1400,38 @@ const CRMHub = () => {
                     🔐 All Leads - System View ({filteredAdminAllLeads.length})
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">Complete visibility of all leads with assignments</p>
+                  <div className="mt-4 flex gap-2">
+                    <Input
+                      placeholder="Search all leads by name, phone, or email..."
+                      value={adminSearchQuery}
+                      onChange={(e) => setAdminSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setDebouncedAdminSearch(adminSearchQuery);
+                        }
+                      }}
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={() => setDebouncedAdminSearch(adminSearchQuery)}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Search
+                    </Button>
+                    {debouncedAdminSearch && (
+                      <Button 
+                        onClick={() => {
+                          setAdminSearchQuery("");
+                          setDebouncedAdminSearch("");
+                        }}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="overflow-y-auto max-h-[600px]">
