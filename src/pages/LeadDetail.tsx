@@ -55,6 +55,7 @@ interface Activity {
   user_id: string;
   profiles?: {
     email: string;
+    full_name: string | null;
   } | undefined;
 }
 
@@ -185,7 +186,7 @@ const LeadDetail = () => {
       const userIds = [...new Set(activitiesData.map(a => a.user_id))];
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("id, email")
+        .select("id, email, full_name")
         .in("id", userIds);
 
       if (profilesError) throw profilesError;
@@ -905,10 +906,13 @@ const LeadDetail = () => {
                                 hour: '2-digit',
                                 minute: '2-digit',
                               })}
-                              {activity.profiles?.email && (
+                              {activity.profiles && (
                                 <>
                                   <span>•</span>
-                                  <span>{activity.profiles.email.split('@')[0]}</span>
+                                  <User className="w-3 h-3" />
+                                  <span className="font-medium">
+                                    {activity.profiles.full_name || activity.profiles.email?.split('@')[0] || 'Unknown'}
+                                  </span>
                                 </>
                               )}
                             </div>
