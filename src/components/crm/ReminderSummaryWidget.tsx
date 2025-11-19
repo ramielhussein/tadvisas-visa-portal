@@ -93,7 +93,7 @@ export const ReminderSummaryWidget = ({ userId }: ReminderSummaryWidgetProps) =>
               </div>
               <div className="space-y-2 ml-6">
                 {overdue.map(lead => (
-                  <Link key={lead.id} to={`/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-destructive/5 border border-destructive/20 hover:bg-destructive/10 transition-colors">
+                  <Link key={lead.id} to={`/crm/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-destructive/5 border border-destructive/20 hover:bg-destructive/10 transition-colors">
                     <span className="font-medium">{lead.client_name || lead.mobile_number}</span>
                     <span className="text-muted-foreground">{format(new Date(lead.remind_me), "MMM dd, yyyy")}</span>
                   </Link>
@@ -110,7 +110,7 @@ export const ReminderSummaryWidget = ({ userId }: ReminderSummaryWidgetProps) =>
               </div>
               <div className="space-y-2 ml-6">
                 {today.map(lead => (
-                  <Link key={lead.id} to={`/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors">
+                  <Link key={lead.id} to={`/crm/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-orange-50 border border-orange-200 hover:bg-orange-100 transition-colors">
                     <span className="font-medium">{lead.client_name || lead.mobile_number}</span>
                     <span className="text-muted-foreground">Due Today</span>
                   </Link>
@@ -127,7 +127,7 @@ export const ReminderSummaryWidget = ({ userId }: ReminderSummaryWidgetProps) =>
               </div>
               <div className="space-y-2 ml-6">
                 {upcoming.map(lead => (
-                  <Link key={lead.id} to={`/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-muted/30 border border-border hover:bg-muted/50 transition-colors">
+                  <Link key={lead.id} to={`/crm/leads/${lead.id}`} className="text-sm flex justify-between items-center p-2 rounded-md bg-muted/30 border border-border hover:bg-muted/50 transition-colors">
                     <span className="font-medium">{lead.client_name || lead.mobile_number}</span>
                     <span className="text-muted-foreground">{format(new Date(lead.remind_me), "MMM dd, yyyy")}</span>
                   </Link>
