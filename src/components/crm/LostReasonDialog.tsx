@@ -52,8 +52,8 @@ export const LostReasonDialog = ({
             />
           </div>
           <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-            Note: This lead will be unassigned and returned to the incoming pool. It will be marked
-            as "Previously Lost" if picked up again.
+            Note: This lead will be archived and won't appear in incoming leads. You can view it later 
+            by enabling "Show Archived" and restore it if needed.
           </div>
         </div>
         <DialogFooter>

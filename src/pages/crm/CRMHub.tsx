@@ -565,6 +565,7 @@ const CRMHub = () => {
           status: "LOST",
           remind_me: twoYears.toISOString().split('T')[0],
           assigned_to: null, // Unassign the lead
+          archived: true, // Archive so it doesn't appear in incoming
           previously_lost: true,
           lost_reason: reason,
           lost_by: user.id,
@@ -585,7 +586,7 @@ const CRMHub = () => {
 
       toast({
         title: "Success",
-        description: "Lead marked as LOST and unassigned",
+        description: "Lead marked as LOST and archived",
       });
       
       setLostDialogOpen(false);
