@@ -11,7 +11,7 @@ const FloatingButtons = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatMinimized, setIsChatMinimized] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(3);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
 
   useEffect(() => {
