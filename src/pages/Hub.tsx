@@ -26,7 +26,7 @@ const Hub = () => {
     },
     {
       name: "Other Africa",
-      flag: "🇰🇪",
+      flag: "🌍",
       insidePath: "/af-ic",
       outsidePath: "/af-oc"
     },
