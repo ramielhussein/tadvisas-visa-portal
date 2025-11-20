@@ -31,8 +31,8 @@ const Hub = () => {
       outsidePath: "/af-oc"
     },
     {
-      name: "Myanmar / India",
-      flag: "🇲🇲 🇮🇳",
+      name: "Myanmar / India / Nepal",
+      flag: "🇲🇲 🇮🇳 🇳🇵",
       insidePath: "/my-ic",
       outsidePath: "/my-oc"
     }
