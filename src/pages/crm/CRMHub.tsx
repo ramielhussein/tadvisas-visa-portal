@@ -75,6 +75,7 @@ const CRMHub = () => {
   const [adminAllLeads, setAdminAllLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("created_at");
+  const [nationalityFilter, setNationalityFilter] = useState<string>("all");
   const [showOnlyHot, setShowOnlyHot] = useState(false);
   const [showOnlyToday, setShowOnlyToday] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
@@ -137,8 +138,13 @@ const CRMHub = () => {
           adminQuery = adminQuery.eq("archived", false);
         }
 
-        // Apply admin search filter
-        if (debouncedAdminSearch) {
+      // Apply nationality filter
+      if (nationalityFilter !== "all") {
+        adminQuery = adminQuery.eq("nationality_code", nationalityFilter);
+      }
+
+      // Apply admin search filter
+      if (debouncedAdminSearch) {
           adminQuery = adminQuery.or(
             `mobile_number.ilike.%${debouncedAdminSearch}%,` +
             `client_name.ilike.%${debouncedAdminSearch}%,` +
@@ -186,6 +192,11 @@ const CRMHub = () => {
         unassignedQuery = unassignedQuery.eq("status", unassignedStatusFilter as any);
       }
 
+      // Apply nationality filter to unassigned
+      if (nationalityFilter !== "all") {
+        unassignedQuery = unassignedQuery.eq("nationality_code", nationalityFilter);
+      }
+
       // Build the query for my assigned leads
       let myLeadsQuery = supabase
         .from("leads")
@@ -209,6 +220,11 @@ const CRMHub = () => {
       // Apply status filter to my leads
       if (myLeadsStatusFilter !== "all") {
         myLeadsQuery = myLeadsQuery.eq("status", myLeadsStatusFilter as any);
+      }
+
+      // Apply nationality filter to my leads
+      if (nationalityFilter !== "all") {
+        myLeadsQuery = myLeadsQuery.eq("nationality_code", nationalityFilter);
       }
 
       // Apply HOT filter if enabled
@@ -263,7 +279,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, showOnlyHot, showOnlyToday, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
+  }, [user, sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -1110,6 +1126,27 @@ const CRMHub = () => {
                   <SelectItem value="visa_expiry_date">Visa Expiry</SelectItem>
                   <SelectItem value="created_at">Date Added</SelectItem>
                   <SelectItem value="updated_at">Last Updated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Label htmlFor="nationality-filter" className="text-sm">Nationality:</Label>
+              <Select value={nationalityFilter} onValueChange={setNationalityFilter}>
+                <SelectTrigger id="nationality-filter" className="w-[180px]">
+                  <SelectValue placeholder="All Nationalities" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Nationalities</SelectItem>
+                  <SelectItem value="PH">Philippines</SelectItem>
+                  <SelectItem value="ID">Indonesia</SelectItem>
+                  <SelectItem value="ET">Ethiopia</SelectItem>
+                  <SelectItem value="KE">Kenya</SelectItem>
+                  <SelectItem value="UG">Uganda</SelectItem>
+                  <SelectItem value="NP">Nepal</SelectItem>
+                  <SelectItem value="BD">Bangladesh</SelectItem>
+                  <SelectItem value="LK">Sri Lanka</SelectItem>
+                  <SelectItem value="MM">Myanmar</SelectItem>
                 </SelectContent>
               </Select>
             </div>
