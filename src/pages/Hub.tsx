@@ -25,8 +25,8 @@ const Hub = () => {
       outsidePath: "/et-oc"
     },
     {
-      name: "Uganda / Kenya",
-      flag: "🇺🇬 🇰🇪",
+      name: "Other Africa",
+      flag: "🇰🇪",
       insidePath: "/af-ic",
       outsidePath: "/af-oc"
     },
