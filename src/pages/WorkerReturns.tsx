@@ -47,7 +47,7 @@ const WorkerReturns = () => {
       console.error("Error fetching returns:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch worker returns",
+        description: "Failed to fetch domestic worker returns",
         variant: "destructive",
       });
     } finally {
@@ -82,9 +82,9 @@ const WorkerReturns = () => {
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 <ClipboardList className="w-8 h-8" />
-                Worker Returns
+                Domestic Worker Returns
               </h1>
-              <p className="text-muted-foreground">Process returned workers and redeployment checklist</p>
+              <p className="text-muted-foreground">Process returned domestic workers and redeployment checklist</p>
             </div>
           </div>
           <Button onClick={() => toast({ title: "Coming Soon", description: "Process return feature coming soon" })}>
@@ -132,14 +132,14 @@ const WorkerReturns = () => {
         {/* Returns List */}
         <Card>
           <CardHeader>
-            <CardTitle>Worker Returns</CardTitle>
+            <CardTitle>Domestic Worker Returns</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <ClipboardList className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Worker Returns Feature</h3>
+              <h3 className="text-lg font-semibold mb-2">Domestic Worker Returns Feature</h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                This feature allows you to process workers who have been returned from clients and manage their redeployment checklist.
+                This feature allows you to process domestic workers who have been returned from clients and manage their redeployment checklist.
               </p>
               <div className="space-y-2 text-sm text-muted-foreground max-w-md mx-auto text-left">
                 <div className="flex items-start gap-2">

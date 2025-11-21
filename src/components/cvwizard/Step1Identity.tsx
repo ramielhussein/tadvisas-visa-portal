@@ -21,7 +21,7 @@ const Step1Identity = ({ formData, updateFormData }: Props) => {
           onCheckedChange={(checked) => updateFormData({ staff: checked as boolean })}
         />
         <Label htmlFor="staff" className="cursor-pointer">
-          <span className="font-semibold">STAFF</span>
+          <span className="font-semibold">ADMIN STAFF</span>
           <span className="text-sm text-muted-foreground ml-2">
             (Internal use only - will not appear publicly)
           </span>

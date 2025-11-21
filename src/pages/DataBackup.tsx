@@ -27,7 +27,7 @@ export default function DataBackup() {
     { name: "leads", displayName: "Leads", description: "Customer leads and contacts" },
     { name: "deals", displayName: "Deals", description: "Sales deals and transactions" },
     { name: "workers", displayName: "Workers", description: "Domestic worker profiles and CVs" },
-    { name: "employees", displayName: "Employees", description: "Internal staff records" },
+    { name: "employees", displayName: "Admin Staff", description: "Internal admin staff records" },
     { name: "contracts", displayName: "Contracts", description: "Client contracts" },
     { name: "invoices", displayName: "Invoices", description: "Customer invoices" },
     { name: "payments", displayName: "Payments", description: "Payment records" },
