@@ -105,6 +105,7 @@ export default function Admin() {
       color: "text-green-600",
       bgColor: "bg-green-50",
       items: [
+        { title: "Finance Hub", path: "/hub/finance", icon: Coins, description: "Central finance dashboard" },
         { title: "Financial Dashboard", path: "/financial", icon: Coins, description: "Revenue and accounts receivable" },
         { title: "Contract Revenue & A/R", path: "/finance/contract-revenue", icon: FileText, description: "Track 2-year contracts and recurring revenue" },
         { title: "Expenses", path: "/expenses", icon: DollarSign, description: "Track business expenses" },

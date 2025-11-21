@@ -20,57 +20,64 @@ const FinanceHub = () => {
       title: "Financial Dashboard",
       description: "Overview of financial metrics and KPIs",
       icon: PieChart,
-      path: "/financial-dashboard",
+      path: "/finance/dashboard",
       color: "text-blue-600"
     },
     {
-      title: "Invoices",
-      description: "Manage client invoices",
-      icon: FileText,
-      path: "/financial-dashboard", // Invoices tab
-      color: "text-green-600"
+      title: "Contract Revenue & A/R",
+      description: "Track 160 contracts and accounts receivable",
+      icon: TrendingUp,
+      path: "/finance/contract-revenue",
+      color: "text-emerald-600"
     },
     {
       title: "Payments",
       description: "Record and track payments",
       icon: CreditCard,
-      path: "/payments-list",
+      path: "/finance/payments",
       color: "text-purple-600"
+    },
+    {
+      title: "Client Statements",
+      description: "Generate client account statements",
+      icon: FileText,
+      path: "/finance/client-statement",
+      color: "text-green-600"
     },
     {
       title: "Expenses",
       description: "Manage business expenses",
       icon: Receipt,
-      path: "/expenses",
+      path: "/finance/expenses",
       color: "text-orange-600"
     },
     {
       title: "Bank Accounts",
       description: "Manage bank accounts and balances",
       icon: Building2,
-      path: "/bank-accounts",
+      path: "/finance/bank-accounts",
       color: "text-indigo-600"
+    },
+    {
+      title: "Bank Transfers",
+      description: "Transfer funds between accounts",
+      icon: CreditCard,
+      path: "/finance/bank-transfers",
+      color: "text-cyan-600"
     },
     {
       title: "Owner Equity",
       description: "Track owner equity accounts",
       icon: Wallet,
-      path: "/owner-equity",
+      path: "/finance/owner-equity",
       color: "text-teal-600"
     },
     {
-      title: "Refunds & Credits",
+      title: "Refunds & Approvals",
       description: "Process refunds and credit notes",
       icon: DollarSign,
-      path: "/refunds-approval",
+      path: "/finance/refunds-approval",
       color: "text-red-600"
-    },
-    {
-      title: "Financial Reports",
-      description: "Generate and view financial reports",
-      icon: TrendingUp,
-      path: "/financial-dashboard",
-      color: "text-amber-600"
     }
   ];
 
