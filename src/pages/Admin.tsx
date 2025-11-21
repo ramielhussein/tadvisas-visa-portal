@@ -58,6 +58,16 @@ export default function Admin() {
 
   const sections = [
     {
+      title: "HR & Employees",
+      description: "Human resources and employee management",
+      icon: Users,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      items: [
+        { title: "HR Dashboard", path: "/hr/dashboard", icon: Users, description: "Employee headcount & analytics" },
+      ],
+    },
+    {
       title: "Product Management",
       description: "Worker procurement, tracking, and movement",
       icon: Package,
@@ -96,6 +106,7 @@ export default function Admin() {
       bgColor: "bg-green-50",
       items: [
         { title: "Financial Dashboard", path: "/financial", icon: Coins, description: "Revenue and accounts receivable" },
+        { title: "Contract Revenue & A/R", path: "/finance/contract-revenue", icon: FileText, description: "Track 2-year contracts and recurring revenue" },
         { title: "Expenses", path: "/expenses", icon: DollarSign, description: "Track business expenses" },
         { title: "Suppliers & A/P", path: "/suppliers", icon: Building2, description: "Supplier accounts payable" },
         { title: "Bank Accounts", path: "/bank-accounts", icon: DollarSign, description: "Manage bank accounts" },
