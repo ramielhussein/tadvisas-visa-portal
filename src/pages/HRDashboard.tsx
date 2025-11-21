@@ -97,7 +97,7 @@ const HRDashboard = () => {
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">HR Dashboard</h1>
             <p className="text-muted-foreground">
-              Employee headcount and workforce analytics
+              Admin staff headcount and workforce analytics
             </p>
           </div>
 
@@ -113,12 +113,12 @@ const HRDashboard = () => {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Users className="w-4 h-4" />
-                      Total Employees
+                      Total Admin Staff
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-3xl font-bold">{stats?.totalEmployees || 0}</p>
-                    <p className="text-xs text-muted-foreground">All staff members</p>
+                    <p className="text-xs text-muted-foreground">All admin staff members</p>
                   </CardContent>
                 </Card>
 

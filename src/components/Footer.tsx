@@ -15,7 +15,7 @@ const Footer = () => {
               className="h-8 w-auto brightness-0 invert"
             />
             <p className="text-blue-100">
-              Your trusted partner for domestic workers, and 2-year maid visa services in UAE. 
+              Your trusted partner for domestic workers and 2-year domestic worker visa services in UAE. 
               100% Tadbeer licensed with an option for zero monthly admin fees.
             </p>
           </div>
@@ -38,9 +38,9 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Services</h3>
             <ul className="space-y-2 text-blue-100">
               <li>2-Year Maid Visa</li>
-              <li>Hire a worker</li>
+              <li>Hire a domestic worker</li>
               <li>Medical & Emirates ID</li>
-              <li>All domestic workers services</li>
+              <li>All domestic worker services</li>
             </ul>
           </div>
 
@@ -68,7 +68,7 @@ const Footer = () => {
 
         <div className="border-t border-blue-600 mt-8 pt-8 text-center">
           <p className="text-blue-100">
-            © <Link to="/admin" className="text-blue-100 hover:text-white transition-colors">2025</Link> <Link to="/cvwizard" className="text-blue-100 hover:text-white transition-colors">tadmaids.com</Link> - Tadmaids Domestic Workers Services Center. All <Link to="/hub" className="text-blue-100 hover:text-white transition-colors">rights</Link> <Link to="/refund" className="text-blue-100 hover:text-white transition-colors">reserved</Link>.
+            © <Link to="/admin" className="text-blue-100 hover:text-white transition-colors">2025</Link> <Link to="/cvwizard" className="text-blue-100 hover:text-white transition-colors">tadmaids.com</Link> - Tadmaids Domestic Worker Services Center. All <Link to="/hub" className="text-blue-100 hover:text-white transition-colors">rights</Link> <Link to="/refund" className="text-blue-100 hover:text-white transition-colors">reserved</Link>.
           </p>
         </div>
       </div>

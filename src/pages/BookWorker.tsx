@@ -181,7 +181,7 @@ const BookWorker = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary mb-4">
-              Book This Worker
+              Book This Domestic Worker
             </h1>
             <p className="text-xl text-muted-foreground">
               Fill in your details and upload required documents
@@ -257,13 +257,13 @@ const BookWorker = () => {
                       <SelectItem value="Package 1: Two years worker on my sponsorship">
                         <div>
                           <div className="font-semibold">Package 1</div>
-                          <div className="text-sm text-muted-foreground">Two years worker on my sponsorship</div>
+                          <div className="text-sm text-muted-foreground">Two years domestic worker on my sponsorship</div>
                         </div>
                       </SelectItem>
                       <SelectItem value="Package 4: Monthly package of selected worker">
                         <div>
                           <div className="font-semibold">Package 4</div>
-                          <div className="text-sm text-muted-foreground">Monthly package of selected worker</div>
+                          <div className="text-sm text-muted-foreground">Monthly package of selected domestic worker</div>
                         </div>
                       </SelectItem>
                     </SelectContent>

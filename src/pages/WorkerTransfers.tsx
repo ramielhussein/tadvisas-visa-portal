@@ -82,7 +82,7 @@ const WorkerTransfers = () => {
       console.error("Error fetching transfers:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch worker transfers",
+        description: "Failed to fetch domestic worker transfers",
         variant: "destructive",
       });
     } finally {
@@ -214,9 +214,9 @@ const WorkerTransfers = () => {
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 <RefreshCw className="w-8 h-8" />
-                Worker Transfers
+                Domestic Worker Transfers
               </h1>
-              <p className="text-muted-foreground">Log all worker movements between locations</p>
+              <p className="text-muted-foreground">Log all domestic worker movements between locations</p>
             </div>
           </div>
           

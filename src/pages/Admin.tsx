@@ -59,26 +59,21 @@ export default function Admin() {
 
   const sections = [
     {
-      title: "HR & Employees",
-      description: "Human resources and employee management",
+      title: "Workforce Operations",
+      description: "Domestic workers & admin staff management",
       icon: Users,
       color: "text-indigo-600",
       bgColor: "bg-indigo-50",
       items: [
-        { title: "HR Dashboard", path: "/hr/dashboard", icon: Users, description: "Employee headcount & analytics" },
-      ],
-    },
-    {
-      title: "Product Management",
-      description: "Worker procurement, tracking, and movement",
-      icon: Package,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      items: [
-        { title: "Create Worker CV", path: "/cvwizard", icon: FileText, description: "Add new worker profiles" },
-        { title: "Product Dashboard", path: "/product/dashboard", icon: Package, description: "Overview of operations" },
-        { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText, description: "Worker procurement POs" },
-        { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users, description: "Worker count tracking" },
+        { title: "HR Dashboard", path: "/hr/dashboard", icon: Users, description: "Admin staff headcount & analytics" },
+        { title: "Create Domestic Worker CV", path: "/cvwizard", icon: FileText, description: "Add new domestic worker profiles" },
+        { title: "Domestic Worker Album", path: "/wizardalbum", icon: Images, description: "Browse available domestic workers" },
+        { title: "CV Review & Approval", path: "/admin/cvwizard-review", icon: ListChecks, description: "Review submitted CVs" },
+        { title: "Product Dashboard", path: "/product/dashboard", icon: Package, description: "Operations overview" },
+        { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText, description: "Domestic worker procurement POs" },
+        { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users, description: "Workforce count tracking" },
+        { title: "Domestic Worker Returns", path: "/product/worker-returns", icon: Package, description: "Process returned domestic workers" },
+        { title: "Domestic Worker Transfers", path: "/product/worker-transfers", icon: Package, description: "Track worker movements" },
       ],
     },
     {
@@ -133,20 +128,6 @@ export default function Admin() {
       ],
     },
     {
-      title: "Worker Management",
-      description: "CV wizard and worker database",
-      icon: Users,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      items: [
-        { title: "My CVs", path: "/my-cvs", icon: FileText, description: "View your submitted CVs" },
-        { title: "CV Wizard Form", path: "/cvwizard", icon: FileText, description: "Create new worker CV" },
-        { title: "CV Review & Approval", path: "/admin/cvwizard-review", icon: ListChecks, description: "Review submitted CVs" },
-        { title: "Worker Album", path: "/wizardalbum", icon: Images, description: "Browse available workers" },
-        { title: "CV Wizard Settings", path: "/admin/cvwizard-settings", icon: Settings, description: "Configure CV wizard" },
-      ],
-    },
-    {
       title: "User Management",
       description: "Manage team and permissions",
       icon: UserPlus,
@@ -165,6 +146,8 @@ export default function Admin() {
       bgColor: "bg-gray-50",
       items: [
         { title: "Country Albums Hub", path: "/hub", icon: MapPin, description: "Country-specific albums" },
+        { title: "My CVs", path: "/my-cvs", icon: FileText, description: "View your submitted CVs" },
+        { title: "CV Wizard Settings", path: "/admin/cvwizard-settings", icon: Settings, description: "Configure CV wizard" },
         { title: "Data Backup & Export", path: "/admin/data-backup", icon: Database, description: "Download database backups" },
         { title: "Site Guide", path: "/siteguide", icon: FileText, description: "Documentation and guide" },
         { title: "Reset Admin Password", path: "/admin/reset-admin", icon: Shield, description: "Reset admin credentials" },

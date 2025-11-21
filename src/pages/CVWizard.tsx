@@ -483,13 +483,13 @@ const CVWizard = () => {
               {editingWorkerId 
                 ? "Edit CV" 
                 : formData.staff 
-                  ? "Staff CV Wizard" 
+                  ? "Admin Staff CV Wizard"
                   : "Tadmaids CV Wizard"
               }
             </CardTitle>
             <CardDescription>
               {formData.staff 
-                ? "Creating internal staff record" 
+                ? "Creating internal admin staff record"
                 : `Step ${currentStep} of ${totalSteps}`
               }
             </CardDescription>
@@ -517,7 +517,7 @@ const CVWizard = () => {
               {currentStep < totalSteps ? (
                 <Button onClick={handleNext} disabled={submitting}>
                   {formData.staff && currentStep === 1 
-                    ? (submitting ? "Creating..." : "Create Staff CV")
+                    ? (submitting ? "Creating..." : "Create Admin Staff CV")
                     : "Next"
                   }
                   {!(formData.staff && currentStep === 1) && <ChevronRight className="ml-2 h-4 w-4" />}

@@ -131,12 +131,15 @@ const AdminMenu = () => {
   // Full admin menu - card-based structure
   const sections = [
     {
-      title: "Product Management",
+      title: "Workforce Operations",
       items: [
-        { title: "Create Worker CV", path: "/cvwizard", icon: FileText },
+        { title: "Create Domestic Worker CV", path: "/cvwizard", icon: FileText },
+        { title: "HR Dashboard", path: "/hr/dashboard", icon: Users },
         { title: "Product Dashboard", path: "/product/dashboard", icon: Package },
         { title: "Purchase Orders", path: "/product/purchase-orders", icon: FileText },
         { title: "Daily Headcount", path: "/product/daily-headcount", icon: Users },
+        { title: "Domestic Worker Album", path: "/wizardalbum", icon: Images },
+        { title: "CV Review", path: "/admin/cvwizard-review", icon: Users },
       ],
     },
     {
@@ -174,15 +177,6 @@ const AdminMenu = () => {
       ],
     },
     {
-      title: "Worker Management",
-      items: [
-        { title: "My CVs", path: "/my-cvs", icon: FileText },
-        { title: "CV Review", path: "/admin/cvwizard-review", icon: Users },
-        { title: "Worker Album", path: "/wizardalbum", icon: Images },
-        { title: "CV Settings", path: "/admin/cvwizard-settings", icon: Settings },
-      ],
-    },
-    {
       title: "User Management",
       items: [
         { title: "Create User", path: "/admin/user-management", icon: Users },
@@ -193,6 +187,8 @@ const AdminMenu = () => {
       title: "System",
       items: [
         { title: "Country Albums", path: "/hub", icon: MapPin },
+        { title: "My CVs", path: "/my-cvs", icon: FileText },
+        { title: "CV Settings", path: "/admin/cvwizard-settings", icon: Settings },
         { title: "Site Guide", path: "/siteguide", icon: FileText },
         { title: "Data Backup", path: "/admin/data-backup", icon: Shield },
         { title: "Reset Admin", path: "/admin/reset-admin", icon: Settings },
