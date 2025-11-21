@@ -155,10 +155,10 @@
   }
 
   /* FCG Brand Colors */
-  --fcg-navy: 220 80% 25%;
-  --fcg-gold: 43 74% 50%;
-  --fcg-gold-light: 43 74% 65%;
-  --fcg-navy-dark: 220 80% 15%;
+  --fcg-navy: hsl(220, 80%, 25%);
+  --fcg-gold: hsl(43, 74%, 50%);
+  --fcg-gold-light: hsl(43, 74%, 65%);
+  --fcg-navy-dark: hsl(220, 80%, 15%);
 }
 
 @layer utilities {
