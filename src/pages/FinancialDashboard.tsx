@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye } from "lucide-react";
+import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye, Calendar, Clock } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { format, differenceInMonths, addMonths } from "date-fns";
 
 interface FinancialStats {
   totalRevenue: number;
@@ -29,6 +32,25 @@ interface AccountBalance {
   overdue_invoices: number;
 }
 
+interface ContractAR {
+  id: string;
+  contract_number: string;
+  client_name: string;
+  start_date: string;
+  end_date: string;
+  duration_months: number;
+  monthly_amount: number;
+  total_amount: number;
+  months_elapsed: number;
+  months_remaining: number;
+  expected_revenue_to_date: number;
+  total_paid: number;
+  current_ar: number;
+  future_ar: number;
+  next_payment_date: string;
+  status: string;
+}
+
 const FinancialDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -46,6 +68,7 @@ const FinancialDashboard = () => {
   });
   const [accountBalances, setAccountBalances] = useState<AccountBalance[]>([]);
   const [supplierBalances, setSupplierBalances] = useState<any[]>([]);
+  const [contractsAR, setContractsAR] = useState<ContractAR[]>([]);
 
   useEffect(() => {
     fetchFinancialData();
@@ -95,6 +118,66 @@ const FinancialDashboard = () => {
 
       setAccountBalances(balances || []);
       setSupplierBalances(suppliers || []);
+
+      // Fetch contracts with A/R tracking
+      const { data: contractsData } = await supabase
+        .from("contracts")
+        .select("*")
+        .neq("status", "Cancelled")
+        .order("start_date", { ascending: true });
+
+      if (contractsData) {
+        const contractsWithAR = await Promise.all(
+          contractsData.map(async (contract) => {
+            // Get payments for this client
+            const { data: payments } = await supabase
+              .from("payments")
+              .select("amount")
+              .eq("client_phone", contract.client_phone);
+
+            const totalPaid = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+            
+            const startDate = new Date(contract.start_date);
+            const endDate = contract.end_date ? new Date(contract.end_date) : addMonths(startDate, contract.duration_months || 24);
+            const today = new Date();
+            
+            const monthsElapsed = Math.max(0, differenceInMonths(today, startDate));
+            const totalDuration = contract.duration_months || differenceInMonths(endDate, startDate);
+            const monthsRemaining = Math.max(0, totalDuration - monthsElapsed);
+            
+            const monthlyAmount = Number(contract.monthly_amount || 0);
+            const expectedMonths = Math.min(monthsElapsed, totalDuration);
+            const expectedRevenueToDate = monthlyAmount > 0 ? monthlyAmount * expectedMonths : Number(contract.total_amount);
+            
+            const currentAR = Math.max(0, expectedRevenueToDate - totalPaid);
+            const futureAR = monthlyAmount > 0 ? monthlyAmount * monthsRemaining : Math.max(0, Number(contract.total_amount) - expectedRevenueToDate);
+            
+            // Calculate next payment date (1st of next month)
+            const nextPaymentDate = addMonths(new Date(today.getFullYear(), today.getMonth(), 1), 1);
+
+            return {
+              id: contract.id,
+              contract_number: contract.contract_number,
+              client_name: contract.client_name,
+              start_date: contract.start_date,
+              end_date: contract.end_date || format(endDate, 'yyyy-MM-dd'),
+              duration_months: totalDuration,
+              monthly_amount: monthlyAmount,
+              total_amount: Number(contract.total_amount),
+              months_elapsed: monthsElapsed,
+              months_remaining: monthsRemaining,
+              expected_revenue_to_date: expectedRevenueToDate,
+              total_paid: totalPaid,
+              current_ar: currentAR,
+              future_ar: futureAR,
+              next_payment_date: format(nextPaymentDate, 'yyyy-MM-dd'),
+              status: contract.status
+            } as ContractAR;
+          })
+        );
+
+        setContractsAR(contractsWithAR);
+      }
     } catch (error: any) {
       console.error("Error fetching financial data:", error);
       toast({
@@ -204,6 +287,93 @@ const FinancialDashboard = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Contract A/R Tracking */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Contract A/R Tracking
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {contractsAR.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  No active contracts found
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Contract #</TableHead>
+                        <TableHead>Client</TableHead>
+                        <TableHead>Start Date</TableHead>
+                        <TableHead className="text-right">Monthly</TableHead>
+                        <TableHead className="text-center">Months Left</TableHead>
+                        <TableHead className="text-right">Current A/R</TableHead>
+                        <TableHead className="text-right">Future A/R</TableHead>
+                        <TableHead>Next Payment</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {contractsAR.map((contract) => (
+                        <TableRow key={contract.id}>
+                          <TableCell className="font-mono text-xs">
+                            {contract.contract_number}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {contract.client_name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-xs">
+                              <Calendar className="h-3 w-3" />
+                              {format(new Date(contract.start_date), 'MMM dd, yyyy')}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {contract.monthly_amount > 0 
+                              ? `AED ${contract.monthly_amount.toLocaleString()}`
+                              : '-'
+                            }
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="secondary">
+                              {contract.months_remaining} / {contract.duration_months}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {contract.current_ar > 0 ? (
+                              <span className="text-orange-600 font-semibold">
+                                AED {contract.current_ar.toLocaleString()}
+                              </span>
+                            ) : (
+                              <span className="text-green-600">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right text-muted-foreground">
+                            AED {contract.future_ar.toLocaleString()}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1 text-xs">
+                              <Clock className="h-3 w-3" />
+                              {format(new Date(contract.next_payment_date), 'MMM dd')}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={contract.status === 'Active' ? 'default' : 'secondary'}>
+                              {contract.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Two Column Layout for A/R and A/P */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
