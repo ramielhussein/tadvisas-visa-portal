@@ -1,5 +1,6 @@
 
 import SendPersonalReports from "./pages/admin/SendPersonalReports";
+import ImportContracts from "./pages/admin/ImportContracts";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -219,6 +220,7 @@ const App = () => (
           <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
           <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
           <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
+          <Route path="/admin/import-contracts" element={<ProtectedRoute><ImportContracts /></ProtectedRoute>} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />

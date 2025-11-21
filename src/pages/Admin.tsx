@@ -22,6 +22,7 @@ import {
   Package,
   Download,
   Database,
+  Upload,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -108,6 +109,7 @@ export default function Admin() {
         { title: "Finance Hub", path: "/hub/finance", icon: Coins, description: "Central finance dashboard" },
         { title: "Financial Dashboard", path: "/financial", icon: Coins, description: "Revenue and accounts receivable" },
         { title: "Contract Revenue & A/R", path: "/finance/contract-revenue", icon: FileText, description: "Track 2-year contracts and recurring revenue" },
+        { title: "Import Contracts (Excel)", path: "/admin/import-contracts", icon: Upload, description: "Import workers and contracts from Excel" },
         { title: "Expenses", path: "/expenses", icon: DollarSign, description: "Track business expenses" },
         { title: "Suppliers & A/P", path: "/suppliers", icon: Building2, description: "Supplier accounts payable" },
         { title: "Bank Accounts", path: "/bank-accounts", icon: DollarSign, description: "Manage bank accounts" },
