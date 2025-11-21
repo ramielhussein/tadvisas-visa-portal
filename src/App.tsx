@@ -87,6 +87,8 @@ import SalesPersonDashboard from "./pages/SalesPersonDashboard";
 import SalesManagerDashboard from "./pages/SalesManagerDashboard";
 import NationalityDashboard from "./pages/NationalityDashboard";
 import DataBackup from "./pages/DataBackup";
+import ContractRevenue from "./pages/ContractRevenue";
+import HRDashboard from "./pages/HRDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -175,6 +177,7 @@ const App = () => (
           <Route path="/crm/team-dashboard" element={<ProtectedRoute><SalesManagerDashboard /></ProtectedRoute>} />
           
           {/* HR & Analytics */}
+          <Route path="/hr/dashboard" element={<ProtectedRoute><HRDashboard /></ProtectedRoute>} />
           <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
@@ -190,6 +193,7 @@ const App = () => (
           <Route path="/finance/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
           <Route path="/finance/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
           <Route path="/finance/refunds-list" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
+          <Route path="/finance/contract-revenue" element={<ProtectedRoute><ContractRevenue /></ProtectedRoute>} />
           
           {/* Product Module - Operations & Workers */}
           <Route path="/product/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
@@ -214,7 +218,7 @@ const App = () => (
           <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
           <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
           <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
-          <Route path="/admin/data-backup" element={<DataBackup />} />
+          <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
