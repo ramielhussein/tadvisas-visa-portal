@@ -2152,6 +2152,7 @@ export type Database = {
           religion: string
           salary: number | null
           skills: Json | null
+          staff: boolean
           status: string | null
           updated_at: string | null
           visa: Json | null
@@ -2183,6 +2184,7 @@ export type Database = {
           religion: string
           salary?: number | null
           skills?: Json | null
+          staff?: boolean
           status?: string | null
           updated_at?: string | null
           visa?: Json | null
@@ -2214,6 +2216,7 @@ export type Database = {
           religion?: string
           salary?: number | null
           skills?: Json | null
+          staff?: boolean
           status?: string | null
           updated_at?: string | null
           visa?: Json | null

@@ -1,4 +1,7 @@
 export interface CVFormData {
+  // Staff flag
+  staff: boolean;
+  
   // Identity
   name: string;
   passport_no: string;

@@ -31,6 +31,7 @@ interface Worker {
   status: string;
   created_at: string;
   maid_status: string;
+  staff?: boolean;
 }
 
 const MyCVs = () => {
@@ -65,6 +66,11 @@ const MyCVs = () => {
         .from("workers")
         .select("*")
         .order("created_at", { ascending: false });
+
+      // Filter out staff CVs for non-admin/non-product users
+      if (!(isAdmin || isProduct)) {
+        query = query.eq("staff", false);
+      }
 
       if (!((isAdmin || isProduct) && showAll)) {
         query = query.eq("created_by", user.id);

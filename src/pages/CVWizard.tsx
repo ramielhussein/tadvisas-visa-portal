@@ -33,6 +33,7 @@ const CVWizard = () => {
   const totalSteps = 10;
 
   const [formData, setFormData] = useState<CVFormData>({
+    staff: false,
     name: "",
     passport_no: "",
     passport_expiry: "",
@@ -106,6 +107,7 @@ const CVWizard = () => {
           if (worker) {
             // Transform worker data to form data format
             setFormData({
+              staff: worker.staff || false,
               name: worker.name || "",
               passport_no: worker.passport_no || "",
               passport_expiry: worker.passport_expiry || "",
@@ -174,6 +176,16 @@ const CVWizard = () => {
   };
 
   const validateStep = (step: number): boolean => {
+    // For staff CVs, only validate step 1 (simplified validation)
+    if (formData.staff && step === 1) {
+      return !!formData.name && !!formData.nationality_code;
+    }
+
+    // For staff CVs, skip all other steps
+    if (formData.staff && step > 1) {
+      return true;
+    }
+
     switch (step) {
       case 1:
         if (!formData.name || !formData.passport_no || !formData.passport_expiry || 
@@ -231,27 +243,34 @@ const CVWizard = () => {
       let missingFields = [];
       
       if (currentStep === 1) {
-        if (!formData.name) missingFields.push("Full Name");
-        if (!formData.passport_no) missingFields.push("Passport Number");
-        if (!formData.passport_expiry) missingFields.push("Passport Expiry");
-        else {
-          const passportExpiry = parseISO(formData.passport_expiry);
-          const monthsUntilExpiry = differenceInMonths(passportExpiry, new Date());
-          if (monthsUntilExpiry < 6) {
-            missingFields.push("Passport must be valid for at least 6 months");
+        if (formData.staff) {
+          // Simplified validation for staff CVs
+          if (!formData.name) missingFields.push("Full Name");
+          if (!formData.nationality_code) missingFields.push("Nationality");
+        } else {
+          // Full validation for regular CVs
+          if (!formData.name) missingFields.push("Full Name");
+          if (!formData.passport_no) missingFields.push("Passport Number");
+          if (!formData.passport_expiry) missingFields.push("Passport Expiry");
+          else {
+            const passportExpiry = parseISO(formData.passport_expiry);
+            const monthsUntilExpiry = differenceInMonths(passportExpiry, new Date());
+            if (monthsUntilExpiry < 6) {
+              missingFields.push("Passport must be valid for at least 6 months");
+            }
           }
-        }
-        if (!formData.nationality_code) missingFields.push("Nationality");
-        if (!formData.date_of_birth) missingFields.push("Date of Birth");
-        else {
-          const dob = parseISO(formData.date_of_birth);
-          const age = differenceInYears(new Date(), dob);
-          if (age < 18) {
-            missingFields.push("Worker must be at least 18 years old");
+          if (!formData.nationality_code) missingFields.push("Nationality");
+          if (!formData.date_of_birth) missingFields.push("Date of Birth");
+          else {
+            const dob = parseISO(formData.date_of_birth);
+            const age = differenceInYears(new Date(), dob);
+            if (age < 18) {
+              missingFields.push("Worker must be at least 18 years old");
+            }
           }
+          if (!formData.religion) missingFields.push("Religion");
+          if (!formData.maid_status) missingFields.push("Maid Status");
         }
-        if (!formData.religion) missingFields.push("Religion");
-        if (!formData.maid_status) missingFields.push("Maid Status");
       } else if (currentStep === 2) {
         if (!formData.job1) missingFields.push("Primary Job");
         if (!formData.marital_status) missingFields.push("Marital Status");
@@ -282,6 +301,12 @@ const CVWizard = () => {
       return;
     }
     
+    // For staff CVs, submit directly after step 1
+    if (formData.staff && currentStep === 1) {
+      handleSubmit();
+      return;
+    }
+    
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -295,7 +320,8 @@ const CVWizard = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(10)) {
+    // For staff CVs, skip consent validation
+    if (!formData.staff && !validateStep(10)) {
       toast({
         title: "Cannot Submit",
         description: "Please accept the consent checkbox.",
@@ -324,6 +350,7 @@ const CVWizard = () => {
         const { error } = await supabase
           .from('workers')
           .update({
+            staff: formData.staff,
             name: formData.name,
             passport_no: formData.passport_no,
             passport_expiry: formData.passport_expiry,
@@ -453,10 +480,18 @@ const CVWizard = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">
-              {editingWorkerId ? "Edit CV" : "Tadmaids CV Wizard"}
+              {editingWorkerId 
+                ? "Edit CV" 
+                : formData.staff 
+                  ? "Staff CV Wizard" 
+                  : "Tadmaids CV Wizard"
+              }
             </CardTitle>
             <CardDescription>
-              Step {currentStep} of {totalSteps}
+              {formData.staff 
+                ? "Creating internal staff record" 
+                : `Step ${currentStep} of ${totalSteps}`
+              }
             </CardDescription>
             {currentUserName && (
               <p className="text-sm text-muted-foreground mt-2">
@@ -481,8 +516,11 @@ const CVWizard = () => {
 
               {currentStep < totalSteps ? (
                 <Button onClick={handleNext} disabled={submitting}>
-                  Next
-                  <ChevronRight className="ml-2 h-4 w-4" />
+                  {formData.staff && currentStep === 1 
+                    ? (submitting ? "Creating..." : "Create Staff CV")
+                    : "Next"
+                  }
+                  {!(formData.staff && currentStep === 1) && <ChevronRight className="ml-2 h-4 w-4" />}
                 </Button>
               ) : (
                 <Button onClick={handleSubmit} disabled={submitting}>

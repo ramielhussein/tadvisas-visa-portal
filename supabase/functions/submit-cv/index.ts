@@ -4,6 +4,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 interface CVFormData {
+  staff?: boolean;
   name: string;
   passport_no: string;
   passport_expiry: string;
@@ -97,6 +98,37 @@ Deno.serve(async (req) => {
     
     console.log('Processing CV submission for:', formData.passport_no);
     
+    // For staff CVs, use simplified processing
+    if (formData.staff) {
+      const { data: worker, error: insertError } = await supabase
+        .from('workers')
+        .insert({
+          staff: true,
+          name: formData.name,
+          nationality_code: formData.nationality_code,
+          passport_no: formData.passport_no || `STAFF-${Date.now()}`,
+          center_ref: `STAFF-${formData.name}`,
+          status: 'Staff',
+          created_by: formData.created_by,
+        })
+        .select()
+        .single();
+      
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        return new Response(
+          JSON.stringify({ error: insertError.message, code: insertError.code }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      return new Response(
+        JSON.stringify({ success: true, center_ref: `STAFF-${formData.name}`, worker_id: worker.id }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Regular CV processing
     // Compute center reference
     const center_ref = computeCenterRef(formData);
     
@@ -143,6 +175,7 @@ Deno.serve(async (req) => {
     const { data: worker, error: insertError } = await supabase
       .from('workers')
       .insert({
+        staff: formData.staff || false,
         passport_no: formData.passport_no,
         passport_expiry: formData.passport_expiry,
         center_ref,
