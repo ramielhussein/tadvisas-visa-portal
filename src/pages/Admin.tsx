@@ -21,6 +21,7 @@ import {
   ListChecks,
   Package,
   Download,
+  Database,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -150,6 +151,7 @@ export default function Admin() {
       bgColor: "bg-gray-50",
       items: [
         { title: "Country Albums Hub", path: "/hub", icon: MapPin, description: "Country-specific albums" },
+        { title: "Data Backup & Export", path: "/admin/data-backup", icon: Database, description: "Download database backups" },
         { title: "Site Guide", path: "/siteguide", icon: FileText, description: "Documentation and guide" },
         { title: "Reset Admin Password", path: "/admin/reset-admin", icon: Shield, description: "Reset admin credentials" },
       ],

@@ -194,6 +194,7 @@ const AdminMenu = () => {
       items: [
         { title: "Country Albums", path: "/hub", icon: MapPin },
         { title: "Site Guide", path: "/siteguide", icon: FileText },
+        { title: "Data Backup", path: "/admin/data-backup", icon: Shield },
         { title: "Reset Admin", path: "/admin/reset-admin", icon: Settings },
       ],
     },
