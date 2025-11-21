@@ -83,6 +83,9 @@ import SalesReportsCenter from "./pages/SalesReportsCenter";
 import LeadAttendanceReport from "./pages/LeadAttendanceReport";
 import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
+import SalesPersonDashboard from "./pages/SalesPersonDashboard";
+import SalesManagerDashboard from "./pages/SalesManagerDashboard";
+import NationalityDashboard from "./pages/NationalityDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -167,6 +170,11 @@ const App = () => (
           <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
           <Route path="/crm/lead-attendance-report" element={<ProtectedRoute><LeadAttendanceReport /></ProtectedRoute>} />
           <Route path="/crm/sales-reports" element={<ProtectedRoute><SalesReportsCenter /></ProtectedRoute>} />
+          <Route path="/crm/my-dashboard" element={<ProtectedRoute><SalesPersonDashboard /></ProtectedRoute>} />
+          <Route path="/crm/team-dashboard" element={<ProtectedRoute><SalesManagerDashboard /></ProtectedRoute>} />
+          
+          {/* HR & Analytics */}
+          <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
           <Route path="/finance" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />

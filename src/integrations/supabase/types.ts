@@ -507,6 +507,170 @@ export type Database = {
           },
         ]
       }
+      employees: {
+        Row: {
+          account_number: string | null
+          allowances: Json | null
+          annual_leave_days: number | null
+          bank_name: string | null
+          base_salary: number | null
+          contract_end_date: string | null
+          contract_start_date: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string | null
+          deductions: Json | null
+          department: string | null
+          documents: Json | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          emirates_id: string | null
+          employee_id: string | null
+          employment_status: string | null
+          employment_type: string | null
+          full_name: string
+          gender: string | null
+          hire_date: string | null
+          iban: string | null
+          id: string
+          last_review_date: string | null
+          last_salary_review_date: string | null
+          leave_balance: Json | null
+          nationality_code: string | null
+          next_review_date: string | null
+          next_salary_review_date: string | null
+          notes: string | null
+          passport_expiry_date: string | null
+          passport_no: string | null
+          payment_frequency: string | null
+          performance_rating: number | null
+          phone: string | null
+          photo_url: string | null
+          position: string | null
+          probation_end_date: string | null
+          reports_to: string | null
+          review_notes: string | null
+          salary_currency: string | null
+          sick_leave_days: number | null
+          swift_code: string | null
+          termination_date: string | null
+          updated_at: string
+          work_location: string | null
+        }
+        Insert: {
+          account_number?: string | null
+          allowances?: Json | null
+          annual_leave_days?: number | null
+          bank_name?: string | null
+          base_salary?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          deductions?: Json | null
+          department?: string | null
+          documents?: Json | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          emirates_id?: string | null
+          employee_id?: string | null
+          employment_status?: string | null
+          employment_type?: string | null
+          full_name: string
+          gender?: string | null
+          hire_date?: string | null
+          iban?: string | null
+          id?: string
+          last_review_date?: string | null
+          last_salary_review_date?: string | null
+          leave_balance?: Json | null
+          nationality_code?: string | null
+          next_review_date?: string | null
+          next_salary_review_date?: string | null
+          notes?: string | null
+          passport_expiry_date?: string | null
+          passport_no?: string | null
+          payment_frequency?: string | null
+          performance_rating?: number | null
+          phone?: string | null
+          photo_url?: string | null
+          position?: string | null
+          probation_end_date?: string | null
+          reports_to?: string | null
+          review_notes?: string | null
+          salary_currency?: string | null
+          sick_leave_days?: number | null
+          swift_code?: string | null
+          termination_date?: string | null
+          updated_at?: string
+          work_location?: string | null
+        }
+        Update: {
+          account_number?: string | null
+          allowances?: Json | null
+          annual_leave_days?: number | null
+          bank_name?: string | null
+          base_salary?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          deductions?: Json | null
+          department?: string | null
+          documents?: Json | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          emirates_id?: string | null
+          employee_id?: string | null
+          employment_status?: string | null
+          employment_type?: string | null
+          full_name?: string
+          gender?: string | null
+          hire_date?: string | null
+          iban?: string | null
+          id?: string
+          last_review_date?: string | null
+          last_salary_review_date?: string | null
+          leave_balance?: Json | null
+          nationality_code?: string | null
+          next_review_date?: string | null
+          next_salary_review_date?: string | null
+          notes?: string | null
+          passport_expiry_date?: string | null
+          passport_no?: string | null
+          payment_frequency?: string | null
+          performance_rating?: number | null
+          phone?: string | null
+          photo_url?: string | null
+          position?: string | null
+          probation_end_date?: string | null
+          reports_to?: string | null
+          review_notes?: string | null
+          salary_currency?: string | null
+          sick_leave_days?: number | null
+          swift_code?: string | null
+          termination_date?: string | null
+          updated_at?: string
+          work_location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employees_reports_to_fkey"
+            columns: ["reports_to"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equity_accounts: {
         Row: {
           account_name: string
@@ -2127,209 +2291,102 @@ export type Database = {
       }
       workers: {
         Row: {
-          account_number: string | null
-          allowances: Json | null
-          annual_leave_days: number | null
-          bank_name: string | null
-          base_salary: number | null
           center_ref: string | null
           children: number | null
-          contract_end_date: string | null
-          contract_start_date: string | null
           created_at: string | null
           created_by: string | null
           date_of_birth: string | null
-          deductions: Json | null
-          department: string | null
           education: Json | null
-          emergency_contact_name: string | null
-          emergency_contact_phone: string | null
-          emergency_contact_relationship: string | null
-          employee_id: string | null
           employer_count: number | null
           employers: Json | null
-          employment_status: string | null
-          employment_type: string | null
           experience: Json | null
           files: Json | null
           financials: Json | null
           height_cm: number | null
-          hire_date: string | null
-          iban: string | null
           id: string
           job1: string
           job2: string | null
           languages: Json | null
-          last_review_date: string | null
-          last_salary_review_date: string | null
-          leave_balance: Json | null
           maid_status: string
           marital_status: string
           name: string
           nationality_code: string
-          next_review_date: string | null
-          next_salary_review_date: string | null
           passport_expiry: string
           passport_no: string
-          payment_frequency: string | null
-          performance_rating: number | null
-          position: string | null
-          probation_end_date: string | null
           religion: string
-          reports_to: string | null
-          review_notes: string | null
           salary: number | null
-          salary_currency: string | null
-          sick_leave_days: number | null
           skills: Json | null
           staff: boolean
           status: string | null
-          swift_code: string | null
-          termination_date: string | null
           updated_at: string | null
           visa: Json | null
           weight_kg: number | null
-          work_location: string | null
         }
         Insert: {
-          account_number?: string | null
-          allowances?: Json | null
-          annual_leave_days?: number | null
-          bank_name?: string | null
-          base_salary?: number | null
           center_ref?: string | null
           children?: number | null
-          contract_end_date?: string | null
-          contract_start_date?: string | null
           created_at?: string | null
           created_by?: string | null
           date_of_birth?: string | null
-          deductions?: Json | null
-          department?: string | null
           education?: Json | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          emergency_contact_relationship?: string | null
-          employee_id?: string | null
           employer_count?: number | null
           employers?: Json | null
-          employment_status?: string | null
-          employment_type?: string | null
           experience?: Json | null
           files?: Json | null
           financials?: Json | null
           height_cm?: number | null
-          hire_date?: string | null
-          iban?: string | null
           id?: string
           job1: string
           job2?: string | null
           languages?: Json | null
-          last_review_date?: string | null
-          last_salary_review_date?: string | null
-          leave_balance?: Json | null
           maid_status: string
           marital_status: string
           name: string
           nationality_code: string
-          next_review_date?: string | null
-          next_salary_review_date?: string | null
           passport_expiry: string
           passport_no: string
-          payment_frequency?: string | null
-          performance_rating?: number | null
-          position?: string | null
-          probation_end_date?: string | null
           religion: string
-          reports_to?: string | null
-          review_notes?: string | null
           salary?: number | null
-          salary_currency?: string | null
-          sick_leave_days?: number | null
           skills?: Json | null
           staff?: boolean
           status?: string | null
-          swift_code?: string | null
-          termination_date?: string | null
           updated_at?: string | null
           visa?: Json | null
           weight_kg?: number | null
-          work_location?: string | null
         }
         Update: {
-          account_number?: string | null
-          allowances?: Json | null
-          annual_leave_days?: number | null
-          bank_name?: string | null
-          base_salary?: number | null
           center_ref?: string | null
           children?: number | null
-          contract_end_date?: string | null
-          contract_start_date?: string | null
           created_at?: string | null
           created_by?: string | null
           date_of_birth?: string | null
-          deductions?: Json | null
-          department?: string | null
           education?: Json | null
-          emergency_contact_name?: string | null
-          emergency_contact_phone?: string | null
-          emergency_contact_relationship?: string | null
-          employee_id?: string | null
           employer_count?: number | null
           employers?: Json | null
-          employment_status?: string | null
-          employment_type?: string | null
           experience?: Json | null
           files?: Json | null
           financials?: Json | null
           height_cm?: number | null
-          hire_date?: string | null
-          iban?: string | null
           id?: string
           job1?: string
           job2?: string | null
           languages?: Json | null
-          last_review_date?: string | null
-          last_salary_review_date?: string | null
-          leave_balance?: Json | null
           maid_status?: string
           marital_status?: string
           name?: string
           nationality_code?: string
-          next_review_date?: string | null
-          next_salary_review_date?: string | null
           passport_expiry?: string
           passport_no?: string
-          payment_frequency?: string | null
-          performance_rating?: number | null
-          position?: string | null
-          probation_end_date?: string | null
           religion?: string
-          reports_to?: string | null
-          review_notes?: string | null
           salary?: number | null
-          salary_currency?: string | null
-          sick_leave_days?: number | null
           skills?: Json | null
           staff?: boolean
           status?: string | null
-          swift_code?: string | null
-          termination_date?: string | null
           updated_at?: string | null
           visa?: Json | null
           weight_kg?: number | null
-          work_location?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "workers_reports_to_fkey"
-            columns: ["reports_to"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
