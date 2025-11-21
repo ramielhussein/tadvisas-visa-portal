@@ -1044,6 +1044,26 @@ const CRMHub = () => {
           </Tabs>
         </div>
 
+        {/* Quick Navigation */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => navigate('/crm/my-dashboard')}>
+            <BarChart3 className="h-4 w-4 mr-2" />
+            My Sales Dashboard
+          </Button>
+          {isAdmin && (
+            <Button variant="outline" onClick={() => navigate('/crm/team-dashboard')}>
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Team Dashboard
+            </Button>
+          )}
+          {isAdmin && (
+            <Button variant="outline" onClick={() => navigate('/hr/nationality-dashboard')}>
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Nationality Report
+            </Button>
+          )}
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
           <Card>
