@@ -86,6 +86,7 @@ import FCG from "./pages/FCG";
 import SalesPersonDashboard from "./pages/SalesPersonDashboard";
 import SalesManagerDashboard from "./pages/SalesManagerDashboard";
 import NationalityDashboard from "./pages/NationalityDashboard";
+import DataBackup from "./pages/DataBackup";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -208,6 +209,12 @@ const App = () => (
           <Route path="/product/nationality-workflows" element={<ProtectedRoute><NationalityWorkflows /></ProtectedRoute>} />
           <Route path="/product/worker-returns" element={<ProtectedRoute><WorkerReturns /></ProtectedRoute>} />
           <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
+          
+          {/* Dashboards */}
+          <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
+          <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
+          <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
+          <Route path="/admin/data-backup" element={<DataBackup />} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
