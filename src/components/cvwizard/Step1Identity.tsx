@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { CVFormData } from "@/components/cvwizard/types";
 
 interface Props {
@@ -12,6 +13,20 @@ const Step1Identity = ({ formData, updateFormData }: Props) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Identity & Core Information</h3>
+
+      <div className="flex items-center space-x-2 p-4 border rounded-md bg-muted/50">
+        <Checkbox
+          id="staff"
+          checked={formData.staff}
+          onCheckedChange={(checked) => updateFormData({ staff: checked as boolean })}
+        />
+        <Label htmlFor="staff" className="cursor-pointer">
+          <span className="font-semibold">STAFF</span>
+          <span className="text-sm text-muted-foreground ml-2">
+            (Internal use only - will not appear publicly)
+          </span>
+        </Label>
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">Full Name *</Label>
