@@ -1002,7 +1002,7 @@ const CRMHub = () => {
     <Layout>
       <div className="container mx-auto py-6 px-4">
         {/* Sales Reports Center Banner */}
-        <Card className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 border-0 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate("/crm/sales-reports")}>
+        <Card className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 border-0">
           <CardContent className="p-6">
             <div className="flex items-center justify-between text-white">
               <div className="flex items-center gap-4">
@@ -1014,7 +1014,12 @@ const CRMHub = () => {
                   <p className="text-sm text-white/90">Access all sales reports, analytics, KPIs, and team performance in one place</p>
                 </div>
               </div>
-              <Button variant="secondary" size="sm" className="font-semibold">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="font-semibold flex-shrink-0"
+                onClick={() => navigate("/crm/sales-reports")}
+              >
                 View Reports →
               </Button>
             </div>
