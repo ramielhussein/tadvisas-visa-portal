@@ -29,16 +29,20 @@ const DailySalesReport = () => {
       // For each user, calculate metrics
       const results = await Promise.all(
         profiles.map(async (user) => {
-          // Leads picked up (assigned) today
-          const { data: assignedLeads } = await supabase
-            .from("audit_logs")
+          // Leads picked up (assigned) today - track assignment changes in lead_activities
+          const { data: assignmentActivities } = await supabase
+            .from("lead_activities")
             .select("*")
-            .eq("table_name", "leads")
-            .eq("action", "UPDATE")
+            .eq("activity_type", "system")
+            .eq("title", "Assignment Changed")
             .gte("created_at", startOfDay.toISOString())
-            .lte("created_at", endOfDay.toISOString())
-            .contains("new_data", { assigned_to: user.id })
-            .is("old_data->>assigned_to", null);
+            .lte("created_at", endOfDay.toISOString());
+          
+          // Filter for leads assigned to this user from unassigned state
+          const assignedLeads = assignmentActivities?.filter((activity: any) => {
+            const metadata = activity.metadata as any;
+            return metadata?.new_assigned_to === user.id && metadata?.old_assigned_to === null;
+          }) || [];
 
           // Lead activities today
           const { data: activities } = await supabase
@@ -59,7 +63,7 @@ const DailySalesReport = () => {
 
           return {
             name: user.full_name || user.email || "Unknown",
-            pickedUp: assignedLeads?.length || 0,
+            pickedUp: assignedLeads.length,
             updated: activities?.length || 0,
             closed: closedDeals?.length || 0,
           };
