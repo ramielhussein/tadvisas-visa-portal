@@ -1096,15 +1096,35 @@ const CRMHub = () => {
           )}
         </div>
 
-        {/* Untaken Leads Warning */}
+        {/* Untaken Leads Clock Warning */}
         {untakenTodayCount > 0 && (
-          <Alert className="mb-6 border-destructive bg-destructive/10">
-            <AlertTriangle className="h-5 w-5 text-destructive" />
-            <AlertTitle className="text-destructive font-semibold">Unassigned Leads Alert</AlertTitle>
-            <AlertDescription className="text-destructive/90">
-              <span className="font-bold text-lg">{untakenTodayCount}</span> {untakenTodayCount === 1 ? 'lead was' : 'leads were'} added today but not yet assigned. Please review and assign them.
-            </AlertDescription>
-          </Alert>
+          <div className="mb-6 flex items-center justify-center gap-4 p-4 bg-destructive/5 rounded-lg border border-destructive/20">
+            <div className="relative flex items-center justify-center">
+              {/* Outer pulsing ring */}
+              <div className="absolute inset-0 animate-ping">
+                <div className="w-24 h-24 rounded-full border-4 border-destructive/40"></div>
+              </div>
+              {/* Clock circle */}
+              <div className="relative w-24 h-24 rounded-full border-4 border-destructive bg-destructive/10 flex items-center justify-center shadow-lg">
+                {/* Clock hands effect */}
+                <div className="absolute top-1/2 left-1/2 w-1 h-8 bg-destructive origin-bottom -translate-x-1/2 -translate-y-full rotate-0"></div>
+                <div className="absolute top-1/2 left-1/2 w-1 h-6 bg-destructive/60 origin-bottom -translate-x-1/2 -translate-y-full rotate-90"></div>
+                {/* Count display */}
+                <div className="text-center z-10">
+                  <div className="text-3xl font-bold text-destructive">{untakenTodayCount}</div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <h3 className="text-lg font-semibold text-destructive flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Unassigned Leads
+              </h3>
+              <p className="text-sm text-destructive/90">
+                {untakenTodayCount === 1 ? 'Lead' : 'Leads'} added today awaiting assignment
+              </p>
+            </div>
+          </div>
         )}
 
         {/* Stats Cards */}
