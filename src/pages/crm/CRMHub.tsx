@@ -104,6 +104,7 @@ const CRMHub = () => {
   const [previouslyLostLead, setPreviouslyLostLead] = useState<Lead | null>(null);
   const [lostByUser, setLostByUser] = useState<string>("");
   const [untakenTodayCount, setUntakenTodayCount] = useState<number>(0);
+  const [untakenP5Count, setUntakenP5Count] = useState<number>(0);
   
   // Throttle real-time updates
   const lastUpdateTimeRef = useRef(0);
@@ -314,14 +315,19 @@ const CRMHub = () => {
       today.setHours(0, 0, 0, 0);
       const todayISO = today.toISOString();
 
-      const { count, error } = await supabase
+      const { data, error } = await supabase
         .from("leads")
-        .select("*", { count: "exact", head: true })
+        .select("service_required")
         .gte("created_at", todayISO)
         .is("assigned_to", null);
 
       if (error) throw error;
-      setUntakenTodayCount(count || 0);
+      
+      const totalCount = data?.length || 0;
+      const p5Count = data?.filter(lead => lead.service_required === 'P5').length || 0;
+      
+      setUntakenTodayCount(totalCount);
+      setUntakenP5Count(p5Count);
     } catch (error) {
       console.error("Error fetching untaken leads count:", error);
     }
@@ -1110,7 +1116,7 @@ const CRMHub = () => {
                 <div className="flex items-center gap-3 mb-1">
                   <h3 className="text-xl font-bold text-foreground">Unassigned Leads</h3>
                   <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-3 rounded-full bg-destructive text-destructive-foreground text-sm font-bold shadow-md animate-pulse">
-                    {untakenTodayCount}
+                    {untakenTodayCount}{untakenP5Count > 0 && ` (${untakenP5Count} P5)`}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
