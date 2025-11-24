@@ -1082,50 +1082,52 @@ const CRMHub = () => {
           </Tabs>
         </div>
 
-        {/* Quick Navigation */}
-        <div className="mb-6 flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => navigate('/crm/my-dashboard')}>
-            <BarChart3 className="h-4 w-4 mr-2" />
-            My Sales Dashboard
-          </Button>
-          {isAdmin && (
-            <Button variant="outline" onClick={() => navigate('/crm/team-dashboard')}>
+        {/* Quick Navigation and Untaken Leads Warning */}
+        <div className="mb-6 flex flex-wrap gap-4 items-start justify-between">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => navigate('/crm/my-dashboard')}>
               <BarChart3 className="h-4 w-4 mr-2" />
-              Team Dashboard
+              My Sales Dashboard
             </Button>
-          )}
-          {isAdmin && (
-            <Button variant="outline" onClick={() => navigate('/hr/nationality-dashboard')}>
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Nationality Report
-            </Button>
-          )}
-        </div>
+            {isAdmin && (
+              <Button variant="outline" onClick={() => navigate('/crm/team-dashboard')}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Team Dashboard
+              </Button>
+            )}
+            {isAdmin && (
+              <Button variant="outline" onClick={() => navigate('/hr/nationality-dashboard')}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Nationality Report
+              </Button>
+            )}
+          </div>
 
-        {/* Untaken Leads Warning */}
-        {untakenTodayCount > 0 && (
-          <div className="mb-6 relative overflow-hidden rounded-xl border border-destructive/20 bg-gradient-to-br from-destructive/5 via-background to-destructive/5 p-6 shadow-lg">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute -inset-1 animate-pulse rounded-full bg-destructive/20 blur"></div>
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 ring-2 ring-destructive/30">
-                  <AlertTriangle className="h-8 w-8 text-destructive animate-pulse" />
+          {/* Untaken Leads Warning - Compact Box */}
+          {untakenTodayCount > 0 && (
+            <div className="relative overflow-hidden rounded-lg border border-destructive/30 bg-gradient-to-br from-destructive/10 to-destructive/5 p-4 shadow-md min-w-[240px]">
+              <div className="flex items-center gap-3">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute -inset-0.5 animate-pulse rounded-full bg-destructive/20 blur-sm"></div>
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-destructive/15 ring-1 ring-destructive/40">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="text-xl font-bold text-foreground">Unassigned Leads</h3>
-                  <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-3 rounded-full bg-destructive text-destructive-foreground text-sm font-bold shadow-md animate-pulse">
-                    {untakenTodayCount}{untakenP5Count > 0 && ` (${untakenP5Count} P5)`}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h4 className="text-sm font-bold text-foreground">Unassigned</h4>
+                    <span className="inline-flex items-center justify-center h-6 px-2 rounded-full bg-destructive text-destructive-foreground text-xs font-bold">
+                      {untakenTodayCount}{untakenP5Count > 0 && ` (${untakenP5Count} P5)`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Added today
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {untakenTodayCount === 1 ? 'Lead was' : 'Leads were'} added today and {untakenTodayCount === 1 ? 'needs' : 'need'} to be assigned
-                </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
