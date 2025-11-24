@@ -324,7 +324,7 @@ const CRMHub = () => {
       if (error) throw error;
       
       const totalCount = data?.length || 0;
-      const p5Count = data?.filter(lead => lead.service_required === 'P5').length || 0;
+      const p5Count = data?.filter(lead => lead.service_required?.startsWith('P5')).length || 0;
       
       setUntakenTodayCount(totalCount);
       setUntakenP5Count(p5Count);
