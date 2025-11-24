@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3 } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
 import { AssignPreviouslyLostDialog } from "@/components/crm/AssignPreviouslyLostDialog";
 import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type SortOption = "remind_me" | "visa_expiry_date" | "created_at" | "updated_at";
 type ViewMode = "cards" | "table";
@@ -102,6 +103,7 @@ const CRMHub = () => {
   const [assignPreviouslyLostDialogOpen, setAssignPreviouslyLostDialogOpen] = useState(false);
   const [previouslyLostLead, setPreviouslyLostLead] = useState<Lead | null>(null);
   const [lostByUser, setLostByUser] = useState<string>("");
+  const [untakenTodayCount, setUntakenTodayCount] = useState<number>(0);
   
   // Throttle real-time updates
   const lastUpdateTimeRef = useRef(0);
@@ -305,9 +307,30 @@ const CRMHub = () => {
     }
   }, []);
 
+  // Fetch untaken leads count from today
+  const fetchUntakenTodayCount = useCallback(async () => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayISO = today.toISOString();
+
+      const { count, error } = await supabase
+        .from("leads")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", todayISO)
+        .is("assigned_to", null);
+
+      if (error) throw error;
+      setUntakenTodayCount(count || 0);
+    } catch (error) {
+      console.error("Error fetching untaken leads count:", error);
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadLeads();
+      fetchUntakenTodayCount();
     }
   }, [user, loadLeads]);
   
@@ -381,11 +404,15 @@ const CRMHub = () => {
               const filtered = prev.filter((l) => l.id !== id);
               return newLead.assigned_to === user.id ? [newLead as any, ...filtered] : filtered;
             });
+
+            // Update untaken today count when leads are assigned/unassigned
+            fetchUntakenTodayCount();
           } else {
             // Lead was deleted
             setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
             setMyLeads((prev) => prev.filter((l) => l.id !== id));
             setAdminAllLeads((prev) => prev.filter((l) => l.id !== id));
+            fetchUntakenTodayCount();
           }
         }
       )
@@ -1068,6 +1095,17 @@ const CRMHub = () => {
             </Button>
           )}
         </div>
+
+        {/* Untaken Leads Warning */}
+        {untakenTodayCount > 0 && (
+          <Alert className="mb-6 border-destructive bg-destructive/10">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <AlertTitle className="text-destructive font-semibold">Unassigned Leads Alert</AlertTitle>
+            <AlertDescription className="text-destructive/90">
+              <span className="font-bold text-lg">{untakenTodayCount}</span> {untakenTodayCount === 1 ? 'lead was' : 'leads were'} added today but not yet assigned. Please review and assign them.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
