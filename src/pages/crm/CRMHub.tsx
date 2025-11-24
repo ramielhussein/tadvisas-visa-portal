@@ -1096,33 +1096,27 @@ const CRMHub = () => {
           )}
         </div>
 
-        {/* Untaken Leads Clock Warning */}
+        {/* Untaken Leads Warning */}
         {untakenTodayCount > 0 && (
-          <div className="mb-6 flex items-center justify-center gap-4 p-4 bg-destructive/5 rounded-lg border border-destructive/20">
-            <div className="relative flex items-center justify-center">
-              {/* Outer pulsing ring */}
-              <div className="absolute inset-0 animate-ping">
-                <div className="w-24 h-24 rounded-full border-4 border-destructive/40"></div>
-              </div>
-              {/* Clock circle */}
-              <div className="relative w-24 h-24 rounded-full border-4 border-destructive bg-destructive/10 flex items-center justify-center shadow-lg">
-                {/* Clock hands effect */}
-                <div className="absolute top-1/2 left-1/2 w-1 h-8 bg-destructive origin-bottom -translate-x-1/2 -translate-y-full rotate-0"></div>
-                <div className="absolute top-1/2 left-1/2 w-1 h-6 bg-destructive/60 origin-bottom -translate-x-1/2 -translate-y-full rotate-90"></div>
-                {/* Count display */}
-                <div className="text-center z-10">
-                  <div className="text-3xl font-bold text-destructive">{untakenTodayCount}</div>
+          <div className="mb-6 relative overflow-hidden rounded-xl border border-destructive/20 bg-gradient-to-br from-destructive/5 via-background to-destructive/5 p-6 shadow-lg">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 animate-pulse rounded-full bg-destructive/20 blur"></div>
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 ring-2 ring-destructive/30">
+                  <AlertTriangle className="h-8 w-8 text-destructive animate-pulse" />
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col">
-              <h3 className="text-lg font-semibold text-destructive flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Unassigned Leads
-              </h3>
-              <p className="text-sm text-destructive/90">
-                {untakenTodayCount === 1 ? 'Lead' : 'Leads'} added today awaiting assignment
-              </p>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="text-xl font-bold text-foreground">Unassigned Leads</h3>
+                  <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-3 rounded-full bg-destructive text-destructive-foreground text-sm font-bold shadow-md animate-pulse">
+                    {untakenTodayCount}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {untakenTodayCount === 1 ? 'Lead was' : 'Leads were'} added today and {untakenTodayCount === 1 ? 'needs' : 'need'} to be assigned
+                </p>
+              </div>
             </div>
           </div>
         )}
