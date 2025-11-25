@@ -44,8 +44,8 @@ export const useUserRole = () => {
         return;
       }
 
-      // Check if user is super admin (only rami@tadmaids.com)
-      const superAdmin = user.email === 'rami@tadmaids.com';
+      // Check if user is super admin (rami@tadmaids.com or rayaan@tadmaids.com)
+      const superAdmin = user.email === 'rami@tadmaids.com' || user.email === 'rayaan@tadmaids.com';
       setIsSuperAdmin(superAdmin);
 
       // Priority order: super_admin > admin > finance > sales > product > client > user
