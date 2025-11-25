@@ -309,37 +309,6 @@ const HRAttendance = () => {
                   </div>
                 </div>
 
-                {todayAttendance.status !== 'checked_out' && (
-                  <div className="flex gap-2">
-                    {todayAttendance.status !== 'on_break' ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          onClick={() => breakOutMutation.mutate()}
-                          disabled={breakOutMutation.isPending}
-                        >
-                          <Coffee className="h-4 w-4 mr-2" />
-                          Break Out
-                        </Button>
-                        <Button
-                          onClick={() => checkOutMutation.mutate()}
-                          disabled={checkOutMutation.isPending}
-                        >
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Check Out
-                        </Button>
-                      </>
-                    ) : (
-                      <Button
-                        onClick={() => breakBackMutation.mutate()}
-                        disabled={breakBackMutation.isPending}
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Break Back
-                      </Button>
-                    )}
-                  </div>
-                )}
 
                 {todayAttendance.is_late && (
                   <div className="flex items-center gap-2 text-sm text-destructive">
@@ -426,6 +395,45 @@ const HRAttendance = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Break/Check Out Fixed Button */}
+      {todayAttendance?.check_in_time && todayAttendance.status !== 'checked_out' && (
+        <div className="fixed bottom-24 right-6 z-50">
+          {todayAttendance.status !== 'on_break' ? (
+            <div className="flex flex-col gap-2">
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => breakOutMutation.mutate()}
+                disabled={breakOutMutation.isPending}
+                className="shadow-lg hover:shadow-xl"
+              >
+                <Coffee className="h-5 w-5 mr-2" />
+                Break Out
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => checkOutMutation.mutate()}
+                disabled={checkOutMutation.isPending}
+                className="shadow-lg hover:shadow-xl"
+              >
+                <LogOut className="h-5 w-5 mr-2" />
+                Check Out
+              </Button>
+            </div>
+          ) : (
+            <Button
+              size="lg"
+              onClick={() => breakBackMutation.mutate()}
+              disabled={breakBackMutation.isPending}
+              className="shadow-lg hover:shadow-xl"
+            >
+              <CheckCircle className="h-5 w-5 mr-2" />
+              Break Back
+            </Button>
+          )}
+        </div>
+      )}
     </Layout>
   );
 };
