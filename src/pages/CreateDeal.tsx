@@ -63,6 +63,7 @@ const CreateDeal = () => {
     payment_method: "",
     bank_account: "",
     commission_rate: "0",
+    received_amount: "0",
     notes: "",
   });
 
@@ -73,18 +74,21 @@ const CreateDeal = () => {
     payment_commission: 0,
     net_amount: 0,
     base_amount: 0,
+    balance_amount: 0,
   });
 
   useEffect(() => {
     const totalIncludingVat = parseFloat(formData.deal_value) || 0;
     const vatRate = parseFloat(formData.vat_rate) || 0;
     const commissionRate = parseFloat(formData.commission_rate) || 0;
+    const receivedAmount = parseFloat(formData.received_amount) || 0;
 
     // Reverse calculate: base amount = total / (1 + VAT%)
     const base_amount = totalIncludingVat / (1 + vatRate / 100);
     const vat_amount = totalIncludingVat - base_amount;
     const total_amount = totalIncludingVat;
     const commission_amount = (base_amount * commissionRate) / 100;
+    const balance_amount = total_amount - receivedAmount;
 
     setCalculatedAmounts({ 
       vat_amount, 
@@ -92,9 +96,10 @@ const CreateDeal = () => {
       commission_amount,
       payment_commission: 0,
       net_amount: total_amount,
-      base_amount
+      base_amount,
+      balance_amount
     });
-  }, [formData.deal_value, formData.vat_rate, formData.commission_rate]);
+  }, [formData.deal_value, formData.vat_rate, formData.commission_rate, formData.received_amount]);
 
   const fetchPaymentMethods = async () => {
     const { data } = await supabase
@@ -266,6 +271,8 @@ const CreateDeal = () => {
           payment_terms: validated.payment_terms,
           commission_rate: validated.commission_rate,
           commission_amount: calculatedAmounts.commission_amount,
+          paid_amount: parseFloat(formData.received_amount) || 0,
+          balance_due: calculatedAmounts.balance_amount,
           notes: validated.notes || null,
           assigned_to: user?.id,
           status: "Draft",
@@ -581,10 +588,35 @@ const CreateDeal = () => {
                       <span className="font-medium">AED {calculatedAmounts.vat_amount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2">
-                      <span>Total Amount:</span>
+                      <span>Deal Amount:</span>
                       <span>AED {calculatedAmounts.total_amount.toFixed(2)}</span>
                     </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="received_amount">Received Amount (AED)</Label>
+                    <Input
+                      id="received_amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.received_amount}
+                      onChange={(e) => setFormData({ ...formData, received_amount: e.target.value })}
+                      placeholder="0.00"
+                    />
+                  </div>
+
+                  {parseFloat(formData.received_amount) > 0 && (
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-2">
+                      <div className="flex justify-between text-green-600 dark:text-green-400 font-medium">
+                        <span>Received:</span>
+                        <span>AED {parseFloat(formData.received_amount).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-orange-600 dark:text-orange-400 font-bold border-t pt-2">
+                        <span>Balance Due:</span>
+                        <span>AED {calculatedAmounts.balance_amount.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
