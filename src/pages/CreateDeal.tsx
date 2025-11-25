@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Search, Paperclip, X, CalendarIcon } from "lucide-react";
+import { ArrowLeft, Search, Paperclip, X, CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,17 @@ const CreateDeal = () => {
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [salesPackages, setSalesPackages] = useState<any[]>([]);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [services, setServices] = useState<Array<{
+    id: string;
+    service_type: string;
+    service_description: string;
+    amount: string;
+  }>>([{
+    id: crypto.randomUUID(),
+    service_type: "",
+    service_description: "",
+    amount: "0"
+  }]);
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -55,9 +66,6 @@ const CreateDeal = () => {
     client_name: "",
     client_phone: "",
     client_email: "",
-    service_type: "",
-    service_description: "",
-    deal_value: "",
     vat_rate: "5",
     payment_terms: "Full Payment",
     payment_method: "",
@@ -78,16 +86,16 @@ const CreateDeal = () => {
   });
 
   useEffect(() => {
-    const totalIncludingVat = parseFloat(formData.deal_value) || 0;
+    // Calculate subtotal from all services
+    const subtotal = services.reduce((sum, service) => sum + (parseFloat(service.amount) || 0), 0);
     const vatRate = parseFloat(formData.vat_rate) || 0;
     const commissionRate = parseFloat(formData.commission_rate) || 0;
     const receivedAmount = parseFloat(formData.received_amount) || 0;
 
-    // Reverse calculate: base amount = total / (1 + VAT%)
-    const base_amount = totalIncludingVat / (1 + vatRate / 100);
-    const vat_amount = totalIncludingVat - base_amount;
-    const total_amount = totalIncludingVat;
-    const commission_amount = (base_amount * commissionRate) / 100;
+    // Calculate VAT and total
+    const vat_amount = (subtotal * vatRate) / 100;
+    const total_amount = subtotal + vat_amount;
+    const commission_amount = (subtotal * commissionRate) / 100;
     const balance_amount = total_amount - receivedAmount;
 
     setCalculatedAmounts({ 
@@ -96,10 +104,10 @@ const CreateDeal = () => {
       commission_amount,
       payment_commission: 0,
       net_amount: total_amount,
-      base_amount,
+      base_amount: subtotal,
       balance_amount
     });
-  }, [formData.deal_value, formData.vat_rate, formData.commission_rate, formData.received_amount]);
+  }, [services, formData.vat_rate, formData.commission_rate, formData.received_amount]);
 
   const fetchPaymentMethods = async () => {
     const { data } = await supabase
@@ -178,8 +186,13 @@ const CreateDeal = () => {
       client_name: lead.client_name || "",
       client_phone: lead.mobile_number || "",
       client_email: lead.email || "",
-      service_type: lead.service_required || "",
     });
+    // Update first service if it's empty
+    if (lead.service_required && services[0] && !services[0].service_type) {
+      const updatedServices = [...services];
+      updatedServices[0].service_type = lead.service_required;
+      setServices(updatedServices);
+    }
     setSearchLeadQuery("");
     setLeads([]);
   };
@@ -200,17 +213,48 @@ const CreateDeal = () => {
     setAttachments(attachments.filter((_, i) => i !== index));
   };
 
+  const addService = () => {
+    setServices([...services, {
+      id: crypto.randomUUID(),
+      service_type: "",
+      service_description: "",
+      amount: "0"
+    }]);
+  };
+
+  const removeService = (id: string) => {
+    if (services.length > 1) {
+      setServices(services.filter(s => s.id !== id));
+    }
+  };
+
+  const updateService = (id: string, field: string, value: string) => {
+    setServices(services.map(s => 
+      s.id === id ? { ...s, [field]: value } : s
+    ));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
+      // Validate at least one service
+      if (services.length === 0 || services.every(s => !s.service_type)) {
+        toast({
+          title: "Validation Error",
+          description: "Please add at least one service",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Validate
       const validated = dealSchema.parse({
         client_name: formData.client_name.trim(),
         client_phone: formData.client_phone.trim(),
         client_email: formData.client_email.trim() || undefined,
-        service_type: formData.service_type,
-        service_description: formData.service_description.trim() || undefined,
+        service_type: services.map(s => s.service_type).filter(Boolean).join(", "),
+        service_description: JSON.stringify(services),
         deal_value: calculatedAmounts.base_amount,
         vat_rate: parseFloat(formData.vat_rate),
         payment_terms: formData.payment_terms,
@@ -516,79 +560,109 @@ const CreateDeal = () => {
 
                 {/* Service Details */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Service Details</h3>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="service_type">Service/Package *</Label>
-                    <Select
-                      value={formData.service_type}
-                      onValueChange={(value) => setFormData({ ...formData, service_type: value })}
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold">Services</h3>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addService}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select sales package" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {salesPackages.map((pkg) => (
-                          <SelectItem key={pkg.id} value={pkg.name}>
-                            {pkg.code} - {pkg.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Service
+                    </Button>
                   </div>
+                  
+                  {services.map((service, index) => (
+                    <Card key={service.id} className="p-4">
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-start">
+                          <Label className="text-base">Service {index + 1}</Label>
+                          {services.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeService(service.id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          )}
+                        </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="service_description">Description</Label>
-                    <Textarea
-                      id="service_description"
-                      value={formData.service_description}
-                      onChange={(e) => setFormData({ ...formData, service_description: e.target.value })}
-                      rows={3}
-                    />
-                  </div>
+                        <div className="space-y-2">
+                          <Label>Service Type *</Label>
+                          <Select
+                            value={service.service_type}
+                            onValueChange={(value) => updateService(service.id, 'service_type', value)}
+                            required
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select service type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {salesPackages.map((pkg) => (
+                                <SelectItem key={pkg.id} value={pkg.code}>
+                                  {pkg.code} - {pkg.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Service Description</Label>
+                          <Textarea
+                            rows={2}
+                            value={service.service_description}
+                            onChange={(e) => updateService(service.id, 'service_description', e.target.value)}
+                            placeholder="Describe the service..."
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Amount (AED) *</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            required
+                            value={service.amount}
+                            onChange={(e) => updateService(service.id, 'amount', e.target.value)}
+                            placeholder="0.00"
+                          />
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
                 </div>
 
-                {/* Financial Details */}
+                {/* Deal Value Summary */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Financial Details</h3>
+                  <h3 className="font-semibold">Deal Value Summary</h3>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="deal_value">Total Amount incl. VAT (AED) *</Label>
-                      <Input
-                        id="deal_value"
-                        type="number"
-                        step="0.01"
-                        required
-                        value={formData.deal_value}
-                        onChange={(e) => setFormData({ ...formData, deal_value: e.target.value })}
-                        placeholder="e.g., 9450"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="vat_rate">VAT Rate (%)</Label>
-                      <Input
-                        id="vat_rate"
-                        type="number"
-                        step="0.01"
-                        value={formData.vat_rate}
-                        onChange={(e) => setFormData({ ...formData, vat_rate: e.target.value })}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="vat_rate">VAT Rate (%)</Label>
+                    <Input
+                      id="vat_rate"
+                      type="number"
+                      step="0.01"
+                      value={formData.vat_rate}
+                      onChange={(e) => setFormData({ ...formData, vat_rate: e.target.value })}
+                      placeholder="5"
+                    />
                   </div>
-
+                  
                   <div className="p-4 bg-muted rounded-lg space-y-2">
-                    <div className="flex justify-between">
-                      <span>Base Amount (ex VAT):</span>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Subtotal (Excl. VAT):</span>
                       <span className="font-medium">AED {calculatedAmounts.base_amount.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>VAT Amount ({formData.vat_rate}%):</span>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">VAT ({formData.vat_rate}%):</span>
                       <span className="font-medium">AED {calculatedAmounts.vat_amount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2">
-                      <span>Deal Amount:</span>
+                      <span>Total Deal Amount:</span>
                       <span>AED {calculatedAmounts.total_amount.toFixed(2)}</span>
                     </div>
                   </div>
