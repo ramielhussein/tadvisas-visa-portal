@@ -16,12 +16,17 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
-  TrendingUp
+  TrendingUp,
+  FileText,
+  Calculator
 } from "lucide-react";
 import { format, formatDistance } from "date-fns";
+import html2pdf from "html2pdf.js";
+import { useNavigate } from "react-router-dom";
 
 const HRAttendance = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [onBreak, setOnBreak] = useState(false);
 
   // Fetch current user's attendance for today
@@ -165,64 +170,127 @@ const HRAttendance = () => {
   // Break back mutation
   const breakBackMutation = useMutation({
     mutationFn: async () => {
-      if (!todayAttendance?.id) throw new Error('No check-in record found');
+      if (!todayAttendance?.id) throw new Error("No attendance record found");
 
-      // Find the active break (no break_back_time)
-      const { data: activeBreak } = await supabase
-        .from('break_records')
-        .select('*')
-        .eq('attendance_record_id', todayAttendance.id)
-        .is('break_back_time', null)
-        .order('break_out_time', { ascending: false })
+      const lastBreak = await supabase
+        .from("break_records")
+        .select("*")
+        .eq("attendance_record_id", todayAttendance.id)
+        .is("break_back_time", null)
+        .order("break_out_time", { ascending: false })
         .limit(1)
         .single();
 
-      if (!activeBreak) throw new Error('No active break found');
+      if (!lastBreak.data) throw new Error("No active break found");
 
-      const breakBackTime = new Date();
+      const breakBackTime = new Date().toISOString();
       const breakDuration = Math.floor(
-        (breakBackTime.getTime() - new Date(activeBreak.break_out_time).getTime()) / 60000
+        (new Date(breakBackTime).getTime() - new Date(lastBreak.data.break_out_time).getTime()) / 60000
       );
 
-      const { error: breakError } = await supabase
-        .from('break_records')
+      await supabase
+        .from("break_records")
         .update({
-          break_back_time: breakBackTime.toISOString(),
+          break_back_time: breakBackTime,
           break_duration_minutes: breakDuration,
         })
-        .eq('id', activeBreak.id);
+        .eq("id", lastBreak.data.id);
 
-      if (breakError) throw breakError;
-
-      // Update total break minutes on attendance record
-      const { data: allBreaks } = await supabase
-        .from('break_records')
-        .select('break_duration_minutes')
-        .eq('attendance_record_id', todayAttendance.id)
-        .not('break_duration_minutes', 'is', null);
-
-      const totalBreakMinutes = allBreaks?.reduce((sum, b) => sum + (b.break_duration_minutes || 0), 0) || 0;
-
-      const { error: statusError } = await supabase
-        .from('attendance_records')
-        .update({ 
-          status: 'checked_in',
+      const totalBreakMinutes = todayAttendance.total_break_minutes + breakDuration;
+      await supabase
+        .from("attendance_records")
+        .update({
+          status: "checked_in",
           total_break_minutes: totalBreakMinutes,
         })
-        .eq('id', todayAttendance.id);
-
-      if (statusError) throw statusError;
+        .eq("id", todayAttendance.id);
     },
     onSuccess: () => {
       setOnBreak(false);
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
-      toast.success('Break ended');
+      toast.success("Break ended successfully");
     },
     onError: (error: Error) => {
       toast.error('Failed to end break: ' + error.message);
     },
   });
+
+  const generatePDF = async () => {
+    const element = document.createElement("div");
+    element.innerHTML = `
+      <div style="padding: 40px; font-family: Arial, sans-serif;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #1a1a1a; margin-bottom: 10px;">Tadmaids HR Attendance Report</h1>
+          <p style="color: #666; font-size: 16px;">${format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
+          <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #16a34a; font-size: 32px; margin: 0;">${staffAttendance?.filter(s => s.status === "checked_in").length || 0}</h3>
+            <p style="color: #166534; margin: 5px 0 0 0;">Working Now</p>
+          </div>
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #d97706; font-size: 32px; margin: 0;">${staffAttendance?.filter(s => s.status === "on_break").length || 0}</h3>
+            <p style="color: #92400e; margin: 5px 0 0 0;">On Break</p>
+          </div>
+          <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #6b7280; font-size: 32px; margin: 0;">${staffAttendance?.filter(s => s.status === "checked_out").length || 0}</h3>
+            <p style="color: #374151; margin: 5px 0 0 0;">Checked Out</p>
+          </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+          <thead>
+            <tr style="background: #f3f4f6; border-bottom: 2px solid #e5e7eb;">
+              <th style="padding: 12px; text-align: left;">Staff Name</th>
+              <th style="padding: 12px; text-align: left;">Position</th>
+              <th style="padding: 12px; text-align: center;">Check In</th>
+              <th style="padding: 12px; text-align: center;">Check Out</th>
+              <th style="padding: 12px; text-align: center;">Break Time</th>
+              <th style="padding: 12px; text-align: center;">Net Hours</th>
+              <th style="padding: 12px; text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(staffAttendance || []).map((staff: any) => `
+              <tr style="border-bottom: 1px solid #e5e7eb;">
+                <td style="padding: 12px;">${staff.employees?.full_name || "N/A"}</td>
+                <td style="padding: 12px;">${staff.employees?.position || "N/A"}</td>
+                <td style="padding: 12px; text-align: center;">${staff.check_in_time ? format(new Date(staff.check_in_time), "h:mm a") : "-"}</td>
+                <td style="padding: 12px; text-align: center;">${staff.check_out_time ? format(new Date(staff.check_out_time), "h:mm a") : "-"}</td>
+                <td style="padding: 12px; text-align: center;">${staff.total_break_minutes} min</td>
+                <td style="padding: 12px; text-align: center;">${staff.net_working_hours?.toFixed(2) || "0.00"}h</td>
+                <td style="padding: 12px; text-align: center;">
+                  <span style="background: ${staff.status === "checked_in" ? "#dcfce7" : staff.status === "on_break" ? "#fef3c7" : "#f3f4f6"}; 
+                               color: ${staff.status === "checked_in" ? "#16a34a" : staff.status === "on_break" ? "#d97706" : "#6b7280"}; 
+                               padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                    ${staff.status === "checked_in" ? "Working" : staff.status === "on_break" ? "On Break" : "Checked Out"}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; color: #6b7280; font-size: 12px;">
+          <p>Generated on ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}</p>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: 10,
+      filename: `attendance-report-${format(new Date(), "yyyy-MM-dd")}.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "landscape" as const },
+    };
+
+    html2pdf().set(opt).from(element).save();
+    
+    toast.success("PDF generated successfully");
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -251,10 +319,20 @@ const HRAttendance = () => {
             <h1 className="text-3xl font-bold">Smart Attendance</h1>
             <p className="text-muted-foreground">UAE Labor Law Compliant Tracking</p>
           </div>
-          <Badge variant="outline" className="text-lg px-4 py-2">
-            <Clock className="h-4 w-4 mr-2" />
-            {format(new Date(), 'EEEE, MMMM dd, yyyy')}
-          </Badge>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={generatePDF}>
+              <FileText className="mr-2 h-4 w-4" />
+              Export PDF
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/hr/payroll")}>
+              <Calculator className="mr-2 h-4 w-4" />
+              Payroll
+            </Button>
+            <Badge variant="outline" className="text-lg px-4 py-2">
+              <Clock className="h-4 w-4 mr-2" />
+              {format(new Date(), 'EEEE, MMMM dd, yyyy')}
+            </Badge>
+          </div>
         </div>
 
         {/* Personal Attendance Card */}

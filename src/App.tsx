@@ -92,6 +92,7 @@ import DataBackup from "./pages/DataBackup";
 import ContractRevenue from "./pages/ContractRevenue";
 import HRDashboard from "./pages/HRDashboard";
 import HRAttendance from "./pages/HRAttendance";
+import HRPayroll from "./pages/HRPayroll";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -188,6 +189,7 @@ const App = () => (
           {/* HR & Analytics */}
           <Route path="/hr/dashboard" element={<ProtectedRoute><HRDashboard /></ProtectedRoute>} />
           <Route path="/hr/attendance" element={<ProtectedRoute><HRAttendance /></ProtectedRoute>} />
+          <Route path="/hr/payroll" element={<ProtectedRoute><HRPayroll /></ProtectedRoute>} />
           <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
