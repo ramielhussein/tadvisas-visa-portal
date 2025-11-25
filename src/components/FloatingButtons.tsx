@@ -1,30 +1,98 @@
-import { FileText, Users, MessageSquare, UserPlus, Clock } from "lucide-react";
+import { FileText, Users, MessageSquare, UserPlus, Clock, Coffee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import TeamChat from "./TeamChat";
 import QuickLeadEntry from "./crm/QuickLeadEntry";
 
 const FloatingButtons = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatMinimized, setIsChatMinimized] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
+  const [onBreak, setOnBreak] = useState(false);
+  const [activeBreakId, setActiveBreakId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setIsAuthenticated(!!user);
+      if (user) {
+        checkBreakStatus(user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session?.user);
+      if (session?.user) {
+        checkBreakStatus(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkBreakStatus = async (userId: string) => {
+    const { data: employee } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('created_by', userId)
+      .single();
+
+    if (!employee) return;
+
+    const { data: attendance } = await supabase
+      .from('attendance_records')
+      .select('id')
+      .eq('employee_id', employee.id)
+      .eq('attendance_date', format(new Date(), 'yyyy-MM-dd'))
+      .maybeSingle();
+
+    if (!attendance) return;
+
+    const { data: activeBreak } = await supabase
+      .from('break_records')
+      .select('id')
+      .eq('attendance_record_id', attendance.id)
+      .is('break_back_time', null)
+      .maybeSingle();
+
+    if (activeBreak) {
+      setOnBreak(true);
+      setActiveBreakId(activeBreak.id);
+    } else {
+      setOnBreak(false);
+      setActiveBreakId(null);
+    }
+  };
+
+  const handleBreakBack = async () => {
+    if (!activeBreakId) return;
+
+    try {
+      const { error } = await supabase
+        .from('break_records')
+        .update({
+          break_back_time: new Date().toISOString(),
+        })
+        .eq('id', activeBreakId);
+
+      if (error) throw error;
+
+      toast.success('Welcome back! Break ended.');
+      setOnBreak(false);
+      setActiveBreakId(null);
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   const handleMaidVisaClick = () => {
     if ((window as any).gtag) {
@@ -61,6 +129,15 @@ const FloatingButtons = () => {
     return (
       <>
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[60] flex flex-nowrap gap-3 whitespace-nowrap">
+          {onBreak && (
+            <button
+              onClick={handleBreakBack}
+              className="group shrink-0 flex items-center gap-2 bg-green-600 text-white px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-green-700 transition-all transform hover:scale-105 whitespace-nowrap animate-pulse"
+            >
+              <Coffee className="w-4 h-4" />
+              <span className="text-xs font-semibold">Break Back</span>
+            </button>
+          )}
           <button
             onClick={() => navigate('/hr/attendance')}
             className="group shrink-0 flex items-center gap-2 bg-accent text-accent-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-accent/90 transition-all transform hover:scale-105 whitespace-nowrap"
