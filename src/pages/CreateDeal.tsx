@@ -72,31 +72,29 @@ const CreateDeal = () => {
     commission_amount: 0,
     payment_commission: 0,
     net_amount: 0,
+    base_amount: 0,
   });
 
   useEffect(() => {
-    const dealValue = parseFloat(formData.deal_value) || 0;
+    const totalIncludingVat = parseFloat(formData.deal_value) || 0;
     const vatRate = parseFloat(formData.vat_rate) || 0;
     const commissionRate = parseFloat(formData.commission_rate) || 0;
 
-    const vat_amount = (dealValue * vatRate) / 100;
-    const total_amount = dealValue + vat_amount;
-    const commission_amount = (dealValue * commissionRate) / 100;
-
-    // Calculate payment commission
-    const selectedMethod = paymentMethods.find(m => m.method_name === formData.payment_method);
-    const paymentCommissionRate = selectedMethod?.commission_rate || 0;
-    const payment_commission = (total_amount * paymentCommissionRate) / 100;
-    const net_amount = total_amount - payment_commission;
+    // Reverse calculate: base amount = total / (1 + VAT%)
+    const base_amount = totalIncludingVat / (1 + vatRate / 100);
+    const vat_amount = totalIncludingVat - base_amount;
+    const total_amount = totalIncludingVat;
+    const commission_amount = (base_amount * commissionRate) / 100;
 
     setCalculatedAmounts({ 
       vat_amount, 
       total_amount, 
       commission_amount,
-      payment_commission,
-      net_amount
+      payment_commission: 0,
+      net_amount: total_amount,
+      base_amount
     });
-  }, [formData.deal_value, formData.vat_rate, formData.commission_rate, formData.payment_method, paymentMethods]);
+  }, [formData.deal_value, formData.vat_rate, formData.commission_rate]);
 
   const fetchPaymentMethods = async () => {
     const { data } = await supabase
@@ -208,7 +206,7 @@ const CreateDeal = () => {
         client_email: formData.client_email.trim() || undefined,
         service_type: formData.service_type,
         service_description: formData.service_description.trim() || undefined,
-        deal_value: parseFloat(formData.deal_value),
+        deal_value: calculatedAmounts.base_amount,
         vat_rate: parseFloat(formData.vat_rate),
         payment_terms: formData.payment_terms,
         commission_rate: parseFloat(formData.commission_rate),
@@ -549,7 +547,7 @@ const CreateDeal = () => {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="deal_value">Deal Value (AED) *</Label>
+                      <Label htmlFor="deal_value">Total Amount incl. VAT (AED) *</Label>
                       <Input
                         id="deal_value"
                         type="number"
@@ -557,6 +555,7 @@ const CreateDeal = () => {
                         required
                         value={formData.deal_value}
                         onChange={(e) => setFormData({ ...formData, deal_value: e.target.value })}
+                        placeholder="e.g., 9450"
                       />
                     </div>
 
@@ -574,29 +573,17 @@ const CreateDeal = () => {
 
                   <div className="p-4 bg-muted rounded-lg space-y-2">
                     <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span className="font-medium">AED {parseFloat(formData.deal_value || "0").toFixed(2)}</span>
+                      <span>Base Amount (ex VAT):</span>
+                      <span className="font-medium">AED {calculatedAmounts.base_amount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>VAT Amount:</span>
+                      <span>VAT Amount ({formData.vat_rate}%):</span>
                       <span className="font-medium">AED {calculatedAmounts.vat_amount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-lg font-bold border-t pt-2">
                       <span>Total Amount:</span>
                       <span>AED {calculatedAmounts.total_amount.toFixed(2)}</span>
                     </div>
-                    {calculatedAmounts.payment_commission > 0 && (
-                      <>
-                        <div className="flex justify-between text-orange-600">
-                          <span>Payment Commission:</span>
-                          <span>- AED {calculatedAmounts.payment_commission.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between text-green-600 font-bold">
-                          <span>Net Amount (after fees):</span>
-                          <span>AED {calculatedAmounts.net_amount.toFixed(2)}</span>
-                        </div>
-                      </>
-                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
