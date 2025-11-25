@@ -1,4 +1,4 @@
-import { FileText, Users, MessageSquare, UserPlus } from "lucide-react";
+import { FileText, Users, MessageSquare, UserPlus, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +62,20 @@ const FloatingButtons = () => {
       <>
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[60] flex flex-nowrap gap-3 whitespace-nowrap">
           <button
+            onClick={() => navigate('/hr/attendance')}
+            className="group shrink-0 flex items-center gap-2 bg-accent text-accent-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-accent/90 transition-all transform hover:scale-105 whitespace-nowrap"
+          >
+            <Clock className="w-4 h-4" />
+            <span className="text-xs font-semibold">Attendance</span>
+          </button>
+          <button
+            onClick={() => setIsAddLeadOpen(true)}
+            className="group shrink-0 flex items-center gap-2 bg-secondary text-secondary-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-secondary/80 transition-all transform hover:scale-105 whitespace-nowrap"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span className="text-xs font-semibold">Add Lead</span>
+          </button>
+          <button
             onClick={handleChatOpen}
             className="group shrink-0 flex items-center gap-2 bg-primary text-primary-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all transform hover:scale-105 whitespace-nowrap relative"
           >
@@ -75,13 +89,6 @@ const FloatingButtons = () => {
                 {unreadCount}
               </Badge>
             )}
-          </button>
-          <button
-            onClick={() => setIsAddLeadOpen(true)}
-            className="group shrink-0 flex items-center gap-2 bg-secondary text-secondary-foreground px-3 py-2 md:px-5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-secondary/80 transition-all transform hover:scale-105 whitespace-nowrap"
-          >
-            <UserPlus className="w-4 h-4" />
-            <span className="text-xs font-semibold">Add Lead</span>
           </button>
         </div>
         
