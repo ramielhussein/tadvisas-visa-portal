@@ -63,6 +63,7 @@ const CreateDeal = () => {
   }, []);
 
   const [dealDate, setDealDate] = useState<Date>(new Date());
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [formData, setFormData] = useState({
     client_name: "",
     client_phone: "",
@@ -549,7 +550,7 @@ const CreateDeal = () => {
                 {/* Deal Date */}
                 <div className="space-y-2">
                   <Label>Deal Date *</Label>
-                  <Popover>
+                  <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -566,7 +567,12 @@ const CreateDeal = () => {
                       <Calendar
                         mode="single"
                         selected={dealDate}
-                        onSelect={(date) => date && setDealDate(date)}
+                        onSelect={(date) => {
+                          if (date) {
+                            setDealDate(date);
+                            setDatePickerOpen(false);
+                          }
+                        }}
                         initialFocus
                         className="pointer-events-auto"
                       />
