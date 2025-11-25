@@ -87,16 +87,17 @@ const CreateDeal = () => {
   });
 
   useEffect(() => {
-    // Calculate subtotal from all services
-    const subtotal = services.reduce((sum, service) => sum + (parseFloat(service.amount) || 0), 0);
+    // Calculate total from all services (VAT inclusive amounts)
+    const totalIncludingVat = services.reduce((sum, service) => sum + (parseFloat(service.amount) || 0), 0);
     const vatRate = parseFloat(formData.vat_rate) || 0;
     const commissionRate = parseFloat(formData.commission_rate) || 0;
     const receivedAmount = parseFloat(formData.received_amount) || 0;
 
-    // Calculate VAT and total
-    const vat_amount = (subtotal * vatRate) / 100;
-    const total_amount = subtotal + vat_amount;
-    const commission_amount = (subtotal * commissionRate) / 100;
+    // Reverse calculate: base amount = total / (1 + VAT%)
+    const base_amount = totalIncludingVat / (1 + vatRate / 100);
+    const vat_amount = totalIncludingVat - base_amount;
+    const total_amount = totalIncludingVat;
+    const commission_amount = (base_amount * commissionRate) / 100;
     const balance_amount = total_amount - receivedAmount;
 
     setCalculatedAmounts({ 
@@ -105,7 +106,7 @@ const CreateDeal = () => {
       commission_amount,
       payment_commission: 0,
       net_amount: total_amount,
-      base_amount: subtotal,
+      base_amount,
       balance_amount
     });
   }, [services, formData.vat_rate, formData.commission_rate, formData.received_amount]);
