@@ -15,6 +15,7 @@ import { ArrowLeft, Search, Paperclip, X, CalendarIcon, Plus, Trash2 } from "luc
 import { format } from "date-fns";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import html2pdf from "html2pdf.js";
 
 const dealSchema = z.object({
   client_name: z.string().min(1, "Client name is required").max(200),
@@ -234,6 +235,171 @@ const CreateDeal = () => {
     ));
   };
 
+  const generateDealSheetPDF = async (deal: any) => {
+    const dealSheetHTML = `
+      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #000; padding-bottom: 20px;">
+          <h1 style="margin: 0; font-size: 32px; color: #1a1a1a;">TADMAIDS</h1>
+          <p style="margin: 5px 0; color: #666;">Domestic Services Agreement</p>
+        </div>
+
+        <!-- Deal Information -->
+        <div style="margin-bottom: 30px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px; width: 50%;"><strong>Deal Number:</strong> ${deal.deal_number}</td>
+              <td style="padding: 8px;"><strong>Date:</strong> ${format(new Date(deal.created_at), "dd MMM yyyy")}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Client Information -->
+        <div style="margin-bottom: 30px; background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #1a1a1a;">Client Information</h3>
+          <table style="width: 100%;">
+            <tr>
+              <td style="padding: 5px;"><strong>Name:</strong> ${deal.client_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px;"><strong>Phone:</strong> ${deal.client_phone}</td>
+            </tr>
+            ${deal.client_email ? `<tr><td style="padding: 5px;"><strong>Email:</strong> ${deal.client_email}</td></tr>` : ''}
+          </table>
+        </div>
+
+        <!-- Services Section -->
+        <div style="margin-bottom: 30px;">
+          <h3 style="color: #1a1a1a; border-bottom: 2px solid #000; padding-bottom: 10px;">Services Included</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <thead>
+              <tr style="background-color: #f0f0f0;">
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Service Type</th>
+                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Description</th>
+                <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">Amount (AED)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${JSON.parse(deal.service_description).map((service: any, index: number) => `
+                <tr>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
+                  <td style="padding: 10px; border: 1px solid #ddd;"><strong>${service.service_type}</strong></td>
+                  <td style="padding: 10px; border: 1px solid #ddd;">${service.service_description || '-'}</td>
+                  <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${parseFloat(service.amount).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Financial Summary -->
+        <div style="margin-bottom: 30px; background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #1a1a1a;">Financial Summary</h3>
+          <table style="width: 100%;">
+            <tr>
+              <td style="padding: 8px;"><strong>Subtotal (Excl. VAT):</strong></td>
+              <td style="padding: 8px; text-align: right;">AED ${deal.deal_value.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;"><strong>VAT (${deal.vat_rate}%):</strong></td>
+              <td style="padding: 8px; text-align: right;">AED ${deal.vat_amount.toFixed(2)}</td>
+            </tr>
+            <tr style="border-top: 2px solid #000;">
+              <td style="padding: 12px;"><strong style="font-size: 18px;">Total Amount:</strong></td>
+              <td style="padding: 12px; text-align: right;"><strong style="font-size: 18px;">AED ${deal.total_amount.toFixed(2)}</strong></td>
+            </tr>
+            ${deal.paid_amount > 0 ? `
+              <tr>
+                <td style="padding: 8px; color: #16a34a;"><strong>Paid Amount:</strong></td>
+                <td style="padding: 8px; text-align: right; color: #16a34a;">AED ${deal.paid_amount.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; color: #ea580c;"><strong>Balance Due:</strong></td>
+                <td style="padding: 8px; text-align: right; color: #ea580c;"><strong>AED ${deal.balance_due.toFixed(2)}</strong></td>
+              </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        <!-- Payment Terms -->
+        <div style="margin-bottom: 40px;">
+          <h4 style="color: #1a1a1a;">Payment Terms:</h4>
+          <p style="margin: 5px 0;">${deal.payment_terms}</p>
+        </div>
+
+        ${deal.notes ? `
+          <div style="margin-bottom: 40px;">
+            <h4 style="color: #1a1a1a;">Additional Notes:</h4>
+            <p style="margin: 5px 0; white-space: pre-wrap;">${deal.notes}</p>
+          </div>
+        ` : ''}
+
+        <!-- Terms and Conditions -->
+        <div style="margin-bottom: 40px; font-size: 12px; color: #666;">
+          <h4 style="color: #1a1a1a;">Terms & Conditions:</h4>
+          <ul style="line-height: 1.6;">
+            <li>This agreement is valid for the services specified above.</li>
+            <li>Payment terms as specified must be adhered to.</li>
+            <li>Services will be delivered as per agreed timelines.</li>
+            <li>Any changes to this agreement must be made in writing and agreed by both parties.</li>
+          </ul>
+        </div>
+
+        <!-- Signatures -->
+        <div style="margin-top: 60px;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="width: 45%; vertical-align: bottom;">
+                <div style="border-top: 2px solid #000; padding-top: 10px; margin-top: 80px;">
+                  <p style="margin: 0;"><strong>Client Signature</strong></p>
+                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Name: ${deal.client_name}</p>
+                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Date: _________________</p>
+                </div>
+              </td>
+              <td style="width: 10%;"></td>
+              <td style="width: 45%; vertical-align: bottom;">
+                <div style="border-top: 2px solid #000; padding-top: 10px; margin-top: 80px;">
+                  <p style="margin: 0;"><strong>TADMAIDS Representative</strong></p>
+                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Name: _________________</p>
+                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Date: _________________</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Footer -->
+        <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #ddd; padding-top: 20px;">
+          <p>This is an official document from TADMAIDS | Generated on ${format(new Date(), "dd MMM yyyy 'at' HH:mm")}</p>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: [10, 10, 10, 10] as [number, number, number, number],
+      filename: `Deal_${deal.deal_number}_${format(new Date(), "yyyyMMdd")}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+    };
+
+    try {
+      await html2pdf().set(opt).from(dealSheetHTML).save();
+      toast({
+        title: "Success!",
+        description: "Deal sheet PDF downloaded successfully",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -343,6 +509,13 @@ const CreateDeal = () => {
         title: "Success!",
         description: `Deal ${dealNumber} created successfully`,
       });
+
+      // Ask user if they want to download deal sheet
+      const downloadSheet = window.confirm("Deal created successfully! Would you like to download the Deal Sheet PDF?");
+      
+      if (downloadSheet) {
+        await generateDealSheetPDF(newDeal);
+      }
 
       navigate(`/deals/${newDeal.id}`);
     } catch (error: any) {
