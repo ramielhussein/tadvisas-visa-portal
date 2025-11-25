@@ -6,11 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Search, Paperclip, X } from "lucide-react";
+import { ArrowLeft, Search, Paperclip, X, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { z } from "zod";
+import { cn } from "@/lib/utils";
 
 const dealSchema = z.object({
   client_name: z.string().min(1, "Client name is required").max(200),
@@ -46,6 +50,7 @@ const CreateDeal = () => {
     fetchSalesPackages();
   }, []);
 
+  const [dealDate, setDealDate] = useState<Date>(new Date());
   const [formData, setFormData] = useState({
     client_name: "",
     client_phone: "",
@@ -267,6 +272,7 @@ const CreateDeal = () => {
           assigned_to: user?.id,
           status: "Draft",
           attachments: uploadedAttachments,
+          created_at: dealDate.toISOString(),
         })
         .select()
         .single();
@@ -317,6 +323,34 @@ const CreateDeal = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Deal Date */}
+                <div className="space-y-2">
+                  <Label>Deal Date *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dealDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dealDate ? format(dealDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dealDate}
+                        onSelect={(date) => date && setDealDate(date)}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
                 {/* Link to Lead */}
                 <div className="space-y-2">
                   <Label>Link to Existing Lead (Optional)</Label>
