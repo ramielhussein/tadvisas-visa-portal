@@ -59,6 +59,74 @@ export type Database = {
         }
         Relationships: []
       }
+      attendance_records: {
+        Row: {
+          attendance_date: string
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string
+          early_leave_minutes: number | null
+          employee_id: string
+          id: string
+          is_early_leave: boolean | null
+          is_late: boolean | null
+          late_minutes: number | null
+          net_working_hours: number | null
+          notes: string | null
+          overtime_hours: number | null
+          regular_hours: number | null
+          status: Database["public"]["Enums"]["attendance_status"]
+          total_break_minutes: number
+          updated_at: string
+        }
+        Insert: {
+          attendance_date?: string
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          early_leave_minutes?: number | null
+          employee_id: string
+          id?: string
+          is_early_leave?: boolean | null
+          is_late?: boolean | null
+          late_minutes?: number | null
+          net_working_hours?: number | null
+          notes?: string | null
+          overtime_hours?: number | null
+          regular_hours?: number | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          total_break_minutes?: number
+          updated_at?: string
+        }
+        Update: {
+          attendance_date?: string
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          early_leave_minutes?: number | null
+          employee_id?: string
+          id?: string
+          is_early_leave?: boolean | null
+          is_late?: boolean | null
+          late_minutes?: number | null
+          net_working_hours?: number | null
+          notes?: string | null
+          overtime_hours?: number | null
+          regular_hours?: number | null
+          status?: Database["public"]["Enums"]["attendance_status"]
+          total_break_minutes?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -142,6 +210,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      break_records: {
+        Row: {
+          attendance_record_id: string
+          break_back_time: string | null
+          break_duration_minutes: number | null
+          break_out_time: string
+          break_type: string | null
+          created_at: string
+          id: string
+        }
+        Insert: {
+          attendance_record_id: string
+          break_back_time?: string | null
+          break_duration_minutes?: number | null
+          break_out_time: string
+          break_type?: string | null
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          attendance_record_id?: string
+          break_back_time?: string | null
+          break_duration_minutes?: number | null
+          break_out_time?: string
+          break_type?: string | null
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "break_records_attendance_record_id_fkey"
+            columns: ["attendance_record_id"]
+            isOneToOne: false
+            referencedRelation: "attendance_records"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_messages: {
         Row: {
@@ -503,6 +609,59 @@ export type Database = {
             columns: ["worker_id"]
             isOneToOne: false
             referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_shifts: {
+        Row: {
+          break_duration_minutes: number
+          created_at: string
+          employee_id: string
+          grace_period_minutes: number
+          id: string
+          is_ramadan_hours: boolean
+          ramadan_shift_end: string | null
+          ramadan_shift_start: string | null
+          shift_end: string
+          shift_start: string
+          updated_at: string
+          working_days: number[]
+        }
+        Insert: {
+          break_duration_minutes?: number
+          created_at?: string
+          employee_id: string
+          grace_period_minutes?: number
+          id?: string
+          is_ramadan_hours?: boolean
+          ramadan_shift_end?: string | null
+          ramadan_shift_start?: string | null
+          shift_end?: string
+          shift_start?: string
+          updated_at?: string
+          working_days?: number[]
+        }
+        Update: {
+          break_duration_minutes?: number
+          created_at?: string
+          employee_id?: string
+          grace_period_minutes?: number
+          id?: string
+          is_ramadan_hours?: boolean
+          ramadan_shift_end?: string | null
+          ramadan_shift_start?: string | null
+          shift_end?: string
+          shift_start?: string
+          updated_at?: string
+          working_days?: number[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_shifts_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: true
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
@@ -1113,6 +1272,76 @@ export type Database = {
             columns: ["related_lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      overtime_records: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          attendance_record_id: string
+          created_at: string
+          employee_id: string
+          id: string
+          overtime_amount: number | null
+          overtime_date: string
+          overtime_hours: number
+          overtime_rate: number
+          reason: string | null
+          status: Database["public"]["Enums"]["overtime_status"]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attendance_record_id: string
+          created_at?: string
+          employee_id: string
+          id?: string
+          overtime_amount?: number | null
+          overtime_date: string
+          overtime_hours: number
+          overtime_rate?: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["overtime_status"]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attendance_record_id?: string
+          created_at?: string
+          employee_id?: string
+          id?: string
+          overtime_amount?: number | null
+          overtime_date?: string
+          overtime_hours?: number
+          overtime_rate?: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["overtime_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "overtime_records_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "overtime_records_attendance_record_id_fkey"
+            columns: ["attendance_record_id"]
+            isOneToOne: false
+            referencedRelation: "attendance_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "overtime_records_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
@@ -2057,6 +2286,30 @@ export type Database = {
           },
         ]
       }
+      uae_public_holidays: {
+        Row: {
+          created_at: string
+          holiday_date: string
+          holiday_name: string
+          id: string
+          is_official: boolean
+        }
+        Insert: {
+          created_at?: string
+          holiday_date: string
+          holiday_name: string
+          id?: string
+          is_official?: boolean
+        }
+        Update: {
+          created_at?: string
+          holiday_date?: string
+          holiday_name?: string
+          id?: string
+          is_official?: boolean
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -2524,6 +2777,7 @@ export type Database = {
         | "product"
         | "client"
         | "super_admin"
+      attendance_status: "checked_in" | "on_break" | "checked_out" | "absent"
       lead_status:
         | "New Lead"
         | "Warm"
@@ -2537,6 +2791,7 @@ export type Database = {
         | "Called Unanswer 2"
         | "No Connection"
       order_status: "Pending" | "Completed" | "Cancelled"
+      overtime_status: "pending" | "approved" | "rejected"
       po_status:
         | "Draft"
         | "Pending Approval"
@@ -2687,6 +2942,7 @@ export const Constants = {
         "client",
         "super_admin",
       ],
+      attendance_status: ["checked_in", "on_break", "checked_out", "absent"],
       lead_status: [
         "New Lead",
         "Warm",
@@ -2701,6 +2957,7 @@ export const Constants = {
         "No Connection",
       ],
       order_status: ["Pending", "Completed", "Cancelled"],
+      overtime_status: ["pending", "approved", "rejected"],
       po_status: ["Draft", "Pending Approval", "Approved", "Paid", "Cancelled"],
       transfer_type: [
         "Airport to Accommodation",

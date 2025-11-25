@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Users, Briefcase, UserCheck, UserX, TrendingUp } from "lucide-react";
+import { Loader2, Users, Briefcase, UserCheck, UserX, TrendingUp, Clock } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,6 +25,8 @@ interface HRStats {
 }
 
 const HRDashboard = () => {
+  const navigate = useNavigate();
+  
   const { data: stats, isLoading } = useQuery({
     queryKey: ['hr-stats'],
     queryFn: async () => {
@@ -94,11 +98,17 @@ const HRDashboard = () => {
     <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">HR Dashboard</h1>
-            <p className="text-muted-foreground">
-              Admin staff headcount and workforce analytics
-            </p>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">HR Dashboard</h1>
+              <p className="text-muted-foreground">
+                Admin staff headcount and workforce analytics
+              </p>
+            </div>
+            <Button onClick={() => navigate('/hr/attendance')}>
+              <Clock className="h-4 w-4 mr-2" />
+              Smart Attendance
+            </Button>
           </div>
 
           {isLoading ? (

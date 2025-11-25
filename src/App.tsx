@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAutoAttendance } from "./hooks/useAutoAttendance";
 import Index from "./pages/Index";
 import HireAMaid from "./pages/HireAMaid";
 import GetAVisa from "./pages/GetAVisa";
@@ -90,6 +91,7 @@ import NationalityDashboard from "./pages/NationalityDashboard";
 import DataBackup from "./pages/DataBackup";
 import ContractRevenue from "./pages/ContractRevenue";
 import HRDashboard from "./pages/HRDashboard";
+import HRAttendance from "./pages/HRAttendance";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,9 +102,15 @@ const queryClient = new QueryClient({
   },
 });
 
+const AppContent = () => {
+  useAutoAttendance();
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <AppContent />
       <Toaster />
       <Sonner />
       <BrowserRouter>
@@ -179,6 +187,7 @@ const App = () => (
           
           {/* HR & Analytics */}
           <Route path="/hr/dashboard" element={<ProtectedRoute><HRDashboard /></ProtectedRoute>} />
+          <Route path="/hr/attendance" element={<ProtectedRoute><HRAttendance /></ProtectedRoute>} />
           <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
           
           {/* Finance Module - Financial Management */}
