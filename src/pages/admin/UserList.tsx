@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useUserRole } from "@/hooks/useUserRole";
 import {
   Dialog,
   DialogContent,
@@ -53,7 +53,7 @@ interface UserProfile {
 export default function UserList() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin, isLoading: adminLoading } = useAdminCheck();
+  const { isAdmin, isLoading: adminLoading } = useUserRole();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);

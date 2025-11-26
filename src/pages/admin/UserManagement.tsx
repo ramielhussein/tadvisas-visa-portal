@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, UserPlus } from "lucide-react";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Permissions {
   cv: {
@@ -48,7 +48,7 @@ type UserRole = 'sales' | 'product' | 'finance' | 'super_admin' | 'custom';
 export default function UserManagement() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAdmin, isLoading: adminLoading } = useAdminCheck();
+  const { isAdmin, isLoading: adminLoading } = useUserRole();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
