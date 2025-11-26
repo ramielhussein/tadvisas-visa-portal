@@ -69,9 +69,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const isAdmin = roles?.some(r => r.role === 'admin');
+    const isAdmin = roles?.some(r => r.role === 'admin' || r.role === 'super_admin');
     if (!isAdmin) {
-      console.error('User is not an admin');
+      console.error('User is not an admin or super_admin');
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
         { 
