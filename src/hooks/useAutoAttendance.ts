@@ -13,11 +13,11 @@ export const useAutoAttendance = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Get employee record for current user
+        // Get employee record for current user using user_id
         const { data: employee } = await supabase
           .from('employees')
           .select('id')
-          .eq('created_by', user.id)
+          .eq('user_id', user.id)
           .maybeSingle();
 
         if (!employee) return;
