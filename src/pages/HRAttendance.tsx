@@ -36,11 +36,11 @@ const HRAttendance = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get employee record for current user
+      // Get employee record for current user using user_id
       const { data: employee } = await supabase
         .from('employees')
         .select('id')
-        .eq('created_by', user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (!employee) return null;
@@ -84,7 +84,7 @@ const HRAttendance = () => {
       const { data: employee } = await supabase
         .from('employees')
         .select('id')
-        .eq('created_by', user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (!employee) throw new Error('Employee record not found');

@@ -716,6 +716,7 @@ export type Database = {
           swift_code: string | null
           termination_date: string | null
           updated_at: string
+          user_id: string | null
           work_location: string | null
         }
         Insert: {
@@ -767,6 +768,7 @@ export type Database = {
           swift_code?: string | null
           termination_date?: string | null
           updated_at?: string
+          user_id?: string | null
           work_location?: string | null
         }
         Update: {
@@ -818,6 +820,7 @@ export type Database = {
           swift_code?: string | null
           termination_date?: string | null
           updated_at?: string
+          user_id?: string | null
           work_location?: string | null
         }
         Relationships: [
