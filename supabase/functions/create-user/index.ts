@@ -29,16 +29,16 @@ serve(async (req) => {
       });
     }
 
-    // Check if user has admin role
+    // Check if user has admin or super_admin role
     const { data: roleData } = await supabaseAdmin
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .eq("role", "admin")
+      .in("role", ["admin", "super_admin"])
       .single();
 
     if (!roleData) {
-      return new Response(JSON.stringify({ error: "Forbidden - Admin access required" }), {
+      return new Response(JSON.stringify({ error: "Forbidden - Admin or Super Admin access required" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
