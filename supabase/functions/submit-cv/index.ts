@@ -120,10 +120,22 @@ Deno.serve(async (req) => {
         console.error('Database insert error for staff CV:', insertError);
         console.error('Error code:', insertError.code, 'Error message:', insertError.message);
         console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
+      // Handle duplicate passport number error
+      if (insertError.code === '23505') {
         return new Response(
-          JSON.stringify({ success: false, error: insertError.message, code: insertError.code, details: insertError.details }),
+          JSON.stringify({ 
+            success: false, 
+            error: 'A CV with this passport number already exists. Please use a different passport number or edit the existing CV.',
+            code: insertError.code 
+          }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
+      }
+      
+      return new Response(
+        JSON.stringify({ success: false, error: insertError.message, code: insertError.code, details: insertError.details }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
       }
       
       return new Response(
