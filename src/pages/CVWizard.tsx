@@ -416,6 +416,13 @@ const CVWizard = () => {
           throw error;
         }
 
+        console.log('Submit response:', data);
+
+        // Check if edge function returned an error in the response
+        if (data?.success === false) {
+          throw new Error(data.error || 'Failed to submit CV');
+        }
+
         if (data?.error) {
           console.error("Edge function returned error:", data.error);
           throw new Error(data.error);

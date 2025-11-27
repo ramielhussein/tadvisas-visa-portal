@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
@@ -176,8 +177,11 @@ const CreateDeal = () => {
     const { data } = await supabase
       .from("workers")
       .select("*")
-      .or(`name.ilike.%${query}%,passport_no.ilike.%${query}%`)
-      .limit(10);
+      .or(`name.ilike.%${query}%,passport_no.ilike.%${query}%,center_ref.ilike.%${query}%`)
+      .in("status", ["Available", "Ready for Market", "Approved"])
+      .eq("staff", false)
+      .order("created_at", { ascending: false })
+      .limit(15);
 
     setWorkers(data || []);
   };
@@ -688,29 +692,51 @@ const CreateDeal = () => {
                   </div>
                 </div>
 
-                {/* Link to Worker/CV */}
+                {/* Link to Domestic Worker/CV */}
                 <div className="space-y-2">
-                  <Label>Link to Worker/CV (Optional)</Label>
+                  <Label>Link to Domestic Worker (Optional)</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Search and link this deal to an existing domestic worker CV
+                  </p>
                   {selectedWorker ? (
-                    <div className="p-3 bg-primary/10 rounded-lg flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">{selectedWorker.name}</p>
-                        <p className="text-sm text-muted-foreground">{selectedWorker.nationality_code} - {selectedWorker.job1}</p>
+                    <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p className="font-semibold text-lg">{selectedWorker.name}</p>
+                          <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Passport:</span>
+                              <span className="ml-1 font-medium">{selectedWorker.passport_no}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Ref:</span>
+                              <span className="ml-1 font-medium">{selectedWorker.center_ref}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Nationality:</span>
+                              <span className="ml-1 font-medium">{selectedWorker.nationality_code}</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Primary Job:</span>
+                              <span className="ml-1 font-medium">{selectedWorker.job1}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedWorker(null)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedWorker(null)}
-                      >
-                        Remove
-                      </Button>
                     </div>
                   ) : (
                     <div className="relative">
                       <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                       <Input
-                        placeholder="Search workers by name or passport..."
+                        placeholder="Search by name, passport, or reference number..."
                         value={searchWorkerQuery}
                         onChange={(e) => {
                           setSearchWorkerQuery(e.target.value);
@@ -719,19 +745,35 @@ const CreateDeal = () => {
                         className="pl-10"
                       />
                       {workers.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-72 overflow-y-auto">
                           {workers.map((worker) => (
                             <div
                               key={worker.id}
-                              className="p-3 hover:bg-accent cursor-pointer border-b last:border-0"
+                              className="p-3 hover:bg-accent cursor-pointer border-b last:border-0 transition-colors"
                               onClick={() => selectWorker(worker)}
                             >
-                              <p className="font-medium">{worker.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {worker.nationality_code} - {worker.job1}
-                              </p>
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1">
+                                  <p className="font-medium">{worker.name}</p>
+                                  <div className="flex gap-3 mt-1 text-sm text-muted-foreground">
+                                    <span>{worker.center_ref}</span>
+                                    <span>•</span>
+                                    <span>{worker.nationality_code}</span>
+                                    <span>•</span>
+                                    <span>{worker.job1}</span>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className="ml-2">
+                                  {worker.status}
+                                </Badge>
+                              </div>
                             </div>
                           ))}
+                        </div>
+                      )}
+                      {searchWorkerQuery.length >= 2 && workers.length === 0 && (
+                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg p-4 text-center text-sm text-muted-foreground">
+                          No available workers found. Try a different search term.
                         </div>
                       )}
                     </div>
