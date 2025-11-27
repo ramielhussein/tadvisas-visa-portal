@@ -121,8 +121,8 @@ Deno.serve(async (req) => {
         console.error('Error code:', insertError.code, 'Error message:', insertError.message);
         console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
         return new Response(
-          JSON.stringify({ error: insertError.message, code: insertError.code, details: insertError.details }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ success: false, error: insertError.message, code: insertError.code, details: insertError.details }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       
@@ -230,8 +230,8 @@ Deno.serve(async (req) => {
       }
       
       return new Response(
-        JSON.stringify({ error: errorMessage, code: insertError.code, details: insertError.details }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: false, error: errorMessage, code: insertError.code, details: insertError.details }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
     
@@ -299,8 +299,8 @@ Deno.serve(async (req) => {
     console.error('Error name:', error.name, 'Error message:', error.message);
     console.error('Error stack:', error.stack);
     return new Response(
-      JSON.stringify({ error: error.message || 'Unknown error occurred' }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ success: false, error: error.message || 'Unknown error occurred' }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
