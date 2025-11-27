@@ -411,7 +411,15 @@ const CVWizard = () => {
           body: payload,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Edge function error:", error);
+          throw error;
+        }
+
+        if (data?.error) {
+          console.error("Edge function returned error:", data.error);
+          throw new Error(data.error);
+        }
 
         toast({
           title: "Success!",
@@ -422,10 +430,23 @@ const CVWizard = () => {
       }
     } catch (error: any) {
       console.error("Submit error:", error);
+      
+      // Extract more detailed error message
+      let errorMessage = "Please try again.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (error.error) {
+        errorMessage = error.error;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast({
         title: "Submission Failed",
-        description: error.message || "Please try again.",
+        description: errorMessage,
         variant: "destructive",
+        duration: 10000, // Show error longer so user can read it
       });
     } finally {
       setSubmitting(false);
