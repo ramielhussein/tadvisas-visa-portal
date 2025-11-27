@@ -96,12 +96,11 @@ const PullWorkerDialog = ({ open, onOpenChange, workerId, workerName, onSuccess 
           vat_rate: vatRate,
           vat_amount: vatAmount,
           total_amount: totalAmount,
-          balance_due: totalAmount,
           status: 'Pending',
           due_date: dueDate.toISOString().split('T')[0],
           description: `Worker acquisition: ${workerName}`,
           notes: notes
-        });
+        } as any);
 
       if (invoiceError) throw invoiceError;
 
