@@ -298,11 +298,10 @@ const CreateContract = () => {
           vat_rate: vatRate,
           vat_amount: vatAmount,
           total_amount: totalAmount,
-          balance_due: totalAmount,
           status: 'Pending',
           due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days from now
           notes: `Contract ${contractNumberData}`
-        });
+        } as any);
 
       if (invoiceError) throw invoiceError;
 

@@ -166,10 +166,9 @@ export default function RefundsApproval() {
             vat_rate: 5,
             vat_amount: refund.total_refund_amount - (refund.total_refund_amount / 1.05),
             total_amount: refund.total_refund_amount,
-            balance_due: refund.total_refund_amount,
             status: "Pending",
             notes: `Auto-generated from approved refund. New COGS for worker: ${refund.total_refund_amount} AED`,
-          })
+          } as any)
           .select()
           .single();
 
