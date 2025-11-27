@@ -488,7 +488,6 @@ const CreateDeal = () => {
           commission_rate: validated.commission_rate,
           commission_amount: calculatedAmounts.commission_amount,
           paid_amount: parseFloat(formData.received_amount) || 0,
-          balance_due: calculatedAmounts.balance_amount,
           notes: validated.notes || null,
           assigned_to: user?.id,
           status: "Draft",
