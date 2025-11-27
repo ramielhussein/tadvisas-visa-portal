@@ -89,6 +89,8 @@ Deno.serve(async (req) => {
   }
   
   try {
+    console.log('Submit-CV edge function called');
+    
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -96,7 +98,7 @@ Deno.serve(async (req) => {
     
     const formData: CVFormData = await req.json();
     
-    console.log('Processing CV submission for:', formData.passport_no);
+    console.log('Processing CV submission for:', formData.passport_no, 'Staff:', formData.staff, 'Created by:', formData.created_by);
     
     // For staff CVs, use simplified processing
     if (formData.staff) {
@@ -115,9 +117,11 @@ Deno.serve(async (req) => {
         .single();
       
       if (insertError) {
-        console.error('Database insert error:', insertError);
+        console.error('Database insert error for staff CV:', insertError);
+        console.error('Error code:', insertError.code, 'Error message:', insertError.message);
+        console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
         return new Response(
-          JSON.stringify({ error: insertError.message, code: insertError.code }),
+          JSON.stringify({ error: insertError.message, code: insertError.code, details: insertError.details }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
@@ -207,7 +211,9 @@ Deno.serve(async (req) => {
       .single();
     
     if (insertError) {
-      console.error('Database insert error:', insertError);
+      console.error('Database insert error for regular CV:', insertError);
+      console.error('Error code:', insertError.code, 'Error message:', insertError.message);
+      console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
       
       // Provide more helpful error messages
       let errorMessage = insertError.message;
@@ -224,7 +230,7 @@ Deno.serve(async (req) => {
       }
       
       return new Response(
-        JSON.stringify({ error: errorMessage, code: insertError.code }),
+        JSON.stringify({ error: errorMessage, code: insertError.code, details: insertError.details }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -289,9 +295,11 @@ Deno.serve(async (req) => {
     );
     
   } catch (error: any) {
-    console.error('Error:', error);
+    console.error('Submit-CV edge function error:', error);
+    console.error('Error name:', error.name, 'Error message:', error.message);
+    console.error('Error stack:', error.stack);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'Unknown error occurred' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
