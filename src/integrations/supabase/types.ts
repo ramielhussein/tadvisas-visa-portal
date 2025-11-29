@@ -482,7 +482,7 @@ export type Database = {
           commission_amount?: number | null
           commission_rate?: number | null
           created_at?: string
-          deal_number: string
+          deal_number?: string
           deal_value: number
           id?: string
           lead_id?: string | null
