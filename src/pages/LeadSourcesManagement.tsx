@@ -58,7 +58,7 @@ export default function LeadSourcesManagement() {
       const { data, error } = await supabase
         .from("lead_sources")
         .select("*")
-        .order("sort_order", { ascending: true })
+        .order("sort_order", { ascending: true, nullsFirst: false })
         .order("source_name", { ascending: true });
 
       if (error) throw error;
@@ -151,11 +151,16 @@ export default function LeadSourcesManagement() {
   };
 
   const resetForm = () => {
+    // Set sort_order to max + 1 for new sources
+    const maxSortOrder = sources.length > 0 
+      ? Math.max(...sources.map(s => s.sort_order || 0))
+      : 0;
+    
     setFormData({
       source_name: "",
       description: "",
       is_active: true,
-      sort_order: 0,
+      sort_order: maxSortOrder + 1,
     });
     setEditingSource(null);
   };
@@ -230,7 +235,7 @@ export default function LeadSourcesManagement() {
                     }
                   />
                   <p className="text-sm text-muted-foreground mt-1">
-                    Lower numbers appear first (e.g., 1 = top, 10 = bottom)
+                    Each source needs a unique number. Lower numbers appear first (e.g., 1, 2, 3...). Sources with the same number will be sorted alphabetically.
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
