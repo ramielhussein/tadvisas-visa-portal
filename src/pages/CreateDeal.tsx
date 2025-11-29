@@ -436,9 +436,6 @@ const CreateDeal = () => {
 
       setLoading(true);
 
-      // Get deal number
-      const { data: dealNumber } = await supabase.rpc('generate_deal_number');
-
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -446,7 +443,7 @@ const CreateDeal = () => {
       const uploadedAttachments = [];
       for (const file of attachments) {
         const fileExt = file.name.split('.').pop();
-        const fileName = `${dealNumber}_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const fileName = `deal_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
         const filePath = `deals/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
@@ -471,7 +468,6 @@ const CreateDeal = () => {
       const { data: newDeal, error } = await supabase
         .from("deals")
         .insert({
-          deal_number: dealNumber,
           lead_id: selectedLead?.id || null,
           client_name: validated.client_name,
           client_phone: validated.client_phone,
@@ -493,7 +489,7 @@ const CreateDeal = () => {
           status: "Draft",
           attachments: uploadedAttachments,
           created_at: dealDate.toISOString(),
-        })
+        } as any)
         .select()
         .single();
 
@@ -512,7 +508,7 @@ const CreateDeal = () => {
 
       toast({
         title: "Success!",
-        description: `Deal ${dealNumber} created successfully`,
+        description: `Deal ${newDeal.deal_number} created successfully`,
       });
 
       // Ask user if they want to download deal sheet
