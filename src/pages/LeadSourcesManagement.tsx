@@ -229,6 +229,9 @@ export default function LeadSourcesManagement() {
                       })
                     }
                   />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Lower numbers appear first (e.g., 1 = top, 10 = bottom)
+                  </p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
