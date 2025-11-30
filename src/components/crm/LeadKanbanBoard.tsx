@@ -158,102 +158,87 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         key={lead.id}
         draggable
         onDragStart={(e) => handleDragStart(e, lead)}
-        className="bg-card border rounded-md p-2.5 shadow-sm hover:shadow-md transition-all cursor-move hover:scale-[1.02]"
+        className="bg-card border rounded-md p-1.5 shadow-sm hover:shadow-md transition-all cursor-move hover:scale-[1.02]"
       >
         {/* Header with Lead Number and Hot Indicator */}
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">
-            #{lead.id.slice(0, 8)}
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="font-semibold text-[11px]">
+            #{lead.id.slice(-6)}
           </h3>
           {lead.hot && (
-            <Badge variant="destructive" className="flex items-center gap-1 text-xs py-0 px-1.5 h-5">
-              <Flame className="h-3 w-3" />
+            <Badge variant="destructive" className="flex items-center gap-0.5 text-[10px] py-0 px-1 h-4">
+              <Flame className="h-2.5 w-2.5" />
               HOT
             </Badge>
           )}
         </div>
 
-        {/* Phone Number */}
-        <div className="mb-1.5">
-          <p className="text-xs text-muted-foreground">Phone</p>
-          <p className="text-xs font-medium">{formatPhoneDisplay(lead.mobile_number)}</p>
-        </div>
-
-        {/* Client Name */}
-        {lead.client_name && (
-          <div className="mb-1.5">
-            <p className="text-xs text-muted-foreground">Client</p>
-            <p className="text-xs font-medium truncate">{lead.client_name}</p>
-          </div>
-        )}
-
         {/* Service Required */}
-        <div className="mb-1.5">
-          <p className="text-xs text-muted-foreground">Service</p>
-          <p className="text-xs font-medium truncate">{lead.service_required || "N/A"}</p>
+        <div className="mb-1">
+          <p className="text-[11px] font-medium truncate">{lead.service_required || "N/A"}</p>
         </div>
 
         {/* Dates */}
-        <div className="grid grid-cols-2 gap-1.5 mb-2">
+        <div className="grid grid-cols-2 gap-1 mb-1">
           <div>
-            <p className="text-[10px] text-muted-foreground">Last Update</p>
-            <p className="text-xs font-medium">{lastUpdate}</p>
+            <p className="text-[9px] text-muted-foreground">Last Update</p>
+            <p className="text-[10px] font-medium">{lastUpdate}</p>
           </div>
           <div>
-            <p className="text-[10px] text-muted-foreground">Next Due</p>
-            <p className="text-xs font-medium">{nextDue}</p>
+            <p className="text-[9px] text-muted-foreground">Next Due</p>
+            <p className="text-[10px] font-medium">{nextDue}</p>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-1 mb-2">
+        <div className="flex gap-0.5 mb-1">
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleWhatsApp(lead)}
-            className="flex-1 h-7 text-xs px-1"
+            className="flex-1 h-6 text-xs px-0.5"
           >
-            <MessageCircle className="h-3 w-3" />
+            <MessageCircle className="h-2.5 w-2.5" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleCall(lead)}
-            className="flex-1 h-7 text-xs px-1"
+            className="flex-1 h-6 text-xs px-0.5"
           >
-            <Phone className="h-3 w-3" />
+            <Phone className="h-2.5 w-2.5" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleEmail(lead)}
-            className="flex-1 h-7 text-xs px-1"
+            className="flex-1 h-6 text-xs px-0.5"
             disabled={!lead.email}
           >
-            <Mail className="h-3 w-3" />
+            <Mail className="h-2.5 w-2.5" />
           </Button>
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-1.5 border-t">
+        <div className="flex items-center justify-between pt-1 border-t">
           <Button
             size="sm"
             variant="ghost"
             onClick={() => moveLeadToAdjacentColumn(lead, -1)}
-            className="h-6 w-6 p-0"
+            className="h-5 w-5 p-0"
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft className="h-2.5 w-2.5" />
           </Button>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground">
             {columnId}
           </span>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => moveLeadToAdjacentColumn(lead, 1)}
-            className="h-6 w-6 p-0"
+            className="h-5 w-5 p-0"
           >
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-2.5 w-2.5" />
           </Button>
         </div>
       </div>
