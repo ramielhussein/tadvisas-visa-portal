@@ -160,10 +160,10 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         onDragStart={(e) => handleDragStart(e, lead)}
         className="bg-card border rounded-md p-1.5 shadow-sm hover:shadow-md transition-all cursor-move hover:scale-[1.02]"
       >
-        {/* Header with Lead Number and Hot Indicator */}
+        {/* Header with Phone Number and Hot Indicator */}
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-[11px]">
-            #{lead.id.slice(-6)}
+            {formatPhoneDisplay(lead.mobile_number)}
           </h3>
           {lead.hot && (
             <Badge variant="destructive" className="flex items-center gap-0.5 text-[10px] py-0 px-1 h-4">
