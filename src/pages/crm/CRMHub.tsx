@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle, Kanban } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -21,9 +21,10 @@ import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
 import { AssignPreviouslyLostDialog } from "@/components/crm/AssignPreviouslyLostDialog";
 import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LeadKanbanBoard } from "@/components/crm/LeadKanbanBoard";
 
 type SortOption = "remind_me" | "visa_expiry_date" | "created_at" | "updated_at";
-type ViewMode = "cards" | "table";
+type ViewMode = "cards" | "table" | "kanban";
 
 interface Lead {
   id: string;
@@ -1078,6 +1079,10 @@ const CRMHub = () => {
                 <TableIcon className="h-4 w-4" />
                 Table View
               </TabsTrigger>
+              <TabsTrigger value="kanban" className="gap-2">
+                <Kanban className="h-4 w-4" />
+                Kanban View
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -1865,6 +1870,15 @@ const CRMHub = () => {
             </Card>
           </div>
           </>
+        )}
+
+        {/* Kanban View */}
+        {viewMode === "kanban" && user && (
+          <LeadKanbanBoard 
+            leads={myLeads}
+            userId={user.id}
+            onLeadUpdate={loadLeads}
+          />
         )}
       </div>
 
