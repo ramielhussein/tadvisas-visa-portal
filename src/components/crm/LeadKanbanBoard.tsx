@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MessageCircle, ChevronLeft, ChevronRight, Flame } from "lucide-react";
+import { Phone, Mail, MessageCircle, ChevronLeft, ChevronRight, Flame, Palette } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { generateWhatsAppLink, formatPhoneDisplay } from "@/lib/phoneValidation";
 import { format, parseISO } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface Lead {
   id: string;
@@ -24,6 +25,7 @@ interface Lead {
   email: string | null;
   updated_at: string;
   lead_source: string | null;
+  color: string | null;
 }
 
 interface LeadKanbanBoardProps {
@@ -37,6 +39,17 @@ const COLUMNS = [
   { id: "Called No Answer", title: "Contacted - No Answer", color: "bg-amber-100 dark:bg-amber-950 border-amber-400 dark:border-amber-600" },
   { id: "Called Engaged", title: "Contacted - Engaged", color: "bg-emerald-100 dark:bg-emerald-950 border-emerald-400 dark:border-emerald-600" },
   { id: "Called COLD", title: "Contacted - Dead/Cold", color: "bg-slate-100 dark:bg-slate-950 border-slate-400 dark:border-slate-600" },
+];
+
+const LEAD_COLORS = [
+  { name: "Red", value: "#ef4444" },
+  { name: "Orange", value: "#f97316" },
+  { name: "Yellow", value: "#eab308" },
+  { name: "Green", value: "#22c55e" },
+  { name: "Blue", value: "#3b82f6" },
+  { name: "Purple", value: "#a855f7" },
+  { name: "Pink", value: "#ec4899" },
+  { name: "Gray", value: "#6b7280" },
 ];
 
 export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoardProps) => {
@@ -148,6 +161,31 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
     await handleStatusChange(lead, newStatus);
   };
 
+  const handleColorChange = async (lead: Lead, color: string) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ color })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      await logActivity(lead.id, "update", "Color Changed", `Lead color changed to ${color}`);
+      
+      toast({
+        title: "Color Updated",
+        description: "Lead color has been changed",
+      });
+    } catch (error: any) {
+      console.error("Error updating color:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update lead color",
+        variant: "destructive",
+      });
+    }
+  };
+
   const renderLeadCard = (lead: Lead, columnId: string) => {
 
     const lastUpdate = lead.updated_at ? format(parseISO(lead.updated_at), "MMM dd, yyyy") : "N/A";
@@ -160,13 +198,52 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         onDragStart={(e) => handleDragStart(e, lead)}
         className="bg-card border rounded-md p-1.5 shadow-sm hover:shadow-md transition-all cursor-move hover:scale-[1.02]"
       >
-        {/* Header with Phone Number and Hot Indicator */}
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-[11px]">
-            {formatPhoneDisplay(lead.mobile_number)}
-          </h3>
+        {/* Header with Phone Number, Color Picker, and Hot Indicator */}
+        <div className="flex items-center justify-between mb-1 gap-1">
+          <div className="flex items-center gap-1 flex-1 min-w-0">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 rounded-sm border"
+                  style={{ backgroundColor: lead.color || "#e5e7eb" }}
+                  title="Change color"
+                >
+                  <span className="sr-only">Change color</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-2" align="start">
+                <div className="grid grid-cols-4 gap-1">
+                  {LEAD_COLORS.map((color) => (
+                    <Button
+                      key={color.value}
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-8 p-0 border-2"
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => handleColorChange(lead, color.value)}
+                      title={color.name}
+                    />
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 border-2"
+                    onClick={() => handleColorChange(lead, "")}
+                    title="Clear color"
+                  >
+                    <span className="text-xs">✕</span>
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <h3 className="font-semibold text-[11px] truncate">
+              {formatPhoneDisplay(lead.mobile_number)}
+            </h3>
+          </div>
           {lead.hot && (
-            <Badge variant="destructive" className="flex items-center gap-0.5 text-[10px] py-0 px-1 h-4">
+            <Badge variant="destructive" className="flex items-center gap-0.5 text-[10px] py-0 px-1 h-4 shrink-0">
               <Flame className="h-2.5 w-2.5" />
               HOT
             </Badge>

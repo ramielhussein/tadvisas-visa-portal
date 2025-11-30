@@ -50,6 +50,7 @@ interface Lead {
   lost_reason: string | null;
   lost_by: string | null;
   lost_at: string | null;
+  color: string | null;
 }
 
 interface User {
