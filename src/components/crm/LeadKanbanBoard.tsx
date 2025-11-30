@@ -33,10 +33,10 @@ interface LeadKanbanBoardProps {
 }
 
 const COLUMNS = [
-  { id: "New Lead", title: "New Un/Act", color: "bg-blue-50 border-blue-200" },
-  { id: "Called No Answer", title: "Contacted - No Answer", color: "bg-yellow-50 border-yellow-200" },
-  { id: "Called Engaged", title: "Contacted - Engaged", color: "bg-green-50 border-green-200" },
-  { id: "Called COLD", title: "Contacted - Dead/Cold", color: "bg-gray-50 border-gray-200" },
+  { id: "New Lead", title: "New Un/Act", color: "bg-blue-100 dark:bg-blue-950 border-blue-400 dark:border-blue-600" },
+  { id: "Called No Answer", title: "Contacted - No Answer", color: "bg-amber-100 dark:bg-amber-950 border-amber-400 dark:border-amber-600" },
+  { id: "Called Engaged", title: "Contacted - Engaged", color: "bg-emerald-100 dark:bg-emerald-950 border-emerald-400 dark:border-emerald-600" },
+  { id: "Called COLD", title: "Contacted - Dead/Cold", color: "bg-slate-100 dark:bg-slate-950 border-slate-400 dark:border-slate-600" },
 ];
 
 export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoardProps) => {
@@ -102,7 +102,7 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         description: `Lead moved to ${newStatus}`,
       });
       
-      onLeadUpdate();
+      // Don't reload - realtime will update
     } catch (error: any) {
       console.error("Error updating status:", error);
       toast({
@@ -162,15 +162,15 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         key={lead.id}
         draggable
         onDragStart={(e) => handleDragStart(e, lead)}
-        className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-move"
+        className="bg-card border rounded-md p-2.5 shadow-sm hover:shadow-md transition-all cursor-move hover:scale-[1.02]"
       >
         {/* Header with Lead Number and Hot Indicator */}
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-lg">
-            Lead #{lead.id.slice(0, 8)}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm">
+            #{lead.id.slice(0, 8)}
           </h3>
           {lead.hot && (
-            <Badge variant="destructive" className="flex items-center gap-1">
+            <Badge variant="destructive" className="flex items-center gap-1 text-xs py-0 px-1.5 h-5">
               <Flame className="h-3 w-3" />
               HOT
             </Badge>
@@ -178,87 +178,86 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
         </div>
 
         {/* Phone Number */}
-        <div className="mb-2">
-          <p className="text-sm text-muted-foreground">Phone</p>
-          <p className="font-medium">{formatPhoneDisplay(lead.mobile_number)}</p>
+        <div className="mb-1.5">
+          <p className="text-xs text-muted-foreground">Phone</p>
+          <p className="text-xs font-medium">{formatPhoneDisplay(lead.mobile_number)}</p>
         </div>
 
         {/* Client Name */}
         {lead.client_name && (
-          <div className="mb-2">
-            <p className="text-sm text-muted-foreground">Client</p>
-            <p className="font-medium">{lead.client_name}</p>
+          <div className="mb-1.5">
+            <p className="text-xs text-muted-foreground">Client</p>
+            <p className="text-xs font-medium truncate">{lead.client_name}</p>
           </div>
         )}
 
         {/* Service Required */}
-        <div className="mb-2">
-          <p className="text-sm text-muted-foreground">Service</p>
-          <p className="font-medium">{lead.service_required || "N/A"}</p>
+        <div className="mb-1.5">
+          <p className="text-xs text-muted-foreground">Service</p>
+          <p className="text-xs font-medium truncate">{lead.service_required || "N/A"}</p>
         </div>
 
         {/* Dates */}
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="grid grid-cols-2 gap-1.5 mb-2">
           <div>
-            <p className="text-xs text-muted-foreground">Last Update</p>
-            <p className="text-sm font-medium">{lastUpdate}</p>
+            <p className="text-[10px] text-muted-foreground">Last Update</p>
+            <p className="text-xs font-medium">{lastUpdate}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Next Due</p>
-            <p className="text-sm font-medium">{nextDue}</p>
+            <p className="text-[10px] text-muted-foreground">Next Due</p>
+            <p className="text-xs font-medium">{nextDue}</p>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-1 mb-2">
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleWhatsApp(lead)}
-            className="flex-1"
+            className="flex-1 h-7 text-xs px-1"
           >
-            <MessageCircle className="h-4 w-4 mr-1" />
-            WhatsApp
+            <MessageCircle className="h-3 w-3" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleCall(lead)}
-            className="flex-1"
+            className="flex-1 h-7 text-xs px-1"
           >
-            <Phone className="h-4 w-4 mr-1" />
-            Call
+            <Phone className="h-3 w-3" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleEmail(lead)}
-            className="flex-1"
+            className="flex-1 h-7 text-xs px-1"
             disabled={!lead.email}
           >
-            <Mail className="h-4 w-4 mr-1" />
-            Email
+            <Mail className="h-3 w-3" />
           </Button>
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between pt-2 border-t">
+        <div className="flex items-center justify-between pt-1.5 border-t">
           <Button
             size="sm"
             variant="ghost"
             onClick={() => handlePrev(columnId)}
+            className="h-6 w-6 p-0"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3 w-3" />
           </Button>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {currentIndex + 1} / {getLeadsByColumn(columnId).length}
           </span>
           <Button
             size="sm"
             variant="ghost"
             onClick={() => handleNext(columnId)}
+            className="h-6 w-6 p-0"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3 w-3" />
           </Button>
         </div>
       </div>
@@ -266,7 +265,7 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4">
       {COLUMNS.map((column) => {
         const columnLeads = getLeadsByColumn(column.id);
         const currentIndex = currentCardIndices[column.id] || 0;
@@ -276,19 +275,19 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
             key={column.id}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, column.id)}
-            className={`rounded-lg border-2 ${column.color} p-4 min-h-[600px]`}
+            className={`rounded-lg border-2 ${column.color} p-3 min-h-[400px]`}
           >
             {/* Column Header */}
-            <div className="mb-4">
-              <h2 className="font-semibold text-lg mb-1">{column.title}</h2>
-              <Badge variant="secondary">{columnLeads.length} leads</Badge>
+            <div className="mb-3">
+              <h2 className="font-semibold text-base mb-1.5">{column.title}</h2>
+              <Badge variant="secondary" className="text-xs">{columnLeads.length} leads</Badge>
             </div>
 
             {/* Lead Cards */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               {columnLeads.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  No leads in this column
+                <div className="text-center text-muted-foreground py-8 text-sm">
+                  No leads
                 </div>
               ) : (
                 columnLeads.map((lead, index) => renderLeadCard(lead, column.id, index))
