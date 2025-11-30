@@ -64,47 +64,49 @@ interface QuickLeadEntryProps {
 
   // Initialize form data when dialog opens or lead changes
   useEffect(() => {
-    if (open && lead) {
-      console.log("Editing lead:", lead); // Debug log
-      setFormData({
-        client_name: lead.client_name || "",
-        email: lead.email || "",
-        mobile_number: lead.mobile_number || "",
-        emirate: lead.emirate || "",
-        status: lead.status || "New Lead",
-        service_required: lead.service_required || "",
-        nationality_code: lead.nationality_code || "",
-        lead_source: lead.lead_source || "",
-        assigned_to: lead.assigned_to || "",
-        comments: lead.comments || "",
-        hot: lead.hot || false,
-        visa_expiry_date: lead.visa_expiry_date || "",
-        remind_me: lead.remind_me || "",
-      });
-      setExistingLead(null);
-      setFormStage('full-form');
-    } else if (open && !lead) {
-      // Reset for new lead
-      setFormData({
-        client_name: "",
-        email: "",
-        mobile_number: "",
-        emirate: "",
-        status: "New Lead",
-        service_required: "",
-        nationality_code: "",
-        lead_source: "",
-        assigned_to: "",
-        comments: "",
-        hot: false,
-        visa_expiry_date: "",
-        remind_me: "",
-      });
-      setExistingLead(null);
-      setFiles({ passport: null, eidFront: null, eidBack: null });
-      setFormStage('number-check');
+    if (open) {
+      if (lead) {
+        console.log("Editing lead:", lead); // Debug log
+        setFormData({
+          client_name: lead.client_name || "",
+          email: lead.email || "",
+          mobile_number: lead.mobile_number || "",
+          emirate: lead.emirate || "",
+          status: lead.status || "New Lead",
+          service_required: lead.service_required || "",
+          nationality_code: lead.nationality_code || "",
+          lead_source: lead.lead_source || "",
+          assigned_to: lead.assigned_to || "",
+          comments: lead.comments || "",
+          hot: lead.hot || false,
+          visa_expiry_date: lead.visa_expiry_date || "",
+          remind_me: lead.remind_me || "",
+        });
+        setExistingLead(null);
+        setFormStage('full-form');
+      } else {
+        // Reset for new lead
+        setFormData({
+          client_name: "",
+          email: "",
+          mobile_number: "",
+          emirate: "",
+          status: "New Lead",
+          service_required: "",
+          nationality_code: "",
+          lead_source: "",
+          assigned_to: "",
+          comments: "",
+          hot: false,
+          visa_expiry_date: "",
+          remind_me: "",
+        });
+        setExistingLead(null);
+        setFiles({ passport: null, eidFront: null, eidBack: null });
+        setFormStage('number-check');
+      }
     }
-  }, [open, lead?.id]); // Use lead.id in dependency to ensure proper re-initialization
+  }, [open, lead]); // Depend on full lead object to ensure effect runs when lead changes
 
   const handleFileChange = (field: keyof typeof files, file: File | null) => {
     setFiles({ ...files, [field]: file });
