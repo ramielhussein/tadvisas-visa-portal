@@ -42,10 +42,13 @@ const COLUMNS = [
 export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoardProps) => {
   const { toast } = useToast();
   const [draggedLead, setDraggedLead] = useState<Lead | null>(null);
-  const [currentCardIndices, setCurrentCardIndices] = useState<Record<string, number>>({});
 
   const getLeadsByColumn = (columnId: string) => {
-    return leads.filter(lead => lead.status === columnId);
+    return leads.filter((lead) => lead.status === columnId);
+  };
+
+  const getColumnIndex = (status: string) => {
+    return COLUMNS.findIndex((column) => column.id === status);
   };
 
   const logActivity = async (leadId: string, activityType: string, title: string, description: string) => {
@@ -134,25 +137,18 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
     setDraggedLead(null);
   };
 
-  const handleNext = (columnId: string) => {
-    const columnLeads = getLeadsByColumn(columnId);
-    const currentIndex = currentCardIndices[columnId] || 0;
-    const nextIndex = (currentIndex + 1) % columnLeads.length;
-    setCurrentCardIndices({ ...currentCardIndices, [columnId]: nextIndex });
+  const moveLeadToAdjacentColumn = async (lead: Lead, direction: 1 | -1) => {
+    const currentIndex = getColumnIndex(lead.status);
+    if (currentIndex === -1) return;
+
+    const newIndex = currentIndex + direction;
+    if (newIndex < 0 || newIndex >= COLUMNS.length) return;
+
+    const newStatus = COLUMNS[newIndex].id;
+    await handleStatusChange(lead, newStatus);
   };
 
-  const handlePrev = (columnId: string) => {
-    const columnLeads = getLeadsByColumn(columnId);
-    const currentIndex = currentCardIndices[columnId] || 0;
-    const prevIndex = (currentIndex - 1 + columnLeads.length) % columnLeads.length;
-    setCurrentCardIndices({ ...currentCardIndices, [columnId]: prevIndex });
-  };
-
-  const renderLeadCard = (lead: Lead, columnId: string, index: number) => {
-    const currentIndex = currentCardIndices[columnId] || 0;
-    const isVisible = index === currentIndex;
-    
-    if (!isVisible) return null;
+  const renderLeadCard = (lead: Lead, columnId: string) => {
 
     const lastUpdate = lead.updated_at ? format(parseISO(lead.updated_at), "MMM dd, yyyy") : "N/A";
     const nextDue = lead.remind_me ? format(parseISO(lead.remind_me), "MMM dd, yyyy") : "No reminder";
@@ -243,18 +239,18 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => handlePrev(columnId)}
+            onClick={() => moveLeadToAdjacentColumn(lead, -1)}
             className="h-6 w-6 p-0"
           >
             <ChevronLeft className="h-3 w-3" />
           </Button>
           <span className="text-xs text-muted-foreground">
-            {currentIndex + 1} / {getLeadsByColumn(columnId).length}
+            {columnId}
           </span>
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => handleNext(columnId)}
+            onClick={() => moveLeadToAdjacentColumn(lead, 1)}
             className="h-6 w-6 p-0"
           >
             <ChevronRight className="h-3 w-3" />
@@ -268,7 +264,6 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4">
       {COLUMNS.map((column) => {
         const columnLeads = getLeadsByColumn(column.id);
-        const currentIndex = currentCardIndices[column.id] || 0;
         
         return (
           <div
@@ -290,7 +285,7 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
                   No leads
                 </div>
               ) : (
-                columnLeads.map((lead, index) => renderLeadCard(lead, column.id, index))
+                columnLeads.map((lead) => renderLeadCard(lead, column.id))
               )}
             </div>
           </div>
