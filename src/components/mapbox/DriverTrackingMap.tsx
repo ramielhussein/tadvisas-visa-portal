@@ -18,7 +18,7 @@ const DriverTrackingMap = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<Record<string, mapboxgl.Marker>>({});
-  const driversLocations = useDriversLocations();
+  const { driversLocations, error: trackingError } = useDriversLocations();
   const [driverProfiles, setDriverProfiles] = useState<Record<string, DriverInfo>>({});
 
   // Fetch driver profiles
@@ -153,7 +153,15 @@ const DriverTrackingMap = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {activeDrivers.length === 0 ? (
+        {trackingError ? (
+          <div className="h-64 flex items-center justify-center bg-destructive/10 rounded-lg">
+            <div className="text-center text-destructive">
+              <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
+              <p>Connection Error</p>
+              <p className="text-sm">{trackingError}</p>
+            </div>
+          </div>
+        ) : activeDrivers.length === 0 ? (
           <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
             <div className="text-center text-muted-foreground">
               <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
