@@ -99,6 +99,7 @@ import TadGoLanding from "./pages/tadgo/TadGoLanding";
 import TadGoLogin from "./pages/tadgo/TadGoLogin";
 import TadGoApp from "./pages/tadgo/TadGoApp";
 import TadGoTaskDetail from "./pages/tadgo/TadGoTaskDetail";
+import TadGoDriverDashboard from "./pages/tadgo/TadGoDriverDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -243,6 +244,7 @@ const App = () => (
           <Route path="/tadgo" element={<TadGoLanding />} />
           <Route path="/tadgo/login" element={<TadGoLogin />} />
           <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
+          <Route path="/tadgo/dashboard" element={<ProtectedRoute><TadGoDriverDashboard /></ProtectedRoute>} />
           <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
