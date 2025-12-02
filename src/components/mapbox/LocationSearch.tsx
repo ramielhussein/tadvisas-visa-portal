@@ -3,7 +3,8 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAPBOX_PUBLIC_TOKEN } from "@/lib/mapbox";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, MapPin, Building2, Home, Plane } from "lucide-react";
 
 interface LocationSearchProps {
   value: string;
@@ -18,11 +19,48 @@ interface SearchResult {
   center: [number, number];
 }
 
+interface PresetLocation {
+  id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  icon: React.ReactNode;
+}
+
+const PRESET_LOCATIONS: PresetLocation[] = [
+  {
+    id: "office",
+    name: "Office",
+    address: "TADMAIDS Domestic Workers Services Center, Croesus Building, Majan, Dubai",
+    lat: 25.0459,
+    lng: 55.1957,
+    icon: <Building2 className="w-4 h-4" />,
+  },
+  {
+    id: "accommodation",
+    name: "Accommodation",
+    address: "Al Wadi, Fire Station Road, Muwaileh Commercial, Sharjah",
+    lat: 25.3163,
+    lng: 55.4631,
+    icon: <Home className="w-4 h-4" />,
+  },
+  {
+    id: "airport-t1",
+    name: "Airport T1",
+    address: "Dubai International Airport Terminal 1, Dubai",
+    lat: 25.2528,
+    lng: 55.3644,
+    icon: <Plane className="w-4 h-4" />,
+  },
+];
+
 const LocationSearch = ({ value, onChange, placeholder = "Search location...", label }: LocationSearchProps) => {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [showPresets, setShowPresets] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -69,9 +107,11 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
   const searchLocations = async (searchQuery: string) => {
     if (searchQuery.length < 3) {
       setResults([]);
+      setShowPresets(true);
       return;
     }
 
+    setShowPresets(false);
     setIsSearching(true);
     try {
       const response = await fetch(
@@ -92,12 +132,38 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
     setSelectedLocation({ lat: result.center[1], lng: result.center[0] });
     onChange(result.place_name, result.center[1], result.center[0]);
     setResults([]);
+    setShowPresets(false);
+  };
+
+  const handleSelectPreset = (preset: PresetLocation) => {
+    setQuery(preset.name);
+    setSelectedLocation({ lat: preset.lat, lng: preset.lng });
+    onChange(preset.address, preset.lat, preset.lng);
+    setResults([]);
+    setShowPresets(false);
   };
 
   return (
     <div className="space-y-3">
       {label && <label className="text-sm font-medium">{label}</label>}
       
+      {/* Preset Location Buttons */}
+      <div className="flex flex-wrap gap-2">
+        {PRESET_LOCATIONS.map((preset) => (
+          <Button
+            key={preset.id}
+            type="button"
+            variant={query === preset.name ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleSelectPreset(preset)}
+            className="gap-1.5"
+          >
+            {preset.icon}
+            {preset.name}
+          </Button>
+        ))}
+      </div>
+
       <div className="relative">
         <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
         <Input
@@ -105,6 +171,9 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
           onChange={(e) => {
             setQuery(e.target.value);
             searchLocations(e.target.value);
+          }}
+          onFocus={() => {
+            if (query.length < 3) setShowPresets(true);
           }}
           placeholder={placeholder}
           className="pl-10"
