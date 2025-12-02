@@ -2475,57 +2475,84 @@ export type Database = {
       }
       worker_transfers: {
         Row: {
+          accepted_at: string | null
           client_name: string | null
+          completed_at: string | null
           contract_id: string | null
           created_at: string
+          delivered_at: string | null
           documents: Json | null
+          driver_id: string | null
           driver_name: string | null
           driver_phone: string | null
+          driver_status: string | null
           from_location: string
           handled_by: string
           id: string
           notes: string | null
+          pickup_at: string | null
+          proof_photo_url: string | null
+          signature_url: string | null
           to_location: string
           transfer_date: string
           transfer_number: string
+          transfer_time: string | null
           transfer_type: Database["public"]["Enums"]["transfer_type"]
           updated_at: string
           vehicle_number: string | null
           worker_id: string
         }
         Insert: {
+          accepted_at?: string | null
           client_name?: string | null
+          completed_at?: string | null
           contract_id?: string | null
           created_at?: string
+          delivered_at?: string | null
           documents?: Json | null
+          driver_id?: string | null
           driver_name?: string | null
           driver_phone?: string | null
+          driver_status?: string | null
           from_location: string
           handled_by: string
           id?: string
           notes?: string | null
+          pickup_at?: string | null
+          proof_photo_url?: string | null
+          signature_url?: string | null
           to_location: string
           transfer_date?: string
           transfer_number: string
+          transfer_time?: string | null
           transfer_type: Database["public"]["Enums"]["transfer_type"]
           updated_at?: string
           vehicle_number?: string | null
           worker_id: string
         }
         Update: {
+          accepted_at?: string | null
           client_name?: string | null
+          completed_at?: string | null
           contract_id?: string | null
           created_at?: string
+          delivered_at?: string | null
           documents?: Json | null
+          driver_id?: string | null
           driver_name?: string | null
           driver_phone?: string | null
+          driver_status?: string | null
           from_location?: string
           handled_by?: string
           id?: string
           notes?: string | null
+          pickup_at?: string | null
+          proof_photo_url?: string | null
+          signature_url?: string | null
           to_location?: string
           transfer_date?: string
           transfer_number?: string
+          transfer_time?: string | null
           transfer_type?: Database["public"]["Enums"]["transfer_type"]
           updated_at?: string
           vehicle_number?: string | null
@@ -2783,6 +2810,7 @@ export type Database = {
         | "product"
         | "client"
         | "super_admin"
+        | "driver"
       attendance_status: "checked_in" | "on_break" | "checked_out" | "absent"
       lead_status:
         | "New Lead"
@@ -2947,6 +2975,7 @@ export const Constants = {
         "product",
         "client",
         "super_admin",
+        "driver",
       ],
       attendance_status: ["checked_in", "on_break", "checked_out", "absent"],
       lead_status: [
