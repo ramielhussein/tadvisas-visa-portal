@@ -116,65 +116,80 @@ export const useDriverLocation = (taskId: string | null) => {
 // Hook to subscribe to all driver locations (for admin view)
 export const useDriversLocations = () => {
   const [driversLocations, setDriversLocations] = useState<Record<string, DriverLocation & { driverId: string }>>({});
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const channel = supabase.channel('driver-locations', {
-      config: {
-        presence: { key: 'admin-viewer' }
-      }
-    });
-
-    channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        console.log('Presence state sync:', state);
-        const locations: Record<string, DriverLocation & { driverId: string }> = {};
-        
-        Object.entries(state).forEach(([key, presences]: [string, any]) => {
-          // Skip the admin viewer's own presence
-          if (key === 'admin-viewer') return;
-          
-          if (presences && presences.length > 0) {
-            const latest = presences[presences.length - 1];
-            // Check if this is a driver with location data
-            if (latest.lat && latest.lng && latest.role === 'driver') {
-              locations[key] = {
-                lat: latest.lat,
-                lng: latest.lng,
-                timestamp: latest.timestamp,
-                taskId: latest.taskId,
-                driverId: latest.driverId || key,
-              };
-            }
-          }
-        });
-        
-        console.log('Drivers locations updated:', locations);
-        setDriversLocations(locations);
-      })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('Driver joined:', key, newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ key }) => {
-        console.log('Driver left:', key);
-        setDriversLocations(prev => {
-          const updated = { ...prev };
-          delete updated[key];
-          return updated;
-        });
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          // Track admin presence to join the channel
-          await channel.track({ role: 'admin' });
-          console.log('Admin subscribed to driver locations channel');
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    
+    try {
+      channel = supabase.channel('driver-locations', {
+        config: {
+          presence: { key: 'admin-viewer' }
         }
       });
 
+      channel
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel?.presenceState() || {};
+          console.log('Presence state sync:', state);
+          const locations: Record<string, DriverLocation & { driverId: string }> = {};
+          
+          Object.entries(state).forEach(([key, presences]: [string, any]) => {
+            // Skip the admin viewer's own presence
+            if (key === 'admin-viewer') return;
+            
+            if (presences && presences.length > 0) {
+              const latest = presences[presences.length - 1];
+              // Check if this is a driver with location data
+              if (latest.lat && latest.lng && latest.role === 'driver') {
+                locations[key] = {
+                  lat: latest.lat,
+                  lng: latest.lng,
+                  timestamp: latest.timestamp,
+                  taskId: latest.taskId,
+                  driverId: latest.driverId || key,
+                };
+              }
+            }
+          });
+          
+          console.log('Drivers locations updated:', locations);
+          setDriversLocations(locations);
+          setError(null);
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('Driver joined:', key, newPresences);
+        })
+        .on('presence', { event: 'leave' }, ({ key }) => {
+          console.log('Driver left:', key);
+          setDriversLocations(prev => {
+            const updated = { ...prev };
+            delete updated[key];
+            return updated;
+          });
+        })
+        .subscribe(async (status, err) => {
+          if (status === 'SUBSCRIBED') {
+            // Track admin presence to join the channel
+            await channel?.track({ role: 'admin' });
+            console.log('Admin subscribed to driver locations channel');
+            setError(null);
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.error('Channel subscription error:', status, err);
+            setError(`Connection error: ${status}`);
+          }
+        });
+    } catch (err) {
+      console.error('Error setting up driver locations channel:', err);
+      setError('Failed to connect to driver tracking');
+    }
+
     return () => {
-      supabase.removeChannel(channel);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
-  return driversLocations;
+  return { driversLocations, error };
 };
