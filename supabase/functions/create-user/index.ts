@@ -45,7 +45,7 @@ serve(async (req) => {
     }
 
     // Get the new user details from the request
-    const { email, password, fullName, permissions } = await req.json();
+    const { email, password, fullName, permissions, isDriver, isWorkerP4 } = await req.json();
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -99,6 +99,25 @@ serve(async (req) => {
 
     if (profileError) {
       console.error("Error updating profile:", profileError);
+    }
+
+    // Add special roles if selected
+    const rolesToAdd = [];
+    if (isDriver) {
+      rolesToAdd.push({ user_id: newUser.user.id, role: 'driver' });
+    }
+    if (isWorkerP4) {
+      rolesToAdd.push({ user_id: newUser.user.id, role: 'worker_p4' });
+    }
+
+    if (rolesToAdd.length > 0) {
+      const { error: rolesError } = await supabaseAdmin
+        .from('user_roles')
+        .insert(rolesToAdd);
+
+      if (rolesError) {
+        console.error("Error adding roles:", rolesError);
+      }
     }
 
     return new Response(

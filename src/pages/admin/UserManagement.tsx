@@ -55,6 +55,8 @@ export default function UserManagement() {
   const [fullName, setFullName] = useState("");
   const [creating, setCreating] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('custom');
+  const [isDriver, setIsDriver] = useState(false);
+  const [isWorkerP4, setIsWorkerP4] = useState(false);
   const [permissions, setPermissions] = useState<Permissions>({
     cv: { create: false, edit: false, delete: false },
     refund: { create: false },
@@ -148,7 +150,9 @@ export default function UserManagement() {
           email, 
           password,
           fullName,
-          permissions
+          permissions,
+          isDriver,
+          isWorkerP4
         }
       });
 
@@ -170,6 +174,8 @@ export default function UserManagement() {
         setPassword("");
         setFullName("");
         setSelectedRole('custom');
+        setIsDriver(false);
+        setIsWorkerP4(false);
         setPermissions({
           cv: { create: false, edit: false, delete: false },
           refund: { create: false },
@@ -259,6 +265,34 @@ export default function UserManagement() {
                   <p className="text-xs text-muted-foreground">
                     Select a role preset or customize permissions below
                   </p>
+                </div>
+
+                <div className="space-y-3 pt-4 border-t">
+                  <Label className="text-base font-semibold">Special Roles</Label>
+                  <div className="space-y-2 ml-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="is-driver"
+                        checked={isDriver}
+                        onCheckedChange={(checked) => setIsDriver(checked as boolean)}
+                        disabled={creating}
+                      />
+                      <label htmlFor="is-driver" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Driver (TadGo Access)
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="is-worker-p4"
+                        checked={isWorkerP4}
+                        onCheckedChange={(checked) => setIsWorkerP4(checked as boolean)}
+                        disabled={creating}
+                      />
+                      <label htmlFor="is-worker-p4" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Worker P4 (Monthly Role)
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
 
