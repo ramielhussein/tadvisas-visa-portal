@@ -102,7 +102,7 @@ serve(async (req) => {
     }
 
     // Add special roles if selected
-    const rolesToAdd = [];
+    const rolesToAdd: { user_id: string; role: string }[] = [];
     if (isDriver) {
       rolesToAdd.push({ user_id: newUser.user.id, role: 'driver' });
     }
@@ -110,13 +110,19 @@ serve(async (req) => {
       rolesToAdd.push({ user_id: newUser.user.id, role: 'worker_p4' });
     }
 
+    console.log("Roles to add:", rolesToAdd);
+
     if (rolesToAdd.length > 0) {
-      const { error: rolesError } = await supabaseAdmin
+      const { data: rolesData, error: rolesError } = await supabaseAdmin
         .from('user_roles')
-        .insert(rolesToAdd);
+        .insert(rolesToAdd)
+        .select();
 
       if (rolesError) {
-        console.error("Error adding roles:", rolesError);
+        console.error("Error adding roles:", JSON.stringify(rolesError));
+        // Don't fail the entire request, user was created successfully
+      } else {
+        console.log("Roles added successfully:", rolesData);
       }
     }
 
