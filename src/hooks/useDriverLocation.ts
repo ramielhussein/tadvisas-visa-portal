@@ -109,14 +109,22 @@ export const useDriversLocations = () => {
   const [driversLocations, setDriversLocations] = useState<Record<string, DriverLocation & { driverId: string }>>({});
 
   useEffect(() => {
-    const channel = supabase.channel('driver-locations');
+    const channel = supabase.channel('driver-locations', {
+      config: {
+        presence: { key: 'admin-viewer' }
+      }
+    });
 
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
+        console.log('Presence state:', state);
         const locations: Record<string, DriverLocation & { driverId: string }> = {};
         
         Object.entries(state).forEach(([driverId, presences]: [string, any]) => {
+          // Skip the admin viewer's own presence
+          if (driverId === 'admin-viewer') return;
+          
           if (presences && presences.length > 0) {
             const latest = presences[presences.length - 1];
             if (latest.lat && latest.lng) {
@@ -142,7 +150,13 @@ export const useDriversLocations = () => {
           return updated;
         });
       })
-      .subscribe();
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          // Track admin presence to join the channel
+          await channel.track({ role: 'admin' });
+          console.log('Admin subscribed to driver locations channel');
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
