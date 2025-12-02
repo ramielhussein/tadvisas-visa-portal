@@ -2476,6 +2476,7 @@ export type Database = {
       worker_transfers: {
         Row: {
           accepted_at: string | null
+          admin_details: string | null
           client_name: string | null
           completed_at: string | null
           contract_id: string | null
@@ -2486,14 +2487,20 @@ export type Database = {
           driver_name: string | null
           driver_phone: string | null
           driver_status: string | null
+          from_lat: number | null
+          from_lng: number | null
           from_location: string
           handled_by: string
+          hr_subtype: string | null
           id: string
           notes: string | null
           pickup_at: string | null
           proof_photo_url: string | null
           signature_url: string | null
+          to_lat: number | null
+          to_lng: number | null
           to_location: string
+          transfer_category: string | null
           transfer_date: string
           transfer_number: string
           transfer_time: string | null
@@ -2504,6 +2511,7 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
+          admin_details?: string | null
           client_name?: string | null
           completed_at?: string | null
           contract_id?: string | null
@@ -2514,14 +2522,20 @@ export type Database = {
           driver_name?: string | null
           driver_phone?: string | null
           driver_status?: string | null
+          from_lat?: number | null
+          from_lng?: number | null
           from_location: string
           handled_by: string
+          hr_subtype?: string | null
           id?: string
           notes?: string | null
           pickup_at?: string | null
           proof_photo_url?: string | null
           signature_url?: string | null
+          to_lat?: number | null
+          to_lng?: number | null
           to_location: string
+          transfer_category?: string | null
           transfer_date?: string
           transfer_number: string
           transfer_time?: string | null
@@ -2532,6 +2546,7 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
+          admin_details?: string | null
           client_name?: string | null
           completed_at?: string | null
           contract_id?: string | null
@@ -2542,14 +2557,20 @@ export type Database = {
           driver_name?: string | null
           driver_phone?: string | null
           driver_status?: string | null
+          from_lat?: number | null
+          from_lng?: number | null
           from_location?: string
           handled_by?: string
+          hr_subtype?: string | null
           id?: string
           notes?: string | null
           pickup_at?: string | null
           proof_photo_url?: string | null
           signature_url?: string | null
+          to_lat?: number | null
+          to_lng?: number | null
           to_location?: string
+          transfer_category?: string | null
           transfer_date?: string
           transfer_number?: string
           transfer_time?: string | null

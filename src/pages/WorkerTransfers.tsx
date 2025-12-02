@@ -3,16 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, RefreshCw, Plus, Search } from "lucide-react";
-import { format } from "date-fns";
+import { ArrowLeft, RefreshCw, Plus, Truck, FileText, Users } from "lucide-react";
+import CreateTransferDialog from "@/components/transfers/CreateTransferDialog";
 
 interface WorkerTransfer {
   id: string;
@@ -23,6 +18,9 @@ interface WorkerTransfer {
   transfer_date: string;
   transfer_time: string | null;
   transfer_type: string;
+  transfer_category: string | null;
+  hr_subtype: string | null;
+  admin_details: string | null;
   notes: string | null;
   status: string | null;
   handled_by: string;
@@ -51,32 +49,12 @@ interface WorkerTransfer {
   };
 }
 
-const LOCATIONS = [
-  "Airport",
-  "Accommodation",
-  "Office",
-  "Center",
-  "Client Location",
-];
-
 const WorkerTransfers = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [transfers, setTransfers] = useState<WorkerTransfer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [searchWorkerQuery, setSearchWorkerQuery] = useState("");
-  const [workers, setWorkers] = useState<any[]>([]);
-  const [selectedWorker, setSelectedWorker] = useState<any>(null);
-
-  const [formData, setFormData] = useState({
-    from_location: "",
-    to_location: "",
-    contract_number: "",
-    transfer_date: format(new Date(), "yyyy-MM-dd"),
-    transfer_time: "",
-    notes: "",
-  });
 
   useEffect(() => {
     fetchTransfers();
@@ -109,103 +87,6 @@ const WorkerTransfers = () => {
     }
   };
 
-  const searchWorkers = async (query: string) => {
-    if (query.length < 2) {
-      setWorkers([]);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("workers")
-        .select("id, name, center_ref, nationality_code")
-        .or(`name.ilike.%${query}%,center_ref.ilike.%${query}%`)
-        .limit(5);
-
-      if (error) throw error;
-      setWorkers(data || []);
-    } catch (error) {
-      console.error("Error searching workers:", error);
-    }
-  };
-
-  const handleCreateTransfer = async () => {
-    if (!selectedWorker) {
-      toast({
-        title: "Error",
-        description: "Please select a worker",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!formData.from_location || !formData.to_location) {
-      toast({
-        title: "Error",
-        description: "Please select both from and to locations",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not authenticated");
-
-      const { data: transferNumber } = await supabase.rpc("generate_transfer_number");
-
-      const insertData: any = {
-        worker_id: selectedWorker.id,
-        from_location: formData.from_location === "Contract" ? formData.contract_number : formData.from_location,
-        to_location: formData.to_location === "Contract" ? formData.contract_number : formData.to_location,
-        transfer_date: formData.transfer_date,
-        transfer_time: formData.transfer_time || null,
-        transfer_type: "Internal",
-        notes: formData.notes || null,
-        handled_by: user.id,
-      };
-
-      // Only add transfer_number if the RPC function exists
-      if (transferNumber) {
-        insertData.transfer_number = transferNumber;
-      }
-
-      const { error } = await supabase.from("worker_transfers").insert(insertData);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Transfer request created successfully",
-      });
-
-      setIsCreateDialogOpen(false);
-      resetForm();
-      fetchTransfers();
-    } catch (error: any) {
-      console.error("Error creating transfer:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create transfer request",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const resetForm = () => {
-    setSelectedWorker(null);
-    setSearchWorkerQuery("");
-    setWorkers([]);
-    setFormData({
-      from_location: "",
-      to_location: "",
-      contract_number: "",
-      transfer_date: format(new Date(), "yyyy-MM-dd"),
-      transfer_time: "",
-      notes: "",
-    });
-  };
-
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "completed":
@@ -228,6 +109,28 @@ const WorkerTransfers = () => {
     }
   };
 
+  const getCategoryIcon = (category: string | null) => {
+    switch (category) {
+      case "ADMIN":
+        return <FileText className="w-4 h-4 text-orange-500" />;
+      case "HR":
+        return <Users className="w-4 h-4 text-blue-500" />;
+      default:
+        return <Truck className="w-4 h-4 text-primary" />;
+    }
+  };
+
+  const formatHRSubtype = (subtype: string | null) => {
+    if (!subtype) return "";
+    const labels: Record<string, string> = {
+      ATTEND_MEDICAL: "Attend Medical",
+      TAWJEEH: "Tawjeeh",
+      BIOMETRICS: "Biometrics",
+      PASSPORT_DELIVERY: "Passport Delivery",
+    };
+    return labels[subtype] || subtype;
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
@@ -246,161 +149,17 @@ const WorkerTransfers = () => {
             </div>
           </div>
           
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                New Transfer
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create Transfer Request</DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4 py-4">
-                {/* Worker Selection */}
-                <div className="space-y-2">
-                  <Label>Worker *</Label>
-                  {selectedWorker ? (
-                    <div className="p-3 bg-primary/10 rounded-lg flex justify-between items-center">
-                      <div>
-                        <p className="font-medium">{selectedWorker.name}</p>
-                        <p className="text-sm text-muted-foreground">{selectedWorker.center_ref}</p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedWorker(null)}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search workers by name or reference..."
-                        value={searchWorkerQuery}
-                        onChange={(e) => {
-                          setSearchWorkerQuery(e.target.value);
-                          searchWorkers(e.target.value);
-                        }}
-                        className="pl-10"
-                      />
-                      {workers.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                          {workers.map((worker) => (
-                            <div
-                              key={worker.id}
-                              className="p-3 hover:bg-accent cursor-pointer border-b last:border-0"
-                              onClick={() => {
-                                setSelectedWorker(worker);
-                                setSearchWorkerQuery("");
-                                setWorkers([]);
-                              }}
-                            >
-                              <p className="font-medium">{worker.name}</p>
-                              <p className="text-sm text-muted-foreground">{worker.center_ref} • {worker.nationality_code}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* From Location */}
-                <div className="space-y-2">
-                  <Label htmlFor="from_location">Transfer From *</Label>
-                  <Select value={formData.from_location} onValueChange={(value) => setFormData({ ...formData, from_location: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LOCATIONS.map((loc) => (
-                        <SelectItem key={loc} value={loc}>{loc}</SelectItem>
-                      ))}
-                      <SelectItem value="Contract">Contract Number</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {formData.from_location === "Contract" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="contract_number">Contract Number</Label>
-                    <Input
-                      id="contract_number"
-                      value={formData.contract_number}
-                      onChange={(e) => setFormData({ ...formData, contract_number: e.target.value })}
-                      placeholder="Enter contract number"
-                    />
-                  </div>
-                )}
-
-                {/* To Location */}
-                <div className="space-y-2">
-                  <Label htmlFor="to_location">Transfer To *</Label>
-                  <Select value={formData.to_location} onValueChange={(value) => setFormData({ ...formData, to_location: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {LOCATIONS.map((loc) => (
-                        <SelectItem key={loc} value={loc}>{loc}</SelectItem>
-                      ))}
-                      <SelectItem value="Contract">Contract Number</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Date and Time */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="transfer_date">Service Date *</Label>
-                    <Input
-                      id="transfer_date"
-                      type="date"
-                      value={formData.transfer_date}
-                      onChange={(e) => setFormData({ ...formData, transfer_date: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="transfer_time">Service Time</Label>
-                    <Input
-                      id="transfer_time"
-                      type="time"
-                      value={formData.transfer_time}
-                      onChange={(e) => setFormData({ ...formData, transfer_time: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Notes */}
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Instructions / Notes</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={4}
-                    placeholder="Add any additional instructions or notes..."
-                  />
-                </div>
-
-                <div className="flex gap-2 pt-4">
-                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="flex-1">
-                    Cancel
-                  </Button>
-                  <Button onClick={handleCreateTransfer} className="flex-1">
-                    Create Transfer
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Transfer
+          </Button>
         </div>
+
+        <CreateTransferDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          onSuccess={fetchTransfers}
+        />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -462,7 +221,14 @@ const WorkerTransfers = () => {
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-3 flex-wrap">
+                            {getCategoryIcon(transfer.transfer_category)}
                             <span className="font-semibold">{transfer.transfer_number || transfer.id.slice(0, 8)}</span>
+                            {transfer.transfer_category && transfer.transfer_category !== "TRANSPORT" && (
+                              <Badge variant="outline" className="text-xs">
+                                {transfer.transfer_category}
+                                {transfer.hr_subtype && ` - ${formatHRSubtype(transfer.hr_subtype)}`}
+                              </Badge>
+                            )}
                             {transfer.driver_status && (
                               <Badge className={getStatusColor(transfer.driver_status)}>
                                 {transfer.driver_status.replace('_', ' ')}
@@ -482,6 +248,11 @@ const WorkerTransfers = () => {
                           {transfer.worker && (
                             <div className="text-sm text-muted-foreground">
                               Worker: <span className="font-medium text-foreground">{transfer.worker.name}</span> ({transfer.worker.center_ref})
+                            </div>
+                          )}
+                          {transfer.admin_details && (
+                            <div className="text-sm bg-orange-50 dark:bg-orange-950/30 p-2 rounded">
+                              <span className="font-medium">Admin Details:</span> {transfer.admin_details}
                             </div>
                           )}
                           <div className="flex items-center gap-2 text-sm">
