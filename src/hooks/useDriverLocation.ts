@@ -29,16 +29,21 @@ export const useDriverLocation = (taskId: string | null) => {
     setIsTracking(true);
     setError(null);
 
+    const driverId = user.id;
+    console.log('Driver starting tracking with ID:', driverId);
+
     // Set up presence channel for real-time location broadcast
     channelRef.current = supabase.channel('driver-locations', {
       config: {
-        presence: { key: user.id }
+        presence: { key: driverId }
       }
     });
 
     channelRef.current.subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
-        console.log('Driver location channel subscribed');
+        console.log('Driver location channel subscribed, tracking started');
+        // Initial track to register presence
+        await channelRef.current.track({ driverId, role: 'driver', taskId: taskId || undefined });
       }
     });
 
@@ -54,9 +59,13 @@ export const useDriverLocation = (taskId: string | null) => {
 
         console.log('Driver location update:', locationData);
 
-        // Broadcast via presence
+        // Broadcast via presence with driver ID
         if (channelRef.current) {
-          await channelRef.current.track(locationData);
+          await channelRef.current.track({
+            ...locationData,
+            driverId,
+            role: 'driver'
+          });
         }
 
         // Also update the task if we have one
@@ -118,25 +127,29 @@ export const useDriversLocations = () => {
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
-        console.log('Presence state:', state);
+        console.log('Presence state sync:', state);
         const locations: Record<string, DriverLocation & { driverId: string }> = {};
         
-        Object.entries(state).forEach(([driverId, presences]: [string, any]) => {
+        Object.entries(state).forEach(([key, presences]: [string, any]) => {
           // Skip the admin viewer's own presence
-          if (driverId === 'admin-viewer') return;
+          if (key === 'admin-viewer') return;
           
           if (presences && presences.length > 0) {
             const latest = presences[presences.length - 1];
-            if (latest.lat && latest.lng) {
-              locations[driverId] = {
-                ...latest,
-                driverId,
+            // Check if this is a driver with location data
+            if (latest.lat && latest.lng && latest.role === 'driver') {
+              locations[key] = {
+                lat: latest.lat,
+                lng: latest.lng,
+                timestamp: latest.timestamp,
+                taskId: latest.taskId,
+                driverId: latest.driverId || key,
               };
             }
           }
         });
         
-        console.log('Drivers locations synced:', locations);
+        console.log('Drivers locations updated:', locations);
         setDriversLocations(locations);
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
