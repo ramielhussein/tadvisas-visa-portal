@@ -2484,6 +2484,9 @@ export type Database = {
           delivered_at: string | null
           documents: Json | null
           driver_id: string | null
+          driver_lat: number | null
+          driver_lng: number | null
+          driver_location_updated_at: string | null
           driver_name: string | null
           driver_phone: string | null
           driver_status: string | null
@@ -2519,6 +2522,9 @@ export type Database = {
           delivered_at?: string | null
           documents?: Json | null
           driver_id?: string | null
+          driver_lat?: number | null
+          driver_lng?: number | null
+          driver_location_updated_at?: string | null
           driver_name?: string | null
           driver_phone?: string | null
           driver_status?: string | null
@@ -2554,6 +2560,9 @@ export type Database = {
           delivered_at?: string | null
           documents?: Json | null
           driver_id?: string | null
+          driver_lat?: number | null
+          driver_lng?: number | null
+          driver_location_updated_at?: string | null
           driver_name?: string | null
           driver_phone?: string | null
           driver_status?: string | null

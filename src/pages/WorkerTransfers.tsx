@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, RefreshCw, Plus, Truck, FileText, Users } from "lucide-react";
 import CreateTransferDialog from "@/components/transfers/CreateTransferDialog";
+import DriverTrackingMap from "@/components/mapbox/DriverTrackingMap";
 
 interface WorkerTransfer {
   id: string;
@@ -160,6 +161,9 @@ const WorkerTransfers = () => {
           onOpenChange={setIsCreateDialogOpen}
           onSuccess={fetchTransfers}
         />
+
+        {/* Live Driver Tracking Map */}
+        <DriverTrackingMap />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

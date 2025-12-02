@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useDriverLocation } from "@/hooks/useDriverLocation";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -18,7 +19,8 @@ import {
   Phone,
   Navigation,
   Upload,
-  Loader2
+  Loader2,
+  Radio
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -61,6 +63,19 @@ const TadGoTaskDetail = () => {
   const [updating, setUpdating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [driverNotes, setDriverNotes] = useState("");
+
+  // Location tracking hook
+  const { isTracking, error: locationError, startTracking, stopTracking } = useDriverLocation(id || null);
+
+  // Start tracking when task is active (accepted to delivered)
+  useEffect(() => {
+    if (task && ['accepted', 'pickup', 'in_transit'].includes(task.driver_status)) {
+      startTracking();
+    }
+    return () => {
+      stopTracking();
+    };
+  }, [task?.driver_status, startTracking, stopTracking]);
 
   useEffect(() => {
     fetchTask();
@@ -255,7 +270,15 @@ const TadGoTaskDetail = () => {
             </Button>
             <div className="flex-1">
               <h1 className="text-lg font-bold text-white">{task.transfer_number}</h1>
-              <p className="text-xs text-slate-400">{task.transfer_type}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-slate-400">{task.transfer_type}</p>
+                {isTracking && (
+                  <span className="flex items-center gap-1 text-xs text-emerald-400">
+                    <Radio className="w-3 h-3 animate-pulse" />
+                    Live
+                  </span>
+                )}
+              </div>
             </div>
             <Badge className={`${getStatusColor(task.driver_status)} text-white`}>
               {task.driver_status?.replace('_', ' ')}
