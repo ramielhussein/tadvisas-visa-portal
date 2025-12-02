@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useDriverLocation } from "@/hooks/useDriverLocation";
 import { 
   Car, 
   MapPin, 
@@ -12,7 +13,8 @@ import {
   CheckCircle, 
   AlertCircle,
   Navigation,
-  RefreshCw
+  RefreshCw,
+  Radio
 } from "lucide-react";
 
 interface Task {
@@ -40,10 +42,24 @@ const TadGoDriverDashboard = () => {
   const [availableTasks, setAvailableTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  
+  // Start location tracking when driver has active tasks
+  const { isTracking, startTracking, stopTracking } = useDriverLocation(null);
 
   useEffect(() => {
     checkAuthAndFetch();
   }, []);
+
+  // Start tracking when there are active tasks
+  useEffect(() => {
+    if (myTasks.length > 0 && !isTracking) {
+      console.log('TadGo Dashboard: Starting location tracking - active tasks found');
+      startTracking();
+    }
+    return () => {
+      stopTracking();
+    };
+  }, [myTasks.length, isTracking, startTracking, stopTracking]);
 
   const checkAuthAndFetch = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -173,14 +189,22 @@ const TadGoDriverDashboard = () => {
           <h1 className="text-2xl font-bold text-emerald-400">TadGo Dashboard</h1>
           <p className="text-slate-400 text-sm">Your tasks at a glance</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => userId && fetchTasks(userId)}
-          className="border-slate-600"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {isTracking && (
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse">
+              <Radio className="w-3 h-3 mr-1" />
+              Live
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => userId && fetchTasks(userId)}
+            className="border-slate-600"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* My Active Tasks */}
