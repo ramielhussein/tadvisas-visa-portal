@@ -34,6 +34,21 @@ interface WorkerTransfer {
   driver_phone: string | null;
   vehicle_number: string | null;
   documents: any;
+  driver_id: string | null;
+  driver_status: string | null;
+  accepted_at: string | null;
+  pickup_at: string | null;
+  delivered_at: string | null;
+  completed_at: string | null;
+  proof_photo_url: string | null;
+  driver?: {
+    email: string;
+    full_name: string | null;
+  };
+  worker?: {
+    name: string;
+    center_ref: string;
+  };
 }
 
 const LOCATIONS = [
@@ -72,7 +87,11 @@ const WorkerTransfers = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("worker_transfers")
-        .select("*")
+        .select(`
+          *,
+          worker:workers(name, center_ref),
+          driver:profiles!worker_transfers_driver_id_fkey(email, full_name)
+        `)
         .order("created_at", { ascending: false })
         .limit(50);
 
@@ -194,9 +213,16 @@ const WorkerTransfers = () => {
       case "pending":
         return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
       case "in transit":
+      case "in_transit":
         return "bg-blue-100 text-blue-800 hover:bg-blue-100";
       case "cancelled":
         return "bg-red-100 text-red-800 hover:bg-red-100";
+      case "accepted":
+        return "bg-indigo-100 text-indigo-800 hover:bg-indigo-100";
+      case "pickup":
+        return "bg-orange-100 text-orange-800 hover:bg-orange-100";
+      case "delivered":
+        return "bg-emerald-100 text-emerald-800 hover:bg-emerald-100";
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-100";
     }
@@ -435,14 +461,29 @@ const WorkerTransfers = () => {
                     <CardContent className="pt-4">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 flex-wrap">
                             <span className="font-semibold">{transfer.transfer_number || transfer.id.slice(0, 8)}</span>
-                            {transfer.status && (
-                              <Badge className={getStatusColor(transfer.status)}>
-                                {transfer.status}
+                            {transfer.driver_status && (
+                              <Badge className={getStatusColor(transfer.driver_status)}>
+                                {transfer.driver_status.replace('_', ' ')}
+                              </Badge>
+                            )}
+                            {transfer.driver && (
+                              <Badge variant="outline" className="text-xs">
+                                🚗 {transfer.driver.full_name || transfer.driver.email}
+                              </Badge>
+                            )}
+                            {!transfer.driver_id && (
+                              <Badge variant="secondary" className="text-xs">
+                                Unassigned
                               </Badge>
                             )}
                           </div>
+                          {transfer.worker && (
+                            <div className="text-sm text-muted-foreground">
+                              Worker: <span className="font-medium text-foreground">{transfer.worker.name}</span> ({transfer.worker.center_ref})
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 text-sm">
                             <span className="font-medium">{transfer.from_location}</span>
                             <span className="text-muted-foreground">→</span>
@@ -457,8 +498,19 @@ const WorkerTransfers = () => {
                               {transfer.notes}
                             </div>
                           )}
+                          {transfer.proof_photo_url && (
+                            <div className="text-xs text-emerald-600">
+                              ✓ Proof photo uploaded
+                            </div>
+                          )}
                         </div>
-                        <Button variant="outline" size="sm">View Details</Button>
+                        <div className="flex flex-col gap-2">
+                          {transfer.proof_photo_url && (
+                            <a href={transfer.proof_photo_url} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm">View Proof</Button>
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

@@ -94,6 +94,12 @@ import HRDashboard from "./pages/HRDashboard";
 import HRAttendance from "./pages/HRAttendance";
 import HRPayroll from "./pages/HRPayroll";
 
+// TadGo Driver App
+import TadGoLanding from "./pages/tadgo/TadGoLanding";
+import TadGoLogin from "./pages/tadgo/TadGoLogin";
+import TadGoApp from "./pages/tadgo/TadGoApp";
+import TadGoTaskDetail from "./pages/tadgo/TadGoTaskDetail";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -232,6 +238,12 @@ const App = () => (
           <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
           <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
           <Route path="/admin/import-contracts" element={<ProtectedRoute><ImportContracts /></ProtectedRoute>} />
+          
+          {/* TadGo Driver App */}
+          <Route path="/tadgo" element={<TadGoLanding />} />
+          <Route path="/tadgo/login" element={<TadGoLogin />} />
+          <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
+          <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
