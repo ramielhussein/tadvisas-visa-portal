@@ -13,6 +13,19 @@ export const useAutoAttendance = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
+        // Check if user is a driver - drivers track time through TadGo app
+        const { data: driverRole } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'driver')
+          .maybeSingle();
+
+        if (driverRole) {
+          console.log('Driver detected - skipping admin attendance (use TadGo app)');
+          return;
+        }
+
         // Get employee record for current user using user_id
         const { data: employee } = await supabase
           .from('employees')
