@@ -30,7 +30,7 @@ export const useDriverLocation = (taskId: string | null) => {
     setError(null);
 
     const driverId = user.id;
-    console.log('Driver starting tracking with ID:', driverId);
+    console.log('[DriverTracking] Starting tracking for driver:', driverId);
 
     // Set up presence channel for real-time location broadcast
     channelRef.current = supabase.channel('driver-locations', {
@@ -39,11 +39,20 @@ export const useDriverLocation = (taskId: string | null) => {
       }
     });
 
-    channelRef.current.subscribe(async (status: string) => {
+    channelRef.current.subscribe(async (status: string, err?: Error) => {
+      console.log('[DriverTracking] Channel status:', status, err);
       if (status === 'SUBSCRIBED') {
-        console.log('Driver location channel subscribed, tracking started');
+        console.log('[DriverTracking] Channel subscribed, sending initial presence');
         // Initial track to register presence
-        await channelRef.current.track({ driverId, role: 'driver', taskId: taskId || undefined });
+        const trackResult = await channelRef.current.track({ 
+          driverId, 
+          role: 'driver', 
+          taskId: taskId || undefined,
+          lat: 0,
+          lng: 0,
+          timestamp: new Date().toISOString()
+        });
+        console.log('[DriverTracking] Initial track result:', trackResult);
       }
     });
 
@@ -57,15 +66,16 @@ export const useDriverLocation = (taskId: string | null) => {
           taskId: taskId || undefined,
         };
 
-        console.log('Driver location update:', locationData);
+        console.log('[DriverTracking] GPS update:', locationData.lat, locationData.lng);
 
         // Broadcast via presence with driver ID
         if (channelRef.current) {
-          await channelRef.current.track({
+          const trackResult = await channelRef.current.track({
             ...locationData,
             driverId,
             role: 'driver'
           });
+          console.log('[DriverTracking] Location broadcast result:', trackResult);
         }
 
         // Also update the task if we have one
@@ -81,13 +91,13 @@ export const useDriverLocation = (taskId: string | null) => {
         }
       },
       (err) => {
-        console.error('Geolocation error:', err);
+        console.error('[DriverTracking] Geolocation error:', err);
         setError(err.message);
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 5000, // Update every 5 seconds max
+        maximumAge: 5000,
       }
     );
   }, [taskId]);
@@ -121,6 +131,8 @@ export const useDriversLocations = () => {
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     
+    console.log('[AdminTracking] Setting up driver locations channel');
+    
     try {
       channel = supabase.channel('driver-locations', {
         config: {
@@ -131,37 +143,45 @@ export const useDriversLocations = () => {
       channel
         .on('presence', { event: 'sync' }, () => {
           const state = channel?.presenceState() || {};
-          console.log('Presence state sync:', state);
+          console.log('[AdminTracking] Presence sync - raw state:', JSON.stringify(state, null, 2));
           const locations: Record<string, DriverLocation & { driverId: string }> = {};
           
           Object.entries(state).forEach(([key, presences]: [string, any]) => {
             // Skip the admin viewer's own presence
             if (key === 'admin-viewer') return;
             
+            console.log('[AdminTracking] Processing presence key:', key, 'presences:', presences);
+            
             if (presences && presences.length > 0) {
               const latest = presences[presences.length - 1];
-              // Check if this is a driver with location data
-              if (latest.lat && latest.lng && latest.role === 'driver') {
-                locations[key] = {
-                  lat: latest.lat,
-                  lng: latest.lng,
-                  timestamp: latest.timestamp,
-                  taskId: latest.taskId,
-                  driverId: latest.driverId || key,
-                };
+              console.log('[AdminTracking] Latest presence for', key, ':', latest);
+              
+              // Check if this is a driver with valid location data (lat/lng can be 0 initially)
+              if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
+                // Only add if we have actual coordinates (not 0,0)
+                if (latest.lat !== 0 || latest.lng !== 0) {
+                  locations[key] = {
+                    lat: latest.lat,
+                    lng: latest.lng,
+                    timestamp: latest.timestamp,
+                    taskId: latest.taskId,
+                    driverId: latest.driverId || key,
+                  };
+                  console.log('[AdminTracking] Added driver location:', key, locations[key]);
+                }
               }
             }
           });
           
-          console.log('Drivers locations updated:', locations);
+          console.log('[AdminTracking] Final drivers locations:', locations);
           setDriversLocations(locations);
           setError(null);
         })
         .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-          console.log('Driver joined:', key, newPresences);
+          console.log('[AdminTracking] Driver joined:', key, newPresences);
         })
         .on('presence', { event: 'leave' }, ({ key }) => {
-          console.log('Driver left:', key);
+          console.log('[AdminTracking] Driver left:', key);
           setDriversLocations(prev => {
             const updated = { ...prev };
             delete updated[key];
@@ -169,22 +189,24 @@ export const useDriversLocations = () => {
           });
         })
         .subscribe(async (status, err) => {
+          console.log('[AdminTracking] Channel status:', status, err);
           if (status === 'SUBSCRIBED') {
             // Track admin presence to join the channel
-            await channel?.track({ role: 'admin' });
-            console.log('Admin subscribed to driver locations channel');
+            const trackResult = await channel?.track({ role: 'admin' });
+            console.log('[AdminTracking] Admin subscribed and tracked:', trackResult);
             setError(null);
           } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            console.error('Channel subscription error:', status, err);
+            console.error('[AdminTracking] Channel error:', status, err);
             setError(`Connection error: ${status}`);
           }
         });
     } catch (err) {
-      console.error('Error setting up driver locations channel:', err);
+      console.error('[AdminTracking] Setup error:', err);
       setError('Failed to connect to driver tracking');
     }
 
     return () => {
+      console.log('[AdminTracking] Cleaning up channel');
       if (channel) {
         supabase.removeChannel(channel);
       }
