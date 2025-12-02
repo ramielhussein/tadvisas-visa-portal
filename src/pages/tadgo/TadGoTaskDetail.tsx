@@ -30,6 +30,10 @@ interface Task {
   worker_id: string;
   from_location: string;
   to_location: string;
+  from_lat: number | null;
+  from_lng: number | null;
+  to_lat: number | null;
+  to_lng: number | null;
   transfer_date: string;
   transfer_time: string | null;
   transfer_type: string;
@@ -219,9 +223,14 @@ const TadGoTaskDetail = () => {
     }
   };
 
-  const openMaps = (location: string) => {
-    const encodedLocation = encodeURIComponent(location + ", Dubai, UAE");
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`, '_blank');
+  const openMaps = (location: string, lat?: number | null, lng?: number | null) => {
+    // Use coordinates if available for precise navigation
+    if (lat && lng) {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+    } else {
+      const encodedLocation = encodeURIComponent(location + ", Dubai, UAE");
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`, '_blank');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -352,7 +361,7 @@ const TadGoTaskDetail = () => {
                 size="sm" 
                 variant="outline" 
                 className="border-emerald-500 text-emerald-400"
-                onClick={() => openMaps(task.from_location)}
+                onClick={() => openMaps(task.from_location, task.from_lat, task.from_lng)}
               >
                 <Navigation className="w-4 h-4" />
               </Button>
@@ -375,7 +384,7 @@ const TadGoTaskDetail = () => {
                 size="sm" 
                 variant="outline" 
                 className="border-red-500 text-red-400"
-                onClick={() => openMaps(task.to_location)}
+                onClick={() => openMaps(task.to_location, task.to_lat, task.to_lng)}
               >
                 <Navigation className="w-4 h-4" />
               </Button>
