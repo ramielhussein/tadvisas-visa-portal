@@ -68,14 +68,29 @@ const WorkerTransfers = () => {
         .from("worker_transfers")
         .select(`
           *,
-          worker:workers(name, center_ref),
-          driver:profiles!worker_transfers_driver_id_fkey(email, full_name)
+          worker:workers(name, center_ref)
         `)
         .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
-      setTransfers(data as any || []);
+      
+      // Fetch driver profiles separately if needed
+      const transfersWithDrivers = await Promise.all(
+        (data || []).map(async (transfer: any) => {
+          if (transfer.driver_id) {
+            const { data: driverData } = await supabase
+              .from("profiles")
+              .select("email, full_name")
+              .eq("id", transfer.driver_id)
+              .single();
+            return { ...transfer, driver: driverData };
+          }
+          return transfer;
+        })
+      );
+      
+      setTransfers(transfersWithDrivers as any);
     } catch (error: any) {
       console.error("Error fetching transfers:", error);
       toast({
