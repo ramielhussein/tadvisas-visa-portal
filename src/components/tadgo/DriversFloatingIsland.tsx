@@ -71,7 +71,7 @@ const DriversFloatingIsland = () => {
       const { data, error } = await supabase
         .from("worker_transfers")
         .select("id, transfer_number, from_location, to_location, transfer_date, driver_status, driver_id")
-        .in("status", ["Pending", "In Progress"])
+        .or("driver_status.is.null,driver_status.in.(accepted,pickup,in_transit)")
         .order("transfer_date", { ascending: true })
         .limit(10);
 
