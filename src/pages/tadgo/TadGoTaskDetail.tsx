@@ -286,14 +286,23 @@ const TadGoTaskDetail = () => {
               <h1 className="text-lg font-bold text-white">{task.transfer_number}</h1>
               <div className="flex items-center gap-2">
                 <p className="text-xs text-slate-400">{task.transfer_type}</p>
-                {isTracking && (
+                {isTracking ? (
                   <span className="flex items-center gap-1 text-xs text-emerald-400">
                     <Radio className="w-3 h-3 animate-pulse" />
                     Live
                   </span>
+                ) : (
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="text-xs text-yellow-400 h-6 px-2"
+                    onClick={startTracking}
+                  >
+                    Start GPS
+                  </Button>
                 )}
                 {locationError && (
-                  <span className="text-xs text-red-400">GPS: {locationError}</span>
+                  <span className="text-xs text-red-400 max-w-[150px] truncate">GPS: {locationError}</span>
                 )}
               </div>
             </div>
