@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
 import AdminMenu from "./AdminMenu";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
+import DriversFloatingIsland from "./tadgo/DriversFloatingIsland";
 import { supabase } from "@/integrations/supabase/client";
 
 interface LayoutProps {
@@ -59,6 +60,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Footer />
       <FloatingButtons />
       <AdminMenu />
+      <DriversFloatingIsland />
       <KeyboardShortcutsHelp 
         open={showShortcutsHelp} 
         onClose={() => setShowShortcutsHelp(false)} 
