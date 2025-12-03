@@ -99,9 +99,8 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
-      const { data: transferNumber } = await supabase.rpc("generate_transfer_number");
-
-      const insertData: any = {
+      // Let database generate transfer_number automatically via default
+      const { error } = await supabase.from("worker_transfers").insert({
         worker_id: selectedWorker?.id || null,
         from_location: fromLocation.address,
         to_location: toLocation.address,
@@ -117,13 +116,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         admin_details: category === "ADMIN" ? adminDetails : null,
         notes: formData.notes || null,
         handled_by: user.id,
-      };
-
-      if (transferNumber) {
-        insertData.transfer_number = transferNumber;
-      }
-
-      const { error } = await supabase.from("worker_transfers").insert(insertData);
+      });
 
       if (error) throw error;
 
