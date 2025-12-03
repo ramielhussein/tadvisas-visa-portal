@@ -17,44 +17,88 @@ serve(async (req) => {
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
-    // ZKTeco devices can send data in different formats
-    // Common formats: JSON, form-urlencoded, or custom protocol
-    const contentType = req.headers.get('content-type') || '';
+    // Log all incoming requests for debugging
+    const url = new URL(req.url);
+    const queryParams = Object.fromEntries(url.searchParams);
     
+    console.log('[ZKTeco] Request received');
+    console.log('[ZKTeco] Method:', req.method);
+    console.log('[ZKTeco] URL:', req.url);
+    console.log('[ZKTeco] Query params:', JSON.stringify(queryParams));
+    console.log('[ZKTeco] Headers:', JSON.stringify(Object.fromEntries(req.headers)));
+
+    const contentType = req.headers.get('content-type') || '';
     let eventData: any;
+    let rawBody = '';
     
     if (contentType.includes('application/json')) {
-      eventData = await req.json();
+      rawBody = await req.text();
+      console.log('[ZKTeco] Raw JSON body:', rawBody);
+      eventData = JSON.parse(rawBody);
     } else if (contentType.includes('application/x-www-form-urlencoded')) {
-      const formData = await req.formData();
-      eventData = Object.fromEntries(formData);
+      rawBody = await req.text();
+      console.log('[ZKTeco] Form data:', rawBody);
+      const params = new URLSearchParams(rawBody);
+      eventData = Object.fromEntries(params);
     } else {
-      // Try to parse as text (some devices send raw data)
-      const text = await req.text();
-      console.log('[ZKTeco] Raw data received:', text);
+      rawBody = await req.text();
+      console.log('[ZKTeco] Raw text body:', rawBody);
       
-      // Try JSON parse first
       try {
-        eventData = JSON.parse(text);
+        eventData = JSON.parse(rawBody);
       } catch {
-        // Parse custom format if needed
-        eventData = { raw: text };
+        eventData = { raw: rawBody };
       }
     }
 
-    console.log('[ZKTeco] Webhook received:', JSON.stringify(eventData));
+    console.log('[ZKTeco] Parsed data:', JSON.stringify(eventData));
 
-    // Extract common fields from ZKTeco data
-    // Field names vary by device model, handle multiple formats
-    const userId = eventData.user_id || eventData.UserId || eventData.uid || eventData.PIN || eventData.pin;
-    const timestamp = eventData.timestamp || eventData.Timestamp || eventData.time || eventData.AttTime || eventData.punch_time;
-    const punchType = eventData.punch_type || eventData.PunchType || eventData.status || eventData.Status || eventData.type;
-    const deviceSn = eventData.sn || eventData.SN || eventData.DeviceSN || eventData.device_sn;
+    // Handle BioTime 9.5 RealTime format
+    // Example: { "RealTime": { "PunchLog": { "UserId": "1", "LogTime": "...", "Type": "CheckIn" } } }
+    let userId: string | undefined;
+    let timestamp: string | undefined;
+    let punchType: string | number | undefined;
+    let deviceSn: string | undefined;
+
+    if (eventData.RealTime?.PunchLog) {
+      // BioTime format
+      const punchLog = eventData.RealTime.PunchLog;
+      userId = punchLog.UserId || punchLog.user_id;
+      timestamp = punchLog.LogTime || punchLog.log_time;
+      punchType = punchLog.Type || punchLog.type;
+      deviceSn = eventData.RealTime.DeviceSN || eventData.RealTime.device_sn;
+      console.log('[ZKTeco] BioTime format detected');
+    } else {
+      // Generic ZKTeco format
+      userId = eventData.user_id || eventData.UserId || eventData.uid || eventData.PIN || eventData.pin || eventData.empcode;
+      timestamp = eventData.timestamp || eventData.Timestamp || eventData.time || eventData.AttTime || eventData.punch_time || eventData.checktime;
+      punchType = eventData.punch_type || eventData.PunchType || eventData.status || eventData.Status || eventData.type || eventData.checktype;
+      deviceSn = eventData.sn || eventData.SN || eventData.DeviceSN || eventData.device_sn;
+    }
+
+    // Also check query params for data
+    if (!userId && queryParams.pin) userId = queryParams.pin;
+    if (!userId && queryParams.user_id) userId = queryParams.user_id;
+    if (!timestamp && queryParams.time) timestamp = queryParams.time;
+
+    console.log('[ZKTeco] Extracted - userId:', userId, 'timestamp:', timestamp, 'punchType:', punchType);
 
     if (!userId) {
       console.log('[ZKTeco] No user ID found in data');
+      
+      // Log raw data for debugging
+      await supabase.from('audit_logs').insert({
+        action: 'biometric_webhook_no_user',
+        new_data: { 
+          raw_body: rawBody,
+          parsed: eventData,
+          query_params: queryParams,
+          content_type: contentType
+        }
+      });
+
       return new Response(
-        JSON.stringify({ success: false, error: 'No user ID in payload' }),
+        JSON.stringify({ success: true, message: 'Logged but no user ID found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -69,7 +113,6 @@ serve(async (req) => {
     if (empError || !employee) {
       console.log('[ZKTeco] Employee not found for ID:', userId);
       
-      // Log the event anyway for debugging
       await supabase.from('audit_logs').insert({
         action: 'biometric_punch_unmatched',
         table_name: 'attendance_records',
@@ -89,33 +132,35 @@ serve(async (req) => {
     const today = punchTime.toISOString().split('T')[0];
 
     // Check if attendance record exists for today
-    const { data: existingRecord, error: recError } = await supabase
+    const { data: existingRecord } = await supabase
       .from('attendance_records')
       .select('*')
       .eq('employee_id', employee.id)
       .eq('attendance_date', today)
       .single();
 
-    // Determine if this is check-in or check-out
-    // ZKTeco punch types: 0=Check-In, 1=Check-Out, 2=Break-Out, 3=Break-In, 4=OT-In, 5=OT-Out
-    const isCheckIn = !punchType || punchType === 0 || punchType === '0' || punchType === 'in' || punchType === 'I';
-    const isCheckOut = punchType === 1 || punchType === '1' || punchType === 'out' || punchType === 'O';
-    const isBreakOut = punchType === 2 || punchType === '2';
-    const isBreakIn = punchType === 3 || punchType === '3';
+    // Determine punch type
+    // BioTime types: "CheckIn", "CheckOut", "BreakOut", "BreakIn", "OvertimeIn", "OvertimeOut"
+    // ZKTeco numeric: 0=Check-In, 1=Check-Out, 2=Break-Out, 3=Break-In
+    const typeStr = String(punchType || '').toLowerCase();
+    const isCheckIn = !punchType || punchType === 0 || punchType === '0' || 
+                      typeStr === 'checkin' || typeStr === 'check-in' || typeStr === 'in' || typeStr === 'i';
+    const isCheckOut = punchType === 1 || punchType === '1' || 
+                       typeStr === 'checkout' || typeStr === 'check-out' || typeStr === 'out' || typeStr === 'o';
+    const isBreakOut = punchType === 2 || punchType === '2' || typeStr === 'breakout' || typeStr === 'break-out';
+    const isBreakIn = punchType === 3 || punchType === '3' || typeStr === 'breakin' || typeStr === 'break-in';
 
     if (!existingRecord) {
       // Create new attendance record with check-in
-      const { data: newRecord, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('attendance_records')
         .insert({
           employee_id: employee.id,
           attendance_date: today,
           check_in_time: punchTime.toISOString(),
           status: 'present',
-          notes: `Biometric check-in from device ${deviceSn || 'unknown'}`
-        })
-        .select()
-        .single();
+          notes: `Biometric check-in from device ${deviceSn || 'BioTime'}`
+        });
 
       if (insertError) {
         console.error('[ZKTeco] Error creating attendance record:', insertError);
@@ -137,12 +182,11 @@ serve(async (req) => {
 
     // Update existing record
     if (isCheckOut && !existingRecord.check_out_time) {
-      // Record check-out
       const { error: updateError } = await supabase
         .from('attendance_records')
         .update({
           check_out_time: punchTime.toISOString(),
-          notes: (existingRecord.notes || '') + ` | Biometric check-out from device ${deviceSn || 'unknown'}`
+          notes: (existingRecord.notes || '') + ` | Biometric check-out`
         })
         .eq('id', existingRecord.id);
 
@@ -162,7 +206,6 @@ serve(async (req) => {
     }
 
     if (isBreakOut) {
-      // Create break record
       const { error: breakError } = await supabase
         .from('break_records')
         .insert({
@@ -187,7 +230,6 @@ serve(async (req) => {
     }
 
     if (isBreakIn) {
-      // Find open break and close it
       const { data: openBreak } = await supabase
         .from('break_records')
         .select('*')
@@ -210,7 +252,6 @@ serve(async (req) => {
           })
           .eq('id', openBreak.id);
 
-        // Update total break minutes
         await supabase
           .from('attendance_records')
           .update({
@@ -218,7 +259,7 @@ serve(async (req) => {
           })
           .eq('id', existingRecord.id);
 
-        console.log('[ZKTeco] Recorded break-in for:', employee.full_name, 'Duration:', breakDuration, 'mins');
+        console.log('[ZKTeco] Recorded break-in for:', employee.full_name);
       }
 
       return new Response(
@@ -257,7 +298,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         action: 'logged',
-        message: 'Punch recorded but no action taken',
+        message: 'Punch recorded',
         employee: employee.full_name
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
