@@ -2543,7 +2543,7 @@ export type Database = {
           to_location: string
           transfer_category?: string | null
           transfer_date?: string
-          transfer_number: string
+          transfer_number?: string
           transfer_time?: string | null
           transfer_type: Database["public"]["Enums"]["transfer_type"]
           updated_at?: string
