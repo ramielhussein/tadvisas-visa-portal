@@ -74,12 +74,17 @@ const TadGoTaskDetail = () => {
   // Start tracking when task is active (accepted to delivered)
   useEffect(() => {
     if (task && ['accepted', 'pickup', 'in_transit'].includes(task.driver_status)) {
+      console.log('[TadGoTask] Starting tracking for status:', task.driver_status);
       startTracking();
     }
+  }, [task?.driver_status]);
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       stopTracking();
     };
-  }, [task?.driver_status, startTracking, stopTracking]);
+  }, []);
 
   useEffect(() => {
     fetchTask();
@@ -286,6 +291,9 @@ const TadGoTaskDetail = () => {
                     <Radio className="w-3 h-3 animate-pulse" />
                     Live
                   </span>
+                )}
+                {locationError && (
+                  <span className="text-xs text-red-400">GPS: {locationError}</span>
                 )}
               </div>
             </div>
