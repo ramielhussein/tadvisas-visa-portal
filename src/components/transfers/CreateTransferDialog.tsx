@@ -68,15 +68,6 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
   };
 
   const handleCreateTransfer = async () => {
-    if (!selectedWorker) {
-      toast({
-        title: "Error",
-        description: "Please select a worker",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (category === "HR" && !hrSubtype) {
       toast({
         title: "Error",
@@ -111,7 +102,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
       const { data: transferNumber } = await supabase.rpc("generate_transfer_number");
 
       const insertData: any = {
-        worker_id: selectedWorker.id,
+        worker_id: selectedWorker?.id || null,
         from_location: fromLocation.address,
         to_location: toLocation.address,
         from_lat: fromLocation.lat || null,
@@ -313,9 +304,9 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
               </div>
             )}
 
-            {/* Worker Selection */}
+            {/* Worker Selection (Optional) */}
             <div className="space-y-2">
-              <Label>Worker *</Label>
+              <Label>Worker <span className="text-muted-foreground text-xs">(optional)</span></Label>
               {selectedWorker ? (
                 <div className="p-3 bg-primary/10 rounded-lg flex justify-between items-center">
                   <div>
