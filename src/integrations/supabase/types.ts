@@ -2510,7 +2510,7 @@ export type Database = {
           transfer_type: Database["public"]["Enums"]["transfer_type"]
           updated_at: string
           vehicle_number: string | null
-          worker_id: string
+          worker_id: string | null
         }
         Insert: {
           accepted_at?: string | null
@@ -2548,7 +2548,7 @@ export type Database = {
           transfer_type: Database["public"]["Enums"]["transfer_type"]
           updated_at?: string
           vehicle_number?: string | null
-          worker_id: string
+          worker_id?: string | null
         }
         Update: {
           accepted_at?: string | null
@@ -2586,7 +2586,7 @@ export type Database = {
           transfer_type?: Database["public"]["Enums"]["transfer_type"]
           updated_at?: string
           vehicle_number?: string | null
-          worker_id?: string
+          worker_id?: string | null
         }
         Relationships: [
           {
