@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { differenceInMonths, differenceInYears, parseISO } from "date-fns";
 import Step1Identity from "@/components/cvwizard/Step1Identity";
@@ -430,6 +431,17 @@ const PublicCVApplication = () => {
           Powered by Tadmaids
         </p>
       </div>
+      
+      {/* Floating Add CV Number Button */}
+      <Link to="/cv-prospects">
+        <Button
+          className="fixed bottom-6 right-6 rounded-full shadow-lg"
+          size="lg"
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Add CV Number
+        </Button>
+      </Link>
     </div>
   );
 };
