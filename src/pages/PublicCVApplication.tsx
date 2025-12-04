@@ -333,6 +333,52 @@ const PublicCVApplication = () => {
                 onChange={(e) => setMobileNumber(e.target.value)}
               />
             </div>
+            
+            {/* Quick Add Only Option */}
+            <div className="pt-4 border-t">
+              <p className="text-xs text-muted-foreground mb-2">
+                Don't have time for the full form?
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const cleanNumber = mobileNumber.replace(/[^\d+]/g, "");
+                  if (cleanNumber.length < 7) {
+                    toast({
+                      title: "Invalid Number",
+                      description: "Please enter a valid phone number (minimum 7 digits)",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  
+                  try {
+                    const { error } = await supabase
+                      .from('cv_prospects')
+                      .insert({ mobile_number: cleanNumber, status: 'pending' });
+                    
+                    if (error) throw error;
+                    
+                    toast({
+                      title: "Number Added!",
+                      description: "We'll send you the application link via WhatsApp.",
+                    });
+                    setMobileNumber("");
+                  } catch (err: any) {
+                    toast({
+                      title: "Error",
+                      description: err.message || "Failed to add number",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                className="w-full"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Quick Add Number Only
+              </Button>
+            </div>
           </div>
         );
       case 'identity':
