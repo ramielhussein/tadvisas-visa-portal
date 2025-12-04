@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Search, Filter, User, MapPin, Briefcase, Languages, GraduationCap, Award } from "lucide-react";
+import { Loader2, Search, Filter, User, MapPin, Briefcase, Languages, GraduationCap, Award, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface Worker {
   id: string;
@@ -45,6 +46,7 @@ const WizardAlbum = () => {
   const [locationFilter, setLocationFilter] = useState<"all" | "inside" | "outside">("all");
   const [nationalityFilter, setNationalityFilter] = useState<string>("all");
   const [skillFilter, setSkillFilter] = useState<string>("all");
+  const [selectedPhoto, setSelectedPhoto] = useState<{ url: string; name: string } | null>(null);
 
   // Fetch workers
   const { data: workers = [], isLoading } = useQuery({
@@ -255,12 +257,15 @@ const WizardAlbum = () => {
                   <Card key={worker.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <CardContent className="p-0">
                       {/* Photo */}
-                      <div className="aspect-square relative bg-muted">
+                      <div 
+                        className={`aspect-square relative bg-muted ${photoUrl ? 'cursor-pointer' : ''}`}
+                        onClick={() => photoUrl && setSelectedPhoto({ url: photoUrl, name: worker.name })}
+                      >
                         {photoUrl ? (
                           <img
                             src={photoUrl}
                             alt={worker.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover hover:opacity-90 transition-opacity"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
@@ -366,6 +371,34 @@ const WizardAlbum = () => {
           )}
         </div>
       </div>
+
+      {/* Full Photo Dialog */}
+      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+        <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-10 right-0 text-white hover:bg-white/20"
+              onClick={() => setSelectedPhoto(null)}
+            >
+              <X className="h-6 w-6" />
+            </Button>
+            {selectedPhoto && (
+              <img
+                src={selectedPhoto.url}
+                alt={selectedPhoto.name}
+                className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+              />
+            )}
+            {selectedPhoto && (
+              <p className="text-center text-white mt-2 font-medium">
+                {selectedPhoto.name}
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
