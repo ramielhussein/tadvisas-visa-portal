@@ -140,7 +140,8 @@ const PublicCVApplication = () => {
     
     switch (stepName) {
       case 'mobile':
-        return mobileNumber.length >= 9;
+        // Accept any international phone number (minimum 7 digits)
+        return mobileNumber.replace(/\D/g, '').length >= 7;
       case 'identity':
         if (!formData.name || !formData.passport_no || !formData.passport_expiry || 
             !formData.nationality_code || !formData.date_of_birth || 
@@ -270,14 +271,14 @@ const PublicCVApplication = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact Information</h3>
             <p className="text-sm text-muted-foreground">
-              Please provide your mobile number so we can contact you about job opportunities.
+              Please provide your mobile number (with country code) so we can contact you about job opportunities.
             </p>
             <div className="space-y-2">
-              <Label htmlFor="mobile">Mobile Number *</Label>
+              <Label htmlFor="mobile">Mobile Number (include country code) *</Label>
               <Input
                 id="mobile"
                 type="tel"
-                placeholder="+971 50 123 4567"
+                placeholder="+63 917 123 4567 or +91 98765 43210"
                 value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value)}
               />

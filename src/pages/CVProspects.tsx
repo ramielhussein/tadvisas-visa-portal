@@ -129,7 +129,7 @@ const CVProspects = () => {
           <CardContent>
             <div className="flex gap-2">
               <Input
-                placeholder="+971 50 123 4567"
+                placeholder="+63 917 123 4567 (any country)"
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleQuickAdd()}
