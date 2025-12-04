@@ -114,9 +114,9 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
     setShowPresets(false);
     setIsSearching(true);
     try {
-      // Search UAE and nearby countries, with proximity bias to Dubai
+      // Restrict search to UAE only with country=ae parameter
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&proximity=55.2708,25.2048&limit=5&types=place,locality,neighborhood,address,poi`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.2708,25.2048&limit=8&types=place,locality,neighborhood,address,poi&language=en`
       );
       
       if (!response.ok) {
@@ -124,7 +124,6 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
       }
       
       const data = await response.json();
-      console.log("Mapbox search results:", data);
       setResults(data.features || []);
     } catch (error) {
       console.error("Error searching locations:", error);
