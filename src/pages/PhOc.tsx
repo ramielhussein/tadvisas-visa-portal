@@ -16,6 +16,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { checkAdminRole, resetAlbum, resetAllAlbums } from "@/utils/albumHelpers";
@@ -31,6 +35,7 @@ const PhOc = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -363,7 +368,8 @@ const PhOc = () => {
                         <img
                           src={photo.url}
                           alt="PH-OC media"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => setSelectedPhoto(photo.url)}
                         />
                       )}
                       {isAuthenticated && (
@@ -398,6 +404,19 @@ const PhOc = () => {
           )}
         </div>
       </div>
+
+      {/* Photo Lightbox Dialog */}
+      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          {selectedPhoto && (
+            <img
+              src={selectedPhoto}
+              alt="Full size"
+              className="w-full h-auto max-h-[90vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
