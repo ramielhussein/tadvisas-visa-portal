@@ -89,7 +89,7 @@ const DriversFloatingIsland = () => {
   const pendingCount = tasks.filter(t => !t.driver_id).length;
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-auto max-w-sm">
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[70] w-auto max-w-sm">
       <Card className={cn(
         "bg-slate-900/95 backdrop-blur-lg border-slate-700 shadow-xl transition-all duration-200",
         isExpanded ? "rounded-xl" : "rounded-full"
