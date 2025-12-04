@@ -1,8 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
 interface CVFormData {
   staff?: boolean;
   name: string;
@@ -27,7 +29,9 @@ interface CVFormData {
   financials: any;
   salary?: number;
   consent: boolean;
-  created_by: string;
+  created_by?: string;
+  mobile_number?: string;
+  public_submission?: boolean;
 }
 
 function computeCenterRef(data: CVFormData): string {
@@ -98,7 +102,7 @@ Deno.serve(async (req) => {
     
     const formData: CVFormData = await req.json();
     
-    console.log('Processing CV submission for:', formData.passport_no, 'Staff:', formData.staff, 'Created by:', formData.created_by);
+    console.log('Processing CV submission for:', formData.passport_no, 'Staff:', formData.staff, 'Public:', formData.public_submission, 'Mobile:', formData.mobile_number);
     
     // For staff CVs, use simplified processing
     if (formData.staff) {
@@ -112,30 +116,27 @@ Deno.serve(async (req) => {
           center_ref: `STAFF-${formData.name}`,
           status: 'Staff',
           created_by: formData.created_by,
+          mobile_number: formData.mobile_number,
         })
         .select()
         .single();
       
       if (insertError) {
         console.error('Database insert error for staff CV:', insertError);
-        console.error('Error code:', insertError.code, 'Error message:', insertError.message);
-        console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
-      // Handle duplicate passport number error
-      if (insertError.code === '23505') {
+        if (insertError.code === '23505') {
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'A CV with this passport number already exists.',
+              code: insertError.code 
+            }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'A CV with this passport number already exists. Please use a different passport number or edit the existing CV.',
-            code: insertError.code 
-          }),
+          JSON.stringify({ success: false, error: insertError.message, code: insertError.code }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
-      }
-      
-      return new Response(
-        JSON.stringify({ success: false, error: insertError.message, code: insertError.code, details: insertError.details }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
       }
       
       return new Response(
@@ -145,20 +146,19 @@ Deno.serve(async (req) => {
     }
     
     // Regular CV processing
-    // Compute center reference
     const center_ref = computeCenterRef(formData);
-    
-    // Compute employer count
-    const employer_count = 0; // Will be added later when employer feature is implemented
+    const employer_count = 0;
     
     // Compute financials
-    const total_cost = formData.financials.costs.reduce((sum: number, c: any) => sum + c.amount, 0);
-    const total_revenue = formData.financials.revenues.reduce((sum: number, r: any) => sum + r.amount, 0);
+    const costs = formData.financials?.costs || [];
+    const revenues = formData.financials?.revenues || [];
+    const total_cost = costs.reduce((sum: number, c: any) => sum + (c.amount || 0), 0);
+    const total_revenue = revenues.reduce((sum: number, r: any) => sum + (r.amount || 0), 0);
     const pnl = total_revenue - total_cost;
     
     const financials = {
-      costs: formData.financials.costs,
-      revenues: formData.financials.revenues,
+      costs,
+      revenues,
       total_cost,
       total_revenue,
       pnl,
@@ -186,6 +186,9 @@ Deno.serve(async (req) => {
     }
     
     console.log('Uploaded files:', Object.keys(fileUrls));
+    
+    // Determine status - public submissions go to Pending Review
+    const status = formData.public_submission ? 'Pending Review' : 'Available';
     
     // Create the worker record
     const { data: worker, error: insertError } = await supabase
@@ -216,38 +219,43 @@ Deno.serve(async (req) => {
         employer_count,
         financials,
         salary: formData.salary,
-        status: 'Available',
-        created_by: formData.created_by,
+        status,
+        created_by: formData.created_by || null,
+        mobile_number: formData.mobile_number,
       })
       .select()
       .single();
     
     if (insertError) {
       console.error('Database insert error for regular CV:', insertError);
-      console.error('Error code:', insertError.code, 'Error message:', insertError.message);
-      console.error('Error details:', insertError.details, 'Error hint:', insertError.hint);
       
-      // Provide more helpful error messages
       let errorMessage = insertError.message;
-      
       if (insertError.code === '23514') {
-        // Check constraint violation
         if (errorMessage.includes('weight_kg')) {
           errorMessage = 'Weight must be between 35 and 200 kg';
         } else if (errorMessage.includes('height_cm')) {
           errorMessage = 'Height must be within valid range';
-        } else if (errorMessage.includes('date_of_birth')) {
-          errorMessage = 'Date of birth must be valid';
         }
+      } else if (insertError.code === '23505') {
+        errorMessage = 'A CV with this passport number already exists.';
       }
       
       return new Response(
-        JSON.stringify({ success: false, error: errorMessage, code: insertError.code, details: insertError.details }),
+        JSON.stringify({ success: false, error: errorMessage, code: insertError.code }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
     
     console.log('Worker created:', worker.id);
+    
+    // Auto-link cv_prospects if mobile_number matches
+    if (formData.mobile_number) {
+      await supabase
+        .from('cv_prospects')
+        .update({ converted: true, worker_id: worker.id, updated_at: new Date().toISOString() })
+        .eq('mobile_number', formData.mobile_number)
+        .eq('converted', false);
+    }
     
     // Get webhook URL from settings
     const { data: webhookSetting } = await supabase
@@ -256,7 +264,6 @@ Deno.serve(async (req) => {
       .eq('key', 'make_webhook_url')
       .maybeSingle();
     
-    // If webhook is configured, send data to Make
     if (webhookSetting?.value) {
       console.log('Sending to Make webhook...');
       
@@ -284,7 +291,8 @@ Deno.serve(async (req) => {
         employers: [],
         employer_count,
         financials,
-        status: 'Available',
+        status,
+        mobile_number: formData.mobile_number,
         created_at: new Date().toISOString(),
       };
       
@@ -294,7 +302,6 @@ Deno.serve(async (req) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        
         console.log('Make webhook response:', webhookResponse.status);
       } catch (webhookError) {
         console.error('Webhook error (non-blocking):', webhookError);
@@ -308,8 +315,6 @@ Deno.serve(async (req) => {
     
   } catch (error: any) {
     console.error('Submit-CV edge function error:', error);
-    console.error('Error name:', error.name, 'Error message:', error.message);
-    console.error('Error stack:', error.stack);
     return new Response(
       JSON.stringify({ success: false, error: error.message || 'Unknown error occurred' }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
