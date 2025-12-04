@@ -23,11 +23,22 @@ import {
 import { format, formatDistance } from "date-fns";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const HRAttendance = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [onBreak, setOnBreak] = useState(false);
+  const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
 
   // Fetch current user's attendance for today
   const { data: todayAttendance, isLoading: loadingAttendance } = useQuery({
@@ -491,7 +502,7 @@ const HRAttendance = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={() => checkOutMutation.mutate()}
+                onClick={() => setShowCheckoutConfirm(true)}
                 disabled={checkOutMutation.isPending}
                 className="shadow-lg hover:shadow-xl"
               >
@@ -512,6 +523,29 @@ const HRAttendance = () => {
           )}
         </div>
       )}
+
+      {/* Checkout Confirmation Dialog */}
+      <AlertDialog open={showCheckoutConfirm} onOpenChange={setShowCheckoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Check Out</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to check out? This will end your workday.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                checkOutMutation.mutate();
+                setShowCheckoutConfirm(false);
+              }}
+            >
+              Yes, Check Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 };
