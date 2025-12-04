@@ -391,6 +391,56 @@ export type Database = {
           },
         ]
       }
+      cv_prospects: {
+        Row: {
+          converted: boolean | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          mobile_number: string
+          name: string | null
+          nationality_code: string | null
+          notes: string | null
+          status: string | null
+          updated_at: string | null
+          worker_id: string | null
+        }
+        Insert: {
+          converted?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          mobile_number: string
+          name?: string | null
+          nationality_code?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+          worker_id?: string | null
+        }
+        Update: {
+          converted?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          mobile_number?: string
+          name?: string | null
+          nationality_code?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_at?: string | null
+          worker_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_prospects_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_headcount: {
         Row: {
           at_accommodation: number
@@ -2625,6 +2675,7 @@ export type Database = {
           languages: Json | null
           maid_status: string
           marital_status: string
+          mobile_number: string | null
           name: string
           nationality_code: string
           passport_expiry: string
@@ -2657,6 +2708,7 @@ export type Database = {
           languages?: Json | null
           maid_status: string
           marital_status: string
+          mobile_number?: string | null
           name: string
           nationality_code: string
           passport_expiry: string
@@ -2689,6 +2741,7 @@ export type Database = {
           languages?: Json | null
           maid_status?: string
           marital_status?: string
+          mobile_number?: string | null
           name?: string
           nationality_code?: string
           passport_expiry?: string

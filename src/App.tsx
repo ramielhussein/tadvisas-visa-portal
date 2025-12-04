@@ -62,6 +62,8 @@ import CRMHub from "./pages/crm/CRMHub";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import DailyHeadcount from "./pages/DailyHeadcount";
 import MyCVs from "./pages/MyCVs";
+import CVProspects from "./pages/CVProspects";
+import PublicCVApplication from "./pages/PublicCVApplication";
 import ExpenseCategoriesManagement from "./pages/ExpenseCategoriesManagement";
 import ExpensesManagement from "./pages/ExpensesManagement";
 import BankTransfers from "./pages/BankTransfers";
@@ -160,6 +162,8 @@ const App = () => (
           <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
           <Route path="/admin/reset-admin" element={<ResetAdmin />} />
           <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
+          <Route path="/cv-prospects" element={<ProtectedRoute><CVProspects /></ProtectedRoute>} />
+          <Route path="/apply" element={<PublicCVApplication />} />
           <Route path="/install" element={<InstallApp />} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />

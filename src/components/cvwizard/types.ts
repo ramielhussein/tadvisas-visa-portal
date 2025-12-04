@@ -78,6 +78,9 @@ export interface CVFormData {
   // Salary
   salary?: number;
   
+  // Contact
+  mobile_number?: string;
+  
   // Consent
   consent: boolean;
 }
