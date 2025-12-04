@@ -181,9 +181,58 @@ const PublicCVApplication = () => {
 
   const handleNext = () => {
     if (!validateCurrentStep()) {
+      const stepName = activeSteps[currentStep];
+      let missing: string[] = [];
+      
+      switch (stepName) {
+        case 'mobile':
+          missing.push("Mobile number (minimum 7 digits)");
+          break;
+        case 'identity':
+          if (!formData.name) missing.push("Full Name");
+          if (!formData.passport_no) missing.push("Passport Number");
+          if (!formData.passport_expiry) missing.push("Passport Expiry");
+          else {
+            const exp = parseISO(formData.passport_expiry);
+            if (differenceInMonths(exp, new Date()) < 6) missing.push("Passport must be valid for 6+ months");
+          }
+          if (!formData.nationality_code) missing.push("Nationality");
+          if (!formData.date_of_birth) missing.push("Date of Birth");
+          else {
+            const dob = parseISO(formData.date_of_birth);
+            if (differenceInYears(new Date(), dob) < 18) missing.push("Must be 18+ years old");
+          }
+          if (!formData.religion) missing.push("Religion");
+          if (!formData.maid_status) missing.push("Maid Status");
+          break;
+        case 'jobs':
+          if (!formData.job1) missing.push("Primary Job");
+          if (!formData.marital_status) missing.push("Marital Status");
+          break;
+        case 'languages':
+          missing.push("At least one language");
+          break;
+        case 'education':
+          missing.push("Education Track");
+          break;
+        case 'visa':
+          if (!formData.visa.status) missing.push("Visa Status");
+          else if (["Cancelled", "Entry Tourist"].includes(formData.visa.status) && !formData.visa.overstay_or_grace_date) {
+            missing.push("Overstay/Grace Date");
+          }
+          break;
+        case 'files':
+          if (!formData.files.photo) missing.push("Photo");
+          if (!formData.files.passport) missing.push("Passport Copy");
+          break;
+        case 'consent':
+          missing.push("Consent checkbox");
+          break;
+      }
+      
       toast({
         title: "Incomplete",
-        description: "Please fill all required fields before proceeding.",
+        description: missing.length > 0 ? `Missing: ${missing.join(", ")}` : "Please fill all required fields.",
         variant: "destructive",
       });
       return;
