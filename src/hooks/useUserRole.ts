@@ -44,14 +44,13 @@ export const useUserRole = () => {
         return;
       }
 
-      // Check if user is super admin (rami@tadmaids.com or rayaan@tadmaids.com)
-      const superAdmin = user.email === 'rami@tadmaids.com' || user.email === 'rayaan@tadmaids.com';
-      setIsSuperAdmin(superAdmin);
-
       // Priority order: super_admin > admin > finance > sales > product > client > user
       if (roles && roles.length > 0) {
         const userRoles = roles.map(r => r.role);
-        if (userRoles.includes('super_admin') && superAdmin) setRole('super_admin');
+        const hasSuperAdmin = userRoles.includes('super_admin');
+        setIsSuperAdmin(hasSuperAdmin);
+        
+        if (hasSuperAdmin) setRole('super_admin');
         else if (userRoles.includes('admin')) setRole('admin');
         else if (userRoles.includes('finance')) setRole('finance');
         else if (userRoles.includes('sales')) setRole('sales');
