@@ -57,9 +57,9 @@ const DriversFloatingIsland = () => {
       const { data, error } = await supabase
         .from("worker_transfers")
         .select("id, transfer_number, from_location, to_location, transfer_date, driver_status, driver_id")
-        .or("driver_status.is.null,driver_status.in.(accepted,pickup,in_transit)")
+        .in("driver_status", ["pending", "accepted", "pickup", "in_transit"])
         .order("transfer_date", { ascending: true })
-        .limit(5);
+        .limit(15);
 
       if (error) throw error;
 
@@ -85,8 +85,8 @@ const DriversFloatingIsland = () => {
   // Don't show while loading or if not authenticated
   if (isLoading || !isAuthenticated) return null;
 
-  const activeCount = tasks.filter(t => t.driver_id).length;
-  const pendingCount = tasks.filter(t => !t.driver_id).length;
+  const activeCount = tasks.filter(t => t.driver_id && t.driver_status !== 'pending').length;
+  const pendingCount = tasks.filter(t => !t.driver_id || t.driver_status === 'pending').length;
 
   return (
     <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[70] w-auto max-w-sm">
@@ -109,7 +109,7 @@ const DriversFloatingIsland = () => {
         </button>
 
         {isExpanded && (
-          <div className="px-3 pb-3 max-h-48 overflow-y-auto">
+          <div className="px-3 pb-3 max-h-64 overflow-y-auto">
             <div className="border-t border-slate-700 pt-2 space-y-1.5">
               {tasks.length === 0 ? (
                 <p className="text-slate-400 text-xs text-center py-2">No tasks</p>
@@ -122,11 +122,15 @@ const DriversFloatingIsland = () => {
                       </span>
                       <Badge variant="outline" className={cn(
                         "text-[10px] px-1.5 py-0",
-                        !task.driver_id ? "text-yellow-400 border-yellow-500/50" :
+                        task.driver_status === "pending" ? "text-yellow-400 border-yellow-500/50" :
                         task.driver_status === "in_transit" ? "text-emerald-400 border-emerald-500/50" :
-                        "text-blue-400 border-blue-500/50"
+                        task.driver_status === "accepted" || task.driver_status === "pickup" ? "text-blue-400 border-blue-500/50" :
+                        "text-slate-400 border-slate-500/50"
                       )}>
-                        {!task.driver_id ? "Open" : task.driver_status === "in_transit" ? "Transit" : "Active"}
+                        {task.driver_status === "pending" ? "Pending" : 
+                         task.driver_status === "in_transit" ? "Transit" : 
+                         task.driver_status === "accepted" ? "Accepted" :
+                         task.driver_status === "pickup" ? "Pickup" : task.driver_status || "Open"}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5">
