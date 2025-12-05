@@ -115,8 +115,9 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
     setIsSearching(true);
     try {
       // Restrict search to UAE only with country=ae parameter
+      // Added fuzzyMatch and autocomplete for better partial matching
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.2708,25.2048&limit=8&types=place,locality,neighborhood,address,poi&language=en`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.2708,25.2048&limit=10&types=place,locality,neighborhood,address,poi&language=en&fuzzyMatch=true&autocomplete=true`
       );
       
       if (!response.ok) {
