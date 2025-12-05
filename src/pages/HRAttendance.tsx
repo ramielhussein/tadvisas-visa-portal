@@ -462,10 +462,17 @@ const HRAttendance = () => {
                 .map((a: any) => new Date(a.check_in_time).getTime());
               const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
               
+              // Check if opened after 10 AM
+              const isLate = firstCheckIn && firstCheckIn.getHours() >= 10;
+              
               return firstCheckIn ? (
-                <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
-                  <Clock className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg border ${
+                  isLate 
+                    ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' 
+                    : 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
+                }`}>
+                  <Clock className={`h-4 w-4 ${isLate ? 'text-red-600' : 'text-green-600'}`} />
+                  <span className={`text-sm font-medium ${isLate ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
                     CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
                   </span>
                 </div>
