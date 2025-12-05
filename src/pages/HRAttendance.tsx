@@ -456,30 +456,48 @@ const HRAttendance = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {staffAttendance?.map((attendance: any) => (
-                <div key={attendance.id} className="flex items-center justify-between p-3 rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Users className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{attendance.employees?.full_name}</p>
-                      <p className="text-sm text-muted-foreground">{attendance.employees?.position}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {attendance.check_in_time && (
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{format(new Date(attendance.check_in_time), 'hh:mm a')}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDistance(new Date(attendance.check_in_time), new Date(), { addSuffix: true })}
-                        </p>
+              {staffAttendance?.map((attendance: any) => {
+                // Calculate working hours
+                const checkInTime = attendance.check_in_time ? new Date(attendance.check_in_time) : null;
+                const checkOutTime = attendance.check_out_time ? new Date(attendance.check_out_time) : null;
+                const now = new Date();
+                
+                let workingMinutes = 0;
+                if (checkInTime) {
+                  const endTime = checkOutTime || now;
+                  workingMinutes = Math.floor((endTime.getTime() - checkInTime.getTime()) / 60000);
+                }
+                
+                const workingHours = Math.floor(workingMinutes / 60);
+                const workingMins = workingMinutes % 60;
+                
+                return (
+                  <div key={attendance.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Users className="h-5 w-5 text-primary" />
                       </div>
-                    )}
-                    {getStatusBadge(attendance.status)}
+                      <div>
+                        <p className="font-medium">{attendance.employees?.full_name}</p>
+                        <p className="text-sm text-muted-foreground">{attendance.employees?.position}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {attendance.check_in_time && (
+                        <div className="text-right space-y-0.5">
+                          <p className="text-sm font-medium">
+                            Working since {format(new Date(attendance.check_in_time), 'hh:mm a')}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Total work: {workingHours}h {workingMins}m • Break: {attendance.total_break_minutes || 0} min
+                          </p>
+                        </div>
+                      )}
+                      {getStatusBadge(attendance.status)}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
