@@ -455,6 +455,22 @@ const HRAttendance = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Center Opened Time */}
+            {(() => {
+              const checkInTimes = staffAttendance
+                ?.filter((a: any) => a.check_in_time)
+                .map((a: any) => new Date(a.check_in_time).getTime());
+              const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
+              
+              return firstCheckIn ? (
+                <div className="flex items-center gap-2 mb-4 p-2 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800">
+                  <Clock className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                    CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
+                  </span>
+                </div>
+              ) : null;
+            })()}
             <div className="space-y-3">
               {staffAttendance?.map((attendance: any) => {
                 // Calculate working hours
