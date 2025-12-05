@@ -455,28 +455,45 @@ const HRAttendance = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Center Opened Time */}
+            {/* Center Opened/Closed Time */}
             {(() => {
               const checkInTimes = staffAttendance
                 ?.filter((a: any) => a.check_in_time)
                 .map((a: any) => new Date(a.check_in_time).getTime());
               const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
               
+              const checkOutTimes = staffAttendance
+                ?.filter((a: any) => a.check_out_time)
+                .map((a: any) => new Date(a.check_out_time).getTime());
+              const lastCheckOut = checkOutTimes?.length ? new Date(Math.max(...checkOutTimes)) : null;
+              
               // Check if opened after 10 AM
               const isLate = firstCheckIn && firstCheckIn.getHours() >= 10;
               
-              return firstCheckIn ? (
-                <div className={`flex items-center gap-2 mb-4 p-2 rounded-lg border ${
-                  isLate 
-                    ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' 
-                    : 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
-                }`}>
-                  <Clock className={`h-4 w-4 ${isLate ? 'text-red-600' : 'text-green-600'}`} />
-                  <span className={`text-sm font-medium ${isLate ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
-                    CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
-                  </span>
+              return (
+                <div className="space-y-2 mb-4">
+                  {firstCheckIn && (
+                    <div className={`flex items-center gap-2 p-2 rounded-lg border ${
+                      isLate 
+                        ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' 
+                        : 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
+                    }`}>
+                      <Clock className={`h-4 w-4 ${isLate ? 'text-red-600' : 'text-green-600'}`} />
+                      <span className={`text-sm font-medium ${isLate ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
+                        CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
+                      </span>
+                    </div>
+                  )}
+                  {lastCheckOut && (
+                    <div className="flex items-center gap-2 p-2 rounded-lg border bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+                      <LogOut className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
+                        CENTER CLOSED TODAY - {format(lastCheckOut, 'hh:mm a')}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              ) : null;
+              );
             })()}
             <div className="space-y-3">
               {staffAttendance?.map((attendance: any) => {
