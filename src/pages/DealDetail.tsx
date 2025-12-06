@@ -946,7 +946,8 @@ const DealDetail = () => {
               {/* Cost of Goods & Profit */}
               <DealCostsSection 
                 dealId={deal.id} 
-                totalRevenue={deal.total_amount} 
+                totalRevenue={deal.total_amount}
+                workerId={deal.worker_id}
               />
 
               {/* Timeline */}

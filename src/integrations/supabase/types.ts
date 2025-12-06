@@ -2743,6 +2743,7 @@ export type Database = {
       }
       workers: {
         Row: {
+          acquisition_costs: Json | null
           center_ref: string | null
           children: number | null
           created_at: string | null
@@ -2776,6 +2777,7 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
+          acquisition_costs?: Json | null
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
@@ -2809,6 +2811,7 @@ export type Database = {
           weight_kg?: number | null
         }
         Update: {
+          acquisition_costs?: Json | null
           center_ref?: string | null
           children?: number | null
           created_at?: string | null
