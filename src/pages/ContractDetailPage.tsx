@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import RecordDealPaymentDialog from "@/components/deals/RecordDealPaymentDialog";
+import VoidContractDialog from "@/components/deals/VoidContractDialog";
 import DealCostsSection from "@/components/deals/DealCostsSection";
 import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download, CreditCard, Printer, Send } from "lucide-react";
 import { format } from "date-fns";
@@ -79,6 +80,8 @@ const ContractDetail = () => {
   const [signedAttachments, setSignedAttachments] = useState<{ name: string; url: string }[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [voidDialogOpen, setVoidDialogOpen] = useState(false);
+  const [voidLoading, setVoidLoading] = useState(false);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [canApproveDeal, setCanApproveDeal] = useState(false);
 
@@ -479,24 +482,35 @@ const ContractDetail = () => {
     }
   };
 
-  const handleVoidDeal = async () => {
-    if (!confirm("Are you sure you want to void this deal? This action cannot be undone.")) {
-      return;
-    }
-
+  const handleVoidDeal = async (workerStatus: string | null) => {
+    setVoidLoading(true);
     try {
-      const { error } = await supabase
+      // Update deal status to Void
+      const { error: dealError } = await supabase
         .from("deals")
         .update({ status: "Void" })
         .eq("id", deal?.id);
 
-      if (error) throw error;
+      if (dealError) throw dealError;
+
+      // Update worker status if a new status was selected and worker exists
+      if (workerStatus && deal?.worker_id) {
+        const { error: workerError } = await supabase
+          .from("workers")
+          .update({ status: workerStatus })
+          .eq("id", deal.worker_id);
+
+        if (workerError) {
+          console.error("Failed to update worker status:", workerError);
+        }
+      }
 
       toast({
         title: "Success",
-        description: "Deal has been voided",
+        description: `Contract has been voided${workerStatus ? ` and worker status set to "${workerStatus}"` : ""}`,
       });
       
+      setVoidDialogOpen(false);
       fetchDeal();
     } catch (error: any) {
       toast({
@@ -504,6 +518,8 @@ const ContractDetail = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setVoidLoading(false);
     }
   };
 
@@ -533,7 +549,7 @@ const ContractDetail = () => {
             )}
             <Button
               variant="destructive"
-              onClick={handleVoidDeal}
+              onClick={() => setVoidDialogOpen(true)}
             >
               Void
             </Button>
@@ -551,7 +567,7 @@ const ContractDetail = () => {
             </Button>
             <Button
               variant="destructive"
-              onClick={handleVoidDeal}
+              onClick={() => setVoidDialogOpen(true)}
             >
               Void
             </Button>
@@ -1006,6 +1022,14 @@ const ContractDetail = () => {
           fetchDeal();
           fetchPayments();
         }}
+      />
+
+      <VoidContractDialog
+        open={voidDialogOpen}
+        onOpenChange={setVoidDialogOpen}
+        workerName={deal?.worker_name || null}
+        onConfirm={handleVoidDeal}
+        isLoading={voidLoading}
       />
     </Layout>
   );
