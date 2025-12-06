@@ -34,10 +34,10 @@ const SalesHub = () => {
       color: "text-green-600"
     },
     {
-      title: "My Deals",
-      description: "Track your deals and pipeline",
+      title: "My Contracts",
+      description: "Track your contracts and pipeline",
       icon: Briefcase,
-      path: "/crm/deals",
+      path: "/crm/contracts",
       color: "text-purple-600"
     },
     {

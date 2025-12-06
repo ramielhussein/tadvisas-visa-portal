@@ -12,7 +12,7 @@ import Layout from "@/components/Layout";
 import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Deal {
+interface Contract {
   id: string;
   deal_number: string;
   client_name: string;
@@ -25,43 +25,43 @@ interface Deal {
   worker_name: string | null;
 }
 
-const DealsManagement = () => {
+const ContractsManagement = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useAdminCheck();
   
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [filteredDeals, setFilteredDeals] = useState<Deal[]>([]);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    totalDeals: 0,
+    totalContracts: 0,
     totalValue: 0,
-    activeDeals: 0,
-    closedDeals: 0,
+    activeContracts: 0,
+    closedContracts: 0,
   });
 
   useEffect(() => {
-    fetchDeals();
+    fetchContracts();
   }, []);
 
   useEffect(() => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      setFilteredDeals(
-        deals.filter(
-          (deal) =>
-            deal.client_name.toLowerCase().includes(query) ||
-            deal.client_phone.includes(query) ||
-            deal.deal_number.toLowerCase().includes(query)
+      setFilteredContracts(
+        contracts.filter(
+          (contract) =>
+            contract.client_name.toLowerCase().includes(query) ||
+            contract.client_phone.includes(query) ||
+            contract.deal_number.toLowerCase().includes(query)
         )
       );
     } else {
-      setFilteredDeals(deals);
+      setFilteredContracts(contracts);
     }
-  }, [searchQuery, deals]);
+  }, [searchQuery, contracts]);
 
-  const fetchDeals = async () => {
+  const fetchContracts = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -71,16 +71,16 @@ const DealsManagement = () => {
 
       if (error) throw error;
 
-      setDeals(data || []);
-      setFilteredDeals(data || []);
+      setContracts(data || []);
+      setFilteredContracts(data || []);
 
-      // Calculate stats - only Active deals count towards Total Value
-      const activeDealsData = data?.filter(d => d.status === 'Active') || [];
+      // Calculate stats - only Active contracts count towards Total Value
+      const activeContractsData = data?.filter(d => d.status === 'Active') || [];
       const stats = {
-        totalDeals: data?.length || 0,
-        totalValue: activeDealsData.reduce((sum, d) => sum + Number(d.total_amount), 0),
-        activeDeals: activeDealsData.length,
-        closedDeals: data?.filter(d => d.status === 'Closed').length || 0,
+        totalContracts: data?.length || 0,
+        totalValue: activeContractsData.reduce((sum, d) => sum + Number(d.total_amount), 0),
+        activeContracts: activeContractsData.length,
+        closedContracts: data?.filter(d => d.status === 'Closed').length || 0,
       };
       setStats(stats);
     } catch (error: any) {
@@ -111,7 +111,7 @@ const DealsManagement = () => {
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading deals...</p>
+            <p>Loading contracts...</p>
           </div>
         </div>
       </Layout>
@@ -123,15 +123,15 @@ const DealsManagement = () => {
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">Deals & Sales</h1>
+            <h1 className="text-4xl font-bold">Contracts</h1>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate("/crm/deals/ar-report")}>
+              <Button variant="outline" onClick={() => navigate("/crm/contracts/ar-report")}>
                 <BarChart3 className="w-4 h-4 mr-2" />
                 A/R Report
               </Button>
-              <Button onClick={() => navigate("/crm/deals/create")}>
+              <Button onClick={() => navigate("/crm/contracts/create")}>
                 <Plus className="w-4 h-4 mr-2" />
-                Create Deal
+                Create Contract
               </Button>
             </div>
           </div>
@@ -142,11 +142,11 @@ const DealsManagement = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Total Deals
+                  Total Contracts
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.totalDeals}</p>
+                <p className="text-2xl font-bold">{stats.totalContracts}</p>
               </CardContent>
             </Card>
 
@@ -170,7 +170,7 @@ const DealsManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.activeDeals}</p>
+                <p className="text-2xl font-bold">{stats.activeContracts}</p>
               </CardContent>
             </Card>
 
@@ -182,7 +182,7 @@ const DealsManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.closedDeals}</p>
+                <p className="text-2xl font-bold">{stats.closedContracts}</p>
               </CardContent>
             </Card>
           </div>
@@ -192,7 +192,7 @@ const DealsManagement = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by client name, phone, or deal number..."
+                placeholder="Search by client name, phone, or contract number..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -200,17 +200,17 @@ const DealsManagement = () => {
             </div>
           </div>
 
-          {/* Deals Table */}
+          {/* Contracts Table */}
           <Card>
             <CardHeader>
-              <CardTitle>All Deals</CardTitle>
+              <CardTitle>All Contracts</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Deal #</TableHead>
+                      <TableHead>Contract #</TableHead>
                       <TableHead>Client</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Service</TableHead>
@@ -223,43 +223,43 @@ const DealsManagement = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredDeals.length === 0 ? (
+                    {filteredContracts.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={10} className="text-center py-8">
-                          No deals found. Create your first deal!
+                          No contracts found. Create your first contract!
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredDeals.map((deal) => (
-                        <TableRow key={deal.id} className="text-sm">
+                      filteredContracts.map((contract) => (
+                        <TableRow key={contract.id} className="text-sm">
                           <TableCell className="font-mono font-medium">
-                            {deal.deal_number}
+                            {contract.deal_number}
                           </TableCell>
-                          <TableCell>{deal.client_name}</TableCell>
+                          <TableCell>{contract.client_name}</TableCell>
                           <TableCell className="font-mono text-xs">
-                            {deal.client_phone}
+                            {contract.client_phone}
                           </TableCell>
-                          <TableCell>{deal.service_type}</TableCell>
-                          <TableCell>{deal.worker_name || "-"}</TableCell>
+                          <TableCell>{contract.service_type}</TableCell>
+                          <TableCell>{contract.worker_name || "-"}</TableCell>
                           <TableCell className="text-right">
-                            {Number(deal.deal_value).toLocaleString()}
+                            {Number(contract.deal_value).toLocaleString()}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {Number(deal.total_amount).toLocaleString()}
+                            {Number(contract.total_amount).toLocaleString()}
                           </TableCell>
                           <TableCell>
-                            <Badge className={cn("text-xs", getStatusColor(deal.status))}>
-                              {deal.status}
+                            <Badge className={cn("text-xs", getStatusColor(contract.status))}>
+                              {contract.status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-xs">
-                            {new Date(deal.created_at).toLocaleDateString('en-GB')}
+                            {new Date(contract.created_at).toLocaleDateString('en-GB')}
                           </TableCell>
                           <TableCell>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => navigate(`/crm/deals/${deal.id}`)}
+                              onClick={() => navigate(`/crm/contracts/${contract.id}`)}
                             >
                               View
                             </Button>
@@ -278,4 +278,4 @@ const DealsManagement = () => {
   );
 };
 
-export default DealsManagement;
+export default ContractsManagement;
