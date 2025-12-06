@@ -424,13 +424,51 @@ const ContractDetail = () => {
     }
   };
 
-  const handleEmailDealSheet = () => {
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  const handleEmailDealSheet = async () => {
     if (!deal) return;
     
-    const subject = encodeURIComponent(`Deal Sheet - ${deal.deal_number}`);
-    const body = encodeURIComponent(`Dear ${deal.client_name},\n\nPlease find attached your deal sheet for reference.\n\nDeal Number: ${deal.deal_number}\nTotal Amount: AED ${deal.total_amount.toFixed(2)}\n\nFor any queries, please contact us at:\nPhone: +97143551186\nEmail: tadbeer@tadmaids.com\n\nBest regards,\nTADMAIDS Team`);
-    const mailto = `mailto:${deal.client_email || ''}?subject=${subject}&body=${body}`;
-    window.location.href = mailto;
+    if (!deal.client_email) {
+      toast({
+        title: "No email address",
+        description: "This client doesn't have an email address on file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSendingEmail(true);
+    
+    try {
+      const dealSheetHtml = generateDealSheetHTML();
+      
+      const { data, error } = await supabase.functions.invoke('send-contract-email', {
+        body: {
+          to: deal.client_email,
+          clientName: deal.client_name,
+          dealNumber: deal.deal_number,
+          totalAmount: deal.total_amount,
+          dealSheetHtml: dealSheetHtml,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email sent!",
+        description: `Deal sheet sent to ${deal.client_email}`,
+      });
+    } catch (error: any) {
+      console.error("Error sending email:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send email",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingEmail(false);
+    }
   };
 
   const handleStatusChange = async (newStatus: string) => {
@@ -656,10 +694,15 @@ const ContractDetail = () => {
                 variant="outline" 
                 size="sm"
                 onClick={handleEmailDealSheet}
+                disabled={sendingEmail}
                 className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
               >
-                <Mail className="w-4 h-4 mr-2" />
-                Email Client
+                {sendingEmail ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2" />
+                ) : (
+                  <Mail className="w-4 h-4 mr-2" />
+                )}
+                {sendingEmail ? "Sending..." : "Email Client"}
               </Button>
               
               {renderActionButtons()}
