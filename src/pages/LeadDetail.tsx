@@ -1004,16 +1004,6 @@ const LeadDetail = () => {
                       Send Email
                     </Button>
                   )}
-
-                    {!lead.client_converted && (
-                      <Button
-                        className="w-full justify-start"
-                        onClick={() => navigate(`/start-here?lead_id=${lead.id}`)}
-                      >
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Convert to Client
-                      </Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
