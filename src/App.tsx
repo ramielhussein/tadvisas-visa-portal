@@ -267,7 +267,9 @@ const App = () => (
           {/* Gym Timer */}
           <Route path="/gym" element={<GymTimer />} />
           
+          {/* Legacy URL redirects */}
           <Route path="/chattest" element={<Navigate to="/" replace />} />
+          <Route path="/financial" element={<Navigate to="/finance" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
