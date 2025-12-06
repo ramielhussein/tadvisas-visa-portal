@@ -162,11 +162,16 @@ const DriverTrackingMap = () => {
             </div>
           </div>
         ) : (
-          <>
-            {/* Always render map container so it initializes properly */}
+          <div className="relative">
+            {/* Map container - use visibility instead of display to maintain layout */}
             <div 
               ref={mapContainerRef} 
-              className={`h-80 rounded-lg overflow-hidden ${activeDrivers.length === 0 ? 'hidden' : ''}`} 
+              className="h-80 w-full rounded-lg overflow-hidden"
+              style={{ 
+                position: 'relative',
+                visibility: activeDrivers.length === 0 ? 'hidden' : 'visible',
+                height: activeDrivers.length === 0 ? 0 : '20rem'
+              }} 
             />
             {activeDrivers.length === 0 && (
               <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
@@ -177,7 +182,7 @@ const DriverTrackingMap = () => {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* Active Drivers List */}
