@@ -50,6 +50,10 @@ const CreateDeal = () => {
     service_type: string;
     service_description: string;
     amount: string;
+    // P4 Monthly fields
+    p4_months?: string;
+    p4_start_date?: Date;
+    p4_end_date?: Date;
   }>>([{
     id: crypto.randomUUID(),
     service_type: "",
@@ -225,7 +229,10 @@ const CreateDeal = () => {
       id: crypto.randomUUID(),
       service_type: "",
       service_description: "",
-      amount: "0"
+      amount: "0",
+      p4_months: "",
+      p4_start_date: undefined,
+      p4_end_date: undefined
     }]);
   };
 
@@ -235,10 +242,31 @@ const CreateDeal = () => {
     }
   };
 
-  const updateService = (id: string, field: string, value: string) => {
-    setServices(services.map(s => 
-      s.id === id ? { ...s, [field]: value } : s
-    ));
+  const updateService = (id: string, field: string, value: string | Date | undefined) => {
+    setServices(services.map(s => {
+      if (s.id !== id) return s;
+      
+      const updated = { ...s, [field]: value };
+      
+      // Auto-calculate end date when P4 months or start date changes
+      if ((field === 'p4_months' || field === 'p4_start_date') && updated.p4_start_date && updated.p4_months) {
+        const months = parseInt(updated.p4_months as string) || 0;
+        if (months > 0) {
+          const endDate = new Date(updated.p4_start_date);
+          endDate.setMonth(endDate.getMonth() + months);
+          endDate.setDate(endDate.getDate() - 1); // End date is last day of the period
+          updated.p4_end_date = endDate;
+        }
+      }
+      
+      return updated;
+    }));
+  };
+
+  // Helper to check if service is P4 Monthly
+  const isP4Monthly = (serviceType: string) => {
+    return serviceType.toLowerCase().includes('p4') || 
+           serviceType.toLowerCase().includes('monthly');
   };
 
   const generateDealSheetPDF = async (deal: any) => {
@@ -826,6 +854,81 @@ const CreateDeal = () => {
                             </SelectContent>
                           </Select>
                         </div>
+
+                        {/* P4 Monthly Fields - shown conditionally */}
+                        {isP4Monthly(service.service_type) && (
+                          <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-4 border border-blue-200 dark:border-blue-800">
+                            <p className="text-sm font-medium text-blue-700 dark:text-blue-300">P4 Monthly Contract Details</p>
+                            
+                            <div className="space-y-2">
+                              <Label>Number of Months *</Label>
+                              <Input
+                                type="number"
+                                min="1"
+                                max="24"
+                                value={service.p4_months || ""}
+                                onChange={(e) => updateService(service.id, 'p4_months', e.target.value)}
+                                placeholder="e.g., 12"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Start Date *</Label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !service.p4_start_date && "text-muted-foreground"
+                                      )}
+                                    >
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {service.p4_start_date ? format(service.p4_start_date, "PPP") : "Select start date"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={service.p4_start_date}
+                                      onSelect={(date) => updateService(service.id, 'p4_start_date', date)}
+                                      initialFocus
+                                      className={cn("p-3 pointer-events-auto")}
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>End Date (Auto-calculated)</Label>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !service.p4_end_date && "text-muted-foreground"
+                                      )}
+                                    >
+                                      <CalendarIcon className="mr-2 h-4 w-4" />
+                                      {service.p4_end_date ? format(service.p4_end_date, "PPP") : "Auto-calculated"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                      mode="single"
+                                      selected={service.p4_end_date}
+                                      onSelect={(date) => updateService(service.id, 'p4_end_date', date)}
+                                      initialFocus
+                                      className={cn("p-3 pointer-events-auto")}
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         <div className="space-y-2">
                           <Label>Service Description</Label>
