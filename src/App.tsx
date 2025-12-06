@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { useAutoAttendance } from "./hooks/useAutoAttendance";
 import Index from "./pages/Index";
 import HireAMaid from "./pages/HireAMaid";
@@ -120,6 +120,12 @@ const AppContent = () => {
   return null;
 };
 
+// Redirect component for legacy deal URLs
+const DealRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/crm/deals/${id}`} replace />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -175,7 +181,7 @@ const App = () => (
           {/* Legacy redirects for backward compatibility */}
           <Route path="/deals" element={<Navigate to="/crm/deals" replace />} />
           <Route path="/deals/create" element={<Navigate to="/crm/deals/create" replace />} />
-          <Route path="/deals/:id" element={<Navigate to="/crm/deals/:id" replace />} />
+          <Route path="/deals/:id" element={<DealRedirect />} />
           <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
           <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
           <Route path="/daily-sales-report" element={<Navigate to="/crm/daily-sales-report" replace />} />
