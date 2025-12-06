@@ -280,17 +280,33 @@ const CreateDeal = () => {
            serviceType.toLowerCase().includes('monthly');
   };
 
-  const generateDealSheetPDF = async (deal: any) => {
-    const dealSheetHTML = `
+  const generateDealSheetHTML = (deal: any) => {
+    return `
       <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
-        <!-- Header -->
-        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #000; padding-bottom: 20px;">
-          <h1 style="margin: 0; font-size: 32px; color: #1a1a1a;">TADMAIDS</h1>
-          <p style="margin: 5px 0; color: #666;">Domestic Services Agreement</p>
+        <!-- Header with Logo -->
+        <div style="margin-bottom: 30px; border-bottom: 3px solid #1e3a5f; padding-bottom: 20px;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="width: 50%;">
+                <img src="https://tadmaids.com/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" alt="TADMAIDS" style="height: 50px; width: auto;" />
+              </td>
+              <td style="width: 50%; text-align: right; font-size: 12px; color: #666;">
+                <p style="margin: 2px 0;"><strong>Phone:</strong> +97143551186</p>
+                <p style="margin: 2px 0;"><strong>Email:</strong> tadbeer@tadmaids.com</p>
+                <p style="margin: 2px 0;"><strong>Address:</strong> Tadmaids Center, Dubai, UAE</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Document Title -->
+        <div style="text-align: center; margin-bottom: 25px;">
+          <h2 style="margin: 0; font-size: 24px; color: #1e3a5f;">DEAL SHEET</h2>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Domestic Services Agreement</p>
         </div>
 
         <!-- Deal Information -->
-        <div style="margin-bottom: 30px;">
+        <div style="margin-bottom: 25px; background-color: #f0f4f8; padding: 15px; border-radius: 8px;">
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px; width: 50%;"><strong>Deal Number:</strong> ${deal.deal_number}</td>
@@ -300,8 +316,8 @@ const CreateDeal = () => {
         </div>
 
         <!-- Client Information -->
-        <div style="margin-bottom: 30px; background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #1a1a1a;">Client Information</h3>
+        <div style="margin-bottom: 25px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; border-left: 4px solid #1e3a5f;">
+          <h3 style="margin-top: 0; color: #1e3a5f; font-size: 16px;">Client Information</h3>
           <table style="width: 100%;">
             <tr>
               <td style="padding: 5px;"><strong>Name:</strong> ${deal.client_name}</td>
@@ -314,11 +330,11 @@ const CreateDeal = () => {
         </div>
 
         <!-- Services Section -->
-        <div style="margin-bottom: 30px;">
-          <h3 style="color: #1a1a1a; border-bottom: 2px solid #000; padding-bottom: 10px;">Services Included</h3>
+        <div style="margin-bottom: 25px;">
+          <h3 style="color: #1e3a5f; border-bottom: 2px solid #1e3a5f; padding-bottom: 10px; font-size: 16px;">Services Included</h3>
           <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
             <thead>
-              <tr style="background-color: #f0f0f0;">
+              <tr style="background-color: #1e3a5f; color: white;">
                 <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
                 <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Service Type</th>
                 <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Description</th>
@@ -327,7 +343,7 @@ const CreateDeal = () => {
             </thead>
             <tbody>
               ${JSON.parse(deal.service_description).map((service: any, index: number) => `
-                <tr>
+                <tr style="background-color: ${index % 2 === 0 ? '#fff' : '#f9f9f9'};">
                   <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
                   <td style="padding: 10px; border: 1px solid #ddd;"><strong>${service.service_type}</strong></td>
                   <td style="padding: 10px; border: 1px solid #ddd;">${service.service_description || '-'}</td>
@@ -339,8 +355,8 @@ const CreateDeal = () => {
         </div>
 
         <!-- Financial Summary -->
-        <div style="margin-bottom: 30px; background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #1a1a1a;">Financial Summary</h3>
+        <div style="margin-bottom: 25px; background-color: #f0f4f8; padding: 20px; border-radius: 8px;">
+          <h3 style="margin-top: 0; color: #1e3a5f; font-size: 16px;">Financial Summary</h3>
           <table style="width: 100%;">
             <tr>
               <td style="padding: 8px;"><strong>Subtotal (Excl. VAT):</strong></td>
@@ -350,9 +366,9 @@ const CreateDeal = () => {
               <td style="padding: 8px;"><strong>VAT (${deal.vat_rate}%):</strong></td>
               <td style="padding: 8px; text-align: right;">AED ${deal.vat_amount.toFixed(2)}</td>
             </tr>
-            <tr style="border-top: 2px solid #000;">
-              <td style="padding: 12px;"><strong style="font-size: 18px;">Total Amount:</strong></td>
-              <td style="padding: 12px; text-align: right;"><strong style="font-size: 18px;">AED ${deal.total_amount.toFixed(2)}</strong></td>
+            <tr style="border-top: 2px solid #1e3a5f; background-color: #1e3a5f; color: white;">
+              <td style="padding: 12px;"><strong style="font-size: 16px;">Total Amount:</strong></td>
+              <td style="padding: 12px; text-align: right;"><strong style="font-size: 16px;">AED ${deal.total_amount.toFixed(2)}</strong></td>
             </tr>
             ${deal.paid_amount > 0 ? `
               <tr>
@@ -368,22 +384,22 @@ const CreateDeal = () => {
         </div>
 
         <!-- Payment Terms -->
-        <div style="margin-bottom: 40px;">
-          <h4 style="color: #1a1a1a;">Payment Terms:</h4>
+        <div style="margin-bottom: 30px;">
+          <h4 style="color: #1e3a5f; font-size: 14px;">Payment Terms:</h4>
           <p style="margin: 5px 0;">${deal.payment_terms}</p>
         </div>
 
         ${deal.notes ? `
-          <div style="margin-bottom: 40px;">
-            <h4 style="color: #1a1a1a;">Additional Notes:</h4>
+          <div style="margin-bottom: 30px;">
+            <h4 style="color: #1e3a5f; font-size: 14px;">Additional Notes:</h4>
             <p style="margin: 5px 0; white-space: pre-wrap;">${deal.notes}</p>
           </div>
         ` : ''}
 
         <!-- Terms and Conditions -->
-        <div style="margin-bottom: 40px; font-size: 12px; color: #666;">
-          <h4 style="color: #1a1a1a;">Terms & Conditions:</h4>
-          <ul style="line-height: 1.6;">
+        <div style="margin-bottom: 30px; font-size: 11px; color: #666; background-color: #f9f9f9; padding: 15px; border-radius: 8px;">
+          <h4 style="color: #1e3a5f; margin-top: 0; font-size: 12px;">Terms & Conditions:</h4>
+          <ul style="line-height: 1.6; margin: 10px 0; padding-left: 20px;">
             <li>This agreement is valid for the services specified above.</li>
             <li>Payment terms as specified must be adhered to.</li>
             <li>Services will be delivered as per agreed timelines.</li>
@@ -392,22 +408,22 @@ const CreateDeal = () => {
         </div>
 
         <!-- Signatures -->
-        <div style="margin-top: 60px;">
+        <div style="margin-top: 50px;">
           <table style="width: 100%;">
             <tr>
               <td style="width: 45%; vertical-align: bottom;">
-                <div style="border-top: 2px solid #000; padding-top: 10px; margin-top: 80px;">
-                  <p style="margin: 0;"><strong>Client Signature</strong></p>
-                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Name: ${deal.client_name}</p>
-                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Date: _________________</p>
+                <div style="border-top: 2px solid #1e3a5f; padding-top: 10px; margin-top: 60px;">
+                  <p style="margin: 0; color: #1e3a5f;"><strong>Client Signature</strong></p>
+                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Name: ${deal.client_name}</p>
+                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Date: _________________</p>
                 </div>
               </td>
               <td style="width: 10%;"></td>
               <td style="width: 45%; vertical-align: bottom;">
-                <div style="border-top: 2px solid #000; padding-top: 10px; margin-top: 80px;">
-                  <p style="margin: 0;"><strong>TADMAIDS Representative</strong></p>
-                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Name: _________________</p>
-                  <p style="margin: 5px 0; font-size: 12px; color: #666;">Date: _________________</p>
+                <div style="border-top: 2px solid #1e3a5f; padding-top: 10px; margin-top: 60px;">
+                  <p style="margin: 0; color: #1e3a5f;"><strong>TADMAIDS Representative</strong></p>
+                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Name: _________________</p>
+                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Date: _________________</p>
                 </div>
               </td>
             </tr>
@@ -415,11 +431,17 @@ const CreateDeal = () => {
         </div>
 
         <!-- Footer -->
-        <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #ddd; padding-top: 20px;">
-          <p>This is an official document from TADMAIDS | Generated on ${format(new Date(), "dd MMM yyyy 'at' HH:mm")}</p>
+        <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 15px;">
+          <p style="margin: 2px 0;">TADMAIDS Domestic Worker Services Center</p>
+          <p style="margin: 2px 0;">Phone: +97143551186 | Email: tadbeer@tadmaids.com | Tadmaids Center, Dubai, UAE</p>
+          <p style="margin: 8px 0; color: #666;">Generated on ${format(new Date(), "dd MMM yyyy 'at' HH:mm")}</p>
         </div>
       </div>
     `;
+  };
+
+  const generateDealSheetPDF = async (deal: any) => {
+    const dealSheetHTML = generateDealSheetHTML(deal);
 
     const opt = {
       margin: [10, 10, 10, 10] as [number, number, number, number],
