@@ -81,8 +81,11 @@ const FinancialDashboard = () => {
       // Fetch invoice stats
       const { data: invoices } = await supabase.from("invoices").select("*");
       
-      // Fetch deals stats
-      const { data: deals } = await supabase.from("deals").select("*");
+      // Fetch deals stats - only Active deals for sales figures
+      const { data: deals } = await supabase
+        .from("deals")
+        .select("*")
+        .eq("status", "Active");
 
       // Fetch account balances
       const { data: balances } = await supabase.from("account_balances").select("*");
@@ -90,40 +93,40 @@ const FinancialDashboard = () => {
       // Fetch supplier balances
       const { data: suppliers } = await supabase.from("supplier_balances").select("*");
 
-      if (invoices) {
-        const totalRevenue = invoices.reduce((sum, inv) => sum + Number(inv.total_amount), 0);
-        const totalPaid = invoices.reduce((sum, inv) => sum + Number(inv.paid_amount), 0);
-        const totalOutstanding = invoices.reduce((sum, inv) => sum + Number(inv.balance_due), 0);
-        const pendingInvoices = invoices.filter(inv => inv.status === 'Pending').length;
-        const overdueInvoices = invoices.filter(inv => inv.status === 'Overdue').length;
+      // Calculate sales from active deals
+      const totalSalesRevenue = deals?.reduce((sum, d) => sum + Number(d.total_amount || 0), 0) || 0;
+      const totalPaidFromDeals = deals?.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0) || 0;
+      const totalOutstandingFromDeals = deals?.reduce((sum, d) => sum + Number(d.balance_due || 0), 0) || 0;
+      const totalCommissions = deals?.reduce((sum, d) => sum + Number(d.commission_amount || 0), 0) || 0;
+      const activeDeals = deals?.length || 0;
 
-        const totalCommissions = deals?.reduce((sum, d) => sum + Number(d.commission_amount || 0), 0) || 0;
-        const activeDeals = deals?.filter(d => d.status === 'Active').length || 0;
+      // Invoice stats for pending/overdue counts
+      const pendingInvoices = invoices?.filter(inv => inv.status === 'Pending').length || 0;
+      const overdueInvoices = invoices?.filter(inv => inv.status === 'Overdue').length || 0;
 
-        const totalPayable = suppliers?.reduce((sum, s) => sum + Number(s.total_outstanding || 0), 0) || 0;
-        const suppliersPending = suppliers?.reduce((sum, s) => sum + Number(s.pending_invoices || 0), 0) || 0;
+      const totalPayable = suppliers?.reduce((sum, s) => sum + Number(s.total_outstanding || 0), 0) || 0;
+      const suppliersPending = suppliers?.reduce((sum, s) => sum + Number(s.pending_invoices || 0), 0) || 0;
 
-        setStats({
-          totalRevenue,
-          totalPaid,
-          totalOutstanding,
-          pendingInvoices,
-          overdueInvoices,
-          activeDeals,
-          totalCommissions,
-          totalPayable,
-          suppliersPending,
-        });
-      }
+      setStats({
+        totalRevenue: totalSalesRevenue,
+        totalPaid: totalPaidFromDeals,
+        totalOutstanding: totalOutstandingFromDeals,
+        pendingInvoices,
+        overdueInvoices,
+        activeDeals,
+        totalCommissions,
+        totalPayable,
+        suppliersPending,
+      });
 
       setAccountBalances(balances || []);
       setSupplierBalances(suppliers || []);
 
-      // Fetch contracts with A/R tracking
+      // Fetch contracts with A/R tracking - only Active contracts (exclude Cancelled, Voided, etc.)
       const { data: contractsData } = await supabase
         .from("contracts")
         .select("*")
-        .neq("status", "Cancelled")
+        .eq("status", "Active")
         .order("start_date", { ascending: true });
 
       if (contractsData) {
