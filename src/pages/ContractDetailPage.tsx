@@ -689,21 +689,24 @@ const ContractDetail = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {/* Dedicated Email Client Button */}
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleEmailDealSheet}
-                disabled={sendingEmail}
-                className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
-              >
-                {sendingEmail ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2" />
-                ) : (
-                  <Mail className="w-4 h-4 mr-2" />
-                )}
-                {sendingEmail ? "Sending..." : "Email Client"}
-              </Button>
+              {/* Dedicated Email Client Button - Only for Active deals */}
+              {deal.status === 'Active' && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleEmailDealSheet}
+                  disabled={sendingEmail || !deal.client_email}
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                  title={!deal.client_email ? "No client email on file" : undefined}
+                >
+                  {sendingEmail ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-700 mr-2" />
+                  ) : (
+                    <Mail className="w-4 h-4 mr-2" />
+                  )}
+                  {sendingEmail ? "Sending..." : "Email Client"}
+                </Button>
+              )}
               
               {renderActionButtons()}
             </div>

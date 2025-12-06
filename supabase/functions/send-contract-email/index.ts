@@ -40,26 +40,31 @@ const handler = async (req: Request): Promise<Response> => {
       to: [to],
       subject: `Deal Sheet - ${dealNumber}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <p>Dear ${clientName},</p>
-          
-          <p>Please find below your deal sheet for reference.</p>
-          
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>Deal Number:</strong> ${dealNumber}</p>
-            <p style="margin: 5px 0;"><strong>Total Amount:</strong> AED ${totalAmount.toFixed(2)}</p>
-          </div>
-
-          ${dealSheetHtml}
-          
-          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
-          
-          <p>For any queries, please contact us at:</p>
-          <p style="margin: 5px 0;">Phone: +97143551186</p>
-          <p style="margin: 5px 0;">Email: tadbeer@tadmaids.com</p>
-          
-          <p style="margin-top: 30px;">Best regards,<br/><strong>TADMAIDS Team</strong></p>
-        </div>
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Deal Sheet - ${dealNumber}</title>
+          </head>
+          <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5;">
+            <div style="max-width: 800px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px;">
+              <p style="margin-bottom: 20px;">Dear ${clientName},</p>
+              
+              <p>Please find below your deal sheet for reference.</p>
+              
+              <!-- Deal Sheet Content -->
+              ${dealSheetHtml}
+              
+              <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+              
+              <p>For any queries, please contact us at:</p>
+              <p style="margin: 5px 0;">Phone: +97143551186</p>
+              <p style="margin: 5px 0;">Email: tadbeer@tadmaids.com</p>
+              
+              <p style="margin-top: 30px;">Best regards,<br/><strong>TADMAIDS Team</strong></p>
+            </div>
+          </body>
+        </html>
       `,
     });
 
