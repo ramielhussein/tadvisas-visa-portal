@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import RecordDealPaymentDialog from "@/components/deals/RecordDealPaymentDialog";
+import DealCostsSection from "@/components/deals/DealCostsSection";
 import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download, CreditCard, Printer, Send } from "lucide-react";
 import { format } from "date-fns";
 import html2pdf from "html2pdf.js";
@@ -941,6 +942,12 @@ const DealDetail = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Cost of Goods & Profit */}
+              <DealCostsSection 
+                dealId={deal.id} 
+                totalRevenue={deal.total_amount} 
+              />
 
               {/* Timeline */}
               <Card>
