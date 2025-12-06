@@ -122,33 +122,35 @@ const FinancialDashboard = () => {
       setAccountBalances(balances || []);
       setSupplierBalances(suppliers || []);
 
-      // Fetch contracts with A/R tracking - only Active contracts (exclude Cancelled, Voided, etc.)
+      // Fetch contracts (from deals table) with A/R tracking - only Active contracts
       const { data: contractsData } = await supabase
-        .from("contracts")
+        .from("deals")
         .select("*")
         .eq("status", "Active")
+        .not("start_date", "is", null)
         .order("start_date", { ascending: true });
 
       if (contractsData) {
         const contractsWithAR = await Promise.all(
           contractsData.map(async (contract) => {
-            // Get payments for this client
+            // Get payments for this deal
             const { data: payments } = await supabase
               .from("payments")
               .select("amount")
-              .eq("client_phone", contract.client_phone);
+              .eq("deal_id", contract.id);
 
-            const totalPaid = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+            const totalPaid = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || Number(contract.paid_amount || 0);
             
             const startDate = new Date(contract.start_date);
-            const endDate = contract.end_date ? new Date(contract.end_date) : addMonths(startDate, contract.duration_months || 24);
+            const endDate = contract.end_date ? new Date(contract.end_date) : addMonths(startDate, 24);
             const today = new Date();
             
             const monthsElapsed = Math.max(0, differenceInMonths(today, startDate));
-            const totalDuration = contract.duration_months || differenceInMonths(endDate, startDate);
+            const totalDuration = differenceInMonths(endDate, startDate) || 24;
             const monthsRemaining = Math.max(0, totalDuration - monthsElapsed);
             
-            const monthlyAmount = Number(contract.monthly_amount || 0);
+            // Calculate monthly amount from total and duration
+            const monthlyAmount = totalDuration > 0 ? Number(contract.total_amount) / totalDuration : 0;
             const expectedMonths = Math.min(monthsElapsed, totalDuration);
             const expectedRevenueToDate = monthlyAmount > 0 ? monthlyAmount * expectedMonths : Number(contract.total_amount);
             
@@ -160,7 +162,7 @@ const FinancialDashboard = () => {
 
             return {
               id: contract.id,
-              contract_number: contract.contract_number,
+              contract_number: contract.deal_number,
               client_name: contract.client_name,
               start_date: contract.start_date,
               end_date: contract.end_date || format(endDate, 'yyyy-MM-dd'),
