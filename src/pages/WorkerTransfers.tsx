@@ -8,11 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, RefreshCw, Plus, Truck, FileText, Users } from "lucide-react";
 import CreateTransferDialog from "@/components/transfers/CreateTransferDialog";
+import TransferDetailDialog from "@/components/transfers/TransferDetailDialog";
 import DriverTrackingMap from "@/components/mapbox/DriverTrackingMap";
 
 interface WorkerTransfer {
   id: string;
   transfer_number: string;
+  title: string | null;
   worker_id: string;
   from_location: string;
   to_location: string;
@@ -56,6 +58,7 @@ const WorkerTransfers = () => {
   const [transfers, setTransfers] = useState<WorkerTransfer[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedTransfer, setSelectedTransfer] = useState<WorkerTransfer | null>(null);
 
   useEffect(() => {
     fetchTransfers();
@@ -177,6 +180,12 @@ const WorkerTransfers = () => {
           onSuccess={fetchTransfers}
         />
 
+        <TransferDetailDialog
+          open={!!selectedTransfer}
+          onOpenChange={(open) => !open && setSelectedTransfer(null)}
+          transfer={selectedTransfer}
+        />
+
         {/* Live Driver Tracking Map */}
         <DriverTrackingMap />
 
@@ -235,13 +244,20 @@ const WorkerTransfers = () => {
             ) : (
               <div className="space-y-3">
                 {transfers.map((transfer) => (
-                  <Card key={transfer.id} className="hover:shadow-md transition-shadow">
+                  <Card 
+                    key={transfer.id} 
+                    className="hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50"
+                    onClick={() => setSelectedTransfer(transfer)}
+                  >
                     <CardContent className="pt-4">
                       <div className="flex items-start justify-between">
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-3 flex-wrap">
                             {getCategoryIcon(transfer.transfer_category)}
-                            <span className="font-semibold">{transfer.transfer_number || transfer.id.slice(0, 8)}</span>
+                            <span className="font-semibold">
+                              {transfer.title || transfer.transfer_number || transfer.id.slice(0, 8)}
+                            </span>
+                            
                             {transfer.transfer_category && transfer.transfer_category !== "TRANSPORT" && (
                               <Badge variant="outline" className="text-xs">
                                 {transfer.transfer_category}

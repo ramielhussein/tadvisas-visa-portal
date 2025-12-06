@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface Task {
   id: string;
   transfer_number: string;
+  title: string | null;
   from_location: string;
   to_location: string;
   transfer_date: string;
@@ -53,13 +54,13 @@ const DriversFloatingIsland = () => {
 
   const fetchTasks = async () => {
     try {
-      // @ts-ignore
+      // @ts-ignore - Fetch only incomplete tasks (not completed/delivered/cancelled)
       const { data, error } = await supabase
         .from("worker_transfers")
-        .select("id, transfer_number, from_location, to_location, transfer_date, driver_status, driver_id")
-        .in("driver_status", ["pending", "accepted", "pickup", "in_transit"])
+        .select("id, transfer_number, title, from_location, to_location, transfer_date, driver_status, driver_id")
+        .or("driver_status.is.null,driver_status.in.(pending,accepted,pickup,in_transit)")
         .order("transfer_date", { ascending: true })
-        .limit(15);
+        .limit(50);
 
       if (error) throw error;
 
@@ -118,7 +119,7 @@ const DriversFloatingIsland = () => {
                   <div key={task.id} className="bg-slate-800/50 rounded-md p-2">
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-white font-medium truncate">
-                        {task.transfer_number || task.id.slice(0, 6)}
+                        {task.title || task.transfer_number || task.id.slice(0, 6)}
                       </span>
                       <Badge variant="outline" className={cn(
                         "text-[10px] px-1.5 py-0",

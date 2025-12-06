@@ -42,6 +42,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
   const [toLocation, setToLocation] = useState({ address: "", lat: 0, lng: 0 });
   
   const [formData, setFormData] = useState({
+    title: "",
     transfer_date: format(new Date(), "yyyy-MM-dd"),
     transfer_time: "",
     notes: "",
@@ -101,6 +102,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
 
       // Let database generate transfer_number automatically via default
       const { error } = await supabase.from("worker_transfers").insert({
+        title: formData.title.trim() || null,
         worker_id: selectedWorker?.id || null,
         from_location: fromLocation.address,
         to_location: toLocation.address,
@@ -149,6 +151,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
     setFromLocation({ address: "", lat: 0, lng: 0 });
     setToLocation({ address: "", lat: 0, lng: 0 });
     setFormData({
+      title: "",
       transfer_date: format(new Date(), "yyyy-MM-dd"),
       transfer_time: "",
       notes: "",
@@ -296,6 +299,16 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
                 <span className="font-medium">Details:</span> {adminDetails}
               </div>
             )}
+
+            {/* Task Title */}
+            <div className="space-y-2">
+              <Label>Task Title <span className="text-muted-foreground text-xs">(for quick identification)</span></Label>
+              <Input
+                placeholder="e.g., Airport Pickup - Maria"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
 
             {/* Worker Selection (Optional) */}
             <div className="space-y-2">
