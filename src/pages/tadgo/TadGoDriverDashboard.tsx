@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -44,22 +44,29 @@ const TadGoDriverDashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
   
   // Start location tracking when driver has active tasks
-  const { isTracking, startTracking, stopTracking } = useDriverLocation(null);
+  const { isTracking, error: trackingError, startTracking, stopTracking } = useDriverLocation(null);
+  const trackingStartedRef = useRef(false);
 
   useEffect(() => {
     checkAuthAndFetch();
   }, []);
 
-  // Start tracking when there are active tasks
+  // Start tracking when there are active tasks - only once
   useEffect(() => {
-    if (myTasks.length > 0 && !isTracking) {
+    if (myTasks.length > 0 && !trackingStartedRef.current) {
       console.log('TadGo Dashboard: Starting location tracking - active tasks found');
+      trackingStartedRef.current = true;
       startTracking();
     }
+    
+    // Cleanup on unmount only
     return () => {
-      stopTracking();
+      if (trackingStartedRef.current) {
+        stopTracking();
+        trackingStartedRef.current = false;
+      }
     };
-  }, [myTasks.length, isTracking, startTracking, stopTracking]);
+  }, [myTasks.length]); // Removed startTracking and stopTracking from deps to prevent re-runs
 
   const checkAuthAndFetch = async () => {
     const { data: { user } } = await supabase.auth.getUser();
