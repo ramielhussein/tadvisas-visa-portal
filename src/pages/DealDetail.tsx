@@ -533,11 +533,6 @@ const DealDetail = () => {
               Edit
             </Button>
             <Button
-              onClick={() => handleStatusChange("Closed")}
-            >
-              Close Deal
-            </Button>
-            <Button
               variant="destructive"
               onClick={handleVoidDeal}
             >
