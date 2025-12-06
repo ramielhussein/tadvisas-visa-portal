@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Deal {
@@ -123,10 +123,16 @@ const DealsManagement = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Deals & Sales</h1>
-            <Button onClick={() => navigate("/crm/deals/create")}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Deal
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => navigate("/crm/deals/ar-report")}>
+                <BarChart3 className="w-4 h-4 mr-2" />
+                A/R Report
+              </Button>
+              <Button onClick={() => navigate("/crm/deals/create")}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Deal
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}

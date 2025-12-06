@@ -32,3 +32,27 @@ verify_jwt = true
 
 [functions.zkteco-webhook]
 verify_jwt = false
+
+[functions.send-deal-notification]
+verify_jwt = true
+
+[functions.send-attendance-report]
+verify_jwt = true
+
+[functions.send-daily-report-email]
+verify_jwt = true
+
+[functions.send-personal-sales-reports]
+verify_jwt = true
+
+[functions.import-contracts-excel]
+verify_jwt = true
+
+[functions.sync-to-trello]
+verify_jwt = true
+
+[functions.import-trello-leads]
+verify_jwt = true
+
+[functions.send-application-email]
+verify_jwt = false

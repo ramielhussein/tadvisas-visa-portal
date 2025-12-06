@@ -38,6 +38,9 @@ interface Deal {
   assigned_to: string | null;
   paid_amount: number;
   balance_due: number;
+  start_date: string | null;
+  end_date: string | null;
+  reminder_days_before: number | null;
   attachments: Array<{
     name?: string;
     url?: string; // legacy public url
@@ -451,6 +454,19 @@ const DealDetail = () => {
         title: "Success",
         description: `Deal status updated to ${newStatus}`,
       });
+
+      // Send notification email when deal is activated
+      if (newStatus === 'Active' && deal?.id) {
+        try {
+          await supabase.functions.invoke('send-deal-notification', {
+            body: { type: 'deal_activated', deal_id: deal.id }
+          });
+          console.log('Deal activation notification sent');
+        } catch (notifError) {
+          console.error('Failed to send notification:', notifError);
+          // Don't fail the status change if notification fails
+        }
+      }
       
       fetchDeal(); // Refresh deal data
     } catch (error: any) {
