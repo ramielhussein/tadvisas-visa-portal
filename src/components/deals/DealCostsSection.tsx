@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, DollarSign, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
+import { Plus, Trash2, DollarSign, TrendingUp, TrendingDown, Loader2, Download } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 interface DealCost {
   id: string;
@@ -19,13 +20,21 @@ interface DealCost {
   created_at: string;
 }
 
+interface WorkerAcquisitionCost {
+  category: string;
+  amount: number;
+  description?: string;
+}
+
 interface DealCostsSectionProps {
   dealId: string;
   totalRevenue: number;
+  workerId?: string | null;
 }
 
 const COST_CATEGORIES = [
   { value: "worker_cost", label: "Worker Cost" },
+  { value: "agent_fee", label: "Agent Fee" },
   { value: "visa_cost", label: "Visa Cost" },
   { value: "medical", label: "Medical" },
   { value: "transport", label: "Transport" },
@@ -34,13 +43,15 @@ const COST_CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
-const DealCostsSection = ({ dealId, totalRevenue }: DealCostsSectionProps) => {
+const DealCostsSection = ({ dealId, totalRevenue, workerId }: DealCostsSectionProps) => {
   const { toast } = useToast();
   const [costs, setCosts] = useState<DealCost[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [workerCosts, setWorkerCosts] = useState<WorkerAcquisitionCost[]>([]);
+  const [importingWorkerCosts, setImportingWorkerCosts] = useState(false);
   const [newCost, setNewCost] = useState({
     cost_category: "",
     description: "",
@@ -51,7 +62,10 @@ const DealCostsSection = ({ dealId, totalRevenue }: DealCostsSectionProps) => {
   useEffect(() => {
     fetchCosts();
     fetchSuppliers();
-  }, [dealId]);
+    if (workerId) {
+      fetchWorkerCosts();
+    }
+  }, [dealId, workerId]);
 
   const fetchCosts = async () => {
     try {
@@ -78,6 +92,67 @@ const DealCostsSection = ({ dealId, totalRevenue }: DealCostsSectionProps) => {
       .order("supplier_name");
     
     setSuppliers(data || []);
+  };
+
+  const fetchWorkerCosts = async () => {
+    if (!workerId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("workers")
+        .select("acquisition_costs")
+        .eq("id", workerId)
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      const costs = (data?.acquisition_costs as unknown) as WorkerAcquisitionCost[] | null;
+      if (Array.isArray(costs)) {
+        setWorkerCosts(costs);
+      } else {
+        setWorkerCosts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching worker costs:", error);
+    }
+  };
+
+  const handleImportWorkerCosts = async () => {
+    if (workerCosts.length === 0) return;
+    
+    setImportingWorkerCosts(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const costsToInsert = workerCosts.map(wc => ({
+        deal_id: dealId,
+        cost_category: wc.category,
+        description: wc.description ? `(From CV) ${wc.description}` : "(From CV)",
+        amount: wc.amount,
+        created_by: user?.id,
+      }));
+
+      const { error } = await supabase
+        .from("deal_costs")
+        .insert(costsToInsert);
+
+      if (error) throw error;
+
+      toast({
+        title: "Costs Imported",
+        description: `${workerCosts.length} worker acquisition costs imported to this deal`,
+      });
+
+      fetchCosts();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setImportingWorkerCosts(false);
+    }
   };
 
   const handleAddCost = async () => {
@@ -185,6 +260,34 @@ const DealCostsSection = ({ dealId, totalRevenue }: DealCostsSectionProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Worker Costs Import Banner */}
+        {workerId && workerCosts.length > 0 && (
+          <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Worker has {workerCosts.length} acquisition cost{workerCosts.length > 1 ? 's' : ''} on file
+              </p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Total: {workerCosts.reduce((sum, c) => sum + c.amount, 0).toLocaleString()} AED
+              </p>
+            </div>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={handleImportWorkerCosts}
+              disabled={importingWorkerCosts}
+              className="border-blue-300 text-blue-700 hover:bg-blue-100"
+            >
+              {importingWorkerCosts ? (
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-1" />
+              )}
+              Import to Deal
+            </Button>
+          </div>
+        )}
+
         {/* Profit Summary */}
         <div className="grid grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg">
           <div>
