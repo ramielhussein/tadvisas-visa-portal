@@ -52,6 +52,7 @@ const CreateDeal = () => {
     amount: string;
     // P4 Monthly fields
     p4_months?: string;
+    p4_monthly_rate?: string;
     p4_start_date?: Date;
     p4_end_date?: Date;
   }>>([{
@@ -231,6 +232,7 @@ const CreateDeal = () => {
       service_description: "",
       amount: "0",
       p4_months: "",
+      p4_monthly_rate: "",
       p4_start_date: undefined,
       p4_end_date: undefined
     }]);
@@ -256,6 +258,15 @@ const CreateDeal = () => {
           endDate.setMonth(endDate.getMonth() + months);
           endDate.setDate(endDate.getDate() - 1); // End date is last day of the period
           updated.p4_end_date = endDate;
+        }
+      }
+      
+      // Auto-calculate total amount for P4 Monthly: months × monthly rate
+      if ((field === 'p4_months' || field === 'p4_monthly_rate') && isP4Monthly(updated.service_type)) {
+        const months = parseInt(updated.p4_months as string) || 0;
+        const monthlyRate = parseFloat(updated.p4_monthly_rate as string) || 0;
+        if (months > 0 && monthlyRate > 0) {
+          updated.amount = (months * monthlyRate).toString();
         }
       }
       
@@ -856,21 +867,47 @@ const CreateDeal = () => {
                         </div>
 
                         {/* P4 Monthly Fields - shown conditionally */}
+                        {/* P4 Monthly Fields - shown conditionally */}
                         {isP4Monthly(service.service_type) && (
                           <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg space-y-4 border border-blue-200 dark:border-blue-800">
                             <p className="text-sm font-medium text-blue-700 dark:text-blue-300">P4 Monthly Contract Details</p>
                             
-                            <div className="space-y-2">
-                              <Label>Number of Months *</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                max="24"
-                                value={service.p4_months || ""}
-                                onChange={(e) => updateService(service.id, 'p4_months', e.target.value)}
-                                placeholder="e.g., 12"
-                              />
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>Number of Months *</Label>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  max="24"
+                                  value={service.p4_months || ""}
+                                  onChange={(e) => updateService(service.id, 'p4_months', e.target.value)}
+                                  placeholder="e.g., 12"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label>Monthly Rate (AED) *</Label>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  value={service.p4_monthly_rate || ""}
+                                  onChange={(e) => updateService(service.id, 'p4_monthly_rate', e.target.value)}
+                                  placeholder="e.g., 1500"
+                                />
+                              </div>
                             </div>
+
+                            {service.p4_months && service.p4_monthly_rate && (
+                              <div className="p-2 bg-green-100 dark:bg-green-900 rounded text-sm text-center">
+                                <span className="font-medium">
+                                  {service.p4_months} months × AED {parseFloat(service.p4_monthly_rate || "0").toLocaleString()} = 
+                                  <span className="text-green-700 dark:text-green-300 font-bold ml-1">
+                                    AED {(parseInt(service.p4_months || "0") * parseFloat(service.p4_monthly_rate || "0")).toLocaleString()}
+                                  </span>
+                                </span>
+                              </div>
+                            )}
 
                             <div className="grid grid-cols-2 gap-4">
                               <div className="space-y-2">
