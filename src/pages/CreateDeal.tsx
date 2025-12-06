@@ -26,7 +26,6 @@ const dealSchema = z.object({
   service_description: z.string().max(1000).optional(),
   deal_value: z.number().min(0, "Deal value must be positive"),
   vat_rate: z.number().min(0).max(100),
-  payment_terms: z.string(),
   commission_rate: z.number().min(0).max(100),
   notes: z.string().max(2000).optional(),
 });
@@ -75,7 +74,6 @@ const CreateDeal = () => {
     client_phone: "",
     client_email: "",
     vat_rate: "5",
-    payment_terms: "Full Payment",
     payment_method: "",
     bank_account: "",
     commission_rate: "0",
@@ -371,7 +369,6 @@ const CreateDeal = () => {
               </td>
               <td style="width: 40%; vertical-align: top;">
                 <div style="font-size: 10px;">
-                  <p style="margin: 0 0 5px;"><strong>Payment Terms:</strong> ${deal.payment_terms}</p>
                   ${deal.notes ? `<p style="margin: 0;"><strong>Notes:</strong> ${deal.notes}</p>` : ''}
                 </div>
               </td>
@@ -463,7 +460,6 @@ const CreateDeal = () => {
         service_description: JSON.stringify(services),
         deal_value: calculatedAmounts.base_amount,
         vat_rate: parseFloat(formData.vat_rate),
-        payment_terms: formData.payment_terms,
         commission_rate: parseFloat(formData.commission_rate),
         notes: formData.notes.trim() || undefined,
       });
@@ -514,7 +510,6 @@ const CreateDeal = () => {
           vat_rate: validated.vat_rate,
           vat_amount: calculatedAmounts.vat_amount,
           total_amount: calculatedAmounts.total_amount,
-          payment_terms: validated.payment_terms,
           commission_rate: validated.commission_rate,
           commission_amount: calculatedAmounts.commission_amount,
           paid_amount: parseFloat(formData.received_amount) || 0,
@@ -1084,36 +1079,15 @@ const CreateDeal = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="payment_terms">Payment Terms</Label>
-                      <Select
-                        value={formData.payment_terms}
-                        onValueChange={(value) => setFormData({ ...formData, payment_terms: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Full Payment">Full Payment</SelectItem>
-                          <SelectItem value="50% Upfront">50% Upfront</SelectItem>
-                          <SelectItem value="Installments">Installments</SelectItem>
-                          <SelectItem value="Net 30">Net 30</SelectItem>
-                          <SelectItem value="Net 60">Net 60</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="commission_rate">Commission Rate (%)</Label>
-                      <Input
-                        id="commission_rate"
-                        type="number"
-                        step="0.01"
-                        value={formData.commission_rate}
-                        onChange={(e) => setFormData({ ...formData, commission_rate: e.target.value })}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="commission_rate">Commission Rate (%)</Label>
+                    <Input
+                      id="commission_rate"
+                      type="number"
+                      step="0.01"
+                      value={formData.commission_rate}
+                      onChange={(e) => setFormData({ ...formData, commission_rate: e.target.value })}
+                    />
                   </div>
 
                   {parseFloat(formData.commission_rate) > 0 && (
