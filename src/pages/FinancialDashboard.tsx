@@ -145,8 +145,10 @@ const FinancialDashboard = () => {
             const endDate = contract.end_date ? new Date(contract.end_date) : addMonths(startDate, 24);
             const today = new Date();
             
-            const monthsElapsed = Math.max(0, differenceInMonths(today, startDate));
-            const totalDuration = differenceInMonths(endDate, startDate) || 24;
+            // Calculate months more accurately by using day difference
+            const msPerMonth = 1000 * 60 * 60 * 24 * 30.44; // Average days per month
+            const totalDuration = Math.round((endDate.getTime() - startDate.getTime()) / msPerMonth) || 24;
+            const monthsElapsed = Math.max(0, Math.floor((today.getTime() - startDate.getTime()) / msPerMonth));
             const monthsRemaining = Math.max(0, totalDuration - monthsElapsed);
             
             // Calculate monthly amount from total and duration
