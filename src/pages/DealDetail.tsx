@@ -654,16 +654,79 @@ const DealDetail = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Service Type</p>
-                    <p className="font-medium">{deal.service_type}</p>
-                  </div>
-                  {deal.service_description && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Description</p>
-                      <p className="text-sm">{deal.service_description}</p>
-                    </div>
-                  )}
+                  {(() => {
+                    // Try to parse service_description as JSON array
+                    let services: any[] = [];
+                    try {
+                      if (deal.service_description) {
+                        services = JSON.parse(deal.service_description);
+                      }
+                    } catch {
+                      // Not JSON, will display as plain text
+                    }
+
+                    if (services.length > 0) {
+                      return (
+                        <div className="space-y-4">
+                          {services.map((service, index) => (
+                            <div key={service.id || index} className="p-4 bg-muted/50 rounded-lg border">
+                              <div className="flex justify-between items-start mb-2">
+                                <span className="font-semibold text-primary">{service.service_type}</span>
+                                <span className="font-medium">AED {parseFloat(service.amount || 0).toLocaleString()}</span>
+                              </div>
+                              {service.service_description && (
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap mb-2">
+                                  {service.service_description}
+                                </p>
+                              )}
+                              {service.p4_months && (
+                                <div className="mt-2 pt-2 border-t text-sm space-y-1">
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Duration:</span>
+                                    <span>{service.p4_months} months</span>
+                                  </div>
+                                  {service.p4_monthly_rate && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Monthly Rate:</span>
+                                      <span>AED {parseFloat(service.p4_monthly_rate).toLocaleString()}</span>
+                                    </div>
+                                  )}
+                                  {service.p4_start_date && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Start:</span>
+                                      <span>{format(new Date(service.p4_start_date), "dd MMM yyyy")}</span>
+                                    </div>
+                                  )}
+                                  {service.p4_end_date && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">End:</span>
+                                      <span>{format(new Date(service.p4_end_date), "dd MMM yyyy")}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    }
+
+                    // Fallback to plain display
+                    return (
+                      <>
+                        <div>
+                          <p className="text-sm text-muted-foreground mb-1">Service Type</p>
+                          <p className="font-medium">{deal.service_type}</p>
+                        </div>
+                        {deal.service_description && (
+                          <div>
+                            <p className="text-sm text-muted-foreground mb-1">Description</p>
+                            <p className="text-sm whitespace-pre-wrap">{deal.service_description}</p>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                   {deal.worker_name && (
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Assigned Worker</p>
