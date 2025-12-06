@@ -201,81 +201,70 @@ const DealDetail = () => {
       const services = JSON.parse(deal.service_description || '[]');
       servicesHtml = services.map((service: any, index: number) => `
         <tr style="background-color: ${index % 2 === 0 ? '#fff' : '#f9f9f9'};">
-          <td style="padding: 10px; border: 1px solid #ddd;">${index + 1}</td>
-          <td style="padding: 10px; border: 1px solid #ddd;"><strong>${service.service_type || deal.service_type}</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${service.service_description || '-'}</td>
-          <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${parseFloat(service.amount || 0).toFixed(2)}</td>
+          <td style="padding: 5px; border: 1px solid #ddd;">${index + 1}</td>
+          <td style="padding: 5px; border: 1px solid #ddd;"><strong>${service.service_type || deal.service_type}</strong></td>
+          <td style="padding: 5px; border: 1px solid #ddd;">${service.service_description || '-'}</td>
+          <td style="padding: 5px; text-align: right; border: 1px solid #ddd;">${parseFloat(service.amount || 0).toFixed(2)}</td>
         </tr>
       `).join('');
     } catch {
       servicesHtml = `
         <tr>
-          <td style="padding: 10px; border: 1px solid #ddd;">1</td>
-          <td style="padding: 10px; border: 1px solid #ddd;"><strong>${deal.service_type}</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${deal.service_description || '-'}</td>
-          <td style="padding: 10px; text-align: right; border: 1px solid #ddd;">${deal.total_amount.toFixed(2)}</td>
+          <td style="padding: 5px; border: 1px solid #ddd;">1</td>
+          <td style="padding: 5px; border: 1px solid #ddd;"><strong>${deal.service_type}</strong></td>
+          <td style="padding: 5px; border: 1px solid #ddd;">${deal.service_description || '-'}</td>
+          <td style="padding: 5px; text-align: right; border: 1px solid #ddd;">${deal.total_amount.toFixed(2)}</td>
         </tr>
       `;
     }
 
     return `
-      <div style="padding: 40px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
+      <div style="padding: 20px 25px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; font-size: 11px;">
         <!-- Header with Logo -->
-        <div style="margin-bottom: 30px; border-bottom: 3px solid #1e3a5f; padding-bottom: 20px;">
+        <div style="margin-bottom: 12px; border-bottom: 2px solid #1e3a5f; padding-bottom: 10px;">
           <table style="width: 100%;">
             <tr>
               <td style="width: 50%;">
-                <img src="https://tadmaids.com/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" alt="TADMAIDS" style="height: 50px; width: auto;" />
+                <img src="https://tadmaids.com/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" alt="TADMAIDS" style="height: 35px; width: auto;" />
               </td>
-              <td style="width: 50%; text-align: right; font-size: 12px; color: #666;">
-                <p style="margin: 2px 0;"><strong>Phone:</strong> +97143551186</p>
-                <p style="margin: 2px 0;"><strong>Email:</strong> tadbeer@tadmaids.com</p>
-                <p style="margin: 2px 0;"><strong>Address:</strong> Tadmaids Center, Dubai, UAE</p>
+              <td style="width: 50%; text-align: right; font-size: 10px; color: #666;">
+                <p style="margin: 1px 0;">+97143551186 | tadbeer@tadmaids.com</p>
+                <p style="margin: 1px 0;">Tadmaids Center, Dubai, UAE</p>
               </td>
             </tr>
           </table>
         </div>
 
-        <!-- Document Title -->
-        <div style="text-align: center; margin-bottom: 25px;">
-          <h2 style="margin: 0; font-size: 24px; color: #1e3a5f;">DEAL SHEET</h2>
-          <p style="margin: 5px 0; color: #666; font-size: 14px;">Domestic Services Agreement</p>
-        </div>
-
-        <!-- Deal Information -->
-        <div style="margin-bottom: 25px; background-color: #f0f4f8; padding: 15px; border-radius: 8px;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 8px; width: 50%;"><strong>Deal Number:</strong> ${deal.deal_number}</td>
-              <td style="padding: 8px;"><strong>Date:</strong> ${format(new Date(deal.created_at), "dd MMM yyyy")}</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- Client Information -->
-        <div style="margin-bottom: 25px; background-color: #f9f9f9; padding: 20px; border-radius: 8px; border-left: 4px solid #1e3a5f;">
-          <h3 style="margin-top: 0; color: #1e3a5f; font-size: 16px;">Client Information</h3>
+        <!-- Document Title & Deal Info in one row -->
+        <div style="margin-bottom: 12px; background-color: #f0f4f8; padding: 10px; border-radius: 6px;">
           <table style="width: 100%;">
             <tr>
-              <td style="padding: 5px;"><strong>Name:</strong> ${deal.client_name}</td>
+              <td style="width: 50%;"><strong style="font-size: 14px; color: #1e3a5f;">DEAL SHEET</strong></td>
+              <td style="text-align: right;"><strong>Deal #:</strong> ${deal.deal_number} | <strong>Date:</strong> ${format(new Date(deal.created_at), "dd MMM yyyy")}</td>
             </tr>
-            <tr>
-              <td style="padding: 5px;"><strong>Phone:</strong> ${deal.client_phone}</td>
-            </tr>
-            ${deal.client_email ? `<tr><td style="padding: 5px;"><strong>Email:</strong> ${deal.client_email}</td></tr>` : ''}
           </table>
         </div>
 
-        <!-- Services Section -->
-        <div style="margin-bottom: 25px;">
-          <h3 style="color: #1e3a5f; border-bottom: 2px solid #1e3a5f; padding-bottom: 10px; font-size: 16px;">Services Included</h3>
-          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <!-- Client Information - Compact -->
+        <div style="margin-bottom: 12px; background-color: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid #1e3a5f;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="width: 33%;"><strong>Client:</strong> ${deal.client_name}</td>
+              <td style="width: 33%;"><strong>Phone:</strong> ${deal.client_phone}</td>
+              <td style="width: 34%;">${deal.client_email ? `<strong>Email:</strong> ${deal.client_email}` : ''}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Services Table - Compact -->
+        <div style="margin-bottom: 12px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
             <thead>
               <tr style="background-color: #1e3a5f; color: white;">
-                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">#</th>
-                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Service Type</th>
-                <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Description</th>
-                <th style="padding: 12px; text-align: right; border: 1px solid #ddd;">Amount (AED)</th>
+                <th style="padding: 6px; text-align: left; border: 1px solid #ddd; width: 5%;">#</th>
+                <th style="padding: 6px; text-align: left; border: 1px solid #ddd; width: 30%;">Service</th>
+                <th style="padding: 6px; text-align: left; border: 1px solid #ddd; width: 45%;">Description</th>
+                <th style="padding: 6px; text-align: right; border: 1px solid #ddd; width: 20%;">Amount (AED)</th>
               </tr>
             </thead>
             <tbody>
@@ -284,87 +273,71 @@ const DealDetail = () => {
           </table>
         </div>
 
-        <!-- Financial Summary -->
-        <div style="margin-bottom: 25px; background-color: #f0f4f8; padding: 20px; border-radius: 8px;">
-          <h3 style="margin-top: 0; color: #1e3a5f; font-size: 16px;">Financial Summary</h3>
+        <!-- Financial Summary - Compact side by side with Payment Terms -->
+        <div style="margin-bottom: 12px;">
           <table style="width: 100%;">
             <tr>
-              <td style="padding: 8px;"><strong>Subtotal (Excl. VAT):</strong></td>
-              <td style="padding: 8px; text-align: right;">AED ${deal.deal_value.toFixed(2)}</td>
+              <td style="width: 60%; vertical-align: top; padding-right: 15px;">
+                <div style="background-color: #f0f4f8; padding: 10px; border-radius: 6px;">
+                  <table style="width: 100%; font-size: 10px;">
+                    <tr>
+                      <td style="padding: 3px;"><strong>Subtotal (Excl. VAT):</strong></td>
+                      <td style="padding: 3px; text-align: right;">AED ${deal.deal_value.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 3px;"><strong>VAT (${deal.vat_rate || 5}%):</strong></td>
+                      <td style="padding: 3px; text-align: right;">AED ${(deal.vat_amount || 0).toFixed(2)}</td>
+                    </tr>
+                    <tr style="background-color: #1e3a5f; color: white;">
+                      <td style="padding: 6px;"><strong>TOTAL:</strong></td>
+                      <td style="padding: 6px; text-align: right;"><strong>AED ${deal.total_amount.toFixed(2)}</strong></td>
+                    </tr>
+                    ${deal.paid_amount > 0 ? `
+                      <tr><td style="padding: 3px; color: #16a34a;"><strong>Paid:</strong></td><td style="text-align: right; color: #16a34a;">AED ${deal.paid_amount.toFixed(2)}</td></tr>
+                      <tr><td style="padding: 3px; color: #ea580c;"><strong>Balance:</strong></td><td style="text-align: right; color: #ea580c;"><strong>AED ${deal.balance_due.toFixed(2)}</strong></td></tr>
+                    ` : ''}
+                  </table>
+                </div>
+              </td>
+              <td style="width: 40%; vertical-align: top;">
+                <div style="font-size: 10px;">
+                  <p style="margin: 0 0 5px;"><strong>Payment Terms:</strong> ${deal.payment_terms || 'Full Payment'}</p>
+                  ${deal.notes ? `<p style="margin: 0;"><strong>Notes:</strong> ${deal.notes}</p>` : ''}
+                </div>
+              </td>
             </tr>
-            <tr>
-              <td style="padding: 8px;"><strong>VAT (${deal.vat_rate || 5}%):</strong></td>
-              <td style="padding: 8px; text-align: right;">AED ${(deal.vat_amount || 0).toFixed(2)}</td>
-            </tr>
-            <tr style="border-top: 2px solid #1e3a5f; background-color: #1e3a5f; color: white;">
-              <td style="padding: 12px;"><strong style="font-size: 16px;">Total Amount:</strong></td>
-              <td style="padding: 12px; text-align: right;"><strong style="font-size: 16px;">AED ${deal.total_amount.toFixed(2)}</strong></td>
-            </tr>
-            ${deal.paid_amount > 0 ? `
-              <tr>
-                <td style="padding: 8px; color: #16a34a;"><strong>Paid Amount:</strong></td>
-                <td style="padding: 8px; text-align: right; color: #16a34a;">AED ${deal.paid_amount.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td style="padding: 8px; color: #ea580c;"><strong>Balance Due:</strong></td>
-                <td style="padding: 8px; text-align: right; color: #ea580c;"><strong>AED ${deal.balance_due.toFixed(2)}</strong></td>
-              </tr>
-            ` : ''}
           </table>
         </div>
 
-        <!-- Payment Terms -->
-        <div style="margin-bottom: 30px;">
-          <h4 style="color: #1e3a5f; font-size: 14px;">Payment Terms:</h4>
-          <p style="margin: 5px 0;">${deal.payment_terms || 'Full Payment'}</p>
+        <!-- Terms - Very Compact -->
+        <div style="margin-bottom: 15px; font-size: 9px; color: #666; background-color: #f9f9f9; padding: 8px; border-radius: 4px;">
+          <strong style="color: #1e3a5f;">Terms:</strong> This agreement is valid for services specified. Payment terms must be adhered to. Changes require written agreement by both parties.
         </div>
 
-        ${deal.notes ? `
-          <div style="margin-bottom: 30px;">
-            <h4 style="color: #1e3a5f; font-size: 14px;">Additional Notes:</h4>
-            <p style="margin: 5px 0; white-space: pre-wrap;">${deal.notes}</p>
-          </div>
-        ` : ''}
-
-        <!-- Terms and Conditions -->
-        <div style="margin-bottom: 30px; font-size: 11px; color: #666; background-color: #f9f9f9; padding: 15px; border-radius: 8px;">
-          <h4 style="color: #1e3a5f; margin-top: 0; font-size: 12px;">Terms & Conditions:</h4>
-          <ul style="line-height: 1.6; margin: 10px 0; padding-left: 20px;">
-            <li>This agreement is valid for the services specified above.</li>
-            <li>Payment terms as specified must be adhered to.</li>
-            <li>Services will be delivered as per agreed timelines.</li>
-            <li>Any changes to this agreement must be made in writing and agreed by both parties.</li>
-          </ul>
-        </div>
-
-        <!-- Signatures -->
-        <div style="margin-top: 50px;">
+        <!-- Signatures - Compact -->
+        <div style="margin-top: 20px;">
           <table style="width: 100%;">
             <tr>
               <td style="width: 45%; vertical-align: bottom;">
-                <div style="border-top: 2px solid #1e3a5f; padding-top: 10px; margin-top: 60px;">
-                  <p style="margin: 0; color: #1e3a5f;"><strong>Client Signature</strong></p>
-                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Name: ${deal.client_name}</p>
-                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Date: _________________</p>
+                <div style="border-top: 1px solid #1e3a5f; padding-top: 5px; margin-top: 30px;">
+                  <p style="margin: 0; font-size: 10px; color: #1e3a5f;"><strong>Client Signature</strong></p>
+                  <p style="margin: 2px 0; font-size: 9px; color: #666;">${deal.client_name} | Date: ___________</p>
                 </div>
               </td>
               <td style="width: 10%;"></td>
               <td style="width: 45%; vertical-align: bottom;">
-                <div style="border-top: 2px solid #1e3a5f; padding-top: 10px; margin-top: 60px;">
-                  <p style="margin: 0; color: #1e3a5f;"><strong>TADMAIDS Representative</strong></p>
-                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Name: _________________</p>
-                  <p style="margin: 5px 0; font-size: 11px; color: #666;">Date: _________________</p>
+                <div style="border-top: 1px solid #1e3a5f; padding-top: 5px; margin-top: 30px;">
+                  <p style="margin: 0; font-size: 10px; color: #1e3a5f;"><strong>TADMAIDS Representative</strong></p>
+                  <p style="margin: 2px 0; font-size: 9px; color: #666;">Name: ___________ | Date: ___________</p>
                 </div>
               </td>
             </tr>
           </table>
         </div>
 
-        <!-- Footer -->
-        <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 15px;">
-          <p style="margin: 2px 0;">TADMAIDS Domestic Worker Services Center</p>
-          <p style="margin: 2px 0;">Phone: +97143551186 | Email: tadbeer@tadmaids.com | Tadmaids Center, Dubai, UAE</p>
-          <p style="margin: 8px 0; color: #666;">Generated on ${format(new Date(), "dd MMM yyyy 'at' HH:mm")}</p>
+        <!-- Footer - Minimal -->
+        <div style="margin-top: 15px; text-align: center; font-size: 8px; color: #999; border-top: 1px solid #eee; padding-top: 8px;">
+          TADMAIDS | +97143551186 | tadbeer@tadmaids.com | Tadmaids Center, Dubai, UAE
         </div>
       </div>
     `;
@@ -595,7 +568,7 @@ const DealDetail = () => {
                 <p className="text-muted-foreground">Deal Details</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               <Badge className={getStatusColor(deal.status)}>
                 {deal.status}
               </Badge>
@@ -617,12 +590,19 @@ const DealDetail = () => {
                     <Printer className="w-4 h-4 mr-2" />
                     Print
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleEmailDealSheet}>
-                    <Send className="w-4 h-4 mr-2" />
-                    Email to Client
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              
+              {/* Dedicated Email Client Button */}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleEmailDealSheet}
+                className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Email Client
+              </Button>
               
               {renderActionButtons()}
             </div>
