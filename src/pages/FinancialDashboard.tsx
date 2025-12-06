@@ -163,8 +163,10 @@ const FinancialDashboard = () => {
             const totalRemainingOnContract = Number(contract.total_amount) - totalPaid;
             const futureAR = Math.max(0, totalRemainingOnContract - currentAR);
             
-            // Calculate next payment date (1st of next month)
-            const nextPaymentDate = addMonths(new Date(today.getFullYear(), today.getMonth(), 1), 1);
+            // Calculate next payment date based on months already paid
+            // If client paid for 3 months, next payment is after those 3 months
+            const monthsPaid = monthlyAmount > 0 ? Math.floor(totalPaid / monthlyAmount) : 0;
+            const nextPaymentDate = addMonths(startDate, monthsPaid);
 
             return {
               id: contract.id,
