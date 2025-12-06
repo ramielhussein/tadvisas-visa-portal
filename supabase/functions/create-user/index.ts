@@ -45,7 +45,7 @@ serve(async (req) => {
     }
 
     // Get the new user details from the request
-    const { email, password, fullName, permissions, isDriver, isWorkerP4 } = await req.json();
+    const { email, password, fullName, permissions, isDriver, isWorkerP4, isSalesManager, isFinance } = await req.json();
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -103,6 +103,12 @@ serve(async (req) => {
 
     // Add special roles if selected
     const rolesToAdd: { user_id: string; role: string }[] = [];
+    if (isSalesManager) {
+      rolesToAdd.push({ user_id: newUser.user.id, role: 'sales_manager' });
+    }
+    if (isFinance) {
+      rolesToAdd.push({ user_id: newUser.user.id, role: 'finance' });
+    }
     if (isDriver) {
       rolesToAdd.push({ user_id: newUser.user.id, role: 'driver' });
     }

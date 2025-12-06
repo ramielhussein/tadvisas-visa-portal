@@ -76,13 +76,28 @@ const DealDetail = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [canApproveDeal, setCanApproveDeal] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchDeal();
       fetchBankAccounts();
+      checkApprovalPermission();
     }
   }, [id]);
+
+  const checkApprovalPermission = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .in('role', ['sales_manager', 'admin', 'super_admin']);
+
+    setCanApproveDeal(roles && roles.length > 0);
+  };
 
   const fetchBankAccounts = async () => {
     const { data } = await supabase
@@ -413,12 +428,21 @@ const DealDetail = () => {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const updateData: any = { 
+        status: newStatus,
+        ...(newStatus === 'Closed' ? { closed_at: new Date().toISOString() } : {}),
+        // Track approval when activating a draft deal
+        ...(newStatus === 'Active' && user ? { 
+          approved_by: user.id, 
+          approved_at: new Date().toISOString() 
+        } : {})
+      };
+
       const { error } = await supabase
         .from("deals")
-        .update({ 
-          status: newStatus,
-          ...(newStatus === 'Closed' ? { closed_at: new Date().toISOString() } : {})
-        })
+        .update(updateData)
         .eq("id", deal?.id);
 
       if (error) throw error;
@@ -479,11 +503,17 @@ const DealDetail = () => {
             >
               Edit
             </Button>
-            <Button
-              onClick={() => handleStatusChange("Active")}
-            >
-              Activate Deal
-            </Button>
+            {canApproveDeal ? (
+              <Button
+                onClick={() => handleStatusChange("Active")}
+              >
+                Activate Deal
+              </Button>
+            ) : (
+              <Button disabled variant="secondary" title="Only Sales Managers can activate deals">
+                Awaiting Manager Approval
+              </Button>
+            )}
             <Button
               variant="destructive"
               onClick={handleVoidDeal}

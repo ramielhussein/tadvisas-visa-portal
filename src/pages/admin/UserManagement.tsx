@@ -57,6 +57,8 @@ export default function UserManagement() {
   const [selectedRole, setSelectedRole] = useState<UserRole>('custom');
   const [isDriver, setIsDriver] = useState(false);
   const [isWorkerP4, setIsWorkerP4] = useState(false);
+  const [isSalesManager, setIsSalesManager] = useState(false);
+  const [isFinance, setIsFinance] = useState(false);
   const [permissions, setPermissions] = useState<Permissions>({
     cv: { create: false, edit: false, delete: false },
     refund: { create: false },
@@ -152,7 +154,9 @@ export default function UserManagement() {
           fullName,
           permissions,
           isDriver,
-          isWorkerP4
+          isWorkerP4,
+          isSalesManager,
+          isFinance
         }
       });
 
@@ -176,6 +180,8 @@ export default function UserManagement() {
         setSelectedRole('custom');
         setIsDriver(false);
         setIsWorkerP4(false);
+        setIsSalesManager(false);
+        setIsFinance(false);
         setPermissions({
           cv: { create: false, edit: false, delete: false },
           refund: { create: false },
@@ -270,6 +276,28 @@ export default function UserManagement() {
                 <div className="space-y-3 pt-4 border-t">
                   <Label className="text-base font-semibold">Special Roles</Label>
                   <div className="space-y-2 ml-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="is-sales-manager"
+                        checked={isSalesManager}
+                        onCheckedChange={(checked) => setIsSalesManager(checked as boolean)}
+                        disabled={creating}
+                      />
+                      <label htmlFor="is-sales-manager" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Sales Manager (Can Approve Deals)
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="is-finance-role"
+                        checked={isFinance}
+                        onCheckedChange={(checked) => setIsFinance(checked as boolean)}
+                        disabled={creating}
+                      />
+                      <label htmlFor="is-finance-role" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Finance (Can Create Contracts)
+                      </label>
+                    </div>
                     <div className="flex items-center space-x-2">
                       <Checkbox 
                         id="is-driver"

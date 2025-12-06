@@ -494,6 +494,8 @@ export type Database = {
       }
       deals: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           assigned_to: string | null
           attachments: Json | null
           balance_due: number | null
@@ -522,6 +524,8 @@ export type Database = {
           worker_name: string | null
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_to?: string | null
           attachments?: Json | null
           balance_due?: number | null
@@ -550,6 +554,8 @@ export type Database = {
           worker_name?: string | null
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_to?: string | null
           attachments?: Json | null
           balance_due?: number | null
@@ -2845,6 +2851,7 @@ export type Database = {
         Args: { commission_rate: number; gross_amount: number }
         Returns: number
       }
+      can_approve_deals: { Args: { _user_id: string }; Returns: boolean }
       check_phone_exists: {
         Args: { phone_number: string }
         Returns: {
@@ -2873,6 +2880,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_finance: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
@@ -2898,6 +2906,7 @@ export type Database = {
         | "super_admin"
         | "driver"
         | "worker_p4"
+        | "sales_manager"
       attendance_status: "checked_in" | "on_break" | "checked_out" | "absent"
       lead_status:
         | "New Lead"
@@ -3065,6 +3074,7 @@ export const Constants = {
         "super_admin",
         "driver",
         "worker_p4",
+        "sales_manager",
       ],
       attendance_status: ["checked_in", "on_break", "checked_out", "absent"],
       lead_status: [
