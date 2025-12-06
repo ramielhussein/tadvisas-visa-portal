@@ -508,13 +508,16 @@ export type Database = {
           created_at: string
           deal_number: string
           deal_value: number
+          end_date: string | null
           id: string
           lead_id: string | null
           notes: string | null
           paid_amount: number
           payment_terms: string | null
+          reminder_days_before: number | null
           service_description: string | null
           service_type: string
+          start_date: string | null
           status: string
           total_amount: number
           updated_at: string
@@ -538,13 +541,16 @@ export type Database = {
           created_at?: string
           deal_number?: string
           deal_value: number
+          end_date?: string | null
           id?: string
           lead_id?: string | null
           notes?: string | null
           paid_amount?: number
           payment_terms?: string | null
+          reminder_days_before?: number | null
           service_description?: string | null
           service_type: string
+          start_date?: string | null
           status?: string
           total_amount: number
           updated_at?: string
@@ -568,13 +574,16 @@ export type Database = {
           created_at?: string
           deal_number?: string
           deal_value?: number
+          end_date?: string | null
           id?: string
           lead_id?: string | null
           notes?: string | null
           paid_amount?: number
           payment_terms?: string | null
+          reminder_days_before?: number | null
           service_description?: string | null
           service_type?: string
+          start_date?: string | null
           status?: string
           total_amount?: number
           updated_at?: string

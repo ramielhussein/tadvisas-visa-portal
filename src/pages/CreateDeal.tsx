@@ -494,6 +494,26 @@ const CreateDeal = () => {
         });
       }
 
+      // Extract start/end dates from services (for P4 Monthly or set defaults)
+      let startDate: string | null = null;
+      let endDate: string | null = null;
+      let reminderDays = 3; // Default for P4 Monthly
+
+      // Check if any service is P4/Monthly
+      const p4Service = services.find(s => isP4Monthly(s.service_type));
+      if (p4Service && p4Service.p4_start_date) {
+        startDate = format(p4Service.p4_start_date, 'yyyy-MM-dd');
+        if (p4Service.p4_end_date) {
+          endDate = format(p4Service.p4_end_date, 'yyyy-MM-dd');
+        }
+        reminderDays = 3; // P4 Monthly gets 3-day reminder
+      } else {
+        // For non-monthly deals like P5, set start date to deal date
+        startDate = format(dealDate, 'yyyy-MM-dd');
+        // P5 and other packages get 30-day reminder
+        reminderDays = 30;
+      }
+
       // Create deal
       const { data: newDeal, error } = await supabase
         .from("deals")
@@ -518,6 +538,9 @@ const CreateDeal = () => {
           status: "Draft",
           attachments: uploadedAttachments,
           created_at: dealDate.toISOString(),
+          start_date: startDate,
+          end_date: endDate,
+          reminder_days_before: reminderDays,
         } as any)
         .select()
         .single();
