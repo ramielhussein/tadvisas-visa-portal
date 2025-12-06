@@ -3,11 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Play, RotateCcw, Dumbbell } from "lucide-react";
 
+const SETS_PER_EXERCISE = 3;
+
 const GymTimer = () => {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [restActive, setRestActive] = useState(false);
   const [restTimer, setRestTimer] = useState(60);
-  const [setsDone, setSetsDone] = useState(0);
+  const [currentExercise, setCurrentExercise] = useState(1);
+  const [currentSet, setCurrentSet] = useState(1);
+  const [totalSets, setTotalSets] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -38,10 +42,24 @@ const GymTimer = () => {
 
   const handleStartWorkout = () => {
     setWorkoutStarted(true);
+    setCurrentExercise(1);
+    setCurrentSet(1);
+    setTotalSets(0);
   };
 
   const handleSetDone = () => {
-    setSetsDone((prev) => prev + 1);
+    setTotalSets((prev) => prev + 1);
+    
+    // Check if we've completed 3 sets for this exercise
+    if (currentSet >= SETS_PER_EXERCISE) {
+      // Move to next exercise
+      setCurrentExercise((prev) => prev + 1);
+      setCurrentSet(1);
+    } else {
+      // Move to next set within same exercise
+      setCurrentSet((prev) => prev + 1);
+    }
+    
     setRestActive(true);
     setRestTimer(60);
   };
@@ -50,7 +68,9 @@ const GymTimer = () => {
     setWorkoutStarted(false);
     setRestActive(false);
     setRestTimer(60);
-    setSetsDone(0);
+    setCurrentExercise(1);
+    setCurrentSet(1);
+    setTotalSets(0);
   };
 
   return (
@@ -76,11 +96,44 @@ const GymTimer = () => {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-8">
-                {/* Sets Counter */}
+              <div className="space-y-6">
+                {/* Exercise & Set Display */}
                 <div className="bg-zinc-900/50 rounded-xl p-6">
-                  <p className="text-zinc-400 text-sm uppercase tracking-wide">Sets Completed</p>
-                  <p className="text-6xl font-bold text-amber-500 mt-2">{setsDone}</p>
+                  <p className="text-zinc-400 text-sm uppercase tracking-wide">Current</p>
+                  <p className="text-4xl font-bold text-amber-500 mt-2">
+                    Exercise {currentExercise}
+                  </p>
+                  <p className="text-2xl font-semibold text-white mt-1">
+                    Set {currentSet} <span className="text-zinc-500">of {SETS_PER_EXERCISE}</span>
+                  </p>
+                </div>
+
+                {/* Progress Indicator */}
+                <div className="flex justify-center gap-2">
+                  {Array.from({ length: SETS_PER_EXERCISE }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-8 h-2 rounded-full ${
+                        i < currentSet - 1 
+                          ? 'bg-green-500' 
+                          : i === currentSet - 1 
+                            ? 'bg-amber-500' 
+                            : 'bg-zinc-600'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-zinc-700/50 rounded-lg p-3">
+                    <p className="text-zinc-400 text-xs uppercase">Total Sets</p>
+                    <p className="text-2xl font-bold text-white">{totalSets}</p>
+                  </div>
+                  <div className="bg-zinc-700/50 rounded-lg p-3">
+                    <p className="text-zinc-400 text-xs uppercase">Exercises</p>
+                    <p className="text-2xl font-bold text-white">{currentExercise - (currentSet === 1 && totalSets > 0 ? 0 : 1) + (currentSet > 1 || totalSets === 0 ? 1 : 0)}</p>
+                  </div>
                 </div>
 
                 {/* Timer Display */}
@@ -94,7 +147,7 @@ const GymTimer = () => {
                   </div>
                 ) : (
                   <div className="bg-green-600/20 rounded-xl p-6 border border-green-600/30">
-                    <p className="text-green-400 text-lg">Ready for next set!</p>
+                    <p className="text-green-400 text-lg">Ready for set {currentSet}!</p>
                   </div>
                 )}
 
