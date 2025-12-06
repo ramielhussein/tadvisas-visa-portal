@@ -172,11 +172,13 @@ export const useDriversLocations = () => {
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const setupDoneRef = useRef(false);
+  const leaveTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const reconnectAttemptRef = useRef(0);
 
   useEffect(() => {
-    if (setupDoneRef.current) return;
-    
     const setup = async () => {
+      if (setupDoneRef.current) return;
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -199,6 +201,12 @@ export const useDriversLocations = () => {
             // Skip admin keys
             if (key.startsWith('admin-')) return;
             
+            // Clear any pending leave timeout for this driver
+            if (leaveTimeoutsRef.current[key]) {
+              clearTimeout(leaveTimeoutsRef.current[key]);
+              delete leaveTimeoutsRef.current[key];
+            }
+            
             if (presences?.length > 0) {
               const latest = presences[presences.length - 1];
               if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
@@ -214,11 +222,27 @@ export const useDriversLocations = () => {
             }
           });
           
-          setDriversLocations(locations);
+          // Merge with existing locations (keep drivers that are still active)
+          setDriversLocations(prev => {
+            const merged = { ...prev };
+            // Update with new locations
+            Object.entries(locations).forEach(([key, loc]) => {
+              merged[key] = loc;
+            });
+            return merged;
+          });
           setError(null);
+          reconnectAttemptRef.current = 0;
         })
         .on('presence', { event: 'join' }, ({ key, newPresences }) => {
           console.log('[AdminTracking] Driver joined:', key);
+          
+          // Clear any pending leave timeout for this driver
+          if (leaveTimeoutsRef.current[key]) {
+            clearTimeout(leaveTimeoutsRef.current[key]);
+            delete leaveTimeoutsRef.current[key];
+          }
+          
           if (!key.startsWith('admin-') && newPresences?.length > 0) {
             const latest = newPresences[newPresences.length - 1];
             if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
@@ -238,20 +262,43 @@ export const useDriversLocations = () => {
         .on('presence', { event: 'leave' }, ({ key }) => {
           console.log('[AdminTracking] Driver left:', key);
           if (!key.startsWith('admin-')) {
-            setDriversLocations(prev => {
-              const updated = { ...prev };
-              delete updated[key];
-              return updated;
-            });
+            // Add a 30-second grace period before removing the driver
+            // This handles temporary disconnections
+            if (leaveTimeoutsRef.current[key]) {
+              clearTimeout(leaveTimeoutsRef.current[key]);
+            }
+            leaveTimeoutsRef.current[key] = setTimeout(() => {
+              console.log('[AdminTracking] Removing driver after grace period:', key);
+              setDriversLocations(prev => {
+                const updated = { ...prev };
+                delete updated[key];
+                return updated;
+              });
+              delete leaveTimeoutsRef.current[key];
+            }, 30000); // 30 second grace period
           }
         })
         .subscribe(async (status) => {
           console.log('[AdminTracking] Channel:', status);
           if (status === 'SUBSCRIBED') {
             await channelRef.current?.track({ role: 'admin' });
-          } else if (status === 'CHANNEL_ERROR') {
-            setError('Connection error');
+            reconnectAttemptRef.current = 0;
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            setError('Connection error - reconnecting...');
             setupDoneRef.current = false;
+            
+            // Auto-reconnect with exponential backoff
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttemptRef.current), 30000);
+            reconnectAttemptRef.current++;
+            console.log('[AdminTracking] Reconnecting in', delay, 'ms');
+            
+            setTimeout(() => {
+              if (channelRef.current) {
+                supabase.removeChannel(channelRef.current);
+                channelRef.current = null;
+              }
+              setup();
+            }, delay);
           }
         });
     };
@@ -259,6 +306,10 @@ export const useDriversLocations = () => {
     setup();
     
     return () => { 
+      // Clear all leave timeouts
+      Object.values(leaveTimeoutsRef.current).forEach(clearTimeout);
+      leaveTimeoutsRef.current = {};
+      
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
