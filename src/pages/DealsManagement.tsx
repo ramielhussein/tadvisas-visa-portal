@@ -252,7 +252,7 @@ const DealsManagement = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => navigate(`/deals/${deal.id}`)}
+                              onClick={() => navigate(`/crm/deals/${deal.id}`)}
                             >
                               View
                             </Button>
