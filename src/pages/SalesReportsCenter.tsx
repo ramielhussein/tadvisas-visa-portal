@@ -67,10 +67,10 @@ const SalesReportsCenter = () => {
       adminOnly: false
     },
     {
-      title: "Deals Management",
-      description: "View and manage all deals, track pipeline and revenue",
+      title: "Contracts Management",
+      description: "View and manage all contracts, track pipeline and revenue",
       icon: FileBarChart,
-      path: "/crm/deals",
+      path: "/crm/contracts",
       color: "text-teal-600",
       adminOnly: false
     },
@@ -137,12 +137,12 @@ const SalesReportsCenter = () => {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/crm/deals")}>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate("/crm/contracts")}>
               <CardContent className="pt-6">
                 <div className="text-center">
                   <FileBarChart className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                  <h3 className="font-semibold mb-1">Deals Pipeline</h3>
-                  <p className="text-sm text-muted-foreground">Track your deals</p>
+                  <h3 className="font-semibold mb-1">Contracts Pipeline</h3>
+                  <p className="text-sm text-muted-foreground">Track your contracts</p>
                 </div>
               </CardContent>
             </Card>

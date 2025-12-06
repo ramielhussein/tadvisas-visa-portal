@@ -35,7 +35,7 @@ interface MonthlyForecast {
   deals: number;
 }
 
-const DealsARReport = () => {
+const ContractsARReport = () => {
   const navigate = useNavigate();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +151,7 @@ const DealsARReport = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/crm/deals")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/crm/contracts")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
@@ -308,7 +308,7 @@ const DealsARReport = () => {
                           reminderStatus === 'overdue' ? 'bg-red-50 dark:bg-red-950/10' :
                           reminderStatus === 'due-soon' ? 'bg-orange-50 dark:bg-orange-950/10' : ''
                         }`}
-                        onClick={() => navigate(`/crm/deals/${deal.id}`)}
+                        onClick={() => navigate(`/crm/contracts/${deal.id}`)}
                       >
                         <TableCell className="font-mono text-sm">{deal.deal_number}</TableCell>
                         <TableCell>
@@ -364,4 +364,4 @@ const DealsARReport = () => {
   );
 };
 
-export default DealsARReport;
+export default ContractsARReport;

@@ -42,18 +42,17 @@ import ScrollToTop from "./components/ScrollToTop";
 import LeadManagement from "./pages/LeadManagement";
 import LeadDetail from "./pages/LeadDetail";
 import Dashboard from "./pages/Dashboard";
-import DealsManagement from "./pages/DealsManagement";
-import DealDetail from "./pages/DealDetail";
-import CreateDeal from "./pages/CreateDeal";
-import EditDeal from "./pages/EditDeal";
-import DealsARReport from "./pages/DealsARReport";
+import ContractsManagement from "./pages/ContractsManagement";
+import ContractDetailPage from "./pages/ContractDetailPage";
+import CreateContractPage from "./pages/CreateContractPage";
+import EditContractPage from "./pages/EditContractPage";
+import ContractsARReport from "./pages/ContractsARReport";
 import FinancialDashboard from "./pages/FinancialDashboard";
 import SuppliersManagement from "./pages/SuppliersManagement";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
 import SiteGuide from "./pages/SiteGuide";
-import ContractManagement from "./pages/ContractManagement";
-import CreateContract from "./pages/CreateContract";
+// ContractManagement and CreateContract removed - consolidated into ContractsManagement
 import RefundsApproval from "./pages/RefundsApproval";
 import ProductHub from "./pages/hubs/ProductHub";
 import SalesHub from "./pages/hubs/SalesHub";
@@ -123,9 +122,9 @@ const AppContent = () => {
 };
 
 // Redirect component for legacy deal URLs
-const DealRedirect = () => {
+const ContractRedirect = () => {
   const { id } = useParams();
-  return <Navigate to={`/crm/deals/${id}`} replace />;
+  return <Navigate to={`/crm/contracts/${id}`} replace />;
 };
 
 const App = () => (
@@ -181,9 +180,9 @@ const App = () => (
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           
           {/* Legacy redirects for backward compatibility */}
-          <Route path="/deals" element={<Navigate to="/crm/deals" replace />} />
-          <Route path="/deals/create" element={<Navigate to="/crm/deals/create" replace />} />
-          <Route path="/deals/:id" element={<DealRedirect />} />
+          <Route path="/deals" element={<Navigate to="/crm/contracts" replace />} />
+          <Route path="/deals/create" element={<Navigate to="/crm/contracts/create" replace />} />
+          <Route path="/deals/:id" element={<ContractRedirect />} />
           <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
           <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
           <Route path="/daily-sales-report" element={<Navigate to="/crm/daily-sales-report" replace />} />
@@ -193,13 +192,11 @@ const App = () => (
           <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
           <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
-          <Route path="/crm/deals" element={<ProtectedRoute><DealsManagement /></ProtectedRoute>} />
-          <Route path="/crm/deals/:id" element={<ProtectedRoute><DealDetail /></ProtectedRoute>} />
-          <Route path="/crm/deals/edit/:id" element={<ProtectedRoute><EditDeal /></ProtectedRoute>} />
-          <Route path="/crm/deals/create" element={<ProtectedRoute><CreateDeal /></ProtectedRoute>} />
-          <Route path="/crm/deals/ar-report" element={<ProtectedRoute><DealsARReport /></ProtectedRoute>} />
-          <Route path="/crm/contracts" element={<ProtectedRoute><ContractManagement /></ProtectedRoute>} />
-          <Route path="/crm/contracts/create" element={<ProtectedRoute><CreateContract /></ProtectedRoute>} />
+          <Route path="/crm/contracts" element={<ProtectedRoute><ContractsManagement /></ProtectedRoute>} />
+          <Route path="/crm/contracts/:id" element={<ProtectedRoute><ContractDetailPage /></ProtectedRoute>} />
+          <Route path="/crm/contracts/edit/:id" element={<ProtectedRoute><EditContractPage /></ProtectedRoute>} />
+          <Route path="/crm/contracts/create" element={<ProtectedRoute><CreateContractPage /></ProtectedRoute>} />
+          <Route path="/crm/contracts/ar-report" element={<ProtectedRoute><ContractsARReport /></ProtectedRoute>} />
           <Route path="/crm/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
           <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
           <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />

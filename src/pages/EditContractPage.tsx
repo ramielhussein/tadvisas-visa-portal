@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-const EditDeal = () => {
+const EditContract = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,13 +60,13 @@ const EditDeal = () => {
         notes: data.notes || "",
       });
     } catch (error: any) {
-      console.error("Error fetching deal:", error);
+      console.error("Error fetching contract:", error);
       toast({
         title: "Error",
-        description: "Failed to load deal",
+        description: "Failed to load contract",
         variant: "destructive",
       });
-      navigate("/crm/deals");
+      navigate("/crm/contracts");
     } finally {
       setLoading(false);
     }
@@ -104,15 +104,15 @@ const EditDeal = () => {
 
       toast({
         title: "Success",
-        description: "Deal updated successfully",
+        description: "Contract updated successfully",
       });
 
-      navigate(`/crm/deals/${id}`);
+      navigate(`/crm/contracts/${id}`);
     } catch (error: any) {
-      console.error("Error updating deal:", error);
+      console.error("Error updating contract:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update deal",
+        description: error.message || "Failed to update contract",
         variant: "destructive",
       });
     } finally {
@@ -134,28 +134,28 @@ const EditDeal = () => {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
-          <p>Deal not found</p>
+          <p>Contract not found</p>
         </div>
       </Layout>
     );
   }
 
-  // Check if deal is editable (only Draft deals can be edited)
+  // Check if contract is editable (only Draft contracts can be edited)
   const isEditable = deal.status === "Draft";
 
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Button variant="ghost" onClick={() => navigate(`/crm/deals/${id}`)} className="mb-6">
+          <Button variant="ghost" onClick={() => navigate(`/crm/contracts/${id}`)} className="mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Deal
+            Back to Contract
           </Button>
 
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Edit Deal - {deal.deal_number}</span>
+                <span>Edit Contract - {deal.deal_number}</span>
                 {!isEditable && (
                   <span className="text-sm font-normal text-destructive">
                     ⚠️ Only Draft deals can be edited
@@ -175,9 +175,9 @@ const EditDeal = () => {
                   <Button 
                     variant="outline" 
                     className="mt-4"
-                    onClick={() => navigate(`/crm/deals/${id}`)}
+                    onClick={() => navigate(`/crm/contracts/${id}`)}
                   >
-                    View Deal Details
+                    View Contract Details
                   </Button>
                 </div>
               ) : (
@@ -310,7 +310,7 @@ const EditDeal = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => navigate(`/crm/deals/${id}`)}
+                      onClick={() => navigate(`/crm/contracts/${id}`)}
                       disabled={saving}
                     >
                       Cancel
@@ -330,4 +330,4 @@ const EditDeal = () => {
   );
 };
 
-export default EditDeal;
+export default EditContract;

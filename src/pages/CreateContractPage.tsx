@@ -18,19 +18,19 @@ import { z } from "zod";
 import { cn } from "@/lib/utils";
 import html2pdf from "html2pdf.js";
 
-const dealSchema = z.object({
+const contractSchema = z.object({
   client_name: z.string().min(1, "Client name is required").max(200),
   client_phone: z.string().min(1, "Phone is required").max(20),
   client_email: z.string().email("Invalid email").max(255).optional().or(z.literal("")),
   service_type: z.string().min(1, "Service type is required"),
   service_description: z.string().max(1000).optional(),
-  deal_value: z.number().min(0, "Deal value must be positive"),
+  deal_value: z.number().min(0, "Contract value must be positive"),
   vat_rate: z.number().min(0).max(100),
   commission_rate: z.number().min(0).max(100),
   notes: z.string().max(2000).optional(),
 });
 
-const CreateDeal = () => {
+const CreateContract = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -452,7 +452,7 @@ const CreateDeal = () => {
       }
 
       // Validate
-      const validated = dealSchema.parse({
+      const validated = contractSchema.parse({
         client_name: formData.client_name.trim(),
         client_phone: formData.client_phone.trim(),
         client_email: formData.client_email.trim() || undefined,
@@ -587,9 +587,9 @@ const CreateDeal = () => {
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          <Button variant="ghost" onClick={() => navigate("/crm/deals")} className="mb-6">
+          <Button variant="ghost" onClick={() => navigate("/crm/contracts")} className="mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Deals
+            Back to Contracts
           </Button>
 
           <Card>
@@ -1173,7 +1173,7 @@ const CreateDeal = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => navigate("/crm/deals")}
+                    onClick={() => navigate("/crm/contracts")}
                   >
                     Cancel
                   </Button>
@@ -1190,4 +1190,4 @@ const CreateDeal = () => {
   );
 };
 
-export default CreateDeal;
+export default CreateContract;

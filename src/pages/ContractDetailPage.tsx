@@ -69,7 +69,7 @@ interface Profile {
   email: string | null;
 }
 
-const DealDetail = () => {
+const ContractDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -139,11 +139,11 @@ const DealDetail = () => {
 
       if (!data) {
         toast({
-          title: "Deal not found",
-          description: "The deal you're looking for doesn't exist.",
+          title: "Contract not found",
+          description: "The contract you're looking for doesn't exist.",
           variant: "destructive",
         });
-        navigate("/crm/deals");
+        navigate("/crm/contracts");
         return;
       }
 
@@ -195,7 +195,7 @@ const DealDetail = () => {
         description: error.message,
         variant: "destructive",
       });
-      navigate("/crm/deals");
+      navigate("/crm/contracts");
     } finally {
       setLoading(false);
     }
@@ -516,7 +516,7 @@ const DealDetail = () => {
           <>
             <Button 
               variant="outline"
-              onClick={() => navigate(`/crm/deals/edit/${deal.id}`)}
+              onClick={() => navigate(`/crm/contracts/edit/${deal.id}`)}
             >
               Edit
             </Button>
@@ -524,10 +524,10 @@ const DealDetail = () => {
               <Button
                 onClick={() => handleStatusChange("Active")}
               >
-                Activate Deal
+                Activate Contract
               </Button>
             ) : (
-              <Button disabled variant="secondary" title="Only Sales Managers can activate deals">
+              <Button disabled variant="secondary" title="Only Sales Managers can activate contracts">
                 Awaiting Manager Approval
               </Button>
             )}
@@ -545,7 +545,7 @@ const DealDetail = () => {
           <>
             <Button
               variant="outline"
-              onClick={() => navigate(`/crm/deals/edit/${deal.id}`)}
+              onClick={() => navigate(`/crm/contracts/edit/${deal.id}`)}
             >
               Edit
             </Button>
@@ -563,9 +563,9 @@ const DealDetail = () => {
         return (
           <Button
             variant="outline"
-            onClick={() => navigate("/crm/deals")}
+            onClick={() => navigate("/crm/contracts")}
           >
-            Back to Deals
+            Back to Contracts
           </Button>
         );
       
@@ -601,13 +601,13 @@ const DealDetail = () => {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => navigate("/crm/deals")}
+                onClick={() => navigate("/crm/contracts")}
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div>
                 <h1 className="text-3xl font-bold">{deal.deal_number}</h1>
-                <p className="text-muted-foreground">Deal Details</p>
+                <p className="text-muted-foreground">Contract Details</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -1011,4 +1011,4 @@ const DealDetail = () => {
   );
 };
 
-export default DealDetail;
+export default ContractDetail;
