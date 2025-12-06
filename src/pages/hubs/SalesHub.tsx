@@ -13,6 +13,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { SalesKPIDashboard } from "@/components/kpi/SalesKPIDashboard";
+import { ConversionMetrics } from "@/components/kpi/ConversionMetrics";
 
 const SalesHub = () => {
   const navigate = useNavigate();
@@ -91,6 +92,12 @@ const SalesHub = () => {
           <p className="text-muted-foreground">
             Manage leads, close deals, and track your performance
           </p>
+        </div>
+
+        {/* Conversion Metrics Dashboard */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Lead Conversion Metrics</h2>
+          <ConversionMetrics />
         </div>
 
         {/* KPI Dashboard */}
