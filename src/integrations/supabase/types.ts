@@ -492,6 +492,74 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_costs: {
+        Row: {
+          amount: number
+          cost_category: string
+          created_at: string
+          created_by: string | null
+          deal_id: string
+          description: string | null
+          id: string
+          po_id: string | null
+          supplier_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          cost_category: string
+          created_at?: string
+          created_by?: string | null
+          deal_id: string
+          description?: string | null
+          id?: string
+          po_id?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          cost_category?: string
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string
+          description?: string | null
+          id?: string
+          po_id?: string | null
+          supplier_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_costs_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_costs_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_costs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "deal_costs_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           approved_at: string | null
