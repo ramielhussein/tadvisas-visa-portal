@@ -74,11 +74,12 @@ const DealsManagement = () => {
       setDeals(data || []);
       setFilteredDeals(data || []);
 
-      // Calculate stats
+      // Calculate stats - only Active deals count towards Total Value
+      const activeDealsData = data?.filter(d => d.status === 'Active') || [];
       const stats = {
         totalDeals: data?.length || 0,
-        totalValue: data?.reduce((sum, d) => sum + Number(d.total_amount), 0) || 0,
-        activeDeals: data?.filter(d => d.status === 'Active').length || 0,
+        totalValue: activeDealsData.reduce((sum, d) => sum + Number(d.total_amount), 0),
+        activeDeals: activeDealsData.length,
         closedDeals: data?.filter(d => d.status === 'Closed').length || 0,
       };
       setStats(stats);
