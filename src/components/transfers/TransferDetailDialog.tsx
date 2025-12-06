@@ -16,6 +16,7 @@ import {
   Image as ImageIcon,
   ExternalLink
 } from "lucide-react";
+import AuthorizedDriverLocationMap from "@/components/mapbox/AuthorizedDriverLocationMap";
 
 interface TransferDetailDialogProps {
   open: boolean;
@@ -180,6 +181,11 @@ const TransferDetailDialog = ({ open, onOpenChange, transfer }: TransferDetailDi
                 )}
               </CardContent>
             </Card>
+          )}
+
+          {/* Real-Time Driver Location Map (Authorized Users Only) */}
+          {transfer.driver_id && (
+            <AuthorizedDriverLocationMap transfer={transfer} />
           )}
 
           {/* Timeline */}
