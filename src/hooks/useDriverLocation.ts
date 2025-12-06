@@ -14,10 +14,12 @@ export const useDriverLocation = (taskId: string | null) => {
   const watchIdRef = useRef<number | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const isStartedRef = useRef(false);
+  const permissionGrantedRef = useRef(false);
 
   const startTracking = useCallback(async () => {
+    // Prevent duplicate starts
     if (isStartedRef.current) {
-      console.log('[DriverTracking] Already tracking');
+      console.log('[DriverTracking] Already tracking, skipping');
       return;
     }
 
@@ -32,6 +34,24 @@ export const useDriverLocation = (taskId: string | null) => {
       return;
     }
 
+    // Check permission state first (if available)
+    if (navigator.permissions) {
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'geolocation' });
+        console.log('[DriverTracking] Permission state:', permissionStatus.state);
+        
+        if (permissionStatus.state === 'denied') {
+          setError("Location permission denied. Please enable in settings.");
+          return;
+        }
+        
+        permissionGrantedRef.current = permissionStatus.state === 'granted';
+      } catch (e) {
+        // Some browsers don't support this, continue anyway
+        console.log('[DriverTracking] Permission query not supported');
+      }
+    }
+
     isStartedRef.current = true;
     setIsTracking(true);
     setError(null);
@@ -39,35 +59,49 @@ export const useDriverLocation = (taskId: string | null) => {
     const driverId = user.id;
     console.log('[DriverTracking] Starting for:', driverId, 'task:', taskId);
 
-    // Setup presence channel
-    channelRef.current = supabase.channel('driver-locations', {
+    // Setup presence channel with unique name for drivers
+    channelRef.current = supabase.channel('driver-tracking-presence', {
       config: { presence: { key: driverId } }
     });
 
     channelRef.current.subscribe(async (status) => {
       console.log('[DriverTracking] Channel:', status);
       if (status === 'SUBSCRIBED') {
-        // Get initial position
-        navigator.geolocation.getCurrentPosition(
-          (pos) => updateLocation(pos, driverId),
-          (err) => {
-            console.error('[DriverTracking] Initial GPS error:', err.message);
-            setError(err.message);
-          },
-          { enableHighAccuracy: true, timeout: 20000 }
-        );
+        // Get initial position only once
+        if (!permissionGrantedRef.current) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              permissionGrantedRef.current = true;
+              updateLocation(pos, driverId);
+            },
+            (err) => {
+              console.error('[DriverTracking] Initial GPS error:', err.message);
+              setError(err.message);
+            },
+            { enableHighAccuracy: true, timeout: 20000 }
+          );
+        }
       }
     });
 
-    // Watch position continuously
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      (pos) => updateLocation(pos, driverId),
-      (err) => {
-        console.error('[DriverTracking] Watch error:', err.message);
-        setError(err.message);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 5000 }
-    );
+    // Watch position continuously - only set up once
+    if (watchIdRef.current === null) {
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          permissionGrantedRef.current = true;
+          updateLocation(pos, driverId);
+        },
+        (err) => {
+          console.error('[DriverTracking] Watch error:', err.message);
+          setError(err.message);
+        },
+        { 
+          enableHighAccuracy: true, 
+          timeout: 30000, 
+          maximumAge: 10000 // Cache position for 10 seconds
+        }
+      );
+    }
 
     async function updateLocation(position: GeolocationPosition, userId: string) {
       const locationData = {
@@ -136,26 +170,33 @@ export const useDriverLocation = (taskId: string | null) => {
 export const useDriversLocations = () => {
   const [driversLocations, setDriversLocations] = useState<Record<string, DriverLocation & { driverId: string }>>({});
   const [error, setError] = useState<string | null>(null);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const setupDoneRef = useRef(false);
 
   useEffect(() => {
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-
+    if (setupDoneRef.current) return;
+    
     const setup = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      setupDoneRef.current = true;
       console.log('[AdminTracking] Setting up');
 
-      channel = supabase.channel('driver-locations', {
+      // Use the same channel name as drivers
+      channelRef.current = supabase.channel('driver-tracking-presence', {
         config: { presence: { key: `admin-${user.id}` } }
       });
 
-      channel
+      channelRef.current
         .on('presence', { event: 'sync' }, () => {
-          const state = channel?.presenceState() || {};
+          const state = channelRef.current?.presenceState() || {};
           const locations: Record<string, DriverLocation & { driverId: string }> = {};
           
+          console.log('[AdminTracking] Presence sync, keys:', Object.keys(state));
+          
           Object.entries(state).forEach(([key, presences]: [string, any]) => {
+            // Skip admin keys
             if (key.startsWith('admin-')) return;
             
             if (presences?.length > 0) {
@@ -168,7 +209,7 @@ export const useDriversLocations = () => {
                   taskId: latest.taskId,
                   driverId: latest.driverId || key,
                 };
-                console.log('[AdminTracking] Driver:', key, latest.lat.toFixed(4), latest.lng.toFixed(4));
+                console.log('[AdminTracking] Driver found:', key, latest.lat.toFixed(4), latest.lng.toFixed(4));
               }
             }
           });
@@ -176,7 +217,26 @@ export const useDriversLocations = () => {
           setDriversLocations(locations);
           setError(null);
         })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('[AdminTracking] Driver joined:', key);
+          if (!key.startsWith('admin-') && newPresences?.length > 0) {
+            const latest = newPresences[newPresences.length - 1];
+            if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
+              setDriversLocations(prev => ({
+                ...prev,
+                [key]: {
+                  lat: latest.lat,
+                  lng: latest.lng,
+                  timestamp: latest.timestamp,
+                  taskId: latest.taskId,
+                  driverId: latest.driverId || key,
+                }
+              }));
+            }
+          }
+        })
         .on('presence', { event: 'leave' }, ({ key }) => {
+          console.log('[AdminTracking] Driver left:', key);
           if (!key.startsWith('admin-')) {
             setDriversLocations(prev => {
               const updated = { ...prev };
@@ -188,15 +248,23 @@ export const useDriversLocations = () => {
         .subscribe(async (status) => {
           console.log('[AdminTracking] Channel:', status);
           if (status === 'SUBSCRIBED') {
-            await channel?.track({ role: 'admin' });
+            await channelRef.current?.track({ role: 'admin' });
           } else if (status === 'CHANNEL_ERROR') {
             setError('Connection error');
+            setupDoneRef.current = false;
           }
         });
     };
 
     setup();
-    return () => { if (channel) supabase.removeChannel(channel); };
+    
+    return () => { 
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      setupDoneRef.current = false;
+    };
   }, []);
 
   return { driversLocations, error };
