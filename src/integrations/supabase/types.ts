@@ -2550,6 +2550,7 @@ export type Database = {
           pickup_at: string | null
           proof_photo_url: string | null
           signature_url: string | null
+          title: string | null
           to_lat: number | null
           to_lng: number | null
           to_location: string
@@ -2588,6 +2589,7 @@ export type Database = {
           pickup_at?: string | null
           proof_photo_url?: string | null
           signature_url?: string | null
+          title?: string | null
           to_lat?: number | null
           to_lng?: number | null
           to_location: string
@@ -2626,6 +2628,7 @@ export type Database = {
           pickup_at?: string | null
           proof_photo_url?: string | null
           signature_url?: string | null
+          title?: string | null
           to_lat?: number | null
           to_lng?: number | null
           to_location?: string
