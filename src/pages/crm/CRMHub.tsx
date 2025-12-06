@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle, Kanban } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle, Kanban, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -82,6 +82,7 @@ const CRMHub = () => {
   const [showOnlyHot, setShowOnlyHot] = useState(false);
   const [showOnlyToday, setShowOnlyToday] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [showOnlyConverted, setShowOnlyConverted] = useState(false);
   const [assigningLeadId, setAssigningLeadId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [searchQuery, setSearchQuery] = useState("");
@@ -166,6 +167,11 @@ const CRMHub = () => {
           adminQuery = adminQuery.eq("status", adminStatusFilter as any);
         }
 
+        // Apply CONVERTED filter if enabled for admin view
+        if (showOnlyConverted) {
+          adminQuery = adminQuery.or("status.eq.SOLD,client_converted.eq.true");
+        }
+
         const { data, error } = await adminQuery;
         if (error) throw error;
         adminAccum = data || [];
@@ -247,6 +253,12 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.gte("created_at", todayStr);
       }
 
+      // Apply CONVERTED filter if enabled (SOLD status or client_converted=true)
+      if (showOnlyConverted) {
+        unassignedQuery = unassignedQuery.or("status.eq.SOLD,client_converted.eq.true");
+        myLeadsQuery = myLeadsQuery.or("status.eq.SOLD,client_converted.eq.true");
+      }
+
       // Apply sorting - newest first for created_at and updated_at, earliest first for other dates
       const ascending = (sortBy === "created_at" || sortBy === "updated_at") ? false : true;
       unassignedQuery = unassignedQuery.order(sortBy, { ascending, nullsFirst: false });
@@ -284,7 +296,7 @@ const CRMHub = () => {
     } finally {
       setLoading(false);
     }
-  }, [user, sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
+  }, [user, sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, showOnlyConverted, isAdmin, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -1273,6 +1285,18 @@ const CRMHub = () => {
               <Label htmlFor="archived-toggle" className="text-sm cursor-pointer flex items-center gap-1">
                 <Archive className="h-4 w-4" />
                 Show Archived
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                id="converted-filter"
+                checked={showOnlyConverted}
+                onCheckedChange={setShowOnlyConverted}
+              />
+              <Label htmlFor="converted-filter" className="text-sm cursor-pointer flex items-center gap-1 text-green-600 font-medium">
+                <CheckCircle2 className="h-4 w-4" />
+                Converted Clients
               </Label>
             </div>
 
