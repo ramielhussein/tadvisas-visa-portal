@@ -103,6 +103,9 @@ import TadGoApp from "./pages/tadgo/TadGoApp";
 import TadGoTaskDetail from "./pages/tadgo/TadGoTaskDetail";
 import TadGoDriverDashboard from "./pages/tadgo/TadGoDriverDashboard";
 
+// Gym Timer
+import GymTimer from "./pages/GymTimer";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -250,6 +253,9 @@ const App = () => (
           <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
           <Route path="/tadgo/dashboard" element={<ProtectedRoute><TadGoDriverDashboard /></ProtectedRoute>} />
           <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
+          
+          {/* Gym Timer */}
+          <Route path="/gym" element={<GymTimer />} />
           
           <Route path="/chattest" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
