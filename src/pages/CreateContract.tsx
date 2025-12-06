@@ -46,11 +46,14 @@ interface Deal {
   client_phone: string;
   client_email: string | null;
   service_type: string;
+  service_description: string | null;
   worker_id: string | null;
   worker_name: string | null;
   deal_value: number;
+  vat_amount: number | null;
   total_amount: number;
   status: string;
+  notes: string | null;
 }
 
 interface ClientData {
@@ -144,13 +147,13 @@ const CreateContract = () => {
     fetchClients();
   }, []);
 
-  // Fetch active deals
+  // Fetch only ACTIVE deals (not drafts - they need approval first)
   useEffect(() => {
     const fetchDeals = async () => {
       const { data, error } = await supabase
         .from('deals')
-        .select('*')
-        .in('status', ['Active', 'Draft'])
+        .select('id, deal_number, client_name, client_phone, client_email, service_type, service_description, worker_id, worker_name, deal_value, vat_amount, total_amount, status, notes')
+        .eq('status', 'Active')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -163,20 +166,53 @@ const CreateContract = () => {
     fetchDeals();
   }, []);
 
-  // Handle deal selection - auto-fill contract data
+  // Handle deal selection - auto-fill ALL contract data
   const handleDealSelect = (dealId: string) => {
     const deal = deals.find(d => d.id === dealId);
     if (deal) {
       setSelectedDeal(dealId);
+      
+      // Auto-fill client data
       setClientData({
         name: deal.client_name,
         phone: deal.client_phone,
         email: deal.client_email || ""
       });
+      
+      // Auto-fill worker if available
       if (deal.worker_id) {
         setSelectedWorker(deal.worker_id);
       }
+      
+      // Auto-fill amount
       setBaseAmount(deal.deal_value);
+      
+      // Auto-match product based on service_type
+      const matchingProduct = products.find(p => 
+        p.name.toLowerCase().includes(deal.service_type.toLowerCase()) ||
+        p.code.toLowerCase().includes(deal.service_type.toLowerCase()) ||
+        deal.service_type.toLowerCase().includes(p.name.toLowerCase())
+      );
+      if (matchingProduct) {
+        setSelectedProduct(matchingProduct.id);
+        
+        // If monthly product, try to extract duration from service_description
+        if (matchingProduct.is_monthly && deal.service_description) {
+          const monthMatch = deal.service_description.match(/(\d+)\s*month/i);
+          if (monthMatch) {
+            const months = parseInt(monthMatch[1]);
+            setDurationMonths(months);
+            setMonthlyAmount(deal.deal_value / months);
+          }
+        } else if (matchingProduct.default_duration_months) {
+          setDurationMonths(matchingProduct.default_duration_months);
+        }
+      }
+      
+      // Auto-fill notes from deal
+      if (deal.notes) {
+        setNotes(deal.notes);
+      }
     }
     setDealSearchOpen(false);
   };
@@ -333,12 +369,12 @@ const CreateContract = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Deal Selection (Optional - to pre-fill data) */}
-            <Card>
+            {/* Deal Selection - Primary Entry Point */}
+            <Card className={selectedDeal ? "border-primary bg-primary/5" : ""}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="h-5 w-5" />
-                  Link to Deal (Optional)
+                  {selectedDeal ? "✓ Deal Linked - Data Auto-Filled" : "Link to Active Deal (Recommended)"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -347,14 +383,14 @@ const CreateContract = () => {
                   <Popover open={dealSearchOpen} onOpenChange={setDealSearchOpen}>
                     <PopoverTrigger asChild>
                       <Button
-                        variant="outline"
+                        variant={selectedDeal ? "default" : "outline"}
                         role="combobox"
                         aria-expanded={dealSearchOpen}
                         className="w-full justify-between"
                       >
                         {selectedDeal
                           ? `${deals.find((deal) => deal.id === selectedDeal)?.deal_number} - ${deals.find((deal) => deal.id === selectedDeal)?.client_name}`
-                          : "Search deals to auto-fill contract data..."}
+                          : "Search active deals to auto-fill all contract data..."}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -362,7 +398,7 @@ const CreateContract = () => {
                       <Command>
                         <CommandInput placeholder="Search by deal number or client name..." />
                         <CommandList>
-                          <CommandEmpty>No active deals found.</CommandEmpty>
+                          <CommandEmpty>No active deals found. Only approved (Active) deals can be converted to contracts.</CommandEmpty>
                           <CommandGroup>
                             {deals.map((deal) => (
                               <CommandItem
@@ -377,9 +413,9 @@ const CreateContract = () => {
                                   )}
                                 />
                                 <div className="flex flex-col">
-                                  <span>{deal.deal_number} - {deal.client_name}</span>
+                                  <span className="font-medium">{deal.deal_number} - {deal.client_name}</span>
                                   <span className="text-xs text-muted-foreground">
-                                    {deal.service_type} • AED {Number(deal.deal_value).toLocaleString()}
+                                    {deal.service_type} • AED {Number(deal.deal_value).toLocaleString()} • {deal.worker_name || 'No worker assigned'}
                                   </span>
                                 </div>
                               </CommandItem>
@@ -389,9 +425,34 @@ const CreateContract = () => {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <p className="text-xs text-muted-foreground">
-                    Selecting a deal will auto-fill client info, worker, and amount. You can still modify any field below.
-                  </p>
+                  {selectedDeal ? (
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-primary">
+                        All fields below have been auto-filled from the deal. Review and click "Issue Contract".
+                      </p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedDeal("");
+                          setSelectedWorker("");
+                          setSelectedProduct("");
+                          setClientData({ name: "", phone: "", email: "" });
+                          setBaseAmount(0);
+                          setDurationMonths(null);
+                          setMonthlyAmount(null);
+                          setNotes("");
+                        }}
+                      >
+                        Clear Selection
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Only deals with "Active" status appear here. Draft deals must be approved by a Sales Manager first.
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -724,9 +785,9 @@ const CreateContract = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} size="lg">
                 {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Create Contract & Invoice
+                {selectedDeal ? "Issue Contract" : "Create Contract & Invoice"}
               </Button>
             </div>
           </form>
