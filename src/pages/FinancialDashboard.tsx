@@ -155,7 +155,11 @@ const FinancialDashboard = () => {
             const expectedRevenueToDate = monthlyAmount > 0 ? monthlyAmount * expectedMonths : Number(contract.total_amount);
             
             const currentAR = Math.max(0, expectedRevenueToDate - totalPaid);
-            const futureAR = monthlyAmount > 0 ? monthlyAmount * monthsRemaining : Math.max(0, Number(contract.total_amount) - expectedRevenueToDate);
+            
+            // Future A/R = Total remaining to be invoiced minus any overpayment
+            // If client paid more than expected to date, reduce future A/R
+            const totalRemainingOnContract = Number(contract.total_amount) - totalPaid;
+            const futureAR = Math.max(0, totalRemainingOnContract - currentAR);
             
             // Calculate next payment date (1st of next month)
             const nextPaymentDate = addMonths(new Date(today.getFullYear(), today.getMonth(), 1), 1);
