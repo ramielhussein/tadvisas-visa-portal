@@ -161,16 +161,23 @@ const DriverTrackingMap = () => {
               <p className="text-sm">{trackingError}</p>
             </div>
           </div>
-        ) : activeDrivers.length === 0 ? (
-          <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
-            <div className="text-center text-muted-foreground">
-              <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No active drivers currently tracking</p>
-              <p className="text-sm">Drivers will appear here when they start a task</p>
-            </div>
-          </div>
         ) : (
-          <div ref={mapContainerRef} className="h-80 rounded-lg overflow-hidden" />
+          <>
+            {/* Always render map container so it initializes properly */}
+            <div 
+              ref={mapContainerRef} 
+              className={`h-80 rounded-lg overflow-hidden ${activeDrivers.length === 0 ? 'hidden' : ''}`} 
+            />
+            {activeDrivers.length === 0 && (
+              <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
+                <div className="text-center text-muted-foreground">
+                  <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p>No active drivers currently tracking</p>
+                  <p className="text-sm">Drivers will appear here when they start a task</p>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Active Drivers List */}
