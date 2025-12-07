@@ -462,10 +462,17 @@ const HRAttendance = () => {
                 .map((a: any) => new Date(a.check_in_time).getTime());
               const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
               
+              // Only show "CENTER CLOSED" when ALL staff have checked out (no one still working or on break)
+              const stillWorking = staffAttendance?.filter((a: any) => 
+                a.status === 'checked_in' || a.status === 'on_break'
+              ).length || 0;
+              
               const checkOutTimes = staffAttendance
                 ?.filter((a: any) => a.check_out_time)
                 .map((a: any) => new Date(a.check_out_time).getTime());
-              const lastCheckOut = checkOutTimes?.length ? new Date(Math.max(...checkOutTimes)) : null;
+              const lastCheckOut = checkOutTimes?.length && stillWorking === 0 
+                ? new Date(Math.max(...checkOutTimes)) 
+                : null;
               
               // Check if opened after 10 AM
               const isLate = firstCheckIn && firstCheckIn.getHours() >= 10;
