@@ -68,6 +68,44 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
     }
   };
 
+  const notifyDrivers = async (transferTitle: string, transferId: string) => {
+    try {
+      // Get all users with driver role
+      const { data: driverRoles, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "driver");
+
+      if (rolesError) {
+        console.error("Error fetching drivers:", rolesError);
+        return;
+      }
+
+      if (!driverRoles || driverRoles.length === 0) return;
+
+      // Create notifications for all drivers
+      const notifications = driverRoles.map((role) => ({
+        user_id: role.user_id,
+        title: "New Transfer Available",
+        message: transferTitle 
+          ? `New task: ${transferTitle} - ${fromLocation.address} → ${toLocation.address}`
+          : `New transfer: ${fromLocation.address} → ${toLocation.address}`,
+        type: "transfer",
+        related_lead_id: null,
+      }));
+
+      const { error: notifyError } = await supabase
+        .from("notifications")
+        .insert(notifications);
+
+      if (notifyError) {
+        console.error("Error sending notifications:", notifyError);
+      }
+    } catch (error) {
+      console.error("Error notifying drivers:", error);
+    }
+  };
+
   const handleCreateTransfer = async () => {
     if (category === "HR" && !hrSubtype) {
       toast({
@@ -101,7 +139,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
       if (!user) throw new Error("User not authenticated");
 
       // Let database generate transfer_number automatically via default
-      const { error } = await supabase.from("worker_transfers").insert({
+      const { data: newTransfer, error } = await supabase.from("worker_transfers").insert({
         title: formData.title.trim() || null,
         worker_id: selectedWorker?.id || null,
         from_location: fromLocation.address,
@@ -118,13 +156,16 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         admin_details: category === "ADMIN" ? adminDetails : null,
         notes: formData.notes || null,
         handled_by: user.id,
-      });
+      }).select("id").single();
 
       if (error) throw error;
 
+      // Notify all drivers about the new transfer
+      await notifyDrivers(formData.title.trim(), newTransfer?.id || "");
+
       toast({
         title: "Success",
-        description: "Transfer request created successfully",
+        description: "Transfer request created and drivers notified",
       });
 
       onOpenChange(false);
