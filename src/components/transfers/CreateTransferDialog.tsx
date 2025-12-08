@@ -70,18 +70,15 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
 
   const notifyDrivers = async (transferTitle: string, transferId: string) => {
     try {
-      // Get all users with driver role
-      const { data: driverRoles, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "driver");
+      // Only notify specific drivers: Rayaan, Sreejith, Talal, Yasin
+      const authorizedDriverIds = [
+        "e5ddce55-8111-45c0-b0a2-e1b752187516", // Rayaan
+        "050adaa3-695d-4c53-b070-bf28feb968f7", // Sreejith
+        "5af01730-5863-473f-b7be-e2261e6e22fa", // Talal
+        "496c8a50-7828-4fee-b4e5-030ae7338455", // Yasin
+      ];
 
-      if (rolesError) {
-        console.error("Error fetching drivers:", rolesError);
-        return;
-      }
-
-      if (!driverRoles || driverRoles.length === 0) return;
+      const driverRoles = authorizedDriverIds.map(id => ({ user_id: id }));
 
       // Create notifications for all drivers
       const notifications = driverRoles.map((role) => ({
