@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useDriverLocation } from "@/hooks/useDriverLocation";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { 
   Car, 
   MapPin, 
@@ -14,7 +15,8 @@ import {
   AlertCircle,
   Navigation,
   RefreshCw,
-  Radio
+  Radio,
+  Bell
 } from "lucide-react";
 
 interface Task {
@@ -46,10 +48,21 @@ const TadGoDriverDashboard = () => {
   // Start location tracking when driver has active tasks
   const { isTracking, error: trackingError, startTracking, stopTracking } = useDriverLocation(null);
   const trackingStartedRef = useRef(false);
+  
+  // Push notifications
+  const { isSupported, isSubscribed, permission, subscribe } = usePushNotifications();
 
   useEffect(() => {
     checkAuthAndFetch();
-  }, []);
+    // Auto-subscribe to push notifications for drivers
+    if (isSupported && !isSubscribed && permission !== 'denied') {
+      subscribe().then(success => {
+        if (success) {
+          console.log('TadGo: Push notifications enabled');
+        }
+      });
+    }
+  }, [isSupported, isSubscribed, permission]);
 
   // Start tracking when there are active tasks - only once
   useEffect(() => {

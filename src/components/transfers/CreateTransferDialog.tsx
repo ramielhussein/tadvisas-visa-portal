@@ -80,7 +80,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
 
       const driverRoles = authorizedDriverIds.map(id => ({ user_id: id }));
 
-      // Create notifications for all drivers
+      // Create in-app notifications for all drivers
       const notifications = driverRoles.map((role) => ({
         user_id: role.user_id,
         title: "New Transfer Available",
@@ -96,8 +96,22 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         .insert(notifications);
 
       if (notifyError) {
-        console.error("Error sending notifications:", notifyError);
+        console.error("Error sending in-app notifications:", notifyError);
       }
+
+      // Send push notifications
+      const pushMessage = transferTitle 
+        ? `New task: ${transferTitle}`
+        : `New transfer: ${fromLocation.address} → ${toLocation.address}`;
+
+      await supabase.functions.invoke('send-push-notification', {
+        body: {
+          title: "New Transfer Available",
+          message: pushMessage,
+          userIds: authorizedDriverIds,
+          url: '/tadgo'
+        }
+      });
     } catch (error) {
       console.error("Error notifying drivers:", error);
     }
