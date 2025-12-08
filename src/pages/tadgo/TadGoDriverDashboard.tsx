@@ -216,16 +216,27 @@ const TadGoDriverDashboard = () => {
               Live
             </Badge>
           )}
-          {isSupported && !isSubscribed && (
+          {/* Always show alert button for debugging */}
+          {isSubscribed ? (
+            <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50">
+              <Bell className="w-3 h-3 mr-1" />
+              Alerts On
+            </Badge>
+          ) : (
             <Button
               variant="outline"
               size="sm"
               onClick={async () => {
+                console.log('Push support:', isSupported, 'Permission:', permission);
+                if (!isSupported) {
+                  toast({ title: "Push not supported", description: "Your browser doesn't support push notifications", variant: "destructive" });
+                  return;
+                }
                 const success = await subscribe();
                 if (success) {
                   toast({ title: "Notifications enabled!", description: "You'll receive push notifications for new tasks" });
                 } else {
-                  toast({ title: "Failed to enable notifications", variant: "destructive" });
+                  toast({ title: "Failed to enable notifications", description: `Permission: ${permission}`, variant: "destructive" });
                 }
               }}
               className="border-amber-600 text-amber-400 hover:bg-amber-500/20"
@@ -233,12 +244,6 @@ const TadGoDriverDashboard = () => {
               <Bell className="w-4 h-4 mr-1" />
               Enable Alerts
             </Button>
-          )}
-          {isSubscribed && (
-            <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50">
-              <Bell className="w-3 h-3 mr-1" />
-              Alerts On
-            </Badge>
           )}
           <Button
             variant="outline"
