@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Eye, Edit, Plus, FileText, Trash2 } from "lucide-react";
+import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -43,6 +45,41 @@ const MyCVs = () => {
   const [showAll, setShowAll] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [workerToDelete, setWorkerToDelete] = useState<string | null>(null);
+  const [searchName, setSearchName] = useState("");
+  const [filterNationality, setFilterNationality] = useState<string>("all");
+  const [filterProfession, setFilterProfession] = useState<string>("all");
+
+  // Get unique nationalities and professions for filter dropdowns
+  const nationalities = useMemo(() => {
+    const codes = [...new Set(workers.map(w => w.nationality_code).filter(Boolean))];
+    return codes.sort();
+  }, [workers]);
+
+  const professions = useMemo(() => {
+    const jobs = [...new Set(workers.map(w => w.job1).filter(Boolean))];
+    return jobs.sort();
+  }, [workers]);
+
+  // Filter workers based on search/filters
+  const filteredWorkers = useMemo(() => {
+    return workers.filter(worker => {
+      const matchesName = searchName === "" || 
+        worker.name.toLowerCase().includes(searchName.toLowerCase());
+      const matchesNationality = filterNationality === "all" || 
+        worker.nationality_code === filterNationality;
+      const matchesProfession = filterProfession === "all" || 
+        worker.job1 === filterProfession;
+      return matchesName && matchesNationality && matchesProfession;
+    });
+  }, [workers, searchName, filterNationality, filterProfession]);
+
+  const clearFilters = () => {
+    setSearchName("");
+    setFilterNationality("all");
+    setFilterProfession("all");
+  };
+
+  const hasActiveFilters = searchName || filterNationality !== "all" || filterProfession !== "all";
 
   useEffect(() => {
     loadMyWorkers();
@@ -183,6 +220,55 @@ const MyCVs = () => {
           </div>
         </div>
 
+        {/* Search and Filter Section */}
+        <Card className="mb-6">
+          <CardContent className="pt-4">
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name..."
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select value={filterNationality} onValueChange={setFilterNationality}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Nationality" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Nationalities</SelectItem>
+                  {nationalities.map(nat => (
+                    <SelectItem key={nat} value={nat}>{nat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterProfession} onValueChange={setFilterProfession}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Profession" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Professions</SelectItem>
+                  {professions.map(job => (
+                    <SelectItem key={job} value={job}>{job}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="icon" onClick={clearFilters} title="Clear filters">
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Showing {filteredWorkers.length} of {workers.length} CVs
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         {workers.length === 0 ? (
           <Card>
             <CardContent className="py-16 text-center">
@@ -197,9 +283,22 @@ const MyCVs = () => {
               </Button>
             </CardContent>
           </Card>
+        ) : filteredWorkers.length === 0 ? (
+          <Card>
+            <CardContent className="py-16 text-center">
+              <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-semibold mb-2">No Matching CVs</h3>
+              <p className="text-muted-foreground mb-4">
+                No CVs match your search criteria
+              </p>
+              <Button variant="outline" onClick={clearFilters}>
+                Clear Filters
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
           <div className="grid gap-4">
-            {workers.map((worker) => (
+            {filteredWorkers.map((worker) => (
               <Card key={worker.id}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
