@@ -779,50 +779,39 @@ const CRMHub = () => {
         return;
       }
 
-      // Add watermark info
       const timestamp = new Date().toISOString();
-      const exporterEmail = user?.email || "unknown";
       
-      // Create CSV content
+      // Facebook Custom Audience format headers
+      // email, phone, fn (first name), ln (last name), ct (city/emirate), country
       const headers = [
-        "Client Name",
-        "Mobile Number",
-        "Email",
-        "Status",
-        "Service Required",
-        "Nationality",
-        "Emirate",
-        "Hot",
-        "Lead Source",
-        "Assigned To",
-        "Created At",
-        "Remind Me",
-        "Visa Expiry",
-        "Comments",
-        "Exported By",
-        "Export Timestamp"
+        "email",
+        "phone",
+        "fn",
+        "ln",
+        "ct",
+        "country"
       ];
 
       const csvContent = [
         headers.join(","),
-        ...leadsToExport.map(lead => [
-          `"${lead.client_name || ""}"`,
-          `"${lead.mobile_number || ""}"`,
-          `"${lead.email || ""}"`,
-          `"${lead.status || ""}"`,
-          `"${lead.service_required || ""}"`,
-          `"${lead.nationality_code || ""}"`,
-          `"${lead.emirate || ""}"`,
-          lead.hot ? "Yes" : "No",
-          `"${lead.lead_source || ""}"`,
-          `"${getAssignedEmail(lead.assigned_to)}"`,
-          `"${lead.created_at || ""}"`,
-          `"${lead.remind_me || ""}"`,
-          `"${lead.visa_expiry_date || ""}"`,
-          `"${(lead.comments || "").replace(/"/g, '""')}"`,
-          `"${exporterEmail}"`,
-          `"${timestamp}"`
-        ].join(","))
+        ...leadsToExport.map(lead => {
+          // Split client name into first and last name
+          const nameParts = (lead.client_name || "").trim().split(/\s+/);
+          const firstName = nameParts[0] || "";
+          const lastName = nameParts.slice(1).join(" ") || "";
+          
+          // Format phone number - remove spaces and special characters
+          const phone = (lead.mobile_number || "").replace(/[\s\-\(\)]/g, "");
+          
+          return [
+            lead.email || "",
+            phone,
+            firstName,
+            lastName,
+            lead.emirate || "",
+            "AE" // UAE country code
+          ].join(",");
+        })
       ].join("\n");
 
       // Create and download file
@@ -830,7 +819,8 @@ const CRMHub = () => {
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `leads_export_${timestamp.split('T')[0]}.csv`);
+      const filterLabel = serviceTypeFilter !== "all" ? `_${serviceTypeFilter}` : "";
+      link.setAttribute("download", `facebook_audience${filterLabel}_${timestamp.split('T')[0]}.csv`);
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
@@ -838,7 +828,7 @@ const CRMHub = () => {
 
       toast({
         title: "Export Successful",
-        description: `Exported ${leadsToExport.length} leads with watermark`,
+        description: `Exported ${leadsToExport.length} leads in Facebook Custom Audience format`,
       });
     } catch (error: any) {
       console.error("Error exporting leads:", error);
