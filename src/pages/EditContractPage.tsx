@@ -19,6 +19,9 @@ const EditContract = () => {
   const [saving, setSaving] = useState(false);
   const [deal, setDeal] = useState<any>(null);
 
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+
   const [formData, setFormData] = useState({
     client_name: "",
     client_phone: "",
@@ -28,14 +31,36 @@ const EditContract = () => {
     deal_value: "",
     vat_rate: "5",
     payment_terms: "Full Payment",
+    payment_method: "",
+    bank_account: "",
     notes: "",
   });
 
   useEffect(() => {
     if (id) {
       fetchDeal();
+      fetchPaymentMethods();
+      fetchBankAccounts();
     }
   }, [id]);
+
+  const fetchPaymentMethods = async () => {
+    const { data } = await supabase
+      .from("payment_methods")
+      .select("*")
+      .eq("is_active", true)
+      .order("method_name");
+    setPaymentMethods(data || []);
+  };
+
+  const fetchBankAccounts = async () => {
+    const { data } = await supabase
+      .from("bank_accounts")
+      .select("*")
+      .eq("status", "Active")
+      .order("bank_name");
+    setBankAccounts(data || []);
+  };
 
   const fetchDeal = async () => {
     try {
@@ -57,6 +82,8 @@ const EditContract = () => {
         deal_value: data.deal_value?.toString() || "0",
         vat_rate: data.vat_rate?.toString() || "5",
         payment_terms: data.payment_terms || "Full Payment",
+        payment_method: (data as any).payment_method || "",
+        bank_account: (data as any).bank_account_id || "",
         notes: data.notes || "",
       });
     } catch (error: any) {
@@ -267,6 +294,42 @@ const EditContract = () => {
                             <SelectItem value="50% Advance">50% Advance</SelectItem>
                             <SelectItem value="Installments">Installments</SelectItem>
                             <SelectItem value="Net 30">Net 30</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="payment_method">Payment Method</Label>
+                        <Select
+                          value={formData.payment_method}
+                          onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select payment method" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {paymentMethods.map((method) => (
+                              <SelectItem key={method.id} value={method.method_name}>
+                                {method.method_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="bank_account">Bank Account</Label>
+                        <Select
+                          value={formData.bank_account}
+                          onValueChange={(value) => setFormData({ ...formData, bank_account: value })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select bank account" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {bankAccounts.map((account) => (
+                              <SelectItem key={account.id} value={account.id}>
+                                {account.bank_name} - {account.account_name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>
