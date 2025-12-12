@@ -938,7 +938,13 @@ interface QuickLeadEntryProps {
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => navigate(`/crm/leads/${existingLead.id}`)}
+                      onClick={() => {
+                        const leadId = existingLead?.id;
+                        if (leadId) {
+                          onClose();
+                          setTimeout(() => navigate(`/crm/leads/${leadId}`), 100);
+                        }
+                      }}
                       className="w-full"
                     >
                       View Lead Details
