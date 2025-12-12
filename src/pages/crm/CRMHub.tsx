@@ -64,11 +64,17 @@ const CRMHub = () => {
   const { toast } = useToast();
   const { isAdmin, user } = useAdminCheck();
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [canExportLeads, setCanExportLeads] = useState(false);
 
-  // Check if user is super admin
+  // Check if user is super admin or can export leads
   useEffect(() => {
     if (user) {
       setIsSuperAdmin(user.email === 'rami@tadmaids.com');
+      // Rayaan and Rami can export leads
+      setCanExportLeads(
+        user.email === 'rami@tadmaids.com' || 
+        user.email === 'rayaan@tadmaids.com'
+      );
     }
   }, [user]);
   
@@ -92,6 +98,7 @@ const CRMHub = () => {
   const [myLeadsStatusFilter, setMyLeadsStatusFilter] = useState<string>("all");
   const [unassignedStatusFilter, setUnassignedStatusFilter] = useState<string>("all");
   const [adminStatusFilter, setAdminStatusFilter] = useState<string>("all");
+  const [serviceTypeFilter, setServiceTypeFilter] = useState<string>("all");
   const [users, setUsers] = useState<User[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
     "New Lead": 0,
@@ -741,23 +748,32 @@ const CRMHub = () => {
   };
 
   const handleExportLeads = () => {
-    if (!isSuperAdmin) {
+    if (!canExportLeads) {
       toast({
         title: "Access Denied",
-        description: "Only super admin can export leads",
+        description: "Only authorized users can export leads",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      // Get the leads to export based on admin view
-      const leadsToExport = adminAllLeads.length > 0 ? adminAllLeads : allLeads;
+      // Get the leads to export based on admin view and filter by service type
+      let leadsToExport = adminAllLeads.length > 0 ? adminAllLeads : allLeads;
+      
+      // Apply service type filter for export
+      if (serviceTypeFilter !== "all") {
+        leadsToExport = leadsToExport.filter(lead => 
+          lead.service_required?.toLowerCase().includes(serviceTypeFilter.toLowerCase())
+        );
+      }
       
       if (leadsToExport.length === 0) {
         toast({
           title: "No Data",
-          description: "No leads to export",
+          description: serviceTypeFilter !== "all" 
+            ? `No leads with service type "${serviceTypeFilter}" to export`
+            : "No leads to export",
           variant: "destructive",
         });
         return;
@@ -1255,6 +1271,23 @@ const CRMHub = () => {
             </div>
 
             <div className="flex items-center gap-2">
+              <Label htmlFor="service-type-filter" className="text-sm">Service:</Label>
+              <Select value={serviceTypeFilter} onValueChange={setServiceTypeFilter}>
+                <SelectTrigger id="service-type-filter" className="w-[140px]">
+                  <SelectValue placeholder="All Services" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Services</SelectItem>
+                  <SelectItem value="P1">P1</SelectItem>
+                  <SelectItem value="P2">P2</SelectItem>
+                  <SelectItem value="P3">P3</SelectItem>
+                  <SelectItem value="P4">P4</SelectItem>
+                  <SelectItem value="P5">P5</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
               <Switch
                 id="hot-filter"
                 checked={showOnlyHot}
@@ -1338,10 +1371,10 @@ const CRMHub = () => {
 
           {isAdmin && viewMode === "table" && (
             <div className="flex gap-2">
-              {isSuperAdmin && (
+              {canExportLeads && (
                 <Button variant="outline" onClick={handleExportLeads}>
                   <Download className="w-4 h-4 mr-2" />
-                  Export Leads
+                  Export {serviceTypeFilter !== "all" ? serviceTypeFilter : "Leads"}
                 </Button>
               )}
               <Button variant="outline" asChild>
