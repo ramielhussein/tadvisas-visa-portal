@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -15,7 +16,8 @@ import {
   RefreshCw,
   CheckCircle2,
   Truck,
-  Package
+  Package,
+  Users
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -39,6 +41,12 @@ interface Task {
   };
 }
 
+interface Driver {
+  id: string;
+  full_name: string;
+  email: string;
+}
+
 const TadGoApp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -46,6 +54,8 @@ const TadGoApp = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("available");
+  const [isDriverManager, setIsDriverManager] = useState(false);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -73,6 +83,43 @@ const TadGoApp = () => {
       return;
     }
     setUser(user);
+    
+    // Check if user is a driver manager
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'driver_manager')
+      .maybeSingle();
+    
+    if (roleData) {
+      setIsDriverManager(true);
+      fetchDrivers();
+    }
+  };
+
+  const fetchDrivers = async () => {
+    try {
+      // Get all users with driver role
+      const { data: driverRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'driver');
+      
+      if (driverRoles && driverRoles.length > 0) {
+        const driverIds = driverRoles.map(d => d.user_id);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', driverIds);
+        
+        if (profiles) {
+          setDrivers(profiles);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching drivers:', error);
+    }
   };
 
   const fetchTasks = async () => {
@@ -114,6 +161,35 @@ const TadGoApp = () => {
       toast({
         title: "Task Accepted",
         description: "The task has been assigned to you",
+      });
+
+      fetchTasks();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAssignTask = async (taskId: string, driverId: string) => {
+    try {
+      const { error } = await supabase
+        .from('worker_transfers')
+        .update({
+          driver_id: driverId,
+          driver_status: 'accepted',
+          accepted_at: new Date().toISOString(),
+        })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      const assignedDriver = drivers.find(d => d.id === driverId);
+      toast({
+        title: "Task Assigned",
+        description: `Task assigned to ${assignedDriver?.full_name || 'driver'}`,
       });
 
       fetchTasks();
@@ -205,7 +281,7 @@ const TadGoApp = () => {
             </span>
           </div>
 
-          {showAccept && (
+          {showAccept && !isDriverManager && (
             <Button 
               size="sm" 
               className="bg-emerald-500 hover:bg-emerald-600"
@@ -218,6 +294,35 @@ const TadGoApp = () => {
             </Button>
           )}
         </div>
+
+        {/* Driver Manager Assignment Dropdown */}
+        {showAccept && isDriverManager && (
+          <div className="mt-3 pt-3 border-t border-slate-700">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-4 h-4 text-amber-400" />
+              <span className="text-sm text-amber-400 font-medium">Assign to Driver</span>
+            </div>
+            <Select onValueChange={(driverId) => handleAssignTask(task.id, driverId)}>
+              <SelectTrigger 
+                className="bg-slate-700 border-slate-600 text-white"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <SelectValue placeholder="Select a driver..." />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-800 border-slate-700">
+                {drivers.map((driver) => (
+                  <SelectItem 
+                    key={driver.id} 
+                    value={driver.id}
+                    className="text-white hover:bg-slate-700"
+                  >
+                    {driver.full_name || driver.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {task.notes && (
           <p className="mt-3 text-sm text-slate-400 bg-slate-700/50 p-2 rounded">
@@ -240,7 +345,14 @@ const TadGoApp = () => {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white">TADGo</h1>
-                <p className="text-xs text-slate-400">{user?.email}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-slate-400">{user?.email}</p>
+                  {isDriverManager && (
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50 text-[10px]">
+                      Manager
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
