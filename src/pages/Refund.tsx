@@ -22,6 +22,7 @@ type Location = 'Inside Country'|'Outside Country';
 type YesNo = 'Yes'|'No';
 type Stage = 'None'|'OEC Issued'|'Contract Attested'|'Medical Done';
 type Reason = '— Not applicable / <= 6 months —'|'Client does not need her'|'Runaway'|'Refused to work (no reason)'|'Medically Unfit'|'Maid Backed Out'|'Client Cancelled'|'Medical Failed outside country'|'Late Delivery'|'Maid want to travel to home country'|'Maid wants to work outside home/domestic'|'Maid Abused Family'|'Family Accused of Mistreatment'|'Food/Shelter/Basics Claim'|'Other';
+type AbscondClassification = ''|'NON_INSURED'|'INSURED'|'AGENT_COVERED';
 
 interface FormData {
   // Step 1
@@ -64,6 +65,10 @@ interface FormData {
   visaVpaDone: YesNo;
   optionB: YesNo;
   standardTadbeerFeesAED: string;
+  
+  // Abscond Classification (for Runaway cases)
+  abscondClassification: AbscondClassification;
+  insuranceProvider: string;
 }
 
 interface CVWorker {
@@ -128,6 +133,8 @@ const Refund = () => {
     visaVpaDone: 'No',
     optionB: 'No',
     standardTadbeerFeesAED: '0',
+    abscondClassification: '',
+    insuranceProvider: '',
   });
 
   // Load users with refund.create permission
@@ -581,6 +588,9 @@ const Refund = () => {
           additions: result.additions,
           noRefund: result.noRefund,
         },
+        // Abscond classification (for Runaway cases)
+        abscond_classification: formData.reason === 'Runaway' && formData.abscondClassification ? formData.abscondClassification : null,
+        insurance_provider: formData.abscondClassification === 'INSURED' ? formData.insuranceProvider : null,
         status: 'finalized',
       };
 
@@ -1228,6 +1238,38 @@ const Refund = () => {
                                 <span dir="rtl">AR: استخدم تاريخ تقديم بلاغ الهروب الرسمي لدى وزارة الموارد البشرية.</span>
                               </p>
                             </div>
+
+                            {/* Abscond Classification */}
+                            <div className="space-y-2 md:col-span-2">
+                              <Label className="text-base font-semibold text-destructive">Abscond Classification *</Label>
+                              <Select 
+                                value={formData.abscondClassification} 
+                                onValueChange={(v) => setFormData({...formData, abscondClassification: v as AbscondClassification})}
+                              >
+                                <SelectTrigger className="border-destructive">
+                                  <SelectValue placeholder="Select classification" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="NON_INSURED">Non-Insured (Company Loss)</SelectItem>
+                                  <SelectItem value="INSURED">Insured (Insurance Claim)</SelectItem>
+                                  <SelectItem value="AGENT_COVERED">Agent Covered (Supplier Claim)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <p className="text-xs text-muted-foreground">
+                                Select how this abscond loss will be covered
+                              </p>
+                            </div>
+
+                            {formData.abscondClassification === 'INSURED' && (
+                              <div className="space-y-2">
+                                <Label>Insurance Provider</Label>
+                                <Input 
+                                  value={formData.insuranceProvider}
+                                  onChange={(e) => setFormData({...formData, insuranceProvider: e.target.value})}
+                                  placeholder="e.g., Emirates Insurance"
+                                />
+                              </div>
+                            )}
                           </>
                         )}
 

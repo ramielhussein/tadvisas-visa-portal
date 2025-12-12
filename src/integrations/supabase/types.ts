@@ -1834,15 +1834,23 @@ export type Database = {
       }
       refunds: {
         Row: {
+          abscond_classification: string | null
           abscond_date: string | null
           abscond_report: boolean | null
           abu_dhabi_insurance_cancelled: boolean | null
+          agent_supplier_id: string | null
           approved_at: string | null
           approved_by: string | null
           at_fault: boolean | null
           base_price_ex_vat: number | null
           calculation_details: Json | null
           cash_assistance_aed: number | null
+          claim_amount: number | null
+          claim_notes: string | null
+          claim_paid_date: string | null
+          claim_reference: string | null
+          claim_status: string | null
+          claim_submitted_date: string | null
           client_mobile: string | null
           client_name: string
           contract_no: string
@@ -1860,6 +1868,7 @@ export type Database = {
           finalized_by: string | null
           gov_visa_aed: number | null
           id: string
+          insurance_provider: string | null
           location: string
           medical_visa_cost_aed: number | null
           nationality: string
@@ -1887,15 +1896,23 @@ export type Database = {
           worker_name: string
         }
         Insert: {
+          abscond_classification?: string | null
           abscond_date?: string | null
           abscond_report?: boolean | null
           abu_dhabi_insurance_cancelled?: boolean | null
+          agent_supplier_id?: string | null
           approved_at?: string | null
           approved_by?: string | null
           at_fault?: boolean | null
           base_price_ex_vat?: number | null
           calculation_details?: Json | null
           cash_assistance_aed?: number | null
+          claim_amount?: number | null
+          claim_notes?: string | null
+          claim_paid_date?: string | null
+          claim_reference?: string | null
+          claim_status?: string | null
+          claim_submitted_date?: string | null
           client_mobile?: string | null
           client_name: string
           contract_no: string
@@ -1913,6 +1930,7 @@ export type Database = {
           finalized_by?: string | null
           gov_visa_aed?: number | null
           id?: string
+          insurance_provider?: string | null
           location: string
           medical_visa_cost_aed?: number | null
           nationality: string
@@ -1940,15 +1958,23 @@ export type Database = {
           worker_name: string
         }
         Update: {
+          abscond_classification?: string | null
           abscond_date?: string | null
           abscond_report?: boolean | null
           abu_dhabi_insurance_cancelled?: boolean | null
+          agent_supplier_id?: string | null
           approved_at?: string | null
           approved_by?: string | null
           at_fault?: boolean | null
           base_price_ex_vat?: number | null
           calculation_details?: Json | null
           cash_assistance_aed?: number | null
+          claim_amount?: number | null
+          claim_notes?: string | null
+          claim_paid_date?: string | null
+          claim_reference?: string | null
+          claim_status?: string | null
+          claim_submitted_date?: string | null
           client_mobile?: string | null
           client_name?: string
           contract_no?: string
@@ -1966,6 +1992,7 @@ export type Database = {
           finalized_by?: string | null
           gov_visa_aed?: number | null
           id?: string
+          insurance_provider?: string | null
           location?: string
           medical_visa_cost_aed?: number | null
           nationality?: string
@@ -1993,6 +2020,20 @@ export type Database = {
           worker_name?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "refunds_agent_supplier_id_fkey"
+            columns: ["agent_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_balances"
+            referencedColumns: ["supplier_id"]
+          },
+          {
+            foreignKeyName: "refunds_agent_supplier_id_fkey"
+            columns: ["agent_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "refunds_finalized_by_fkey"
             columns: ["finalized_by"]
