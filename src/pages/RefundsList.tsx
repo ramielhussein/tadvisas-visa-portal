@@ -103,10 +103,16 @@ const RefundsList = () => {
                 All approved and finalized refund calculations
               </p>
             </div>
-            <Button onClick={() => navigate('/refund')}>
-              <FileText className="w-4 h-4 mr-2" />
-              Create New Refund
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => navigate('/finance/absconded-workers')}>
+                <FileText className="w-4 h-4 mr-2" />
+                Absconded Report
+              </Button>
+              <Button onClick={() => navigate('/refund')}>
+                <FileText className="w-4 h-4 mr-2" />
+                Create New Refund
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}

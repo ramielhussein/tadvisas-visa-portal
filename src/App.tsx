@@ -51,6 +51,7 @@ import FinancialDashboard from "./pages/FinancialDashboard";
 import SuppliersManagement from "./pages/SuppliersManagement";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
+import AbscondedWorkersReport from "./pages/AbscondedWorkersReport";
 import SiteGuide from "./pages/SiteGuide";
 // ContractManagement and CreateContract removed - consolidated into ContractsManagement
 import RefundsApproval from "./pages/RefundsApproval";
@@ -226,6 +227,7 @@ const App = () => (
           <Route path="/finance/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
           <Route path="/finance/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
           <Route path="/finance/refunds-list" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
+          <Route path="/finance/absconded-workers" element={<ProtectedRoute><AbscondedWorkersReport /></ProtectedRoute>} />
           <Route path="/finance/contract-revenue" element={<ProtectedRoute><ContractRevenue /></ProtectedRoute>} />
           
           {/* Product Module - Operations & Workers */}
