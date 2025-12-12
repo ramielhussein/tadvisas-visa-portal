@@ -41,6 +41,22 @@ interface Permissions {
     create: boolean;
     assign: boolean;
   };
+  deals: {
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+    view_all: boolean;
+  };
+  finance: {
+    view_dashboard: boolean;
+    manage_invoices: boolean;
+    manage_transactions: boolean;
+  };
+  suppliers: {
+    create: boolean;
+    edit: boolean;
+    view_all: boolean;
+  };
 }
 
 interface UserProfile {
@@ -92,7 +108,26 @@ export default function UserList() {
 
   const handleEditUser = (user: UserProfile) => {
     setSelectedUser(user);
-    setEditedUser({ ...user });
+    // Ensure all permission categories exist with defaults
+    const defaultPermissions: Permissions = {
+      cv: { create: false, edit: false, delete: false },
+      refund: { create: false },
+      leads: { create: false, assign: false },
+      deals: { create: false, edit: false, delete: false, view_all: false },
+      finance: { view_dashboard: false, manage_invoices: false, manage_transactions: false },
+      suppliers: { create: false, edit: false, view_all: false }
+    };
+    const mergedPermissions = {
+      ...defaultPermissions,
+      ...user.permissions,
+      cv: { ...defaultPermissions.cv, ...user.permissions?.cv },
+      refund: { ...defaultPermissions.refund, ...user.permissions?.refund },
+      leads: { ...defaultPermissions.leads, ...user.permissions?.leads },
+      deals: { ...defaultPermissions.deals, ...user.permissions?.deals },
+      finance: { ...defaultPermissions.finance, ...user.permissions?.finance },
+      suppliers: { ...defaultPermissions.suppliers, ...user.permissions?.suppliers },
+    };
+    setEditedUser({ ...user, permissions: mergedPermissions });
   };
 
   const handleSaveUser = async () => {
@@ -280,13 +315,13 @@ export default function UserList() {
                     <div className="text-[10px] text-muted-foreground truncate">
                       {user.full_name || <span className="italic">No name</span>}
                     </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {user.permissions?.cv?.create && " CV-Create"}
-                      {user.permissions?.cv?.edit && " CV-Edit"}
-                      {user.permissions?.cv?.delete && " CV-Delete"}
-                      {user.permissions?.refund?.create && " Refund"}
-                      {user.permissions?.leads?.create && " Leads-Create"}
-                      {user.permissions?.leads?.assign && " Leads-Assign"}
+                    <div className="text-[10px] text-muted-foreground flex flex-wrap gap-1">
+                      {user.permissions?.cv?.create && <span className="bg-muted px-1 rounded">CV</span>}
+                      {user.permissions?.refund?.create && <span className="bg-muted px-1 rounded">Refund</span>}
+                      {user.permissions?.leads?.create && <span className="bg-muted px-1 rounded">Leads</span>}
+                      {user.permissions?.deals?.create && <span className="bg-muted px-1 rounded">Deals</span>}
+                      {user.permissions?.finance?.view_dashboard && <span className="bg-muted px-1 rounded">Finance</span>}
+                      {user.permissions?.suppliers?.view_all && <span className="bg-muted px-1 rounded">Suppliers</span>}
                     </div>
                   </div>
                   <div className="flex gap-1">
@@ -475,6 +510,214 @@ export default function UserList() {
                         />
                         <label htmlFor="edit-leads-assign" className="text-xs">
                           Assign Leads
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Deals / Contracts</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-deals-create"
+                          checked={editedUser.permissions.deals.create}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                deals: { ...editedUser.permissions.deals, create: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-deals-create" className="text-xs">
+                          Create Deals
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-deals-edit"
+                          checked={editedUser.permissions.deals.edit}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                deals: { ...editedUser.permissions.deals, edit: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-deals-edit" className="text-xs">
+                          Edit Deals
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-deals-delete"
+                          checked={editedUser.permissions.deals.delete}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                deals: { ...editedUser.permissions.deals, delete: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-deals-delete" className="text-xs">
+                          Delete Deals
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-deals-view-all"
+                          checked={editedUser.permissions.deals.view_all}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                deals: { ...editedUser.permissions.deals, view_all: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-deals-view-all" className="text-xs">
+                          View All Deals
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Finance</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-finance-view"
+                          checked={editedUser.permissions.finance.view_dashboard}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                finance: { ...editedUser.permissions.finance, view_dashboard: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-finance-view" className="text-xs">
+                          View Dashboard
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-finance-invoices"
+                          checked={editedUser.permissions.finance.manage_invoices}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                finance: { ...editedUser.permissions.finance, manage_invoices: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-finance-invoices" className="text-xs">
+                          Manage Invoices
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-finance-transactions"
+                          checked={editedUser.permissions.finance.manage_transactions}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                finance: { ...editedUser.permissions.finance, manage_transactions: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-finance-transactions" className="text-xs">
+                          Manage Transactions
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Suppliers</Label>
+                    <div className="space-y-1 ml-2">
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-suppliers-create"
+                          checked={editedUser.permissions.suppliers.create}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                suppliers: { ...editedUser.permissions.suppliers, create: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-suppliers-create" className="text-xs">
+                          Create Suppliers
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-suppliers-edit"
+                          checked={editedUser.permissions.suppliers.edit}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                suppliers: { ...editedUser.permissions.suppliers, edit: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-suppliers-edit" className="text-xs">
+                          Edit Suppliers
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <Checkbox 
+                          id="edit-suppliers-view-all"
+                          checked={editedUser.permissions.suppliers.view_all}
+                          onCheckedChange={(checked) => 
+                            setEditedUser({
+                              ...editedUser,
+                              permissions: {
+                                ...editedUser.permissions,
+                                suppliers: { ...editedUser.permissions.suppliers, view_all: checked as boolean }
+                              }
+                            })
+                          }
+                          className="h-3 w-3"
+                        />
+                        <label htmlFor="edit-suppliers-view-all" className="text-xs">
+                          View All Suppliers
                         </label>
                       </div>
                     </div>
