@@ -307,6 +307,7 @@ const EditContract = () => {
                             <SelectValue placeholder="Select payment method" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
                             {paymentMethods.map((method) => (
                               <SelectItem key={method.id} value={method.method_name}>
                                 {method.method_name}
@@ -325,6 +326,7 @@ const EditContract = () => {
                             <SelectValue placeholder="Select bank account" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
                             {bankAccounts.map((account) => (
                               <SelectItem key={account.id} value={account.id}>
                                 {account.bank_name} - {account.account_name}
