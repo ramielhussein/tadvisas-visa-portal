@@ -3058,6 +3058,7 @@ export type Database = {
         | "driver"
         | "worker_p4"
         | "sales_manager"
+        | "driver_manager"
       attendance_status: "checked_in" | "on_break" | "checked_out" | "absent"
       lead_status:
         | "New Lead"
@@ -3226,6 +3227,7 @@ export const Constants = {
         "driver",
         "worker_p4",
         "sales_manager",
+        "driver_manager",
       ],
       attendance_status: ["checked_in", "on_break", "checked_out", "absent"],
       lead_status: [
