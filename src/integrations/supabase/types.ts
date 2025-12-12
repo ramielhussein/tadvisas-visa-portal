@@ -3031,6 +3031,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_driver_manager: { Args: { _user_id: string }; Returns: boolean }
       is_finance: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
