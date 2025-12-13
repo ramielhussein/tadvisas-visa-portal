@@ -114,7 +114,11 @@ const TadGoApp = () => {
           .in('id', driverIds);
         
         if (profiles) {
-          setDrivers(profiles);
+          // Filter out Nour Droubi from the drivers list
+          const filteredDrivers = profiles.filter(
+            driver => driver.email?.toLowerCase() !== 'nour@tadmaids.com'
+          );
+          setDrivers(filteredDrivers);
         }
       }
     } catch (error) {
