@@ -411,25 +411,55 @@ const CRMHub = () => {
           if (!isRelevantToUser) return;
 
           // Optimized update: only update the specific lead that changed
+          // Instead of full reload, just update in place to preserve filter state
           if (newLead) {
-            // Update admin all leads
+            // Update admin all leads - update in place, don't reorder
             if (isAdmin) {
               setAdminAllLeads((prev) => {
-                const filtered = prev.filter((l) => l.id !== id);
-                return [newLead as any, ...filtered];
+                const existingIndex = prev.findIndex((l) => l.id === id);
+                if (existingIndex >= 0) {
+                  // Update existing lead in place
+                  const updated = [...prev];
+                  updated[existingIndex] = newLead as any;
+                  return updated;
+                }
+                // New lead - add to beginning
+                return [newLead as any, ...prev];
               });
             }
 
-            // Update unassigned leads
+            // Update unassigned leads - update in place
             setUnassignedLeads((prev) => {
-              const filtered = prev.filter((l) => l.id !== id);
-              return newLead.assigned_to === null ? [newLead as any, ...filtered] : filtered;
+              const existingIndex = prev.findIndex((l) => l.id === id);
+              if (newLead.assigned_to !== null) {
+                // Lead is now assigned, remove from unassigned
+                return prev.filter((l) => l.id !== id);
+              }
+              if (existingIndex >= 0) {
+                // Update existing lead in place
+                const updated = [...prev];
+                updated[existingIndex] = newLead as any;
+                return updated;
+              }
+              // New unassigned lead - add to beginning
+              return [newLead as any, ...prev];
             });
 
-            // Update my leads
+            // Update my leads - update in place
             setMyLeads((prev) => {
-              const filtered = prev.filter((l) => l.id !== id);
-              return newLead.assigned_to === user.id ? [newLead as any, ...filtered] : filtered;
+              const existingIndex = prev.findIndex((l) => l.id === id);
+              if (newLead.assigned_to !== user.id) {
+                // Lead is no longer assigned to me, remove
+                return prev.filter((l) => l.id !== id);
+              }
+              if (existingIndex >= 0) {
+                // Update existing lead in place
+                const updated = [...prev];
+                updated[existingIndex] = newLead as any;
+                return updated;
+              }
+              // Newly assigned to me - add to beginning
+              return [newLead as any, ...prev];
             });
 
             // Update untaken today count when leads are assigned/unassigned
