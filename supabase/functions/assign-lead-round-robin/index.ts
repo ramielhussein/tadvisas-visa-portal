@@ -45,28 +45,43 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get all users with sales permissions
-    const { data: allProfiles, error: usersError } = await supabase
-      .from('profiles')
-      .select('id, email, permissions')
-      .order('email');
+    // Get all users with sales ROLE (not permissions) from user_roles table
+    const { data: salesRoleUsers, error: rolesError } = await supabase
+      .from('user_roles')
+      .select('user_id')
+      .eq('role', 'sales');
 
-    if (usersError) {
-      console.error('Error fetching profiles:', usersError);
-      throw usersError;
+    if (rolesError) {
+      console.error('Error fetching sales role users:', rolesError);
+      throw rolesError;
     }
 
-    // Filter users who have sales permissions
-    const salesUsers = (allProfiles || []).filter(profile => {
-      const perms = profile.permissions as any;
-      return perms?.leads?.create || perms?.leads?.assign || 
-             perms?.deals?.create || perms?.deals?.edit;
-    });
-
-    if (!salesUsers || salesUsers.length === 0) {
-      console.log('No users with sales permissions found, skipping assignment');
+    if (!salesRoleUsers || salesRoleUsers.length === 0) {
+      console.log('No users with sales role found, skipping assignment');
       return new Response(
-        JSON.stringify({ success: true, message: 'No users with sales permissions available' }),
+        JSON.stringify({ success: true, message: 'No users with sales role available' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const salesUserIds = salesRoleUsers.map(r => r.user_id);
+
+    // Get profile info for these users
+    const { data: salesProfiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .in('id', salesUserIds)
+      .order('email');
+
+    if (profilesError) {
+      console.error('Error fetching sales profiles:', profilesError);
+      throw profilesError;
+    }
+
+    if (!salesProfiles || salesProfiles.length === 0) {
+      console.log('No sales profiles found, skipping assignment');
+      return new Response(
+        JSON.stringify({ success: true, message: 'No sales profiles available' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -88,7 +103,7 @@ Deno.serve(async (req) => {
     );
 
     // Filter to only active users (default to active if not set)
-    const activeUsers = salesUsers.filter(user => activeMap.get(user.id) !== false);
+    const activeUsers = salesProfiles.filter(user => activeMap.get(user.id) !== false);
 
     if (activeUsers.length === 0) {
       console.log('No active sales users found, skipping assignment');
@@ -112,9 +127,9 @@ Deno.serve(async (req) => {
 
     const currentIndex = indexSetting?.value ? parseInt(indexSetting.value) : 0;
     const nextIndex = (currentIndex + 1) % activeUsers.length;
-    const assignedUser = activeUsers[currentIndex];
+    const assignedUser = activeUsers[currentIndex % activeUsers.length];
 
-    console.log(`Assigning lead to user ${assignedUser.email} (index ${currentIndex} of ${activeUsers.length} active users)`);
+    console.log(`Assigning lead to user ${assignedUser.email} (index ${currentIndex} of ${activeUsers.length} active sales users)`);
 
     // Get lead details for notification
     const { data: leadData } = await supabase

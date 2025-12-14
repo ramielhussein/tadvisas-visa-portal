@@ -91,6 +91,7 @@ import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
 import SalesPersonDashboard from "./pages/SalesPersonDashboard";
 import SalesManagerDashboard from "./pages/SalesManagerDashboard";
+import SalesDashboard from "./pages/SalesDashboard";
 import NationalityDashboard from "./pages/NationalityDashboard";
 import DataBackup from "./pages/DataBackup";
 import ContractRevenue from "./pages/ContractRevenue";
@@ -253,6 +254,7 @@ const App = () => (
           <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
           <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
           <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
+          <Route path="/sales-dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
           <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
           <Route path="/admin/import-contracts" element={<ProtectedRoute><ImportContracts /></ProtectedRoute>} />
           

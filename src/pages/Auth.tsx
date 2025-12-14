@@ -32,7 +32,7 @@ const Auth = () => {
       } else if (userRoles.includes('finance')) {
         navigate("/hub/finance");
       } else if (userRoles.includes('sales')) {
-        navigate("/hub/sales");
+        navigate("/sales-dashboard");
       } else if (userRoles.includes('product')) {
         navigate("/product-dashboard");
       } else if (userRoles.includes('client')) {
