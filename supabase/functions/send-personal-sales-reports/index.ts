@@ -58,15 +58,34 @@ const handler = async (req: Request): Promise<Response> => {
     const todayStart = new Date(today.setHours(0, 0, 0, 0)).toISOString();
     const todayEnd = new Date(today.setHours(23, 59, 59, 999)).toISOString();
 
-    // Get all sales team members (users with assigned leads)
+    // Get all users with sales ROLE from user_roles table (not all profiles!)
+    const { data: salesRoleUsers, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "sales");
+
+    if (rolesError) throw rolesError;
+
+    if (!salesRoleUsers || salesRoleUsers.length === 0) {
+      console.log("No users with sales role found");
+      return new Response(
+        JSON.stringify({ success: true, message: "No sales users to send reports to" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const salesUserIds = salesRoleUsers.map(r => r.user_id);
+
+    // Get profile info for sales users only
     const { data: salesPeople, error: salesError } = await supabase
       .from("profiles")
       .select("id, full_name, email")
+      .in("id", salesUserIds)
       .not("email", "is", null);
 
     if (salesError) throw salesError;
 
-    console.log(`Generating reports for ${salesPeople?.length || 0} sales people`);
+    console.log(`Generating reports for ${salesPeople?.length || 0} sales people with sales role`);
 
     // Generate report for each sales person
     for (const person of salesPeople || []) {
