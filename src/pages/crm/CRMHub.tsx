@@ -116,9 +116,8 @@ const CRMHub = () => {
   const [untakenTodayCount, setUntakenTodayCount] = useState<number>(0);
   const [untakenP5Count, setUntakenP5Count] = useState<number>(0);
   
-  // Throttle real-time updates
+  // Debounce real-time updates
   const lastUpdateTimeRef = useRef(0);
-  const pendingUpdateRef = useRef<NodeJS.Timeout | null>(null);
 
   // Handle search on Enter key
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -382,18 +381,10 @@ const CRMHub = () => {
           table: 'leads',
         },
         (payload) => {
-          // Throttle updates to max once per second
+          // Debounce updates - skip if too frequent
           const now = Date.now();
-          if (now - lastUpdateTimeRef.current < 1000) {
-            // Queue update for later
-            if (pendingUpdateRef.current) {
-              clearTimeout(pendingUpdateRef.current);
-            }
-            pendingUpdateRef.current = setTimeout(() => {
-              loadLeads();
-              lastUpdateTimeRef.current = Date.now();
-            }, 1000);
-            return;
+          if (now - lastUpdateTimeRef.current < 300) {
+            return; // Skip this update, don't queue - the state is already fresh enough
           }
           
           lastUpdateTimeRef.current = now;
@@ -410,20 +401,17 @@ const CRMHub = () => {
 
           if (!isRelevantToUser) return;
 
-          // Optimized update: only update the specific lead that changed
-          // Instead of full reload, just update in place to preserve filter state
+          // In-place updates only - never reload full data
           if (newLead) {
             // Update admin all leads - update in place, don't reorder
             if (isAdmin) {
               setAdminAllLeads((prev) => {
                 const existingIndex = prev.findIndex((l) => l.id === id);
                 if (existingIndex >= 0) {
-                  // Update existing lead in place
                   const updated = [...prev];
                   updated[existingIndex] = newLead as any;
                   return updated;
                 }
-                // New lead - add to beginning
                 return [newLead as any, ...prev];
               });
             }
@@ -432,16 +420,13 @@ const CRMHub = () => {
             setUnassignedLeads((prev) => {
               const existingIndex = prev.findIndex((l) => l.id === id);
               if (newLead.assigned_to !== null) {
-                // Lead is now assigned, remove from unassigned
                 return prev.filter((l) => l.id !== id);
               }
               if (existingIndex >= 0) {
-                // Update existing lead in place
                 const updated = [...prev];
                 updated[existingIndex] = newLead as any;
                 return updated;
               }
-              // New unassigned lead - add to beginning
               return [newLead as any, ...prev];
             });
 
@@ -449,21 +434,20 @@ const CRMHub = () => {
             setMyLeads((prev) => {
               const existingIndex = prev.findIndex((l) => l.id === id);
               if (newLead.assigned_to !== user.id) {
-                // Lead is no longer assigned to me, remove
                 return prev.filter((l) => l.id !== id);
               }
               if (existingIndex >= 0) {
-                // Update existing lead in place
                 const updated = [...prev];
                 updated[existingIndex] = newLead as any;
                 return updated;
               }
-              // Newly assigned to me - add to beginning
               return [newLead as any, ...prev];
             });
 
-            // Update untaken today count when leads are assigned/unassigned
-            fetchUntakenTodayCount();
+            // Update untaken count only for assignment changes
+            if (oldLead?.assigned_to !== newLead.assigned_to) {
+              fetchUntakenTodayCount();
+            }
           } else {
             // Lead was deleted
             setUnassignedLeads((prev) => prev.filter((l) => l.id !== id));
