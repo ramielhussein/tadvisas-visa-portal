@@ -118,6 +118,14 @@ const CRMHub = () => {
   
   // Debounce real-time updates
   const lastUpdateTimeRef = useRef(0);
+  const isAdminRef = useRef(isAdmin);
+  const userIdRef = useRef(user?.id);
+  
+  // Keep refs in sync
+  useEffect(() => {
+    isAdminRef.current = isAdmin;
+    userIdRef.current = user?.id;
+  }, [isAdmin, user?.id]);
 
   // Handle search on Enter key
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -353,21 +361,42 @@ const CRMHub = () => {
     }
   }, []);
 
+  // Initial load only when user changes
   useEffect(() => {
     if (user) {
       loadLeads();
       fetchUntakenTodayCount();
-    }
-  }, [user, loadLeads]);
-  
-  // Fetch users only once on mount
-  useEffect(() => {
-    if (user) {
       fetchUsers();
     }
-  }, [user, fetchUsers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+  
+  // Reload when filters change (debounced to prevent rapid reloads)
+  const filtersRef = useRef({ sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, showOnlyConverted, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter });
+  
+  useEffect(() => {
+    const prev = filtersRef.current;
+    const filtersChanged = 
+      prev.sortBy !== sortBy ||
+      prev.nationalityFilter !== nationalityFilter ||
+      prev.showOnlyHot !== showOnlyHot ||
+      prev.showOnlyToday !== showOnlyToday ||
+      prev.showArchived !== showArchived ||
+      prev.showOnlyConverted !== showOnlyConverted ||
+      prev.debouncedSearch !== debouncedSearch ||
+      prev.debouncedAdminSearch !== debouncedAdminSearch ||
+      prev.unassignedStatusFilter !== unassignedStatusFilter ||
+      prev.myLeadsStatusFilter !== myLeadsStatusFilter ||
+      prev.adminStatusFilter !== adminStatusFilter;
+    
+    if (filtersChanged && user) {
+      filtersRef.current = { sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, showOnlyConverted, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter };
+      loadLeads();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy, nationalityFilter, showOnlyHot, showOnlyToday, showArchived, showOnlyConverted, debouncedSearch, debouncedAdminSearch, unassignedStatusFilter, myLeadsStatusFilter, adminStatusFilter]);
 
-  // Real-time subscription for leads - throttled to reduce re-renders
+  // Real-time subscription for leads - only subscribe once when user is available
   useEffect(() => {
     if (!user) return;
 
@@ -391,20 +420,22 @@ const CRMHub = () => {
           const newLead: any = (payload as any).new || null;
           const oldLead: any = (payload as any).old || null;
           const id = (newLead && newLead.id) || (oldLead && oldLead.id);
+          const currentUserId = userIdRef.current;
+          const currentIsAdmin = isAdminRef.current;
 
           // Only update if this lead is relevant to the current user
           const isRelevantToUser = 
-            newLead?.assigned_to === user.id || 
-            oldLead?.assigned_to === user.id || 
+            newLead?.assigned_to === currentUserId || 
+            oldLead?.assigned_to === currentUserId || 
             newLead?.assigned_to === null ||
-            isAdmin;
+            currentIsAdmin;
 
           if (!isRelevantToUser) return;
 
           // In-place updates only - never reload full data
           if (newLead) {
             // Update admin all leads - update in place, don't reorder
-            if (isAdmin) {
+            if (currentIsAdmin) {
               setAdminAllLeads((prev) => {
                 const existingIndex = prev.findIndex((l) => l.id === id);
                 if (existingIndex >= 0) {
@@ -433,7 +464,7 @@ const CRMHub = () => {
             // Update my leads - update in place
             setMyLeads((prev) => {
               const existingIndex = prev.findIndex((l) => l.id === id);
-              if (newLead.assigned_to !== user.id) {
+              if (newLead.assigned_to !== currentUserId) {
                 return prev.filter((l) => l.id !== id);
               }
               if (existingIndex >= 0) {
@@ -462,7 +493,8 @@ const CRMHub = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, isAdmin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]); // Only re-subscribe when user changes, not isAdmin
 
   const handleAssignToMe = async (leadId: string) => {
     if (!user) return;
