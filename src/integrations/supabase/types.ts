@@ -1196,6 +1196,7 @@ export type Database = {
         Row: {
           archived: boolean
           assigned_to: string | null
+          bumped_at: string | null
           client_converted: boolean | null
           client_name: string | null
           color: string | null
@@ -1225,6 +1226,7 @@ export type Database = {
         Insert: {
           archived?: boolean
           assigned_to?: string | null
+          bumped_at?: string | null
           client_converted?: boolean | null
           client_name?: string | null
           color?: string | null
@@ -1254,6 +1256,7 @@ export type Database = {
         Update: {
           archived?: boolean
           assigned_to?: string | null
+          bumped_at?: string | null
           client_converted?: boolean | null
           client_name?: string | null
           color?: string | null

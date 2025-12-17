@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail, MessageCircle, ChevronLeft, ChevronRight, Flame, Palette } from "lucide-react";
+import { Phone, Mail, MessageCircle, ChevronLeft, ChevronRight, Flame, Palette, ArrowUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { generateWhatsAppLink, formatPhoneDisplay } from "@/lib/phoneValidation";
@@ -26,6 +26,7 @@ interface Lead {
   updated_at: string;
   lead_source: string | null;
   color: string | null;
+  bumped_at: string | null;
 }
 
 interface LeadKanbanBoardProps {
@@ -186,6 +187,33 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
     }
   };
 
+  const handleBumpLead = async (lead: Lead) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ bumped_at: new Date().toISOString() })
+        .eq("id", lead.id);
+
+      if (error) throw error;
+
+      await logActivity(lead.id, "update", "Lead Bumped", "Lead bumped to top of the list");
+      
+      toast({
+        title: "Lead Bumped",
+        description: "Lead moved to top of the list",
+      });
+
+      onLeadUpdate();
+    } catch (error: any) {
+      console.error("Error bumping lead:", error);
+      toast({
+        title: "Error",
+        description: "Failed to bump lead",
+        variant: "destructive",
+      });
+    }
+  };
+
   const renderLeadCard = (lead: Lead, columnId: string) => {
 
     const lastUpdate = lead.updated_at ? format(parseISO(lead.updated_at), "MMM dd, yyyy") : "N/A";
@@ -293,6 +321,15 @@ export const LeadKanbanBoard = ({ leads, userId, onLeadUpdate }: LeadKanbanBoard
             disabled={!lead.email}
           >
             <Mail className="h-2.5 w-2.5" />
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleBumpLead(lead)}
+            className="flex-1 h-6 text-xs px-0.5"
+            title="Bump to top"
+          >
+            <ArrowUp className="h-2.5 w-2.5" />
           </Button>
         </div>
 

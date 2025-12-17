@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle, Kanban, CheckCircle2 } from "lucide-react";
+import { Loader2, Flame, UserPlus, UserMinus, LayoutGrid, Table as TableIcon, Download, Upload, Anchor, XCircle, Pencil, Archive, BarChart3, AlertTriangle, Kanban, CheckCircle2, ArrowUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
@@ -51,6 +51,7 @@ interface Lead {
   lost_by: string | null;
   lost_at: string | null;
   color: string | null;
+  bumped_at: string | null;
 }
 
 interface User {
@@ -151,6 +152,7 @@ const CRMHub = () => {
         let adminQuery = supabase
           .from("leads")
           .select("*")
+          .order("bumped_at", { ascending: false, nullsFirst: true })
           .order(sortBy, { ascending: adminAscending, nullsFirst: false });
 
         // Filter archived leads unless toggle is on OR searching (show all when searching)
@@ -273,10 +275,14 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.or("status.eq.SOLD,client_converted.eq.true");
       }
 
-      // Apply sorting - newest first for created_at and updated_at, earliest first for other dates
+      // Apply sorting - bumped_at first (DESC, nulls last), then by sortBy
       const ascending = (sortBy === "created_at" || sortBy === "updated_at") ? false : true;
-      unassignedQuery = unassignedQuery.order(sortBy, { ascending, nullsFirst: false });
-      myLeadsQuery = myLeadsQuery.order(sortBy, { ascending, nullsFirst: false });
+      unassignedQuery = unassignedQuery
+        .order("bumped_at", { ascending: false, nullsFirst: true })
+        .order(sortBy, { ascending, nullsFirst: false });
+      myLeadsQuery = myLeadsQuery
+        .order("bumped_at", { ascending: false, nullsFirst: true })
+        .order(sortBy, { ascending, nullsFirst: false });
 
       const [unassignedResult, myLeadsResult] = await Promise.all([
         unassignedQuery,
@@ -751,6 +757,30 @@ const CRMHub = () => {
     }
   };
 
+  const handleBumpLead = async (leadId: string) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .update({ bumped_at: new Date().toISOString() })
+        .eq("id", leadId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Lead Bumped",
+        description: "Lead moved to top of the list",
+      });
+
+      loadLeads();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleImportExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -1045,7 +1075,7 @@ const CRMHub = () => {
             <div>Created: {formatDate(lead.created_at)}</div>
           </div>
         </div>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div onClick={(e) => e.stopPropagation()} className="flex flex-col gap-1">
           {showAssignButton ? (
             <Button
               size="sm"
@@ -1081,6 +1111,18 @@ const CRMHub = () => {
               )}
             </Button>
           ) : null}
+          {isAdmin && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => handleBumpLead(lead.id)}
+              className="h-7 text-xs"
+              title="Bump to top"
+            >
+              <ArrowUp className="h-3 w-3 mr-1" />
+              Bump
+            </Button>
+          )}
         </div>
       </div>
     </div>
