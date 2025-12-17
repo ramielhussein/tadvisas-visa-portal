@@ -76,19 +76,57 @@ const FloatingButtons = () => {
     if (!activeBreakId) return;
 
     try {
-      const { error } = await supabase
+      // Fetch the break record to get break_out_time and attendance_record_id
+      const { data: breakRecord, error: fetchError } = await supabase
+        .from('break_records')
+        .select('break_out_time, attendance_record_id')
+        .eq('id', activeBreakId)
+        .single();
+
+      if (fetchError || !breakRecord) throw new Error('Break record not found');
+
+      const breakBackTime = new Date().toISOString();
+      const breakDuration = Math.floor(
+        (new Date(breakBackTime).getTime() - new Date(breakRecord.break_out_time).getTime()) / 60000
+      );
+
+      // Update break record with back time and duration
+      const { error: updateBreakError } = await supabase
         .from('break_records')
         .update({
-          break_back_time: new Date().toISOString(),
+          break_back_time: breakBackTime,
+          break_duration_minutes: breakDuration,
         })
         .eq('id', activeBreakId);
 
-      if (error) throw error;
+      if (updateBreakError) throw updateBreakError;
+
+      // Fetch attendance record to get current total break minutes
+      const { data: attendance, error: attendanceError } = await supabase
+        .from('attendance_records')
+        .select('total_break_minutes')
+        .eq('id', breakRecord.attendance_record_id)
+        .single();
+
+      if (attendanceError) throw attendanceError;
+
+      // Update attendance record status and total break minutes
+      const totalBreakMinutes = (attendance?.total_break_minutes || 0) + breakDuration;
+      const { error: updateAttendanceError } = await supabase
+        .from('attendance_records')
+        .update({
+          status: 'checked_in',
+          total_break_minutes: totalBreakMinutes,
+        })
+        .eq('id', breakRecord.attendance_record_id);
+
+      if (updateAttendanceError) throw updateAttendanceError;
 
       toast.success('Welcome back! Break ended.');
       setOnBreak(false);
       setActiveBreakId(null);
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
     } catch (error: any) {
       toast.error(error.message);
     }
