@@ -43,7 +43,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.send-personal-sales-reports]
-verify_jwt = true
+verify_jwt = false
 
 [functions.import-contracts-excel]
 verify_jwt = true
