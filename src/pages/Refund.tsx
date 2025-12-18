@@ -60,6 +60,8 @@ interface FormData {
   abscondReport: YesNo;
   abscondDate: Date | undefined;
   unpaidSalaryDays: string;
+  additionalDeductionAmount: string;
+  additionalDeductionDescription: string;
 
   // Step 4
   visaVpaDone: YesNo;
@@ -130,6 +132,8 @@ const Refund = () => {
     abscondReport: 'No',
     abscondDate: undefined,
     unpaidSalaryDays: '0',
+    additionalDeductionAmount: '0',
+    additionalDeductionDescription: '',
     visaVpaDone: 'No',
     optionB: 'No',
     standardTadbeerFeesAED: '0',
@@ -1281,6 +1285,30 @@ const Refund = () => {
                             onChange={(e) => setFormData({...formData, unpaidSalaryDays: e.target.value})}
                             placeholder="0"
                           />
+                        </div>
+                      </div>
+
+                      {/* Additional Deduction Section */}
+                      <div className="border-t pt-4 mt-4">
+                        <h4 className="font-semibold mb-4 text-base">Additional Deduction</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Amount (AED)</Label>
+                            <Input 
+                              type="number"
+                              value={formData.additionalDeductionAmount}
+                              onChange={(e) => setFormData({...formData, additionalDeductionAmount: e.target.value})}
+                              placeholder="0"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Description</Label>
+                            <Input 
+                              value={formData.additionalDeductionDescription}
+                              onChange={(e) => setFormData({...formData, additionalDeductionDescription: e.target.value})}
+                              placeholder="Reason for additional deduction"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
