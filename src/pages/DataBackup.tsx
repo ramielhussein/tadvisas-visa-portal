@@ -26,6 +26,8 @@ export default function DataBackup() {
   const [loadingCounts, setLoadingCounts] = useState(false);
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const [leadPackageFilter, setLeadPackageFilter] = useState<string>("all");
+  const [filteredLeadCount, setFilteredLeadCount] = useState<number | null>(null);
+  const [loadingFilteredCount, setLoadingFilteredCount] = useState(false);
   const { data: packages } = useInquiryPackages();
 
   const tables: TableInfo[] = [
@@ -72,6 +74,34 @@ export default function DataBackup() {
     const total = Object.values(tableCounts).reduce((sum, count) => sum + count, 0);
     setTotalRecords(total);
   }, [tableCounts]);
+
+  // Load filtered lead count when package filter changes
+  useEffect(() => {
+    const loadFilteredCount = async () => {
+      if (leadPackageFilter === "all") {
+        setFilteredLeadCount(null);
+        return;
+      }
+      
+      setLoadingFilteredCount(true);
+      try {
+        const { count, error } = await supabase
+          .from("leads")
+          .select("*", { count: "exact", head: true })
+          .eq("service_required", leadPackageFilter);
+        
+        if (!error && count !== null) {
+          setFilteredLeadCount(count);
+        }
+      } catch (error) {
+        console.error("Error counting filtered leads:", error);
+      } finally {
+        setLoadingFilteredCount(false);
+      }
+    };
+    
+    loadFilteredCount();
+  }, [leadPackageFilter]);
 
   const loadTableCounts = async () => {
     setLoadingCounts(true);
@@ -376,11 +406,19 @@ export default function DataBackup() {
                     </>
                   )}
                 </Button>
-                {tableCounts["leads"] !== undefined && (
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    Total leads: <span className="font-semibold ml-1">{tableCounts["leads"].toLocaleString()}</span>
-                  </div>
-                )}
+                <div className="flex items-center text-sm text-muted-foreground">
+                  {loadingFilteredCount ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : leadPackageFilter === "all" ? (
+                    <>Total leads: <span className="font-semibold ml-1">{(tableCounts["leads"] || 0).toLocaleString()}</span></>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-orange-500">{(filteredLeadCount || 0).toLocaleString()}</span>
+                      <span className="mx-1">{leadPackageFilter} leads</span>
+                      <span className="text-xs">(of {(tableCounts["leads"] || 0).toLocaleString()} total)</span>
+                    </>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
