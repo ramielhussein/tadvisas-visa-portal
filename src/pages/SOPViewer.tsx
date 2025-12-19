@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronRight, ChevronDown, FileText, FolderOpen, ArrowLeft, Home } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChevronRight, ChevronDown, FileText, FolderOpen, ArrowLeft, Home, Search, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface SOPPage {
@@ -179,12 +180,89 @@ function TreeItem({ node, currentSlug, level = 0 }: { node: TreeNode; currentSlu
   );
 }
 
+// Highlight matched terms in text
+function highlightText(text: string, query: string): JSX.Element {
+  if (!query.trim()) return <>{text}</>;
+  
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  
+  return (
+    <>
+      {parts.map((part, i) => 
+        regex.test(part) ? (
+          <mark key={i} className="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
+
+// Search result item component
+function SearchResult({ page, query, onClick }: { page: SOPPage; query: string; onClick: () => void }) {
+  // Get a snippet of content around the first match
+  const getSnippet = (content: string, searchQuery: string): string => {
+    const lowerContent = content.toLowerCase();
+    const lowerQuery = searchQuery.toLowerCase();
+    const matchIndex = lowerContent.indexOf(lowerQuery);
+    
+    if (matchIndex === -1) return content.slice(0, 100) + '...';
+    
+    const start = Math.max(0, matchIndex - 40);
+    const end = Math.min(content.length, matchIndex + searchQuery.length + 60);
+    
+    let snippet = content.slice(start, end);
+    if (start > 0) snippet = '...' + snippet;
+    if (end < content.length) snippet = snippet + '...';
+    
+    return snippet.replace(/\n/g, ' ');
+  };
+
+  return (
+    <Link
+      to={`/sop/${page.slug}`}
+      onClick={onClick}
+      className="block p-3 rounded-lg border bg-card hover:bg-accent transition-colors"
+    >
+      <h4 className="font-medium text-sm">
+        {highlightText(page.title, query)}
+      </h4>
+      {page.description && (
+        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+          {highlightText(page.description, query)}
+        </p>
+      )}
+      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+        {highlightText(getSnippet(page.content, query), query)}
+      </p>
+    </Link>
+  );
+}
+
 export default function SOPViewer() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [pages, setPages] = useState<SOPPage[]>([]);
   const [currentPage, setCurrentPage] = useState<SOPPage | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  // Filter pages based on search query
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    
+    const query = searchQuery.toLowerCase();
+    return pages.filter(page => 
+      page.title.toLowerCase().includes(query) ||
+      (page.description && page.description.toLowerCase().includes(query)) ||
+      page.content.toLowerCase().includes(query)
+    );
+  }, [searchQuery, pages]);
 
   useEffect(() => {
     const fetchPages = async () => {
@@ -276,18 +354,71 @@ export default function SOPViewer() {
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
       <div className="w-72 border-r flex flex-col">
-        <div className="p-4 border-b">
+        <div className="p-4 border-b space-y-3">
           <Link to="/sop" className="flex items-center gap-2 font-semibold text-lg">
             <FolderOpen className="h-5 w-5" />
             SOP Manual
           </Link>
+          {/* Search input */}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search SOPs..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchResults(e.target.value.trim().length > 0);
+              }}
+              className="pl-8 pr-8 h-9 text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setShowSearchResults(false);
+                }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
+        
         <ScrollArea className="flex-1 p-2">
-          {tree.map(node => (
-            <TreeItem key={node.id} node={node} currentSlug={slug} />
-          ))}
-          {tree.length === 0 && (
-            <p className="text-sm text-muted-foreground p-4">No SOP pages found.</p>
+          {/* Show search results or tree */}
+          {showSearchResults && searchQuery.trim() ? (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground px-2 py-1">
+                {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+              </p>
+              {searchResults.length > 0 ? (
+                searchResults.map(page => (
+                  <SearchResult
+                    key={page.id}
+                    page={page}
+                    query={searchQuery}
+                    onClick={() => {
+                      setShowSearchResults(false);
+                      setSearchQuery("");
+                    }}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground p-4 text-center">
+                  No matching SOPs found.
+                </p>
+              )}
+            </div>
+          ) : (
+            <>
+              {tree.map(node => (
+                <TreeItem key={node.id} node={node} currentSlug={slug} />
+              ))}
+              {tree.length === 0 && (
+                <p className="text-sm text-muted-foreground p-4">No SOP pages found.</p>
+              )}
+            </>
           )}
         </ScrollArea>
         <div className="p-3 border-t">
