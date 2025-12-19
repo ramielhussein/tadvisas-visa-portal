@@ -1,6 +1,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { crypto } from 'https://deno.land/std@0.177.0/crypto/mod.ts';
-import { encodeHex } from 'https://deno.land/std@0.177.0/encoding/hex.ts';
+
+// Helper function to convert ArrayBuffer to hex string
+function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +31,7 @@ Deno.serve(async (req) => {
     const encoder = new TextEncoder();
     const data = encoder.encode(apiKey);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const keyHash = encodeHex(new Uint8Array(hashBuffer));
+    const keyHash = toHex(hashBuffer);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
