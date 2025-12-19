@@ -28,6 +28,15 @@ Deno.serve(async (req) => {
       });
     }
 
+    const apiKey = authHeader.slice('Bearer '.length).trim();
+    if (!apiKey) {
+      console.error('Empty bearer token');
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const encoder = new TextEncoder();
     const data = encoder.encode(apiKey);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
