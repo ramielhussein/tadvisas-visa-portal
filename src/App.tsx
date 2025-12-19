@@ -109,6 +109,8 @@ import TadGoDriverDashboard from "./pages/tadgo/TadGoDriverDashboard";
 // Gym Timer
 import GymTimer from "./pages/GymTimer";
 
+// SOP Viewer
+import SOPViewer from "./pages/SOPViewer";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -179,6 +181,8 @@ const App = () => (
           <Route path="/install" element={<InstallApp />} />
           <Route path="/wizardalbum" element={<WizardAlbum />} />
           <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
+          <Route path="/sop" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
+          <Route path="/sop/:slug" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
           <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
           
           {/* Legacy redirects for backward compatibility */}
