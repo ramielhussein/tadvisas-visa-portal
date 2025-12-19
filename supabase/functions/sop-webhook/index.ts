@@ -3,8 +3,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // Helper function to convert ArrayBuffer to hex string
 function toHex(buffer: ArrayBuffer): string {
   return Array.from(new Uint8Array(buffer))
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
+}
+
+function maskBearer(authHeader: string): string {
+  if (!authHeader.startsWith('Bearer ')) return '[non-bearer auth]';
+  const token = authHeader.slice('Bearer '.length).trim();
+  if (!token) return 'Bearer [empty]';
+  const start = token.slice(0, 8);
+  const end = token.slice(-4);
+  return `Bearer ${start}…${end}`;
 }
 
 const corsHeaders = {
@@ -20,6 +29,12 @@ Deno.serve(async (req) => {
   try {
     // Validate API key from Authorization header
     const authHeader = req.headers.get('Authorization');
+    if (authHeader) {
+      console.log('sop-webhook Authorization:', maskBearer(authHeader));
+    } else {
+      console.log('sop-webhook Authorization: [missing]');
+    }
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       console.error('Missing or invalid Authorization header');
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
