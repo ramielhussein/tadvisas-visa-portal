@@ -268,24 +268,39 @@ export default function DataBackup() {
           {/* Total Database Size Card - Always Visible */}
           <Card className="mb-6 border-2 border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5">
             <CardContent className="py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-primary/20">
-                    <Database className="h-8 w-8 text-primary" />
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/20">
+                      <Database className="h-8 w-8 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground font-medium">Total Database Size</p>
+                      <p className="text-4xl font-bold text-primary">
+                        {loadingCounts ? (
+                          <span className="flex items-center gap-2">
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                            <span className="text-lg">Calculating...</span>
+                          </span>
+                        ) : (
+                          totalRecords.toLocaleString()
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground">records across {tables.length} tables</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">Total Database Size</p>
-                    <p className="text-4xl font-bold text-primary">
+                  
+                  {/* Leads Count */}
+                  <div className="border-l-2 border-primary/30 pl-6">
+                    <p className="text-sm text-muted-foreground font-medium">Total Leads</p>
+                    <p className="text-3xl font-bold text-orange-500">
                       {loadingCounts ? (
-                        <span className="flex items-center gap-2">
-                          <Loader2 className="h-6 w-6 animate-spin" />
-                          <span className="text-lg">Calculating...</span>
-                        </span>
+                        <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        totalRecords.toLocaleString()
+                        (tableCounts["leads"] || 0).toLocaleString()
                       )}
                     </p>
-                    <p className="text-xs text-muted-foreground">records across {tables.length} tables</p>
+                    <p className="text-xs text-muted-foreground">lead records</p>
                   </div>
                 </div>
                 <Button
