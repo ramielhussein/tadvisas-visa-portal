@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +14,20 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
-  const redirectToHub = async (userId: string) => {
-    // Get user role and redirect to appropriate hub
+  // Get the intended destination from state, or fall back to role-based redirect
+  const from = (location.state as { from?: string })?.from;
+
+  const redirectUser = async (userId: string) => {
+    // If there's a stored "from" path, go there instead of role-based redirect
+    if (from) {
+      navigate(from, { replace: true });
+      return;
+    }
+
+    // Fall back to role-based redirect
     const { data: roles } = await supabase
       .from('user_roles')
       .select('role')
@@ -28,20 +38,20 @@ const Auth = () => {
       
       // Priority-based redirect
       if (userRoles.includes('admin')) {
-        navigate("/admin");
+        navigate("/admin", { replace: true });
       } else if (userRoles.includes('finance')) {
-        navigate("/hub/finance");
+        navigate("/hub/finance", { replace: true });
       } else if (userRoles.includes('sales')) {
-        navigate("/sales-dashboard");
+        navigate("/sales-dashboard", { replace: true });
       } else if (userRoles.includes('product')) {
-        navigate("/product-dashboard");
+        navigate("/product-dashboard", { replace: true });
       } else if (userRoles.includes('client')) {
-        navigate("/hub/client");
+        navigate("/hub/client", { replace: true });
       } else {
-        navigate("/hub");
+        navigate("/hub", { replace: true });
       }
     } else {
-      navigate("/hub");
+      navigate("/hub", { replace: true });
     }
   };
 
@@ -49,18 +59,18 @@ const Auth = () => {
     // Check if user is already logged in
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
-        await redirectToHub(session.user.id);
+        await redirectUser(session.user.id);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        await redirectToHub(session.user.id);
+        await redirectUser(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,9 +89,9 @@ const Auth = () => {
         description: "Logged in successfully!",
       });
 
-      // Redirect to appropriate hub based on role
+      // Redirect to stored destination or role-based hub
       if (data.user) {
-        await redirectToHub(data.user.id);
+        await redirectUser(data.user.id);
       }
     } catch (error: any) {
       toast({
