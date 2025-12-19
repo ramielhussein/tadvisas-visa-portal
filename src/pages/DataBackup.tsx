@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Database, Download, CheckCircle2, Loader2, ArrowLeft, HardDrive } from "lucide-react";
+import { Database, Download, CheckCircle2, Loader2, ArrowLeft, HardDrive, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useInquiryPackages } from "@/hooks/useCRMData";
 
 interface TableInfo {
   name: string;
@@ -22,6 +24,9 @@ export default function DataBackup() {
   const [exporting, setExporting] = useState<string | null>(null);
   const [tableCounts, setTableCounts] = useState<Record<string, number>>({});
   const [loadingCounts, setLoadingCounts] = useState(false);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [leadPackageFilter, setLeadPackageFilter] = useState<string>("all");
+  const { data: packages } = useInquiryPackages();
 
   const tables: TableInfo[] = [
     { name: "leads", displayName: "Leads", description: "Customer leads and contacts" },
@@ -57,6 +62,17 @@ export default function DataBackup() {
     { name: "audit_logs", displayName: "Audit Logs", description: "System audit trail" },
   ];
 
+  // Load total database size on mount
+  useEffect(() => {
+    loadTableCounts();
+  }, []);
+
+  // Calculate total records whenever tableCounts changes
+  useEffect(() => {
+    const total = Object.values(tableCounts).reduce((sum, count) => sum + count, 0);
+    setTotalRecords(total);
+  }, [tableCounts]);
+
   const loadTableCounts = async () => {
     setLoadingCounts(true);
     const counts: Record<string, number> = {};
@@ -79,13 +95,18 @@ export default function DataBackup() {
     setLoadingCounts(false);
   };
 
-  const exportTable = async (tableName: string, displayName: string) => {
+  const exportTable = async (tableName: string, displayName: string, filter?: { column: string; value: string }) => {
     setExporting(tableName);
 
     try {
-      const { data, error } = await supabase
-        .from(tableName as any)
-        .select("*");
+      let query = supabase.from(tableName as any).select("*");
+      
+      // Apply filter if provided
+      if (filter && filter.value !== "all") {
+        query = query.eq(filter.column, filter.value);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -97,8 +118,9 @@ export default function DataBackup() {
       // Create download link
       const link = document.createElement("a");
       const timestamp = new Date().toISOString().split("T")[0];
+      const filterSuffix = filter && filter.value !== "all" ? `_${filter.value}` : "";
       link.href = url;
-      link.download = `${tableName}_backup_${timestamp}.json`;
+      link.download = `${tableName}${filterSuffix}_backup_${timestamp}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -117,6 +139,12 @@ export default function DataBackup() {
     } finally {
       setExporting(null);
     }
+  };
+
+  const exportFilteredLeads = async () => {
+    await exportTable("leads", `Leads (${leadPackageFilter === "all" ? "All" : leadPackageFilter})`, 
+      leadPackageFilter !== "all" ? { column: "service_required", value: leadPackageFilter } : undefined
+    );
   };
 
   const exportAllTables = async () => {
@@ -237,6 +265,41 @@ export default function DataBackup() {
             </div>
           </div>
 
+          {/* Total Database Size Card - Always Visible */}
+          <Card className="mb-6 border-2 border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5">
+            <CardContent className="py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-full bg-primary/20">
+                    <Database className="h-8 w-8 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground font-medium">Total Database Size</p>
+                    <p className="text-4xl font-bold text-primary">
+                      {loadingCounts ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                          <span className="text-lg">Calculating...</span>
+                        </span>
+                      ) : (
+                        totalRecords.toLocaleString()
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground">records across {tables.length} tables</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={loadTableCounts}
+                  disabled={loadingCounts}
+                  variant="outline"
+                  size="sm"
+                >
+                  {loadingCounts ? <Loader2 className="h-4 w-4 animate-spin" /> : "Refresh"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Info Card */}
           <Card className="mb-6 border-primary/20 bg-primary/5">
             <CardContent className="pt-6">
@@ -251,6 +314,58 @@ export default function DataBackup() {
                     <li>• <strong>Storage:</strong> Save exports to multiple locations for redundancy</li>
                   </ul>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Filtered Leads Export */}
+          <Card className="mb-6 border-orange-500/20 bg-orange-500/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5 text-orange-500" />
+                Export Leads by Package
+              </CardTitle>
+              <CardDescription>
+                Filter and download leads by service package (P1, P2, P3, P4, P5, etc.)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Select value={leadPackageFilter} onValueChange={setLeadPackageFilter}>
+                  <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectValue placeholder="Select package" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Packages</SelectItem>
+                    {packages?.map((pkg) => (
+                      <SelectItem key={pkg.id} value={pkg.package_name}>
+                        {pkg.package_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={exportFilteredLeads}
+                  disabled={exporting !== null}
+                  className="flex-1 sm:flex-none"
+                >
+                  {exporting === "leads" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Exporting...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export {leadPackageFilter === "all" ? "All Leads" : `${leadPackageFilter} Leads`}
+                    </>
+                  )}
+                </Button>
+                {tableCounts["leads"] !== undefined && (
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    Total leads: <span className="font-semibold ml-1">{tableCounts["leads"].toLocaleString()}</span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -282,23 +397,6 @@ export default function DataBackup() {
                   <>
                     <Download className="h-4 w-4 mr-2" />
                     Export All Tables
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={loadTableCounts}
-                disabled={loadingCounts}
-                variant="outline"
-              >
-                {loadingCounts ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <Database className="h-4 w-4 mr-2" />
-                    Load Row Counts
                   </>
                 )}
               </Button>
