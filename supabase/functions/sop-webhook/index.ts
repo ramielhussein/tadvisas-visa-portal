@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { createHash } from 'https://deno.land/std@0.177.0/hash/mod.ts';
+import { crypto } from 'https://deno.land/std@0.177.0/crypto/mod.ts';
+import { encodeHex } from 'https://deno.land/std@0.177.0/encoding/hex.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,8 +23,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const apiKey = authHeader.replace('Bearer ', '');
-    const keyHash = new createHash('sha256').update(apiKey).toString();
+    const encoder = new TextEncoder();
+    const data = encoder.encode(apiKey);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const keyHash = encodeHex(new Uint8Array(hashBuffer));
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
