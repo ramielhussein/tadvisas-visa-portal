@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInquiryPackages } from "@/hooks/useCRMData";
+import * as XLSX from "xlsx";
 
 interface TableInfo {
   name: string;
@@ -140,21 +141,17 @@ export default function DataBackup() {
 
       if (error) throw error;
 
-      // Create JSON file
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
+      // Create Excel workbook
+      const worksheet = XLSX.utils.json_to_sheet(data || []);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, displayName.substring(0, 31)); // Sheet names max 31 chars
       
-      // Create download link
-      const link = document.createElement("a");
+      // Generate Excel file
       const timestamp = new Date().toISOString().split("T")[0];
       const filterSuffix = filter && filter.value !== "all" ? `_${filter.value}` : "";
-      link.href = url;
-      link.download = `${tableName}${filterSuffix}_backup_${timestamp}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const filename = `${tableName}${filterSuffix}_backup_${timestamp}.xlsx`;
+      
+      XLSX.writeFile(workbook, filename);
 
       toast({
         title: "Export Complete",
@@ -181,7 +178,9 @@ export default function DataBackup() {
     setExporting("all");
 
     try {
-      const allData: Record<string, any[]> = {};
+      const workbook = XLSX.utils.book_new();
+      let totalRecordsExported = 0;
+      let tablesExported = 0;
 
       for (const table of tables) {
         const { data, error } = await supabase
@@ -193,36 +192,25 @@ export default function DataBackup() {
           continue;
         }
 
-        allData[table.name] = data || [];
+        if (data && data.length > 0) {
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          // Sheet names max 31 chars
+          const sheetName = table.displayName.substring(0, 31);
+          XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+          totalRecordsExported += data.length;
+          tablesExported++;
+        }
       }
 
-      // Create comprehensive backup file
-      const backup = {
-        exportDate: new Date().toISOString(),
-        version: "1.0",
-        tables: allData,
-        metadata: {
-          totalTables: Object.keys(allData).length,
-          totalRecords: Object.values(allData).reduce((sum, records) => sum + records.length, 0),
-        },
-      };
-
-      const jsonString = JSON.stringify(backup, null, 2);
-      const blob = new Blob([jsonString], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement("a");
+      // Generate Excel file with all sheets
       const timestamp = new Date().toISOString().split("T")[0];
-      link.href = url;
-      link.download = `complete_database_backup_${timestamp}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const filename = `complete_database_backup_${timestamp}.xlsx`;
+      
+      XLSX.writeFile(workbook, filename);
 
       toast({
         title: "Complete Backup Exported",
-        description: `All ${backup.metadata.totalTables} tables exported with ${backup.metadata.totalRecords} total records`,
+        description: `All ${tablesExported} tables exported with ${totalRecordsExported} total records`,
       });
     } catch (error: any) {
       toast({
