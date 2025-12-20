@@ -207,17 +207,20 @@ const HRAttendance = () => {
         })
         .eq("id", lastBreak.data.id);
 
-      // Calculate total from all break records to avoid stale state issues
-      const { data: allBreaks } = await supabase
+      // Calculate total from all break records for *this* attendance record (today)
+      const { data: allBreaks, error: breaksError } = await supabase
         .from("break_records")
         .select("break_duration_minutes")
         .eq("attendance_record_id", todayAttendance.id)
         .not("break_duration_minutes", "is", null);
-      
+
+      if (breaksError) throw breaksError;
+
+      // NOTE: `allBreaks` already includes the break we just updated above, so don't add `breakDuration` again.
       const totalBreakMinutes = (allBreaks || []).reduce(
-        (sum, b) => sum + (b.break_duration_minutes || 0), 
+        (sum, b) => sum + (b.break_duration_minutes || 0),
         0
-      ) + breakDuration; // Add current break since it was just updated
+      );
 
       await supabase
         .from("attendance_records")
