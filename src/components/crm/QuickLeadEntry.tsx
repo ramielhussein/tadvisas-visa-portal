@@ -975,6 +975,20 @@ interface QuickLeadEntryProps {
                               type: "info",
                               related_lead_id: existingLead.id,
                             });
+
+                            // Send email notification for reassignment
+                            try {
+                              await supabase.functions.invoke("send-lead-assignment-email", {
+                                body: {
+                                  lead_id: existingLead.id,
+                                  new_assignee_id: newAssignee,
+                                  old_assignee_id: existingLead.assigned_to,
+                                  is_reassignment: true,
+                                },
+                              });
+                            } catch (emailError) {
+                              console.error("Failed to send assignment email:", emailError);
+                            }
                           }
 
                           toast({
