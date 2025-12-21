@@ -608,12 +608,33 @@ const CRMHub = () => {
 
   const handleAssignLead = async (leadId: string, userId: string | null) => {
     try {
+      // Get current lead to check for old assignee
+      const lead = [...myLeads, ...unassignedLeads, ...adminAllLeads].find(l => l.id === leadId);
+      const oldAssigneeId = lead?.assigned_to;
+
       const { error } = await supabase
         .from("leads")
         .update({ assigned_to: userId })
         .eq("id", leadId);
 
       if (error) throw error;
+
+      // Send email notification if reassigning to a different user
+      if (userId && userId !== oldAssigneeId) {
+        try {
+          await supabase.functions.invoke("send-lead-assignment-email", {
+            body: {
+              lead_id: leadId,
+              new_assignee_id: userId,
+              old_assignee_id: oldAssigneeId,
+              is_reassignment: !!oldAssigneeId,
+            },
+          });
+        } catch (emailError) {
+          console.error("Failed to send assignment email:", emailError);
+          // Don't fail the main operation if email fails
+        }
+      }
 
       toast({
         title: "Success",
