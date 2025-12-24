@@ -120,6 +120,15 @@ export const useQZTray = () => {
         console.log('QZ Tray already connected');
       }
 
+      // Ensure the local QZ Tray app version is available.
+      // Some QZ builds can throw during print if connection.version isn't populated.
+      try {
+        const trayVersion = await window.qz.api.getVersion();
+        console.log('QZ Tray app version:', trayVersion);
+      } catch (e) {
+        console.warn('Unable to read QZ Tray app version; printing may fail until QZ Tray is updated/restarted.', e);
+      }
+
       // Get available printers
       const printers = await window.qz.printers.find();
       console.log('Found printers:', printers);
@@ -196,42 +205,40 @@ export const useQZTray = () => {
       throw new Error('Printer not connected or selected');
     }
 
+
     console.log('Printing to:', state.selectedPrinter);
 
-    const config = window.qz.configs.create(state.selectedPrinter, {
-      // Safer for ESC/POS control codes; avoids accidental UTF-8 transformations
-      encoding: 'ISO-8859-1',
-    });
+    // Keep config minimal; per QZ docs, raw ESC/POS can be sent as a simple string[]
+    // (this avoids the code-path that can crash when connection.version is missing).
+    const config = window.qz.configs.create(state.selectedPrinter);
 
     const payload = (data || []).filter((chunk) => typeof chunk === 'string');
     if (payload.length === 0) {
       throw new Error('No print data to send');
     }
 
-    // QZ print() expects an array of print-items. For raw command printing, the
-    // most compatible shape is a single raw print-item whose `data` is a string.
-    // (Some QZ builds choke on `data: string[]` and throw "reading '0'".)
-    const printData = [
-      {
-        type: 'raw',
-        format: 'command',
-        flavor: 'plain',
-        data: payload.join('\n'),
-      },
-    ];
-
     try {
-      await window.qz.print(config, printData);
+      // Some environments don't populate connection.version until we ask for it.
+      if (!window.qz.websocket?.connection?.version) {
+        try {
+          await window.qz.api.getVersion();
+        } catch {
+          // ignore
+        }
+      }
+
+      await window.qz.print(config, payload);
       console.log('Print job sent successfully');
     } catch (err: any) {
       console.error('QZ print failed', {
         err,
         message: err?.message,
         stack: err?.stack,
-        qzVersion: window.qz?.version,
+        qzLibVersion: window.qz?.version,
+        trayConnectionVersion: window.qz.websocket?.connection?.version,
         printer: state.selectedPrinter,
-        itemType: typeof printData?.[0],
-        hasData: !!printData?.[0]?.data,
+        payloadItems: payload.length,
+        firstItemType: typeof payload[0],
       });
       throw err;
     }
