@@ -103,8 +103,14 @@ export const useQZTray = () => {
         );
       });
 
-      window.qz.security.setSignaturePromise(() => {
-        return (resolve: any) => resolve();
+      // NOTE: This follows QZ Tray's expected signature-promise shape:
+      // (toSign) => (resolve, reject) => resolve(signature)
+      // For local/dev use we resolve with an empty signature to avoid server-side signing.
+      window.qz.security.setSignaturePromise((toSign: string) => {
+        return (resolve: any, _reject: any) => {
+          void toSign;
+          resolve('');
+        };
       });
 
       if (!window.qz.websocket.isActive()) {
@@ -197,10 +203,10 @@ export const useQZTray = () => {
       encoding: 'UTF-8'
     });
     
-    // QZ Tray expects data wrapped in an array with type specification
+    // QZ Tray expects an array of print items; for ESC/POS we send raw commands.
     const printData = [{
       type: 'raw',
-      format: 'plain',
+      format: 'command',
       data: data.join('\n')
     }];
     
