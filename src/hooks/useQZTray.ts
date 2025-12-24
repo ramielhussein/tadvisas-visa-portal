@@ -69,10 +69,11 @@ export const useQZTray = () => {
     console.log('Attempting to connect to QZ Tray...');
 
     try {
-      // Check if already connected
-      if (window.qz.websocket.isActive()) {
+      // Check if already connected - if so, still refresh printers list
+      const alreadyConnected = window.qz.websocket.isActive();
+      if (alreadyConnected) {
+        console.log('QZ Tray already connected; refreshing printers list...');
         setState(prev => ({ ...prev, isConnected: true, error: null }));
-        return true;
       }
 
       // Configure security (for development - in production, use proper certificates)
@@ -106,9 +107,13 @@ export const useQZTray = () => {
         return (resolve: any) => resolve();
       });
 
-      await window.qz.websocket.connect();
-      console.log('QZ Tray connected successfully');
-      
+      if (!window.qz.websocket.isActive()) {
+        await window.qz.websocket.connect();
+        console.log('QZ Tray connected successfully');
+      } else {
+        console.log('QZ Tray already connected');
+      }
+
       // Get available printers
       const printers = await window.qz.printers.find();
       console.log('Found printers:', printers);
