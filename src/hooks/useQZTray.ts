@@ -197,7 +197,6 @@ export const useQZTray = () => {
     }
 
     console.log('Printing to:', state.selectedPrinter);
-    console.log('Chunks:', Array.isArray(data) ? data.length : 'not-array');
 
     const config = window.qz.configs.create(state.selectedPrinter, {
       // Safer for ESC/POS control codes; avoids accidental UTF-8 transformations
@@ -205,24 +204,37 @@ export const useQZTray = () => {
     });
 
     const payload = (data || []).filter((chunk) => typeof chunk === 'string');
-
     if (payload.length === 0) {
       throw new Error('No print data to send');
     }
 
-    // QZ 2.x raw printing expects an *array of print items*.
-    // For raw commands, the item's `data` should be an array of strings.
+    // QZ print() expects an array of print-items. For raw command printing, the
+    // most compatible shape is a single raw print-item whose `data` is a string.
+    // (Some QZ builds choke on `data: string[]` and throw "reading '0'".)
     const printData = [
       {
         type: 'raw',
         format: 'command',
         flavor: 'plain',
-        data: payload,
+        data: payload.join('\n'),
       },
     ];
 
-    await window.qz.print(config, printData);
-    console.log('Print job sent successfully');
+    try {
+      await window.qz.print(config, printData);
+      console.log('Print job sent successfully');
+    } catch (err: any) {
+      console.error('QZ print failed', {
+        err,
+        message: err?.message,
+        stack: err?.stack,
+        qzVersion: window.qz?.version,
+        printer: state.selectedPrinter,
+        itemType: typeof printData?.[0],
+        hasData: !!printData?.[0]?.data,
+      });
+      throw err;
+    }
   }, [state.isConnected, state.selectedPrinter]);
 
   // Print formatted receipt
