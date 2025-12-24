@@ -197,20 +197,22 @@ export const useQZTray = () => {
     }
 
     console.log('Printing to:', state.selectedPrinter);
-    console.log('Data length:', data.length);
-    
+    console.log('Chunks:', Array.isArray(data) ? data.length : 'not-array');
+
+    // QZ docs recommend sending ESC/POS as an array of raw command strings
+    // (not a single joined string).
     const config = window.qz.configs.create(state.selectedPrinter, {
-      encoding: 'UTF-8'
+      // Safer for ESC/POS control codes; avoids accidental UTF-8 transformations
+      encoding: 'ISO-8859-1',
     });
-    
-    // QZ Tray expects an array of print items; for ESC/POS we send raw commands.
-    const printData = [{
-      type: 'raw',
-      format: 'command',
-      data: data.join('\n')
-    }];
-    
-    await window.qz.print(config, printData);
+
+    const payload = (data || []).filter((chunk) => typeof chunk === 'string');
+
+    if (payload.length === 0) {
+      throw new Error('No print data to send');
+    }
+
+    await window.qz.print(config, payload);
     console.log('Print job sent successfully');
   }, [state.isConnected, state.selectedPrinter]);
 
