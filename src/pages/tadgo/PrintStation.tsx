@@ -251,24 +251,45 @@ const PrintStation = () => {
             {/* Printer Selection */}
             <div className="space-y-2">
               <Label>Thermal Printer</Label>
-              <Select 
-                value={qz.selectedPrinter || ''} 
-                onValueChange={qz.selectPrinter}
-                disabled={!qz.isConnected}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a printer..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {qz.printers.map(printer => (
-                    <SelectItem key={printer} value={printer}>
-                      {printer}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {qz.printers.length === 0 && qz.isConnected && (
-                <p className="text-sm text-muted-foreground">No printers found</p>
+              {!qz.isLoaded ? (
+                <p className="text-sm text-muted-foreground">Loading QZ Tray library...</p>
+              ) : !qz.isConnected ? (
+                <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <p className="text-sm text-yellow-600">
+                    QZ Tray is not connected. Make sure it's installed and running.
+                  </p>
+                  <Button size="sm" variant="outline" className="mt-2" onClick={qz.connect}>
+                    Try Connect
+                  </Button>
+                </div>
+              ) : qz.printers.length === 0 ? (
+                <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <p className="text-sm text-yellow-600">
+                    No printers detected. Make sure your printer is connected and turned on.
+                  </p>
+                  <Button size="sm" variant="outline" className="mt-2" onClick={qz.connect}>
+                    Refresh Printers
+                  </Button>
+                </div>
+              ) : (
+                <Select 
+                  value={qz.selectedPrinter || ''} 
+                  onValueChange={qz.selectPrinter}
+                >
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="Select a printer..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    {qz.printers.map(printer => (
+                      <SelectItem key={printer} value={printer}>
+                        {printer}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {qz.selectedPrinter && (
+                <p className="text-sm text-green-600">✓ Selected: {qz.selectedPrinter}</p>
               )}
             </div>
 

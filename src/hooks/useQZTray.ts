@@ -60,10 +60,13 @@ export const useQZTray = () => {
     if (!window.qz) {
       setState(prev => ({ 
         ...prev, 
-        error: 'QZ Tray library not loaded' 
+        error: 'QZ Tray library not loaded. Please refresh the page.' 
       }));
+      console.error('QZ Tray library not loaded');
       return false;
     }
+    
+    console.log('Attempting to connect to QZ Tray...');
 
     try {
       // Check if already connected
@@ -104,13 +107,15 @@ export const useQZTray = () => {
       });
 
       await window.qz.websocket.connect();
+      console.log('QZ Tray connected successfully');
       
       // Get available printers
       const printers = await window.qz.printers.find();
+      console.log('Found printers:', printers);
       
       // Try to find a thermal printer
       let selectedPrinter = null;
-      const thermalKeywords = ['thermal', 'receipt', 'pos', '80mm', 'epson', 'star', 'citizen', 'bixolon'];
+      const thermalKeywords = ['thermal', 'receipt', 'pos', '80mm', 'epson', 'star', 'citizen', 'bixolon', 'xprinter', 'goojprt', 'munbyn'];
       
       for (const printer of printers) {
         const lowerPrinter = printer.toLowerCase();
@@ -124,6 +129,8 @@ export const useQZTray = () => {
       if (!selectedPrinter && printers.length > 0) {
         selectedPrinter = printers[0];
       }
+      
+      console.log('Selected printer:', selectedPrinter);
 
       setState(prev => ({ 
         ...prev, 
