@@ -190,8 +190,22 @@ export const useQZTray = () => {
       throw new Error('Printer not connected or selected');
     }
 
-    const config = window.qz.configs.create(state.selectedPrinter);
-    await window.qz.print(config, data);
+    console.log('Printing to:', state.selectedPrinter);
+    console.log('Data length:', data.length);
+    
+    const config = window.qz.configs.create(state.selectedPrinter, {
+      encoding: 'UTF-8'
+    });
+    
+    // QZ Tray expects data wrapped in an array with type specification
+    const printData = [{
+      type: 'raw',
+      format: 'plain',
+      data: data.join('\n')
+    }];
+    
+    await window.qz.print(config, printData);
+    console.log('Print job sent successfully');
   }, [state.isConnected, state.selectedPrinter]);
 
   // Print formatted receipt
