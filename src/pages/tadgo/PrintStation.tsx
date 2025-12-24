@@ -26,70 +26,134 @@ const PrintStation = () => {
   const [printLogs, setPrintLogs] = useState<PrintLog[]>([]);
   const [pendingTasks, setPendingTasks] = useState<TaskData[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const processedTaskIds = useRef<Set<string>>(new Set());
-  
-  const qz = useQZTray();
 
-  // Subscribe to new tasks in worker_transfers
+  const processedTaskIds = useRef<Set<string>>(new Set());
+  const autoPrintRef = useRef(autoPrint);
+  const soundEnabledRef = useRef(soundEnabled);
+
+  const qz = useQZTray();
+  const qzConnectedRef = useRef(qz.isConnected);
+
+  useEffect(() => {
+    autoPrintRef.current = autoPrint;
+  }, [autoPrint]);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    qzConnectedRef.current = qz.isConnected;
+  }, [qz.isConnected]);
+
+  const fetchPendingTasks = async () => {
+    try {
+      // Pending in TadGo = unassigned + pending status
+      // @ts-ignore - Supabase types too deep
+      const { data, error } = await supabase
+        .from('worker_transfers')
+        .select(
+          `id, transfer_number, title, from_location, to_location, transfer_date, transfer_time, transfer_category, hr_subtype, notes, client_name, driver_id, driver_status,
+           worker:workers(name, center_ref)`
+        )
+        .is('driver_id', null)
+        .eq('driver_status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      const tasks: TaskData[] = (data || []).map((t: any) => ({
+        id: t.id,
+        transfer_number: t.transfer_number,
+        title: t.title,
+        from_location: t.from_location,
+        to_location: t.to_location,
+        transfer_date: t.transfer_date,
+        transfer_time: t.transfer_time,
+        transfer_category: t.transfer_category,
+        hr_subtype: t.hr_subtype,
+        notes: t.notes,
+        worker: t.worker ?? null,
+        client_name: t.client_name,
+      }));
+
+      setPendingTasks(tasks);
+    } catch (e) {
+      console.error('Failed to fetch pending TadGo tasks for print station:', e);
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    fetchPendingTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Subscribe to changes in worker_transfers
   useEffect(() => {
     const channel = supabase
       .channel('print-station-tasks')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
-          table: 'worker_transfers'
+          table: 'worker_transfers',
         },
         async (payload) => {
-          console.log('New task received:', payload);
-          
-          const newTask = payload.new as any;
-          
-          // Prevent duplicate processing
-          if (processedTaskIds.current.has(newTask.id)) {
-            return;
-          }
-          processedTaskIds.current.add(newTask.id);
-          
-          // Fetch worker details if worker_id exists
-          let workerData = null;
-          if (newTask.worker_id) {
-            const { data } = await supabase
-              .from('workers')
-              .select('name, center_ref')
-              .eq('id', newTask.worker_id)
-              .single();
-            workerData = data;
-          }
-          
-          const taskData: TaskData = {
-            id: newTask.id,
-            transfer_number: newTask.transfer_number,
-            title: newTask.title,
-            from_location: newTask.from_location,
-            to_location: newTask.to_location,
-            transfer_date: newTask.transfer_date,
-            transfer_time: newTask.transfer_time,
-            transfer_category: newTask.transfer_category,
-            hr_subtype: newTask.hr_subtype,
-            notes: newTask.notes,
-            worker: workerData,
-            client_name: newTask.client_name,
-          };
-          
-          // Play alert sound
-          if (soundEnabled) {
-            playAlertSound();
-          }
-          
-          // Auto-print if enabled
-          if (autoPrint && qz.isConnected) {
-            await handlePrintTask(taskData);
-          } else {
-            // Add to pending queue
-            setPendingTasks(prev => [taskData, ...prev]);
-            addPrintLog(taskData.id, taskData.title || taskData.transfer_number || 'Task', 'pending');
+          try {
+            // Always refresh list to reflect TadGo state
+            void fetchPendingTasks();
+
+            if (payload.eventType !== 'INSERT') return;
+
+            const newTask = payload.new as any;
+            console.log('New task received (print station):', newTask);
+
+            // Prevent duplicate processing
+            if (processedTaskIds.current.has(newTask.id)) return;
+            processedTaskIds.current.add(newTask.id);
+
+            // Fetch worker details if worker_id exists
+            let workerData = null;
+            if (newTask.worker_id) {
+              const { data } = await supabase
+                .from('workers')
+                .select('name, center_ref')
+                .eq('id', newTask.worker_id)
+                .single();
+              workerData = data;
+            }
+
+            const taskData: TaskData = {
+              id: newTask.id,
+              transfer_number: newTask.transfer_number,
+              title: newTask.title,
+              from_location: newTask.from_location,
+              to_location: newTask.to_location,
+              transfer_date: newTask.transfer_date,
+              transfer_time: newTask.transfer_time,
+              transfer_category: newTask.transfer_category,
+              hr_subtype: newTask.hr_subtype,
+              notes: newTask.notes,
+              worker: workerData,
+              client_name: newTask.client_name,
+            };
+
+            // Play alert sound
+            if (soundEnabledRef.current) {
+              playAlertSound();
+            }
+
+            // Auto-print if enabled
+            if (autoPrintRef.current && qzConnectedRef.current) {
+              await handlePrintTask(taskData);
+            } else {
+              addPrintLog(taskData.id, taskData.title || taskData.transfer_number || 'Task', 'pending');
+            }
+          } catch (e) {
+            console.error('Print station realtime handler error:', e);
           }
         }
       )
@@ -101,7 +165,9 @@ const PrintStation = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [autoPrint, soundEnabled, qz.isConnected]);
+    // Subscribe once; refs keep latest settings
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePrintTask = async (task: TaskData) => {
     const logId = Date.now().toString();
