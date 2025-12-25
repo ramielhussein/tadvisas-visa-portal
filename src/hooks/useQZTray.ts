@@ -205,40 +205,45 @@ export const useQZTray = () => {
       throw new Error('Printer not connected or selected');
     }
 
-
     console.log('Printing to:', state.selectedPrinter);
 
-    // Keep config minimal; per QZ docs, raw ESC/POS can be sent as a simple string[]
-    // (this avoids the code-path that can crash when connection.version is missing).
     const config = window.qz.configs.create(state.selectedPrinter);
 
-    const payload = (data || []).filter((chunk) => typeof chunk === 'string');
-    if (payload.length === 0) {
+    // Filter and join all ESC/POS commands into a single string
+    const commands = (data || []).filter((chunk) => typeof chunk === 'string');
+    if (commands.length === 0) {
       throw new Error('No print data to send');
     }
 
-    try {
-      // Some environments don't populate connection.version until we ask for it.
-      if (!window.qz.websocket?.connection?.version) {
-        try {
-          await window.qz.api.getVersion();
-        } catch {
-          // ignore
-        }
+    // QZ Tray raw printing expects the data array to contain either:
+    // 1. Plain strings (sent as-is)
+    // 2. Objects with { type: 'raw', format: 'command', data: '...' }
+    // The safest approach per QZ docs is to send a single raw command object
+    const printData = [
+      {
+        type: 'raw',
+        format: 'command',
+        flavor: 'plain',
+        data: commands.join(''),
+        options: { language: 'ESCPOS' }
       }
+    ];
 
-      await window.qz.print(config, payload);
+    console.log('QZ print payload:', { 
+      printer: state.selectedPrinter, 
+      commandCount: commands.length,
+      totalLength: commands.join('').length 
+    });
+
+    try {
+      await window.qz.print(config, printData);
       console.log('Print job sent successfully');
     } catch (err: any) {
       console.error('QZ print failed', {
         err,
         message: err?.message,
         stack: err?.stack,
-        qzLibVersion: window.qz?.version,
-        trayConnectionVersion: window.qz.websocket?.connection?.version,
         printer: state.selectedPrinter,
-        payloadItems: payload.length,
-        firstItemType: typeof payload[0],
       });
       throw err;
     }
