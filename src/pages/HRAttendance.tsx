@@ -18,8 +18,11 @@ import {
   XCircle,
   TrendingUp,
   FileText,
-  Calculator
+  Calculator,
+  RotateCcw,
+  Shield
 } from "lucide-react";
+import { useUserRole } from "@/hooks/useUserRole";
 import { format, formatDistance } from "date-fns";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from "react-router-dom";
@@ -37,8 +40,10 @@ import {
 const HRAttendance = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
   const [onBreak, setOnBreak] = useState(false);
   const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
+  const [resetTargetId, setResetTargetId] = useState<string | null>(null);
 
   // Fetch current user's attendance for today
   const { data: todayAttendance, isLoading: loadingAttendance } = useQuery({
@@ -126,6 +131,47 @@ const HRAttendance = () => {
     mutationFn: async () => {
       if (!todayAttendance?.id) throw new Error('No check-in record found');
 
+      // First, close any open break records for this attendance
+      const { data: openBreaks } = await supabase
+        .from('break_records')
+        .select('id, break_out_time')
+        .eq('attendance_record_id', todayAttendance.id)
+        .is('break_back_time', null);
+
+      if (openBreaks && openBreaks.length > 0) {
+        const now = new Date().toISOString();
+        for (const brk of openBreaks) {
+          const breakDuration = Math.floor(
+            (new Date(now).getTime() - new Date(brk.break_out_time).getTime()) / 60000
+          );
+          await supabase
+            .from('break_records')
+            .update({
+              break_back_time: now,
+              break_duration_minutes: breakDuration,
+            })
+            .eq('id', brk.id);
+        }
+
+        // Recalculate total break minutes
+        const { data: allBreaks } = await supabase
+          .from('break_records')
+          .select('break_duration_minutes')
+          .eq('attendance_record_id', todayAttendance.id)
+          .not('break_duration_minutes', 'is', null);
+
+        const totalBreakMinutes = (allBreaks || []).reduce(
+          (sum, b) => sum + (b.break_duration_minutes || 0),
+          0
+        );
+
+        await supabase
+          .from('attendance_records')
+          .update({ total_break_minutes: totalBreakMinutes })
+          .eq('id', todayAttendance.id);
+      }
+
+      // Now perform checkout
       const { error } = await supabase
         .from('attendance_records')
         .update({
@@ -142,6 +188,7 @@ const HRAttendance = () => {
       toast.success('Checked out successfully!');
     },
     onError: (error: Error) => {
+      console.error('Checkout error:', error);
       toast.error('Failed to check out: ' + error.message);
     },
   });
@@ -238,6 +285,81 @@ const HRAttendance = () => {
     },
     onError: (error: Error) => {
       toast.error('Failed to end break: ' + error.message);
+    },
+  });
+
+  // Admin: Reset attendance for a user (delete today's record so they can check in fresh)
+  const resetAttendanceMutation = useMutation({
+    mutationFn: async (attendanceId: string) => {
+      // First delete all break records for this attendance
+      await supabase
+        .from('break_records')
+        .delete()
+        .eq('attendance_record_id', attendanceId);
+
+      // Then delete the attendance record
+      const { error } = await supabase
+        .from('attendance_records')
+        .delete()
+        .eq('id', attendanceId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
+      toast.success('Attendance reset successfully - user can now check in fresh');
+      setResetTargetId(null);
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to reset attendance: ' + error.message);
+    },
+  });
+
+  // Admin: Force checkout for a user
+  const forceCheckoutMutation = useMutation({
+    mutationFn: async (attendanceId: string) => {
+      // Close any open breaks first
+      const { data: openBreaks } = await supabase
+        .from('break_records')
+        .select('id, break_out_time')
+        .eq('attendance_record_id', attendanceId)
+        .is('break_back_time', null);
+
+      if (openBreaks && openBreaks.length > 0) {
+        const now = new Date().toISOString();
+        for (const brk of openBreaks) {
+          const breakDuration = Math.floor(
+            (new Date(now).getTime() - new Date(brk.break_out_time).getTime()) / 60000
+          );
+          await supabase
+            .from('break_records')
+            .update({
+              break_back_time: now,
+              break_duration_minutes: breakDuration,
+            })
+            .eq('id', brk.id);
+        }
+      }
+
+      // Force checkout
+      const { error } = await supabase
+        .from('attendance_records')
+        .update({
+          check_out_time: new Date().toISOString(),
+          status: 'checked_out',
+        })
+        .eq('id', attendanceId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
+      toast.success('User checked out successfully');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to checkout user: ' + error.message);
     },
   });
 
@@ -555,6 +677,30 @@ const HRAttendance = () => {
                         </div>
                       )}
                       {getStatusBadge(attendance.status)}
+                      
+                      {/* Admin Controls */}
+                      {isAdmin && attendance.status !== 'checked_out' && (
+                        <div className="flex gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => forceCheckoutMutation.mutate(attendance.id)}
+                            disabled={forceCheckoutMutation.isPending}
+                            title="Force checkout"
+                          >
+                            <LogOut className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setResetTargetId(attendance.id)}
+                            title="Reset attendance"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <RotateCcw className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -621,6 +767,31 @@ const HRAttendance = () => {
               }}
             >
               Yes, Check Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Admin Reset Confirmation Dialog */}
+      <AlertDialog open={!!resetTargetId} onOpenChange={(open) => !open && setResetTargetId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-destructive" />
+              Reset Attendance Record
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will delete the attendance record for today, allowing the user to check in fresh. 
+              All break records will also be deleted. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => resetTargetId && resetAttendanceMutation.mutate(resetTargetId)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reset Attendance
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
