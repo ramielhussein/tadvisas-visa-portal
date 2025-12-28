@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Phone, Plus, MessageCircle, Check, Trash2, Link2 } from "lucide-react";
+import { Phone, Plus, MessageCircle, Check, Trash2, Link2, FileText, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -20,10 +21,16 @@ interface CVProspect {
   converted: boolean;
   worker_id: string | null;
   created_at: string;
+  worker?: {
+    id: string;
+    name: string;
+    status: string;
+  } | null;
 }
 
 const CVProspects = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [prospects, setProspects] = useState<CVProspect[]>([]);
   const [loading, setLoading] = useState(true);
   const [newPhone, setNewPhone] = useState("");
@@ -33,7 +40,10 @@ const CVProspects = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from('cv_prospects')
-      .select('*')
+      .select(`
+        *,
+        worker:workers(id, name, status)
+      `)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -42,6 +52,14 @@ const CVProspects = () => {
       setProspects(data || []);
     }
     setLoading(false);
+  };
+
+  const handleCreateCV = (phone: string) => {
+    navigate(`/cvwizard?phone=${encodeURIComponent(phone)}`);
+  };
+
+  const handleViewWorker = (workerId: string) => {
+    navigate(`/wizardalbum?worker=${workerId}`);
   };
 
   useEffect(() => {
@@ -195,7 +213,18 @@ const CVProspects = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {prospect.converted ? (
+                        {prospect.converted && prospect.worker ? (
+                          <div className="flex flex-col gap-1">
+                            <Badge variant="default" className="bg-green-500 w-fit">
+                              <Check className="h-3 w-3 mr-1" />
+                              Converted
+                            </Badge>
+                            <span className="text-sm font-medium">{prospect.worker.name}</span>
+                            <Badge variant="outline" className="w-fit text-xs">
+                              {prospect.worker.status}
+                            </Badge>
+                          </div>
+                        ) : prospect.converted ? (
                           <Badge variant="default" className="bg-green-500">
                             <Check className="h-3 w-3 mr-1" />
                             Converted
@@ -217,15 +246,34 @@ const CVProspects = () => {
                           >
                             <MessageCircle className="h-4 w-4 text-green-600" />
                           </Button>
-                          {!prospect.converted && (
+                          {prospect.converted && prospect.worker_id ? (
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => handleDelete(prospect.id)}
-                              title="Delete"
+                              onClick={() => handleViewWorker(prospect.worker_id!)}
+                              title="View Worker CV"
                             >
-                              <Trash2 className="h-4 w-4 text-destructive" />
+                              <Eye className="h-4 w-4 text-primary" />
                             </Button>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleCreateCV(prospect.mobile_number)}
+                                title="Create CV for this prospect"
+                              >
+                                <FileText className="h-4 w-4 text-blue-600" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDelete(prospect.id)}
+                                title="Delete"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </>
                           )}
                         </div>
                       </TableCell>

@@ -39,6 +39,16 @@ const Step1Identity = ({ formData, updateFormData }: Props) => {
       </div>
 
       <div className="space-y-2">
+        <Label htmlFor="mobile_number">Mobile Number</Label>
+        <Input
+          id="mobile_number"
+          value={formData.mobile_number || ""}
+          onChange={(e) => updateFormData({ mobile_number: e.target.value })}
+          placeholder="+63 917 123 4567"
+        />
+      </div>
+
+      <div className="space-y-2">
         <Label htmlFor="passport_no">Passport Number *</Label>
         <Input
           id="passport_no"
