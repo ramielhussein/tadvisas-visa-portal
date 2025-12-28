@@ -26,6 +26,7 @@ const CVWizard = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const editingWorkerId = searchParams.get('id');
+  const prefilledPhone = searchParams.get('phone');
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(!!editingWorkerId);
@@ -78,6 +79,7 @@ const CVWizard = () => {
       revenues: [],
     },
     consent: false,
+    mobile_number: prefilledPhone || "",
   });
 
   useEffect(() => {
