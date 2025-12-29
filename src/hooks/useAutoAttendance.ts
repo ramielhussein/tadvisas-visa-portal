@@ -13,15 +13,18 @@ export const useAutoAttendance = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Check if user is a driver - drivers track time through TadGo app
-        const { data: driverRole } = await supabase
+        // Check user roles - drivers track time through TadGo app, unless they also have admin roles
+        const { data: userRoles } = await supabase
           .from('user_roles')
           .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'driver')
-          .maybeSingle();
+          .eq('user_id', user.id);
 
-        if (driverRole) {
+        const roles = userRoles?.map(r => r.role) || [];
+        const isDriver = roles.includes('driver');
+        const hasAdminRole = roles.includes('admin') || roles.includes('super_admin') || roles.includes('driver_manager');
+
+        // Only skip auto check-in for pure drivers (no admin/manager roles)
+        if (isDriver && !hasAdminRole) {
           console.log('Driver detected - skipping admin attendance (use TadGo app)');
           return;
         }
