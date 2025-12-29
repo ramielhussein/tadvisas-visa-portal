@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { 
   Car, 
   MapPin, 
@@ -17,7 +18,9 @@ import {
   CheckCircle2,
   Truck,
   Package,
-  Users
+  Users,
+  Bell,
+  BellOff
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -56,6 +59,27 @@ const TadGoApp = () => {
   const [activeTab, setActiveTab] = useState("available");
   const [isDriverManager, setIsDriverManager] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
+  const { isSupported, isSubscribed, permission, subscribe } = usePushNotifications();
+
+  // Request push notification permission on mount
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      if (isSupported && !isSubscribed && permission === 'default') {
+        // Small delay to let the app load first
+        setTimeout(async () => {
+          const result = await subscribe();
+          if (result) {
+            toast({
+              title: "Notifications Enabled",
+              description: "You'll receive alerts for new tasks and updates",
+            });
+          }
+        }, 1500);
+      }
+    };
+
+    requestNotificationPermission();
+  }, [isSupported, isSubscribed, permission, subscribe, toast]);
 
   useEffect(() => {
     checkAuth();
@@ -360,6 +384,34 @@ const TadGoApp = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Notification toggle button */}
+              {isSupported && (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={async () => {
+                    if (!isSubscribed) {
+                      const result = await subscribe();
+                      toast({
+                        title: result ? "Notifications Enabled" : "Permission Denied",
+                        description: result 
+                          ? "You'll receive alerts for new tasks" 
+                          : "Please enable notifications in browser settings",
+                        variant: result ? "default" : "destructive",
+                      });
+                    } else {
+                      toast({
+                        title: "Already Enabled",
+                        description: "Push notifications are active",
+                      });
+                    }
+                  }}
+                  className={isSubscribed ? "text-emerald-400 hover:text-emerald-300" : "text-slate-400 hover:text-white"}
+                  title={isSubscribed ? "Notifications enabled" : "Enable notifications"}
+                >
+                  {isSubscribed ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
+                </Button>
+              )}
               <Button 
                 variant="ghost" 
                 size="icon"
