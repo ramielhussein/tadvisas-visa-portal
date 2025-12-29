@@ -68,49 +68,21 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
     }
   };
 
-  const notifyDrivers = async (transferTitle: string, transferId: string) => {
+  const notifyTransferCreated = async (transferId: string, transferNumber: string) => {
     try {
-      // Only notify Rayaan for testing
-      const authorizedDriverIds = [
-        "e5ddce55-8111-45c0-b0a2-e1b752187516", // Rayaan
-      ];
-
-      const driverRoles = authorizedDriverIds.map(id => ({ user_id: id }));
-
-      // Create in-app notifications for all drivers
-      const notifications = driverRoles.map((role) => ({
-        user_id: role.user_id,
-        title: "New Transfer Available",
-        message: transferTitle 
-          ? `New task: ${transferTitle} - ${fromLocation.address} → ${toLocation.address}`
-          : `New transfer: ${fromLocation.address} → ${toLocation.address}`,
-        type: "transfer",
-        related_lead_id: null,
-      }));
-
-      const { error: notifyError } = await supabase
-        .from("notifications")
-        .insert(notifications);
-
-      if (notifyError) {
-        console.error("Error sending in-app notifications:", notifyError);
-      }
-
-      // Send push notifications
-      const pushMessage = transferTitle 
-        ? `New task: ${transferTitle}`
-        : `New transfer: ${fromLocation.address} → ${toLocation.address}`;
-
-      await supabase.functions.invoke('send-push-notification', {
+      // Call the notify-transfer edge function to notify managers
+      await supabase.functions.invoke('notify-transfer', {
         body: {
-          title: "New Transfer Available",
-          message: pushMessage,
-          userIds: authorizedDriverIds,
-          url: '/tadgo'
+          transferId,
+          eventType: 'created',
+          transferNumber,
+          pickupLocation: fromLocation.address,
+          dropoffLocation: toLocation.address,
         }
       });
+      console.log('Managers notified about new transfer');
     } catch (error) {
-      console.error("Error notifying drivers:", error);
+      console.error("Error notifying about transfer:", error);
     }
   };
 
@@ -164,12 +136,12 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         admin_details: category === "ADMIN" ? adminDetails : null,
         notes: formData.notes || null,
         handled_by: user.id,
-      }).select("id").single();
+      }).select("id, transfer_number").single();
 
       if (error) throw error;
 
-      // Notify all drivers about the new transfer
-      await notifyDrivers(formData.title.trim(), newTransfer?.id || "");
+      // Notify managers about the new transfer
+      await notifyTransferCreated(newTransfer?.id || "", newTransfer?.transfer_number || "");
 
       toast({
         title: "Success",

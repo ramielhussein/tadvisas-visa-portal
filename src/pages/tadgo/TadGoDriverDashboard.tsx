@@ -140,6 +140,13 @@ const TadGoDriverDashboard = () => {
     if (!userId) return;
     
     try {
+      // Get the task details first
+      const { data: taskData } = await supabase
+        .from("worker_transfers")
+        .select("transfer_number, from_location, to_location")
+        .eq("id", taskId)
+        .single();
+
       // @ts-ignore - Supabase types too deep
       const result = await supabase
         .from("worker_transfers")
@@ -151,6 +158,18 @@ const TadGoDriverDashboard = () => {
         .eq("id", taskId);
 
       if (result.error) throw result.error;
+
+      // Notify the driver (self) that task was assigned
+      await supabase.functions.invoke('notify-transfer', {
+        body: {
+          transferId: taskId,
+          eventType: 'assigned',
+          driverId: userId,
+          transferNumber: taskData?.transfer_number,
+          pickupLocation: taskData?.from_location,
+          dropoffLocation: taskData?.to_location,
+        }
+      });
 
       toast({
         title: "Task Accepted",
