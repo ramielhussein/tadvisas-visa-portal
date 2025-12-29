@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Clock, 
   LogIn, 
@@ -20,10 +23,12 @@ import {
   FileText,
   Calculator,
   RotateCcw,
-  Shield
+  Shield,
+  Calendar,
+  Search
 } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
-import { format, formatDistance } from "date-fns";
+import { format, formatDistance, differenceInDays, startOfMonth, endOfMonth } from "date-fns";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from "react-router-dom";
 import {
@@ -44,6 +49,11 @@ const HRAttendance = () => {
   const [onBreak, setOnBreak] = useState(false);
   const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
   const [resetTargetId, setResetTargetId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("today");
+  
+  // Date range state for history
+  const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
   // Fetch current user's attendance for today
   const { data: todayAttendance, isLoading: loadingAttendance } = useQuery({
@@ -90,6 +100,73 @@ const HRAttendance = () => {
       return data;
     },
   });
+
+  // Fetch attendance history with date range
+  const { data: attendanceHistory, isLoading: loadingHistory, refetch: refetchHistory } = useQuery({
+    queryKey: ['attendance-history', startDate, endDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('attendance_records')
+        .select(`
+          *,
+          employees!inner(id, full_name, position, department, photo_url, user_id)
+        `)
+        .gte('attendance_date', startDate)
+        .lte('attendance_date', endDate)
+        .order('attendance_date', { ascending: false })
+        .order('check_in_time', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: activeTab === 'history',
+  });
+
+  // Calculate per-employee statistics from history
+  const employeeStats = attendanceHistory ? (() => {
+    const statsMap = new Map<string, {
+      name: string;
+      position: string;
+      daysWorked: number;
+      totalMinutes: number;
+      totalBreakMinutes: number;
+      lateDays: number;
+      records: any[];
+    }>();
+    
+    attendanceHistory.forEach((record: any) => {
+      const empId = record.employees?.id;
+      if (!empId) return;
+      
+      let existing = statsMap.get(empId);
+      if (!existing) {
+        existing = {
+          name: record.employees?.full_name || 'Unknown',
+          position: record.employees?.position || 'N/A',
+          daysWorked: 0,
+          totalMinutes: 0,
+          totalBreakMinutes: 0,
+          lateDays: 0,
+          records: [],
+        };
+        statsMap.set(empId, existing);
+      }
+      
+      existing.daysWorked++;
+      existing.records.push(record);
+      existing.totalBreakMinutes += record.total_break_minutes || 0;
+      if (record.is_late) existing.lateDays++;
+      
+      if (record.check_in_time && record.check_out_time) {
+        const minutes = Math.floor(
+          (new Date(record.check_out_time).getTime() - new Date(record.check_in_time).getTime()) / 60000
+        );
+        existing.totalMinutes += minutes - (record.total_break_minutes || 0);
+      }
+    });
+    
+    return Array.from(statsMap.values()).sort((a, b) => b.daysWorked - a.daysWorked);
+  })() : [];
 
   // Check in mutation
   const checkInMutation = useMutation({
@@ -482,232 +559,400 @@ const HRAttendance = () => {
           </div>
         </div>
 
-        {/* Personal Attendance Card */}
-        <Card className="border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Timer className="h-5 w-5" />
-              My Attendance Today
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {!todayAttendance?.check_in_time ? (
-              <div className="text-center py-8">
-                <Button
-                  size="lg"
-                  onClick={() => checkInMutation.mutate()}
-                  disabled={checkInMutation.isPending}
-                  className="w-full max-w-xs"
-                >
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Check In
-                </Button>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Start your workday
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4 text-green-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Check In</p>
-                      <p className="font-semibold">{format(new Date(todayAttendance.check_in_time), 'hh:mm a')}</p>
-                    </div>
+        {/* Tabs for Today / History */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="today" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Today
+            </TabsTrigger>
+            <TabsTrigger value="history" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              History
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Today Tab */}
+          <TabsContent value="today" className="space-y-6 mt-4">
+            {/* Personal Attendance Card */}
+            <Card className="border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Timer className="h-5 w-5" />
+                  My Attendance Today
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {!todayAttendance?.check_in_time ? (
+                  <div className="text-center py-8">
+                    <Button
+                      size="lg"
+                      onClick={() => checkInMutation.mutate()}
+                      disabled={checkInMutation.isPending}
+                      className="w-full max-w-xs"
+                    >
+                      <LogIn className="h-5 w-5 mr-2" />
+                      Check In
+                    </Button>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Start your workday
+                    </p>
                   </div>
-                  {todayAttendance.check_out_time && (
-                    <div className="flex items-center gap-2">
-                      <LogOut className="h-4 w-4 text-blue-500" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Check Out</p>
-                        <p className="font-semibold">{format(new Date(todayAttendance.check_out_time), 'hh:mm a')}</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex items-center gap-2">
+                        <LogIn className="h-4 w-4 text-green-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Check In</p>
+                          <p className="font-semibold">{format(new Date(todayAttendance.check_in_time), 'hh:mm a')}</p>
+                        </div>
+                      </div>
+                      {todayAttendance.check_out_time && (
+                        <div className="flex items-center gap-2">
+                          <LogOut className="h-4 w-4 text-blue-500" />
+                          <div>
+                            <p className="text-sm text-muted-foreground">Check Out</p>
+                            <p className="font-semibold">{format(new Date(todayAttendance.check_out_time), 'hh:mm a')}</p>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <Coffee className="h-4 w-4 text-yellow-500" />
+                        <div>
+                          <p className="text-sm text-muted-foreground">Break Time</p>
+                          <p className="font-semibold">{todayAttendance.total_break_minutes} min</p>
+                        </div>
                       </div>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Coffee className="h-4 w-4 text-yellow-500" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Break Time</p>
-                      <p className="font-semibold">{todayAttendance.total_break_minutes} min</p>
-                    </div>
-                  </div>
-                </div>
 
-
-                {todayAttendance.is_late && (
-                  <div className="flex items-center gap-2 text-sm text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <span>Late by {todayAttendance.late_minutes} minutes</span>
+                    {todayAttendance.is_late && (
+                      <div className="flex items-center gap-2 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Late by {todayAttendance.late_minutes} minutes</span>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* Team Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Working Now</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.working}</div>
-              <p className="text-xs text-muted-foreground">Active staff members</p>
-            </CardContent>
-          </Card>
+            {/* Team Overview Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Working Now</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.working}</div>
+                  <p className="text-xs text-muted-foreground">Active staff members</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">On Break</CardTitle>
-              <Coffee className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.onBreak}</div>
-              <p className="text-xs text-muted-foreground">Taking a break</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">On Break</CardTitle>
+                  <Coffee className="h-4 w-4 text-yellow-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.onBreak}</div>
+                  <p className="text-xs text-muted-foreground">Taking a break</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Checked Out</CardTitle>
-              <LogOut className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.checkedOut}</div>
-              <p className="text-xs text-muted-foreground">Finished for today</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Team Attendance List */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Team Attendance Today
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Center Opened/Closed Time */}
-            {(() => {
-              const checkInTimes = staffAttendance
-                ?.filter((a: any) => a.check_in_time)
-                .map((a: any) => new Date(a.check_in_time).getTime());
-              const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
-              
-              // Only show "CENTER CLOSED" when ALL staff have checked out (no one still working or on break)
-              const stillWorking = staffAttendance?.filter((a: any) => 
-                a.status === 'checked_in' || a.status === 'on_break'
-              ).length || 0;
-              
-              const checkOutTimes = staffAttendance
-                ?.filter((a: any) => a.check_out_time)
-                .map((a: any) => new Date(a.check_out_time).getTime());
-              const lastCheckOut = checkOutTimes?.length && stillWorking === 0 
-                ? new Date(Math.max(...checkOutTimes)) 
-                : null;
-              
-              // Check if opened after 10 AM
-              const isLate = firstCheckIn && firstCheckIn.getHours() >= 10;
-              
-              return (
-                <div className="space-y-2 mb-4">
-                  {firstCheckIn && (
-                    <div className={`flex items-center gap-2 p-2 rounded-lg border ${
-                      isLate 
-                        ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' 
-                        : 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
-                    }`}>
-                      <Clock className={`h-4 w-4 ${isLate ? 'text-red-600' : 'text-green-600'}`} />
-                      <span className={`text-sm font-medium ${isLate ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
-                        CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
-                      </span>
-                    </div>
-                  )}
-                  {lastCheckOut && (
-                    <div className="flex items-center gap-2 p-2 rounded-lg border bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-                      <LogOut className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                        CENTER CLOSED TODAY - {format(lastCheckOut, 'hh:mm a')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-            <div className="space-y-3">
-              {staffAttendance?.map((attendance: any) => {
-                // Calculate working hours
-                const checkInTime = attendance.check_in_time ? new Date(attendance.check_in_time) : null;
-                const checkOutTime = attendance.check_out_time ? new Date(attendance.check_out_time) : null;
-                const now = new Date();
-                
-                let workingMinutes = 0;
-                if (checkInTime) {
-                  const endTime = checkOutTime || now;
-                  workingMinutes = Math.floor((endTime.getTime() - checkInTime.getTime()) / 60000);
-                }
-                
-                const workingHours = Math.floor(workingMinutes / 60);
-                const workingMins = workingMinutes % 60;
-                
-                return (
-                  <div key={attendance.id} className="flex items-center justify-between p-3 rounded-lg border">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{attendance.employees?.full_name}</p>
-                        <p className="text-sm text-muted-foreground">{attendance.employees?.position}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {attendance.check_in_time && (
-                        <div className="text-right space-y-0.5">
-                          <p className="text-sm font-medium">
-                            Working since {format(new Date(attendance.check_in_time), 'hh:mm a')}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Total work: {workingHours}h {workingMins}m • Break: {attendance.total_break_minutes || 0} min
-                          </p>
-                        </div>
-                      )}
-                      {getStatusBadge(attendance.status)}
-                      
-                      {/* Admin Controls */}
-                      {isAdmin && attendance.status !== 'checked_out' && (
-                        <div className="flex gap-1">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => forceCheckoutMutation.mutate(attendance.id)}
-                            disabled={forceCheckoutMutation.isPending}
-                            title="Force checkout"
-                          >
-                            <LogOut className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setResetTargetId(attendance.id)}
-                            title="Reset attendance"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <RotateCcw className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">Checked Out</CardTitle>
+                  <LogOut className="h-4 w-4 text-blue-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.checkedOut}</div>
+                  <p className="text-xs text-muted-foreground">Finished for today</p>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Team Attendance List */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Team Attendance Today
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Center Opened/Closed Time */}
+                {(() => {
+                  const checkInTimes = staffAttendance
+                    ?.filter((a: any) => a.check_in_time)
+                    .map((a: any) => new Date(a.check_in_time).getTime());
+                  const firstCheckIn = checkInTimes?.length ? new Date(Math.min(...checkInTimes)) : null;
+                  
+                  const stillWorking = staffAttendance?.filter((a: any) => 
+                    a.status === 'checked_in' || a.status === 'on_break'
+                  ).length || 0;
+                  
+                  const checkOutTimes = staffAttendance
+                    ?.filter((a: any) => a.check_out_time)
+                    .map((a: any) => new Date(a.check_out_time).getTime());
+                  const lastCheckOut = checkOutTimes?.length && stillWorking === 0 
+                    ? new Date(Math.max(...checkOutTimes)) 
+                    : null;
+                  
+                  const isLate = firstCheckIn && firstCheckIn.getHours() >= 10;
+                  
+                  return (
+                    <div className="space-y-2 mb-4">
+                      {firstCheckIn && (
+                        <div className={`flex items-center gap-2 p-2 rounded-lg border ${
+                          isLate 
+                            ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' 
+                            : 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
+                        }`}>
+                          <Clock className={`h-4 w-4 ${isLate ? 'text-red-600' : 'text-green-600'}`} />
+                          <span className={`text-sm font-medium ${isLate ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
+                            CENTER OPENED TODAY - {format(firstCheckIn, 'hh:mm a')}
+                          </span>
+                        </div>
+                      )}
+                      {lastCheckOut && (
+                        <div className="flex items-center gap-2 p-2 rounded-lg border bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+                          <LogOut className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
+                            CENTER CLOSED TODAY - {format(lastCheckOut, 'hh:mm a')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+                <div className="space-y-3">
+                  {staffAttendance?.map((attendance: any) => {
+                    const checkInTime = attendance.check_in_time ? new Date(attendance.check_in_time) : null;
+                    const checkOutTime = attendance.check_out_time ? new Date(attendance.check_out_time) : null;
+                    const now = new Date();
+                    
+                    let workingMinutes = 0;
+                    if (checkInTime) {
+                      const endTime = checkOutTime || now;
+                      workingMinutes = Math.floor((endTime.getTime() - checkInTime.getTime()) / 60000);
+                    }
+                    
+                    const workingHours = Math.floor(workingMinutes / 60);
+                    const workingMins = workingMinutes % 60;
+                    
+                    return (
+                      <div key={attendance.id} className="flex items-center justify-between p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Users className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{attendance.employees?.full_name}</p>
+                            <p className="text-sm text-muted-foreground">{attendance.employees?.position}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          {attendance.check_in_time && (
+                            <div className="text-right space-y-0.5">
+                              <p className="text-sm font-medium">
+                                Working since {format(new Date(attendance.check_in_time), 'hh:mm a')}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Total work: {workingHours}h {workingMins}m • Break: {attendance.total_break_minutes || 0} min
+                              </p>
+                            </div>
+                          )}
+                          {getStatusBadge(attendance.status)}
+                          
+                          {isAdmin && attendance.status !== 'checked_out' && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => forceCheckoutMutation.mutate(attendance.id)}
+                                disabled={forceCheckoutMutation.isPending}
+                                title="Force checkout"
+                              >
+                                <LogOut className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setResetTargetId(attendance.id)}
+                                title="Reset attendance"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <RotateCcw className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* History Tab */}
+          <TabsContent value="history" className="space-y-6 mt-4">
+            {/* Date Range Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="h-5 w-5" />
+                  Search Attendance History
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4 items-end">
+                  <div className="space-y-2">
+                    <Label htmlFor="start-date">Start Date</Label>
+                    <Input
+                      id="start-date"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-40"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="end-date">End Date</Label>
+                    <Input
+                      id="end-date"
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-40"
+                    />
+                  </div>
+                  <Button onClick={() => refetchHistory()}>
+                    <Search className="h-4 w-4 mr-2" />
+                    Search
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Showing records from {format(new Date(startDate), 'MMM dd, yyyy')} to {format(new Date(endDate), 'MMM dd, yyyy')}
+                  {' '}({differenceInDays(new Date(endDate), new Date(startDate)) + 1} days)
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Employee Stats Summary */}
+            {loadingHistory ? (
+              <Card>
+                <CardContent className="py-8 text-center">
+                  <p className="text-muted-foreground">Loading attendance history...</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {employeeStats.map((emp, idx) => {
+                    const totalHours = Math.floor(emp.totalMinutes / 60);
+                    const totalMins = emp.totalMinutes % 60;
+                    const avgHoursPerDay = emp.daysWorked > 0 ? (emp.totalMinutes / emp.daysWorked / 60).toFixed(1) : '0';
+                    
+                    return (
+                      <Card key={idx}>
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-lg flex items-center gap-2">
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              <Users className="h-4 w-4 text-primary" />
+                            </div>
+                            {emp.name}
+                          </CardTitle>
+                          <p className="text-sm text-muted-foreground">{emp.position}</p>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="p-2 rounded-lg bg-green-50 dark:bg-green-950/30">
+                              <p className="font-semibold text-green-700 dark:text-green-400">{emp.daysWorked}</p>
+                              <p className="text-xs text-muted-foreground">Days Worked</p>
+                            </div>
+                            <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/30">
+                              <p className="font-semibold text-blue-700 dark:text-blue-400">{totalHours}h {totalMins}m</p>
+                              <p className="text-xs text-muted-foreground">Total Hours</p>
+                            </div>
+                            <div className="p-2 rounded-lg bg-yellow-50 dark:bg-yellow-950/30">
+                              <p className="font-semibold text-yellow-700 dark:text-yellow-400">{emp.totalBreakMinutes}m</p>
+                              <p className="text-xs text-muted-foreground">Break Time</p>
+                            </div>
+                            <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-950/30">
+                              <p className="font-semibold text-purple-700 dark:text-purple-400">{avgHoursPerDay}h</p>
+                              <p className="text-xs text-muted-foreground">Avg/Day</p>
+                            </div>
+                          </div>
+                          {emp.lateDays > 0 && (
+                            <div className="flex items-center gap-1 text-xs text-destructive">
+                              <AlertCircle className="h-3 w-3" />
+                              <span>Late {emp.lateDays} time{emp.lateDays > 1 ? 's' : ''}</span>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                {employeeStats.length === 0 && (
+                  <Card>
+                    <CardContent className="py-8 text-center">
+                      <p className="text-muted-foreground">No attendance records found for this date range.</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Detailed Records Table */}
+                {attendanceHistory && attendanceHistory.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Detailed Attendance Records ({attendanceHistory.length} records)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left p-2">Date</th>
+                              <th className="text-left p-2">Name</th>
+                              <th className="text-center p-2">Check In</th>
+                              <th className="text-center p-2">Check Out</th>
+                              <th className="text-center p-2">Break</th>
+                              <th className="text-center p-2">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {attendanceHistory.map((record: any) => (
+                              <tr key={record.id} className="border-b hover:bg-muted/50">
+                                <td className="p-2">{format(new Date(record.attendance_date), 'MMM dd, yyyy')}</td>
+                                <td className="p-2">{record.employees?.full_name}</td>
+                                <td className="p-2 text-center">
+                                  {record.check_in_time ? format(new Date(record.check_in_time), 'hh:mm a') : '-'}
+                                </td>
+                                <td className="p-2 text-center">
+                                  {record.check_out_time ? format(new Date(record.check_out_time), 'hh:mm a') : '-'}
+                                </td>
+                                <td className="p-2 text-center">{record.total_break_minutes || 0}m</td>
+                                <td className="p-2 text-center">{getStatusBadge(record.status)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Quick Break/Check Out Fixed Button */}
