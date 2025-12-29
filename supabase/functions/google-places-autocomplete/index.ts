@@ -44,17 +44,9 @@ serve(async (req) => {
           },
           radius: 50000.0  // 50km radius to cover Dubai
         }
-      },
-      includedPrimaryTypes: [
-        'establishment',
-        'geocode',
-        'address',
-        'point_of_interest',
-        'locality',
-        'sublocality',
-        'neighborhood',
-        'route'
-      ]
+      }
+      // Note: Removed includedPrimaryTypes to allow all place types
+      // The new Places API is strict about valid types
     };
 
     const response = await fetch(url.toString(), {
