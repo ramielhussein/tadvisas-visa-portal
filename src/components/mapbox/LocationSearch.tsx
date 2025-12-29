@@ -114,10 +114,12 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
     setShowPresets(false);
     setIsSearching(true);
     try {
-      // Restrict search to UAE only with country=ae parameter
-      // Added fuzzyMatch and autocomplete for better partial matching
+      // Use Mapbox Search API with better POI handling
+      // proximity is set to Dubai Marina area for better Dubai results
+      // bbox restricts to UAE region for more relevant results
+      const bbox = "51.5,22.5,56.5,26.5"; // UAE bounding box
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.2708,25.2048&limit=10&types=place,locality,neighborhood,address,poi&language=en&fuzzyMatch=true&autocomplete=true`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.1385,25.0772&bbox=${bbox}&limit=8&types=poi,address,place,locality,neighborhood&language=en&autocomplete=true`
       );
       
       if (!response.ok) {
@@ -125,7 +127,25 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
       }
       
       const data = await response.json();
-      setResults(data.features || []);
+      
+      // Sort results to prioritize exact matches and Dubai locations
+      const sortedResults = (data.features || []).sort((a: any, b: any) => {
+        const aName = a.text?.toLowerCase() || '';
+        const bName = b.text?.toLowerCase() || '';
+        const query = searchQuery.toLowerCase();
+        
+        // Prioritize results that start with the search query
+        const aStartsWith = aName.startsWith(query) ? -1 : 0;
+        const bStartsWith = bName.startsWith(query) ? -1 : 0;
+        
+        // Prioritize Dubai results
+        const aIsDubai = a.place_name?.toLowerCase().includes('dubai') ? -1 : 0;
+        const bIsDubai = b.place_name?.toLowerCase().includes('dubai') ? -1 : 0;
+        
+        return (aStartsWith + aIsDubai) - (bStartsWith + bIsDubai);
+      });
+      
+      setResults(sortedResults);
     } catch (error) {
       console.error("Error searching locations:", error);
       setResults([]);
