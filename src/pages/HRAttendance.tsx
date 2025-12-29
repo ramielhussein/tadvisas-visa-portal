@@ -25,8 +25,16 @@ import {
   RotateCcw,
   Shield,
   Calendar,
-  Search
+  Search,
+  UserX
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useUserRole } from "@/hooks/useUserRole";
 import { format, formatDistance, differenceInDays, startOfMonth, endOfMonth } from "date-fns";
 import html2pdf from "html2pdf.js";
@@ -50,6 +58,8 @@ const HRAttendance = () => {
   const [showCheckoutConfirm, setShowCheckoutConfirm] = useState(false);
   const [resetTargetId, setResetTargetId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("today");
+  const [showMarkAbsentDialog, setShowMarkAbsentDialog] = useState(false);
+  const [selectedEmployeeForAbsent, setSelectedEmployeeForAbsent] = useState<string>("");
   
   // Date range state for history
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
@@ -101,7 +111,26 @@ const HRAttendance = () => {
     },
   });
 
-  // Fetch attendance history with date range
+  // Fetch all employees for mark absent feature
+  const { data: allEmployees } = useQuery({
+    queryKey: ['all-employees'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('employees')
+        .select('id, full_name, position, employment_status')
+        .eq('employment_status', 'Active')
+        .order('full_name');
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Get employees who haven't checked in today
+  const employeesNotCheckedIn = allEmployees?.filter(emp => 
+    !staffAttendance?.some((att: any) => att.employee_id === emp.id)
+  ) || [];
+
   const { data: attendanceHistory, isLoading: loadingHistory, refetch: refetchHistory } = useQuery({
     queryKey: ['attendance-history', startDate, endDate],
     queryFn: async () => {
@@ -440,6 +469,31 @@ const HRAttendance = () => {
     },
   });
 
+  // Mark absent mutation
+  const markAbsentMutation = useMutation({
+    mutationFn: async (employeeId: string) => {
+      const { error } = await supabase
+        .from('attendance_records')
+        .insert({
+          employee_id: employeeId,
+          attendance_date: format(new Date(), 'yyyy-MM-dd'),
+          status: 'absent',
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
+      toast.success('Employee marked as absent');
+      setShowMarkAbsentDialog(false);
+      setSelectedEmployeeForAbsent("");
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to mark absent: ' + error.message);
+    },
+  });
+
   const generatePDF = async () => {
     const element = document.createElement("div");
     element.innerHTML = `
@@ -543,7 +597,11 @@ const HRAttendance = () => {
             <h1 className="text-3xl font-bold">Smart Attendance</h1>
             <p className="text-muted-foreground">UAE Labor Law Compliant Tracking</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" onClick={() => setShowMarkAbsentDialog(true)}>
+              <UserX className="mr-2 h-4 w-4" />
+              Mark Absent
+            </Button>
             <Button variant="outline" onClick={generatePDF}>
               <FileText className="mr-2 h-4 w-4" />
               Export PDF
@@ -1037,6 +1095,52 @@ const HRAttendance = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Reset Attendance
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mark Absent Dialog */}
+      <AlertDialog open={showMarkAbsentDialog} onOpenChange={setShowMarkAbsentDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <UserX className="h-5 w-5 text-muted-foreground" />
+              Mark Employee as Absent
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Select an employee to mark as absent for today. Only employees who haven't checked in yet are shown.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Label htmlFor="absent-employee">Select Employee</Label>
+            <Select 
+              value={selectedEmployeeForAbsent} 
+              onValueChange={setSelectedEmployeeForAbsent}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select an employee" />
+              </SelectTrigger>
+              <SelectContent>
+                {employeesNotCheckedIn.length === 0 ? (
+                  <SelectItem value="none" disabled>All employees have checked in</SelectItem>
+                ) : (
+                  employeesNotCheckedIn.map((emp) => (
+                    <SelectItem key={emp.id} value={emp.id}>
+                      {emp.full_name} - {emp.position || 'N/A'}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedEmployeeForAbsent("")}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedEmployeeForAbsent && markAbsentMutation.mutate(selectedEmployeeForAbsent)}
+              disabled={!selectedEmployeeForAbsent || markAbsentMutation.isPending}
+            >
+              Mark Absent
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
