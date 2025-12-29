@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.google-places-details]
 verify_jwt = false
+
+[functions.notify-transfer]
+verify_jwt = false
