@@ -5,6 +5,7 @@ import { MAPBOX_PUBLIC_TOKEN } from "@/lib/mapbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Building2, Home, Plane } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationSearchProps {
   value: string;
@@ -13,10 +14,11 @@ interface LocationSearchProps {
   label?: string;
 }
 
-interface SearchResult {
-  id: string;
-  place_name: string;
-  center: [number, number];
+interface GooglePlacePrediction {
+  place_id: string;
+  description: string;
+  main_text: string;
+  secondary_text: string;
 }
 
 interface PresetLocation {
@@ -57,13 +59,14 @@ const PRESET_LOCATIONS: PresetLocation[] = [
 
 const LocationSearch = ({ value, onChange, placeholder = "Search location...", label }: LocationSearchProps) => {
   const [query, setQuery] = useState(value);
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<GooglePlacePrediction[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [showPresets, setShowPresets] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize map
   useEffect(() => {
@@ -111,55 +114,67 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
       return;
     }
 
+    // Clear any pending search
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Debounce search
+    searchTimeoutRef.current = setTimeout(async () => {
+      setShowPresets(false);
+      setIsSearching(true);
+      try {
+        console.log('Searching Google Places for:', searchQuery);
+        
+        const { data, error } = await supabase.functions.invoke('google-places-autocomplete', {
+          body: { query: searchQuery }
+        });
+
+        if (error) {
+          console.error('Google Places API error:', error);
+          setResults([]);
+          return;
+        }
+
+        console.log('Google Places results:', data?.predictions?.length || 0);
+        setResults(data?.predictions || []);
+      } catch (error) {
+        console.error("Error searching locations:", error);
+        setResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  };
+
+  const handleSelectLocation = async (prediction: GooglePlacePrediction) => {
+    setQuery(prediction.description);
+    setResults([]);
     setShowPresets(false);
     setIsSearching(true);
+
     try {
-      // Use Mapbox Search API with better POI handling
-      // proximity is set to Dubai Marina area for better Dubai results
-      // bbox restricts to UAE region for more relevant results
-      const bbox = "51.5,22.5,56.5,26.5"; // UAE bounding box
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchQuery)}.json?access_token=${MAPBOX_PUBLIC_TOKEN}&country=ae&proximity=55.1385,25.0772&bbox=${bbox}&limit=8&types=poi,address,place,locality,neighborhood&language=en&autocomplete=true`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`Mapbox API error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Sort results to prioritize exact matches and Dubai locations
-      const sortedResults = (data.features || []).sort((a: any, b: any) => {
-        const aName = a.text?.toLowerCase() || '';
-        const bName = b.text?.toLowerCase() || '';
-        const query = searchQuery.toLowerCase();
-        
-        // Prioritize results that start with the search query
-        const aStartsWith = aName.startsWith(query) ? -1 : 0;
-        const bStartsWith = bName.startsWith(query) ? -1 : 0;
-        
-        // Prioritize Dubai results
-        const aIsDubai = a.place_name?.toLowerCase().includes('dubai') ? -1 : 0;
-        const bIsDubai = b.place_name?.toLowerCase().includes('dubai') ? -1 : 0;
-        
-        return (aStartsWith + aIsDubai) - (bStartsWith + bIsDubai);
+      // Get place details to get coordinates
+      const { data, error } = await supabase.functions.invoke('google-places-details', {
+        body: { placeId: prediction.place_id }
       });
-      
-      setResults(sortedResults);
+
+      if (error || !data?.result?.coordinates) {
+        console.error('Error getting place details:', error);
+        // Still update the value even without coordinates
+        onChange(prediction.description);
+        return;
+      }
+
+      const { lat, lng } = data.result.coordinates;
+      setSelectedLocation({ lat, lng });
+      onChange(prediction.description, lat, lng);
     } catch (error) {
-      console.error("Error searching locations:", error);
-      setResults([]);
+      console.error("Error getting place details:", error);
+      onChange(prediction.description);
     } finally {
       setIsSearching(false);
     }
-  };
-
-  const handleSelectLocation = (result: SearchResult) => {
-    setQuery(result.place_name);
-    setSelectedLocation({ lat: result.center[1], lng: result.center[0] });
-    onChange(result.place_name, result.center[1], result.center[0]);
-    setResults([]);
-    setShowPresets(false);
   };
 
   const handleSelectPreset = (preset: PresetLocation) => {
@@ -210,12 +225,15 @@ const LocationSearch = ({ value, onChange, placeholder = "Search location...", l
           <div className="absolute z-50 w-full mt-1 bg-background border rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {results.map((result) => (
               <div
-                key={result.id}
+                key={result.place_id}
                 className="p-3 hover:bg-accent cursor-pointer border-b last:border-0 flex items-start gap-2"
                 onClick={() => handleSelectLocation(result)}
               >
                 <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm">{result.place_name}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{result.main_text}</span>
+                  <span className="text-xs text-muted-foreground">{result.secondary_text}</span>
+                </div>
               </div>
             ))}
           </div>
