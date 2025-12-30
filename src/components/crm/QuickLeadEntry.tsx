@@ -1099,6 +1099,9 @@ interface QuickLeadEntryProps {
                         {pkg.package_name}
                       </SelectItem>
                     ))}
+                    <SelectItem key="other" value="Other">
+                      Other
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -1215,6 +1218,9 @@ interface QuickLeadEntryProps {
                         {pkg.package_name}
                       </SelectItem>
                     ))}
+                    <SelectItem key="other" value="Other">
+                      Other
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               )}
