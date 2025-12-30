@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
@@ -60,6 +60,7 @@ const HRAttendance = () => {
   const [activeTab, setActiveTab] = useState("today");
   const [showMarkAbsentDialog, setShowMarkAbsentDialog] = useState(false);
   const [selectedEmployeeForAbsent, setSelectedEmployeeForAbsent] = useState<string>("");
+  const [canViewTeamAttendance, setCanViewTeamAttendance] = useState(false);
   
   // Date range state for history
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
@@ -67,6 +68,25 @@ const HRAttendance = () => {
   
   // Filter state for detailed records table
   const [filterName, setFilterName] = useState<string>("");
+
+  // Check if user has view-only attendance permission
+  useEffect(() => {
+    const checkAttendancePermission = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('permissions')
+        .eq('id', user.id)
+        .single();
+      
+      const permissions = profile?.permissions as Record<string, any> | null;
+      const hasViewPermission = permissions?.attendance?.view_team === true;
+      setCanViewTeamAttendance(hasViewPermission);
+    };
+    checkAttendancePermission();
+  }, []);
 
   // Fetch current user's attendance for today
   const { data: todayAttendance, isLoading: loadingAttendance } = useQuery({
@@ -601,17 +621,21 @@ const HRAttendance = () => {
             <p className="text-muted-foreground">UAE Labor Law Compliant Tracking</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" onClick={() => setShowMarkAbsentDialog(true)}>
-              <UserX className="mr-2 h-4 w-4" />
-              Mark Absent
-            </Button>
+            {isAdmin && (
+              <>
+                <Button variant="outline" onClick={() => setShowMarkAbsentDialog(true)}>
+                  <UserX className="mr-2 h-4 w-4" />
+                  Mark Absent
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/hr/payroll")}>
+                  <Calculator className="mr-2 h-4 w-4" />
+                  Payroll
+                </Button>
+              </>
+            )}
             <Button variant="outline" onClick={generatePDF}>
               <FileText className="mr-2 h-4 w-4" />
               Export PDF
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/hr/payroll")}>
-              <Calculator className="mr-2 h-4 w-4" />
-              Payroll
             </Button>
             <Badge variant="outline" className="text-lg px-4 py-2">
               <Clock className="h-4 w-4 mr-2" />
@@ -620,17 +644,19 @@ const HRAttendance = () => {
           </div>
         </div>
 
-        {/* Tabs for Today / History */}
+        {/* Tabs for Today / History - History only for admins */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className={`grid w-full max-w-md ${isAdmin ? 'grid-cols-2' : 'grid-cols-1'}`}>
             <TabsTrigger value="today" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Today
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              History
-            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="history" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                History
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Today Tab */}
