@@ -3092,6 +3092,7 @@ export type Database = {
         Returns: number
       }
       can_approve_deals: { Args: { _user_id: string }; Returns: boolean }
+      can_view_attendance: { Args: { _user_id: string }; Returns: boolean }
       check_phone_exists: {
         Args: { phone_number: string }
         Returns: {
