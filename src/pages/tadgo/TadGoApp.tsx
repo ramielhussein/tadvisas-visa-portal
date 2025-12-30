@@ -20,7 +20,8 @@ import {
   Package,
   Users,
   Bell,
-  BellOff
+  BellOff,
+  ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -302,6 +303,24 @@ const TadGoApp = () => {
             <span className="text-white">{task.to_location}</span>
           </div>
         </div>
+
+        {/* Google Maps Link - show for assigned/accepted tasks */}
+        {task.gmap_link && (task.driver_id || task.driver_status !== 'pending') && (
+          <div className="mb-3">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="w-full border-blue-500 text-blue-400 hover:bg-blue-500/10"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(task.gmap_link!, '_blank');
+              }}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open in Google Maps
+            </Button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-slate-400">
