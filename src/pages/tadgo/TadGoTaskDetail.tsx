@@ -395,19 +395,24 @@ const TadGoTaskDetail = () => {
               </div>
               <div className="flex-1">
                 <p className="text-xs text-slate-400 mb-1">DELIVER TO</p>
-                <p className="text-white font-medium">{task.to_location}</p>
+                <p className="text-white font-medium">
+                  {task.to_location || (task.gmap_link ? 'See Google Maps Link' : 'Not specified')}
+                </p>
                 {task.client_name && (
                   <p className="text-sm text-slate-400">{task.client_name}</p>
                 )}
               </div>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="border-red-500 text-red-400"
-                onClick={() => openMaps(task.to_location, task.to_lat, task.to_lng)}
-              >
-                <Navigation className="w-4 h-4" />
-              </Button>
+              {/* Only show navigation button if we have coordinates or to_location (not just gmap_link) */}
+              {(task.to_location || (task.to_lat && task.to_lng)) && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="border-red-500 text-red-400"
+                  onClick={() => openMaps(task.to_location || '', task.to_lat, task.to_lng)}
+                >
+                  <Navigation className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
