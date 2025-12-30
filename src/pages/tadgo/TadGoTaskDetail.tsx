@@ -20,13 +20,15 @@ import {
   Navigation,
   Upload,
   Loader2,
-  Radio
+  Radio,
+  ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 
 interface Task {
   id: string;
   transfer_number: string;
+  title: string | null;
   worker_id: string;
   from_location: string;
   to_location: string;
@@ -47,6 +49,7 @@ interface Task {
   pickup_at: string | null;
   delivered_at: string | null;
   completed_at: string | null;
+  gmap_link: string | null;
   worker?: {
     name: string;
     center_ref: string;
@@ -283,9 +286,9 @@ const TadGoTaskDetail = () => {
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex-1">
-              <h1 className="text-lg font-bold text-white">{task.transfer_number}</h1>
+              <h1 className="text-lg font-bold text-white">{task.title || task.transfer_number}</h1>
               <div className="flex items-center gap-2">
-                <p className="text-xs text-slate-400">{task.transfer_type}</p>
+                <p className="text-xs text-slate-400">{task.transfer_number} • {task.transfer_type}</p>
                 {isTracking ? (
                   <span className="flex items-center gap-1 text-xs text-emerald-400">
                     <Radio className="w-3 h-3 animate-pulse" />
@@ -408,6 +411,21 @@ const TadGoTaskDetail = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Google Maps Link */}
+        {task.gmap_link && (
+          <Card className="bg-blue-900/30 border-blue-500/50">
+            <CardContent className="p-4">
+              <Button 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={() => window.open(task.gmap_link!, '_blank')}
+              >
+                <ExternalLink className="w-5 h-5 mr-2" />
+                Open Client's Google Maps Link
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Schedule */}
         <Card className="bg-slate-800/50 border-slate-700">
