@@ -13,6 +13,7 @@ interface TransferNotifyRequest {
   transferNumber?: string;
   pickupLocation?: string;
   dropoffLocation?: string;
+  gmapLink?: string;
 }
 
 serve(async (req) => {
@@ -28,8 +29,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { transferId, eventType, driverId, transferNumber, pickupLocation, dropoffLocation }: TransferNotifyRequest = await req.json();
-    console.log("Request payload:", { transferId, eventType, driverId, transferNumber });
+    const { transferId, eventType, driverId, transferNumber, pickupLocation, dropoffLocation, gmapLink }: TransferNotifyRequest = await req.json();
+    console.log("Request payload:", { transferId, eventType, driverId, transferNumber, gmapLink });
 
     if (!transferId || !eventType) {
       return new Response(
@@ -39,19 +40,29 @@ serve(async (req) => {
     }
 
     // Get transfer details if not provided
-    let transfer = { transfer_number: transferNumber, pickup_location: pickupLocation, dropoff_location: dropoffLocation, driver_id: driverId };
+    let transfer = { 
+      transfer_number: transferNumber, 
+      pickup_location: pickupLocation, 
+      dropoff_location: dropoffLocation, 
+      driver_id: driverId,
+      gmap_link: gmapLink 
+    };
     
     if (!transferNumber || !pickupLocation) {
       const { data: transferData, error: transferError } = await supabaseAdmin
         .from('worker_transfers')
-        .select('transfer_number, pickup_location, dropoff_location, driver_id')
+        .select('transfer_number, pickup_location, dropoff_location, driver_id, gmap_link, from_location, to_location')
         .eq('id', transferId)
         .single();
       
       if (transferError) {
         console.error('Error fetching transfer:', transferError);
       } else {
-        transfer = transferData;
+        transfer = {
+          ...transferData,
+          pickup_location: transferData.from_location || transferData.pickup_location,
+          dropoff_location: transferData.to_location || transferData.dropoff_location,
+        };
       }
     }
 
@@ -69,10 +80,11 @@ serve(async (req) => {
         console.error('Error fetching managers:', managersError);
       } else if (managers && managers.length > 0) {
         for (const manager of managers) {
+          const gmapText = transfer.gmap_link ? ` 📍 Map: ${transfer.gmap_link}` : '';
           notifications.push({
             userId: manager.user_id,
             title: '🚗 New Transfer Created',
-            message: `Transfer ${transfer.transfer_number || transferId.substring(0, 8)} from ${transfer.pickup_location || 'Unknown'} to ${transfer.dropoff_location || 'Unknown'}`,
+            message: `Transfer ${transfer.transfer_number || transferId.substring(0, 8)} from ${transfer.pickup_location || 'Unknown'} to ${transfer.dropoff_location || 'Unknown'}${gmapText}`,
             tag: 'transfer-created',
           });
         }
@@ -83,10 +95,11 @@ serve(async (req) => {
     if (eventType === 'assigned' && (driverId || transfer.driver_id)) {
       // Notify the assigned driver
       const targetDriverId = driverId || transfer.driver_id;
+      const gmapText = transfer.gmap_link ? ` 📍 Map: ${transfer.gmap_link}` : '';
       notifications.push({
         userId: targetDriverId,
         title: '📋 New Task Assigned',
-        message: `You have a new task: ${transfer.transfer_number || transferId.substring(0, 8)}. Pickup: ${transfer.pickup_location || 'Check app for details'}`,
+        message: `You have a new task: ${transfer.transfer_number || transferId.substring(0, 8)}. Pickup: ${transfer.pickup_location || 'Check app for details'}${gmapText}`,
         tag: 'task-assigned',
       });
       console.log(`Will notify driver: ${targetDriverId}`);

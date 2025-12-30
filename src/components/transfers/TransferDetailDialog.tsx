@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { 
   MapPin, 
@@ -14,18 +16,78 @@ import {
   Phone, 
   Car,
   Image as ImageIcon,
-  ExternalLink
+  ExternalLink,
+  Navigation
 } from "lucide-react";
 import AuthorizedDriverLocationMap from "@/components/mapbox/AuthorizedDriverLocationMap";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+// Available drivers for assignment
+const AVAILABLE_DRIVERS = [
+  { id: "9aa615f1-1aba-4c6d-8038-c11246e6d650", name: "Nagath" },
+  { id: "496c8a50-7828-4fee-b4e5-030ae7338455", name: "Yasin" },
+  { id: "5af01730-5863-473f-b7be-e2261e6e22fa", name: "Mohd Talal" },
+];
 
 interface TransferDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   transfer: any;
+  onRefresh?: () => void;
 }
 
-const TransferDetailDialog = ({ open, onOpenChange, transfer }: TransferDetailDialogProps) => {
+const TransferDetailDialog = ({ open, onOpenChange, transfer, onRefresh }: TransferDetailDialogProps) => {
+  const { toast } = useToast();
+  const [isAssigning, setIsAssigning] = useState(false);
+
   if (!transfer) return null;
+
+  const handleAssignDriver = async (driverId: string) => {
+    if (!driverId || driverId === "unassigned") return;
+    
+    setIsAssigning(true);
+    try {
+      const { error } = await supabase
+        .from("worker_transfers")
+        .update({ 
+          driver_id: driverId, 
+          driver_status: "assigned" 
+        })
+        .eq("id", transfer.id);
+
+      if (error) throw error;
+
+      // Notify the driver
+      await supabase.functions.invoke('notify-transfer', {
+        body: {
+          transferId: transfer.id,
+          eventType: 'assigned',
+          driverId,
+          transferNumber: transfer.transfer_number,
+          pickupLocation: transfer.from_location,
+          dropoffLocation: transfer.to_location,
+          gmapLink: transfer.gmap_link,
+        }
+      });
+
+      toast({
+        title: "Driver Assigned",
+        description: "The driver has been notified of the assignment",
+      });
+      
+      onRefresh?.();
+    } catch (error: any) {
+      console.error("Error assigning driver:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to assign driver",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAssigning(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -151,6 +213,35 @@ const TransferDetailDialog = ({ open, onOpenChange, transfer }: TransferDetailDi
             </CardContent>
           </Card>
 
+          {/* Google Maps Link */}
+          {transfer.gmap_link && (
+            <Card className="border-red-200 bg-red-50/50 dark:bg-red-950/30">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Navigation className="w-4 h-4 text-red-600" />
+                    <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                      Google Maps Location
+                    </p>
+                  </div>
+                  <a 
+                    href={transfer.gmap_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="outline" size="sm" className="border-red-200 text-red-700 hover:bg-red-100">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Open Map
+                    </Button>
+                  </a>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 break-all">
+                  {transfer.gmap_link}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Date & Time */}
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
@@ -163,7 +254,7 @@ const TransferDetailDialog = ({ open, onOpenChange, transfer }: TransferDetailDi
           </div>
 
           {/* Driver Assignment */}
-          {transfer.driver_id && (
+          {transfer.driver_id ? (
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -179,6 +270,27 @@ const TransferDetailDialog = ({ open, onOpenChange, transfer }: TransferDetailDi
                     <span className="text-muted-foreground">Vehicle:</span> {transfer.vehicle_number}
                   </p>
                 )}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/30">
+              <CardContent className="pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Car className="w-4 h-4 text-amber-600" />
+                  <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Assign Driver</p>
+                </div>
+                <Select onValueChange={handleAssignDriver} disabled={isAssigning}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={isAssigning ? "Assigning..." : "Select a driver..."} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AVAILABLE_DRIVERS.map((driver) => (
+                      <SelectItem key={driver.id} value={driver.id}>
+                        {driver.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </CardContent>
             </Card>
           )}

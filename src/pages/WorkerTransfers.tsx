@@ -42,6 +42,7 @@ interface WorkerTransfer {
   delivered_at: string | null;
   completed_at: string | null;
   proof_photo_url: string | null;
+  gmap_link: string | null;
   driver?: {
     email: string;
     full_name: string | null;
@@ -184,6 +185,7 @@ const WorkerTransfers = () => {
           open={!!selectedTransfer}
           onOpenChange={(open) => !open && setSelectedTransfer(null)}
           transfer={selectedTransfer}
+          onRefresh={fetchTransfers}
         />
 
         {/* Live Driver Tracking Map - All Drivers */}
