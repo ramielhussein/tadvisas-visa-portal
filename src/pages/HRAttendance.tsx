@@ -64,6 +64,9 @@ const HRAttendance = () => {
   // Date range state for history
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  
+  // Filter state for detailed records table
+  const [filterName, setFilterName] = useState<string>("");
 
   // Fetch current user's attendance for today
   const { data: todayAttendance, isLoading: loadingAttendance } = useQuery({
@@ -970,10 +973,52 @@ const HRAttendance = () => {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <TrendingUp className="h-5 w-5" />
-                        Detailed Attendance Records ({attendanceHistory.length} records)
+                        Detailed Attendance Records
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
+                      {/* Filters Section */}
+                      <div className="flex flex-wrap gap-4 p-4 bg-muted/30 rounded-lg border">
+                        <div className="flex-1 min-w-[200px]">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Filter by Name</Label>
+                          <Select value={filterName} onValueChange={setFilterName}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="All Employees" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Employees</SelectItem>
+                              {/* Get unique employee names from the history */}
+                              {Array.from(new Set(attendanceHistory.map((r: any) => r.employees?.full_name)))
+                                .filter(Boolean)
+                                .sort()
+                                .map((name: string) => (
+                                  <SelectItem key={name} value={name}>{name}</SelectItem>
+                                ))
+                              }
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-end">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setFilterName("")}
+                          >
+                            Clear Filters
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Filtered results count */}
+                      <p className="text-sm text-muted-foreground">
+                        Showing {attendanceHistory.filter((record: any) => {
+                          if (filterName && filterName !== "all" && record.employees?.full_name !== filterName) return false;
+                          return true;
+                        }).length} of {attendanceHistory.length} records
+                        {filterName && filterName !== "all" && ` for ${filterName}`}
+                        {` from ${format(new Date(startDate), 'MMM dd, yyyy')} to ${format(new Date(endDate), 'MMM dd, yyyy')}`}
+                      </p>
+
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
@@ -987,7 +1032,13 @@ const HRAttendance = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {attendanceHistory.map((record: any) => (
+                            {attendanceHistory
+                              .filter((record: any) => {
+                                // Name filter
+                                if (filterName && filterName !== "all" && record.employees?.full_name !== filterName) return false;
+                                return true;
+                              })
+                              .map((record: any) => (
                               <tr key={record.id} className="border-b hover:bg-muted/50">
                                 <td className="p-2">{format(new Date(record.attendance_date), 'MMM dd, yyyy')}</td>
                                 <td className="p-2">{record.employees?.full_name}</td>
