@@ -196,6 +196,7 @@ export const useDriversLocations = () => {
   const setupDoneRef = useRef(false);
   const leaveTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
   const reconnectAttemptRef = useRef(0);
+  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const setup = async () => {
@@ -206,6 +207,52 @@ export const useDriversLocations = () => {
 
       setupDoneRef.current = true;
       console.log('[AdminTracking] Setting up');
+
+      // Also poll the database for driver locations as a fallback
+      const pollDriverLocations = async () => {
+        const { data, error: dbError } = await supabase
+          .from('worker_transfers')
+          .select('id, driver_id, driver_lat, driver_lng, driver_location_updated_at')
+          .not('driver_id', 'is', null)
+          .not('driver_lat', 'is', null)
+          .not('driver_lng', 'is', null)
+          .in('driver_status', ['accepted', 'pickup', 'in_transit'])
+          .order('driver_location_updated_at', { ascending: false });
+
+        if (data && data.length > 0) {
+          const now = Date.now();
+          const activeLocations: Record<string, DriverLocation & { driverId: string }> = {};
+          
+          data.forEach((transfer) => {
+            if (transfer.driver_id && transfer.driver_lat && transfer.driver_lng && transfer.driver_location_updated_at) {
+              const updatedAt = new Date(transfer.driver_location_updated_at).getTime();
+              // Only include if updated in the last 5 minutes
+              if (now - updatedAt < 5 * 60 * 1000) {
+                activeLocations[transfer.driver_id] = {
+                  lat: transfer.driver_lat,
+                  lng: transfer.driver_lng,
+                  timestamp: transfer.driver_location_updated_at,
+                  taskId: transfer.id,
+                  driverId: transfer.driver_id,
+                };
+              }
+            }
+          });
+
+          if (Object.keys(activeLocations).length > 0) {
+            console.log('[AdminTracking] DB poll found', Object.keys(activeLocations).length, 'active drivers');
+            setDriversLocations(prev => ({
+              ...prev,
+              ...activeLocations,
+            }));
+            setError(null);
+          }
+        }
+      };
+
+      // Poll immediately and then every 10 seconds
+      pollDriverLocations();
+      pollIntervalRef.current = setInterval(pollDriverLocations, 10000);
 
       // Use the same channel name as drivers
       channelRef.current = supabase.channel('driver-tracking-presence', {
@@ -231,7 +278,8 @@ export const useDriversLocations = () => {
             
             if (presences?.length > 0) {
               const latest = presences[presences.length - 1];
-              if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
+              // Accept any presence with valid coordinates (don't require role field)
+              if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
                 locations[key] = {
                   lat: latest.lat,
                   lng: latest.lng,
@@ -267,7 +315,7 @@ export const useDriversLocations = () => {
           
           if (!key.startsWith('admin-') && newPresences?.length > 0) {
             const latest = newPresences[newPresences.length - 1];
-            if (typeof latest.lat === 'number' && typeof latest.lng === 'number' && latest.role === 'driver') {
+            if (typeof latest.lat === 'number' && typeof latest.lng === 'number') {
               setDriversLocations(prev => ({
                 ...prev,
                 [key]: {
@@ -331,6 +379,12 @@ export const useDriversLocations = () => {
       // Clear all leave timeouts
       Object.values(leaveTimeoutsRef.current).forEach(clearTimeout);
       leaveTimeoutsRef.current = {};
+      
+      // Clear polling interval
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
       
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
