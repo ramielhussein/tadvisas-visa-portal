@@ -27,6 +27,7 @@ import { format } from "date-fns";
 interface Task {
   id: string;
   transfer_number: string;
+  title: string | null;
   worker_id: string;
   from_location: string;
   to_location: string;
@@ -38,6 +39,7 @@ interface Task {
   driver_id: string | null;
   client_name: string | null;
   accepted_at: string | null;
+  gmap_link: string | null;
   worker?: {
     name: string;
     center_ref: string;
@@ -271,8 +273,8 @@ const TadGoApp = () => {
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <p className="font-semibold text-white">{task.transfer_number}</p>
-            <p className="text-sm text-slate-400">{task.transfer_type}</p>
+            <p className="font-semibold text-white">{task.title || task.transfer_number}</p>
+            <p className="text-sm text-slate-400">{task.transfer_number} • {task.transfer_type}</p>
           </div>
           <Badge className={`${getStatusColor(task.driver_status)} text-white`}>
             {getStatusIcon(task.driver_status)}
