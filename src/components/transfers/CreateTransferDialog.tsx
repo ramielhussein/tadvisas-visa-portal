@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Truck, FileText, Users } from "lucide-react";
+import { Search, Truck, FileText, Users, MapPin, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import LocationSearch from "@/components/mapbox/LocationSearch";
 
@@ -27,6 +28,13 @@ const HR_SUBTYPES: { value: HRSubtype; label: string }[] = [
   { value: "PASSPORT_DELIVERY", label: "Passport Delivery" },
 ];
 
+// Available drivers for assignment
+const AVAILABLE_DRIVERS = [
+  { id: "9aa615f1-1aba-4c6d-8038-c11246e6d650", name: "Nagath" },
+  { id: "496c8a50-7828-4fee-b4e5-030ae7338455", name: "Yasin" },
+  { id: "5af01730-5863-473f-b7be-e2261e6e22fa", name: "Mohd Talal" },
+];
+
 const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferDialogProps) => {
   const { toast } = useToast();
   const [step, setStep] = useState<1 | 2>(1);
@@ -37,6 +45,8 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
   const [searchWorkerQuery, setSearchWorkerQuery] = useState("");
   const [workers, setWorkers] = useState<any[]>([]);
   const [selectedWorker, setSelectedWorker] = useState<any>(null);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>("");
+  const [gmapLink, setGmapLink] = useState("");
   
   const [fromLocation, setFromLocation] = useState({ address: "", lat: 0, lng: 0 });
   const [toLocation, setToLocation] = useState({ address: "", lat: 0, lng: 0 });
@@ -68,7 +78,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
     }
   };
 
-  const notifyTransferCreated = async (transferId: string, transferNumber: string) => {
+  const notifyTransferCreated = async (transferId: string, transferNumber: string, assignedDriverId?: string) => {
     try {
       // Call the notify-transfer edge function to notify managers
       await supabase.functions.invoke('notify-transfer', {
@@ -78,9 +88,26 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
           transferNumber,
           pickupLocation: fromLocation.address,
           dropoffLocation: toLocation.address,
+          gmapLink: gmapLink || undefined,
         }
       });
       console.log('Managers notified about new transfer');
+
+      // If a driver is assigned, also notify them
+      if (assignedDriverId) {
+        await supabase.functions.invoke('notify-transfer', {
+          body: {
+            transferId,
+            eventType: 'assigned',
+            driverId: assignedDriverId,
+            transferNumber,
+            pickupLocation: fromLocation.address,
+            dropoffLocation: toLocation.address,
+            gmapLink: gmapLink || undefined,
+          }
+        });
+        console.log('Driver notified about assignment');
+      }
     } catch (error) {
       console.error("Error notifying about transfer:", error);
     }
@@ -136,12 +163,16 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         admin_details: category === "ADMIN" ? adminDetails : null,
         notes: formData.notes || null,
         handled_by: user.id,
+        gmap_link: gmapLink.trim() || null,
+        driver_id: selectedDriverId && selectedDriverId !== "unassigned" ? selectedDriverId : null,
+        driver_status: selectedDriverId && selectedDriverId !== "unassigned" ? "assigned" : null,
       }).select("id, transfer_number").single();
 
       if (error) throw error;
 
-      // Notify managers about the new transfer
-      await notifyTransferCreated(newTransfer?.id || "", newTransfer?.transfer_number || "");
+      // Notify managers about the new transfer and driver if assigned
+      const driverToNotify = selectedDriverId && selectedDriverId !== "unassigned" ? selectedDriverId : undefined;
+      await notifyTransferCreated(newTransfer?.id || "", newTransfer?.transfer_number || "", driverToNotify);
 
       toast({
         title: "Success",
@@ -171,6 +202,8 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
     setWorkers([]);
     setFromLocation({ address: "", lat: 0, lng: 0 });
     setToLocation({ address: "", lat: 0, lng: 0 });
+    setSelectedDriverId("");
+    setGmapLink("");
     setFormData({
       title: "",
       transfer_date: format(new Date(), "yyyy-MM-dd"),
@@ -394,6 +427,50 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
               onChange={(address, lat, lng) => setToLocation({ address, lat: lat || 0, lng: lng || 0 })}
               placeholder="Search destination..."
             />
+
+            {/* Google Maps Link */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-red-500" />
+                Google Maps Link <span className="text-muted-foreground text-xs">(paste client's gmap link)</span>
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="https://maps.google.com/..."
+                  value={gmapLink}
+                  onChange={(e) => setGmapLink(e.target.value)}
+                  className="flex-1"
+                />
+                {gmapLink && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => window.open(gmapLink, '_blank')}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Driver Assignment */}
+            <div className="space-y-2">
+              <Label>Assign Driver <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Select value={selectedDriverId} onValueChange={setSelectedDriverId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a driver to assign..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Leave Unassigned</SelectItem>
+                  {AVAILABLE_DRIVERS.map((driver) => (
+                    <SelectItem key={driver.id} value={driver.id}>
+                      {driver.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             {/* Date and Time */}
             <div className="grid grid-cols-2 gap-4">

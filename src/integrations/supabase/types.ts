@@ -2783,6 +2783,7 @@ export type Database = {
           from_lat: number | null
           from_lng: number | null
           from_location: string
+          gmap_link: string | null
           handled_by: string
           hr_subtype: string | null
           id: string
@@ -2822,6 +2823,7 @@ export type Database = {
           from_lat?: number | null
           from_lng?: number | null
           from_location: string
+          gmap_link?: string | null
           handled_by: string
           hr_subtype?: string | null
           id?: string
@@ -2861,6 +2863,7 @@ export type Database = {
           from_lat?: number | null
           from_lng?: number | null
           from_location?: string
+          gmap_link?: string | null
           handled_by?: string
           hr_subtype?: string | null
           id?: string
