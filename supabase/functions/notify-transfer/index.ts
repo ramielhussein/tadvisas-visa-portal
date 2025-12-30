@@ -67,42 +67,91 @@ serve(async (req) => {
     }
 
     const notifications: { userId: string; title: string; message: string; tag: string }[] = [];
+    const gmapText = transfer.gmap_link ? ` 📍 Map: ${transfer.gmap_link}` : '';
+    const taskMessage = `${transfer.transfer_number || transferId.substring(0, 8)}: ${transfer.pickup_location || 'Unknown'} → ${transfer.dropoff_location || 'Unknown'}${gmapText}`;
 
     // Handle different event types
     if (eventType === 'created') {
-      // Notify all driver managers when a transfer is created
-      const { data: managers, error: managersError } = await supabaseAdmin
-        .from('user_roles')
-        .select('user_id')
-        .eq('role', 'driver_manager');
+      const assignedDriverId = driverId || transfer.driver_id;
+      
+      if (assignedDriverId) {
+        // Transfer is assigned to a specific driver - notify only that driver
+        notifications.push({
+          userId: assignedDriverId,
+          title: '📋 New Task Assigned',
+          message: `You have a new task: ${taskMessage}`,
+          tag: 'task-assigned',
+        });
+        console.log(`Transfer assigned to driver: ${assignedDriverId}`);
 
-      if (managersError) {
-        console.error('Error fetching managers:', managersError);
-      } else if (managers && managers.length > 0) {
-        for (const manager of managers) {
-          const gmapText = transfer.gmap_link ? ` 📍 Map: ${transfer.gmap_link}` : '';
-          notifications.push({
-            userId: manager.user_id,
-            title: '🚗 New Transfer Created',
-            message: `Transfer ${transfer.transfer_number || transferId.substring(0, 8)} from ${transfer.pickup_location || 'Unknown'} to ${transfer.dropoff_location || 'Unknown'}${gmapText}`,
-            tag: 'transfer-created',
-          });
+        // Also notify managers about the assignment
+        const { data: managers, error: managersError } = await supabaseAdmin
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'driver_manager');
+
+        if (!managersError && managers && managers.length > 0) {
+          for (const manager of managers) {
+            notifications.push({
+              userId: manager.user_id,
+              title: '🚗 New Transfer Assigned',
+              message: `New task created and assigned: ${taskMessage}`,
+              tag: 'transfer-created',
+            });
+          }
+          console.log(`Will also notify ${managers.length} managers`);
         }
-        console.log(`Will notify ${managers.length} managers`);
+      } else {
+        // Transfer is NOT assigned - notify ALL drivers
+        const { data: drivers, error: driversError } = await supabaseAdmin
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'driver');
+
+        if (driversError) {
+          console.error('Error fetching drivers:', driversError);
+        } else if (drivers && drivers.length > 0) {
+          for (const driver of drivers) {
+            notifications.push({
+              userId: driver.user_id,
+              title: '🚗 New Task Available',
+              message: `New unassigned task: ${taskMessage}`,
+              tag: 'task-available',
+            });
+          }
+          console.log(`Will notify ${drivers.length} drivers about unassigned task`);
+        }
+
+        // Also notify managers
+        const { data: managers, error: managersError } = await supabaseAdmin
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'driver_manager');
+
+        if (!managersError && managers && managers.length > 0) {
+          for (const manager of managers) {
+            notifications.push({
+              userId: manager.user_id,
+              title: '🚗 New Unassigned Transfer',
+              message: `New unassigned task needs a driver: ${taskMessage}`,
+              tag: 'transfer-created',
+            });
+          }
+          console.log(`Will also notify ${managers.length} managers`);
+        }
       }
     }
 
     if (eventType === 'assigned' && (driverId || transfer.driver_id)) {
-      // Notify the assigned driver
+      // Notify the assigned driver when assignment happens later
       const targetDriverId = driverId || transfer.driver_id;
-      const gmapText = transfer.gmap_link ? ` 📍 Map: ${transfer.gmap_link}` : '';
       notifications.push({
         userId: targetDriverId,
         title: '📋 New Task Assigned',
-        message: `You have a new task: ${transfer.transfer_number || transferId.substring(0, 8)}. Pickup: ${transfer.pickup_location || 'Check app for details'}${gmapText}`,
+        message: `You have been assigned a task: ${taskMessage}`,
         tag: 'task-assigned',
       });
-      console.log(`Will notify driver: ${targetDriverId}`);
+      console.log(`Will notify driver about assignment: ${targetDriverId}`);
     }
 
     // Send push notifications
