@@ -207,7 +207,7 @@ const WorkerTransfers = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-yellow-600">
-                {transfers.filter((t) => t.status?.toLowerCase() === "pending").length}
+                {transfers.filter((t) => t.driver_status?.toLowerCase() === "pending" || (!t.driver_id && !t.driver_status)).length}
               </div>
             </CardContent>
           </Card>
@@ -217,7 +217,7 @@ const WorkerTransfers = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {transfers.filter((t) => t.status?.toLowerCase() === "in transit").length}
+                {transfers.filter((t) => t.driver_status?.toLowerCase() === "in_transit" || t.driver_status?.toLowerCase() === "pickup").length}
               </div>
             </CardContent>
           </Card>
@@ -227,7 +227,7 @@ const WorkerTransfers = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {transfers.filter((t) => t.status?.toLowerCase() === "completed").length}
+                {transfers.filter((t) => t.driver_status?.toLowerCase() === "completed" || t.driver_status?.toLowerCase() === "delivered").length}
               </div>
             </CardContent>
           </Card>

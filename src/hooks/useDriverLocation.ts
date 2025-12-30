@@ -89,16 +89,29 @@ export const useDriverLocation = (taskId: string | null) => {
       watchIdRef.current = navigator.geolocation.watchPosition(
         (pos) => {
           permissionGrantedRef.current = true;
+          setError(null); // Clear any previous error on success
           updateLocation(pos, driverId);
         },
         (err) => {
-          console.error('[DriverTracking] Watch error:', err.message);
-          setError(err.message);
+          console.error('[DriverTracking] Watch error:', err.code, err.message);
+          // Handle specific error codes
+          if (err.code === 1) {
+            setError("Location permission denied");
+          } else if (err.code === 2) {
+            setError("Location unavailable - trying again...");
+            // Don't stop tracking on position unavailable, it will retry
+          } else if (err.code === 3) {
+            // Timeout - this is common on mobile, just log it and continue
+            console.log('[DriverTracking] GPS timeout - will retry automatically');
+            // Don't set error for timeout, the watch will retry
+          } else {
+            setError(err.message);
+          }
         },
         { 
           enableHighAccuracy: true, 
-          timeout: 30000, 
-          maximumAge: 10000 // Cache position for 10 seconds
+          timeout: 60000, // Increased to 60 seconds for mobile
+          maximumAge: 30000 // Cache position for 30 seconds
         }
       );
     }
