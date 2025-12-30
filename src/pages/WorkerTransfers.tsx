@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, RefreshCw, Plus, Truck, FileText, Users } from "lucide-react";
 import CreateTransferDialog from "@/components/transfers/CreateTransferDialog";
 import TransferDetailDialog from "@/components/transfers/TransferDetailDialog";
+import DriverTrackingMap from "@/components/mapbox/DriverTrackingMap";
 
 interface WorkerTransfer {
   id: string;
@@ -184,6 +185,9 @@ const WorkerTransfers = () => {
           onOpenChange={(open) => !open && setSelectedTransfer(null)}
           transfer={selectedTransfer}
         />
+
+        {/* Live Driver Tracking Map - All Drivers */}
+        <DriverTrackingMap />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
