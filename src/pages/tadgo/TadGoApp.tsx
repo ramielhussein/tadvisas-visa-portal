@@ -162,7 +162,8 @@ const TadGoApp = () => {
           *,
           worker:workers(name, center_ref)
         `)
-        .order('transfer_date', { ascending: true });
+        .order('transfer_date', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setTasks((data as any) || []);
