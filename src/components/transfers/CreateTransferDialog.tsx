@@ -80,34 +80,22 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
 
   const notifyTransferCreated = async (transferId: string, transferNumber: string, assignedDriverId?: string) => {
     try {
-      // Call the notify-transfer edge function to notify managers
+      // Call notify-transfer with the driver assignment info
+      // The edge function will handle:
+      // - If assigned: notify only the assigned driver + managers
+      // - If unassigned: notify ALL drivers + managers
       await supabase.functions.invoke('notify-transfer', {
         body: {
           transferId,
           eventType: 'created',
+          driverId: assignedDriverId, // Pass driver ID so edge function knows if assigned
           transferNumber,
           pickupLocation: fromLocation.address,
           dropoffLocation: toLocation.address,
           gmapLink: gmapLink || undefined,
         }
       });
-      console.log('Managers notified about new transfer');
-
-      // If a driver is assigned, also notify them
-      if (assignedDriverId) {
-        await supabase.functions.invoke('notify-transfer', {
-          body: {
-            transferId,
-            eventType: 'assigned',
-            driverId: assignedDriverId,
-            transferNumber,
-            pickupLocation: fromLocation.address,
-            dropoffLocation: toLocation.address,
-            gmapLink: gmapLink || undefined,
-          }
-        });
-        console.log('Driver notified about assignment');
-      }
+      console.log('Transfer notifications sent');
     } catch (error) {
       console.error("Error notifying about transfer:", error);
     }
