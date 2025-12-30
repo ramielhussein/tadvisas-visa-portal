@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-// VAPID public key - you'll need to generate this
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+// VAPID public key for Web Push
+const VAPID_PUBLIC_KEY = 'BFCssdHncTfTJ_E5iMpPEwKJoPN8FypY3dQKEMFZQ4DEv-0IeZ3bbHy2J5s4DS_12i-lAyWWLWi82XEXqAnDyYU';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
