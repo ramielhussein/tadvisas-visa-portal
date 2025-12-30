@@ -2794,7 +2794,7 @@ export type Database = {
           title: string | null
           to_lat: number | null
           to_lng: number | null
-          to_location: string
+          to_location: string | null
           transfer_category: string | null
           transfer_date: string
           transfer_number: string
@@ -2834,7 +2834,7 @@ export type Database = {
           title?: string | null
           to_lat?: number | null
           to_lng?: number | null
-          to_location: string
+          to_location?: string | null
           transfer_category?: string | null
           transfer_date?: string
           transfer_number?: string
@@ -2874,7 +2874,7 @@ export type Database = {
           title?: string | null
           to_lat?: number | null
           to_lng?: number | null
-          to_location?: string
+          to_location?: string | null
           transfer_category?: string | null
           transfer_date?: string
           transfer_number?: string

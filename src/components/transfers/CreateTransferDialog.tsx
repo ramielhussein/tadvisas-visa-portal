@@ -132,10 +132,20 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
       return;
     }
 
-    if (!fromLocation.address || !toLocation.address) {
+    // Only require to_location if no gmap_link is provided
+    if (!fromLocation.address) {
       toast({
         title: "Error",
-        description: "Please select both from and to locations",
+        description: "Please select a from location",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!toLocation.address && !gmapLink.trim()) {
+      toast({
+        title: "Error",
+        description: "Please select a to location or provide a Google Maps link",
         variant: "destructive",
       });
       return;
@@ -150,7 +160,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         title: formData.title.trim() || null,
         worker_id: selectedWorker?.id || null,
         from_location: fromLocation.address,
-        to_location: toLocation.address,
+        to_location: toLocation.address || null,
         from_lat: fromLocation.lat || null,
         from_lng: fromLocation.lng || null,
         to_lat: toLocation.lat || null,
