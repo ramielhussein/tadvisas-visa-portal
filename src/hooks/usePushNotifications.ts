@@ -23,56 +23,80 @@ export const usePushNotifications = () => {
   const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if push notifications are supported
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setIsSupported(true);
-      setPermission(Notification.permission);
-      checkSubscription();
-    }
+    const checkSupport = async () => {
+      console.log('Push: Checking browser support...');
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        console.log('Push: Browser supports push notifications');
+        setIsSupported(true);
+        setPermission(Notification.permission);
+        console.log('Push: Current permission:', Notification.permission);
+        await checkSubscription();
+      } else {
+        console.log('Push: Browser does NOT support push notifications');
+      }
+      setIsLoading(false);
+    };
+    checkSupport();
   }, []);
 
   const checkSubscription = async () => {
     try {
+      console.log('Push: Checking existing subscription...');
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
+      const hasSubscription = !!subscription;
+      console.log('Push: Has existing subscription:', hasSubscription);
+      setIsSubscribed(hasSubscription);
     } catch (error) {
-      console.error('Error checking subscription:', error);
+      console.error('Push: Error checking subscription:', error);
     }
   };
 
   const subscribe = async () => {
     try {
+      console.log('Push: Starting subscription process...');
+      
       // Request permission
+      console.log('Push: Requesting permission...');
       const permission = await Notification.requestPermission();
+      console.log('Push: Permission result:', permission);
       setPermission(permission);
       
       if (permission !== 'granted') {
-        console.log('Notification permission denied');
+        console.log('Push: Notification permission denied');
         return false;
       }
 
       // Register service worker
+      console.log('Push: Registering service worker...');
       const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('Push: Service worker registered');
       await navigator.serviceWorker.ready;
+      console.log('Push: Service worker ready');
 
       // Subscribe to push
+      console.log('Push: Subscribing to push manager...');
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       });
+      console.log('Push: Subscription created:', subscription.endpoint.substring(0, 50) + '...');
 
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        console.error('No user logged in');
+        console.error('Push: No user logged in');
         return false;
       }
+      console.log('Push: User ID:', user.id);
 
       // Save subscription to database
       const subscriptionJson = subscription.toJSON();
+      console.log('Push: Saving subscription to database...');
       const { error } = await supabase.from('push_subscriptions').upsert({
         user_id: user.id,
         endpoint: subscriptionJson.endpoint!,
@@ -83,15 +107,15 @@ export const usePushNotifications = () => {
       });
 
       if (error) {
-        console.error('Error saving subscription:', error);
+        console.error('Push: Error saving subscription:', error);
         return false;
       }
 
       setIsSubscribed(true);
-      console.log('Push subscription saved successfully');
+      console.log('Push: Subscription saved successfully!');
       return true;
     } catch (error) {
-      console.error('Error subscribing to push:', error);
+      console.error('Push: Error subscribing:', error);
       return false;
     }
   };
@@ -126,6 +150,7 @@ export const usePushNotifications = () => {
   return {
     isSupported,
     isSubscribed,
+    isLoading,
     permission,
     subscribe,
     unsubscribe
