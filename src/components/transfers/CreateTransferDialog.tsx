@@ -165,7 +165,7 @@ const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferD
         handled_by: user.id,
         gmap_link: gmapLink.trim() || null,
         driver_id: selectedDriverId && selectedDriverId !== "unassigned" ? selectedDriverId : null,
-        driver_status: selectedDriverId && selectedDriverId !== "unassigned" ? "assigned" : null,
+        driver_status: selectedDriverId && selectedDriverId !== "unassigned" ? "accepted" : "pending",
       }).select("id, transfer_number").single();
 
       if (error) throw error;
