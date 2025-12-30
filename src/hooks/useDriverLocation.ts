@@ -67,18 +67,34 @@ export const useDriverLocation = (taskId: string | null) => {
     channelRef.current.subscribe(async (status) => {
       console.log('[DriverTracking] Channel:', status);
       if (status === 'SUBSCRIBED') {
-        // Get initial position only once
+        // Get initial position - use lower accuracy for faster first fix
         if (!permissionGrantedRef.current) {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
               permissionGrantedRef.current = true;
+              setError(null);
               updateLocation(pos, driverId);
             },
             (err) => {
-              console.error('[DriverTracking] Initial GPS error:', err.message);
-              setError(err.message);
+              console.log('[DriverTracking] Initial GPS attempting high accuracy failed, trying low accuracy');
+              // Try with lower accuracy if high accuracy fails
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  permissionGrantedRef.current = true;
+                  setError(null);
+                  updateLocation(pos, driverId);
+                },
+                (fallbackErr) => {
+                  console.error('[DriverTracking] Initial GPS error:', fallbackErr.message);
+                  if (fallbackErr.code === 1) {
+                    setError("Location permission denied");
+                  }
+                  // Don't set error for other cases - watch will handle it
+                },
+                { enableHighAccuracy: false, timeout: 30000, maximumAge: 60000 }
+              );
             },
-            { enableHighAccuracy: true, timeout: 20000 }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
           );
         }
       }
@@ -93,25 +109,18 @@ export const useDriverLocation = (taskId: string | null) => {
           updateLocation(pos, driverId);
         },
         (err) => {
-          console.error('[DriverTracking] Watch error:', err.code, err.message);
-          // Handle specific error codes
+          console.log('[DriverTracking] Watch error code:', err.code, err.message);
+          // Only show error for permission denied - other errors are transient
           if (err.code === 1) {
-            setError("Location permission denied");
-          } else if (err.code === 2) {
-            setError("Location unavailable - trying again...");
-            // Don't stop tracking on position unavailable, it will retry
-          } else if (err.code === 3) {
-            // Timeout - this is common on mobile, just log it and continue
-            console.log('[DriverTracking] GPS timeout - will retry automatically');
-            // Don't set error for timeout, the watch will retry
-          } else {
-            setError(err.message);
+            setError("Location permission denied. Please enable in settings.");
           }
+          // For timeout (code 3) and position unavailable (code 2), 
+          // watchPosition will automatically retry - no need to show error
         },
         { 
           enableHighAccuracy: true, 
-          timeout: 60000, // Increased to 60 seconds for mobile
-          maximumAge: 30000 // Cache position for 30 seconds
+          timeout: 60000, // 60 second timeout per update
+          maximumAge: 60000 // Accept cached position up to 60 seconds old
         }
       );
     }
