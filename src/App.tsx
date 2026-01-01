@@ -104,7 +104,6 @@ import TadGoLanding from "./pages/tadgo/TadGoLanding";
 import TadGoLogin from "./pages/tadgo/TadGoLogin";
 import TadGoApp from "./pages/tadgo/TadGoApp";
 import TadGoTaskDetail from "./pages/tadgo/TadGoTaskDetail";
-import TadGoDriverDashboard from "./pages/tadgo/TadGoDriverDashboard";
 import PrintStation from "./pages/tadgo/PrintStation";
 
 // Gym Timer
@@ -267,7 +266,7 @@ const App = () => (
           <Route path="/tadgo" element={<TadGoLanding />} />
           <Route path="/tadgo/login" element={<TadGoLogin />} />
           <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
-          <Route path="/tadgo/dashboard" element={<ProtectedRoute><TadGoDriverDashboard /></ProtectedRoute>} />
+          <Route path="/tadgo/dashboard" element={<Navigate to="/tadgo/app" replace />} />
           <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
           <Route path="/tadgo/print-station" element={<ProtectedRoute><PrintStation /></ProtectedRoute>} />
           {/* Gym Timer */}
