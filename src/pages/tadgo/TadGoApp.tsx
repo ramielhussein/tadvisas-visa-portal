@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { useDriverLocation } from "@/hooks/useDriverLocation";
 import { 
   Car, 
   MapPin, 
@@ -21,7 +22,12 @@ import {
   Users,
   Bell,
   BellOff,
-  ExternalLink
+  ExternalLink,
+  Phone,
+  MessageCircle,
+  Radio,
+  History,
+  Navigation
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -39,7 +45,9 @@ interface Task {
   driver_status: string;
   driver_id: string | null;
   client_name: string | null;
+  client_phone: string | null;
   accepted_at: string | null;
+  completed_at: string | null;
   gmap_link: string | null;
   worker?: {
     name: string;
@@ -63,12 +71,15 @@ const TadGoApp = () => {
   const [isDriverManager, setIsDriverManager] = useState(false);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const { isSupported, isSubscribed, permission, subscribe } = usePushNotifications();
+  
+  // Location tracking for active tasks
+  const { isTracking, startTracking, stopTracking } = useDriverLocation(null);
+  const trackingStartedRef = useRef(false);
 
   // Request push notification permission on mount
   useEffect(() => {
     const requestNotificationPermission = async () => {
       if (isSupported && !isSubscribed && permission === 'default') {
-        // Small delay to let the app load first
         setTimeout(async () => {
           const result = await subscribe();
           if (result) {
@@ -103,6 +114,26 @@ const TadGoApp = () => {
     };
   }, []);
 
+  // Start tracking when there are active tasks
+  useEffect(() => {
+    const myActiveTasks = tasks.filter(t => 
+      t.driver_id === user?.id && 
+      ['accepted', 'pickup', 'in_transit'].includes(t.driver_status)
+    );
+    
+    if (myActiveTasks.length > 0 && !trackingStartedRef.current) {
+      trackingStartedRef.current = true;
+      startTracking();
+    }
+    
+    return () => {
+      if (trackingStartedRef.current) {
+        stopTracking();
+        trackingStartedRef.current = false;
+      }
+    };
+  }, [tasks, user?.id]);
+
   const checkAuth = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -127,7 +158,6 @@ const TadGoApp = () => {
 
   const fetchDrivers = async () => {
     try {
-      // Get all users with driver role
       const { data: driverRoles } = await supabase
         .from('user_roles')
         .select('user_id')
@@ -141,7 +171,6 @@ const TadGoApp = () => {
           .in('id', driverIds);
         
         if (profiles) {
-          // Filter out Nour Droubi from the drivers list
           const filteredDrivers = profiles.filter(
             driver => driver.email?.toLowerCase() !== 'nour@tadmaids.com'
           );
@@ -239,8 +268,43 @@ const TadGoApp = () => {
     navigate('/tadgo');
   };
 
+  // One-tap call handler
+  const handleCall = (phone: string | null, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!phone) {
+      toast({ title: "No phone number", description: "Client phone not available", variant: "destructive" });
+      return;
+    }
+    window.location.href = `tel:${phone}`;
+  };
+
+  // One-tap WhatsApp handler
+  const handleWhatsApp = (phone: string | null, workerName: string | null, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!phone) {
+      toast({ title: "No phone number", description: "Client phone not available", variant: "destructive" });
+      return;
+    }
+    // Remove any non-digit characters and add UAE country code if needed
+    let cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '971' + cleanPhone.slice(1);
+    } else if (!cleanPhone.startsWith('971')) {
+      cleanPhone = '971' + cleanPhone;
+    }
+    const message = encodeURIComponent(`Hi, I'm your TADGo driver. I'm on my way${workerName ? ` with ${workerName}` : ''}.`);
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+  };
+
   const availableTasks = tasks.filter(t => !t.driver_id && t.driver_status === 'pending');
-  const myTasks = tasks.filter(t => t.driver_id === user?.id);
+  const myTasks = tasks.filter(t => 
+    t.driver_id === user?.id && 
+    !['completed', 'cancelled', 'delivered'].includes(t.driver_status)
+  );
+  const historyTasks = tasks.filter(t => 
+    t.driver_id === user?.id && 
+    ['completed', 'cancelled', 'delivered'].includes(t.driver_status)
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -250,6 +314,7 @@ const TadGoApp = () => {
       case 'in_transit': return 'bg-purple-500';
       case 'delivered': return 'bg-emerald-500';
       case 'completed': return 'bg-green-600';
+      case 'cancelled': return 'bg-red-500';
       default: return 'bg-slate-500';
     }
   };
@@ -266,9 +331,9 @@ const TadGoApp = () => {
     }
   };
 
-  const TaskCard = ({ task, showAccept = false }: { task: Task; showAccept?: boolean }) => (
+  const TaskCard = ({ task, showAccept = false, isHistory = false }: { task: Task; showAccept?: boolean; isHistory?: boolean }) => (
     <Card 
-      className="bg-slate-800/50 border-slate-700 cursor-pointer hover:bg-slate-800/70 transition-colors"
+      className={`border-slate-700 cursor-pointer hover:bg-slate-800/70 transition-colors ${isHistory ? 'bg-slate-800/30' : 'bg-slate-800/50'}`}
       onClick={() => navigate(`/tadgo/task/${task.id}`)}
     >
       <CardContent className="p-4">
@@ -295,17 +360,41 @@ const TadGoApp = () => {
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="w-4 h-4 text-emerald-400" />
             <span className="text-slate-400">From:</span>
-            <span className="text-white">{task.from_location}</span>
+            <span className="text-white truncate">{task.from_location}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="w-4 h-4 text-red-400" />
             <span className="text-slate-400">To:</span>
-            <span className="text-white">{task.to_location}</span>
+            <span className="text-white truncate">{task.to_location}</span>
           </div>
         </div>
 
-        {/* Google Maps Link - show for assigned/accepted tasks */}
-        {task.gmap_link && (task.driver_id || task.driver_status !== 'pending') && (
+        {/* One-tap communication buttons - show for assigned tasks */}
+        {task.driver_id && !isHistory && (
+          <div className="flex gap-2 mb-3">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1 border-green-500 text-green-400 hover:bg-green-500/10"
+              onClick={(e) => handleCall(task.client_phone, e)}
+            >
+              <Phone className="w-4 h-4 mr-1" />
+              Call
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1 border-emerald-500 text-emerald-400 hover:bg-emerald-500/10"
+              onClick={(e) => handleWhatsApp(task.client_phone, task.worker?.name || null, e)}
+            >
+              <MessageCircle className="w-4 h-4 mr-1" />
+              WhatsApp
+            </Button>
+          </div>
+        )}
+
+        {/* Google Maps Link */}
+        {task.gmap_link && task.driver_id && (
           <div className="mb-3">
             <Button 
               size="sm" 
@@ -374,9 +463,16 @@ const TadGoApp = () => {
           </div>
         )}
 
-        {task.notes && (
+        {task.notes && !isHistory && (
           <p className="mt-3 text-sm text-slate-400 bg-slate-700/50 p-2 rounded">
             {task.notes}
+          </p>
+        )}
+
+        {/* History completion date */}
+        {isHistory && task.completed_at && (
+          <p className="mt-2 text-xs text-slate-500">
+            Completed: {format(new Date(task.completed_at), 'MMM d, yyyy h:mm a')}
           </p>
         )}
       </CardContent>
@@ -402,11 +498,16 @@ const TadGoApp = () => {
                       Manager
                     </Badge>
                   )}
+                  {isTracking && (
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50 text-[10px] animate-pulse">
+                      <Radio className="w-2 h-2 mr-1" />
+                      Live
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {/* Notification toggle button */}
               {isSupported && (
                 <Button 
                   variant="ghost" 
@@ -456,20 +557,27 @@ const TadGoApp = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4 pb-20">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full bg-slate-800/50 border border-slate-700 mb-4">
             <TabsTrigger 
               value="available" 
-              className="flex-1 data-[state=active]:bg-emerald-500 data-[state=active]:text-white"
+              className="flex-1 data-[state=active]:bg-emerald-500 data-[state=active]:text-white text-xs"
             >
               Available ({availableTasks.length})
             </TabsTrigger>
             <TabsTrigger 
               value="my-tasks" 
-              className="flex-1 data-[state=active]:bg-emerald-500 data-[state=active]:text-white"
+              className="flex-1 data-[state=active]:bg-emerald-500 data-[state=active]:text-white text-xs"
             >
               My Tasks ({myTasks.length})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className="flex-1 data-[state=active]:bg-emerald-500 data-[state=active]:text-white text-xs"
+            >
+              <History className="w-3 h-3 mr-1" />
+              History ({historyTasks.length})
             </TabsTrigger>
           </TabsList>
 
@@ -501,7 +609,7 @@ const TadGoApp = () => {
             ) : myTasks.length === 0 ? (
               <div className="text-center py-12 text-slate-400">
                 <Truck className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No tasks assigned</p>
+                <p>No active tasks</p>
                 <p className="text-sm">Accept tasks from the Available tab</p>
               </div>
             ) : (
@@ -510,7 +618,56 @@ const TadGoApp = () => {
               ))
             )}
           </TabsContent>
+
+          <TabsContent value="history" className="space-y-3">
+            {loading ? (
+              <div className="text-center py-12 text-slate-400">
+                <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2" />
+                Loading history...
+              </div>
+            ) : historyTasks.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <History className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No completed tasks yet</p>
+                <p className="text-sm">Your completed tasks will appear here</p>
+              </div>
+            ) : (
+              historyTasks.map(task => (
+                <TaskCard key={task.id} task={task} isHistory />
+              ))
+            )}
+          </TabsContent>
         </Tabs>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 p-3 z-20">
+        <div className="flex justify-around max-w-md mx-auto">
+          <Button
+            variant="ghost"
+            className="flex-col h-auto py-2 text-emerald-400"
+            onClick={() => setActiveTab("my-tasks")}
+          >
+            <Car className="w-5 h-5 mb-1" />
+            <span className="text-xs">Tasks</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className={`flex-col h-auto py-2 ${activeTab === 'available' ? 'text-emerald-400' : 'text-slate-400'}`}
+            onClick={() => setActiveTab("available")}
+          >
+            <Package className="w-5 h-5 mb-1" />
+            <span className="text-xs">Available</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className={`flex-col h-auto py-2 ${activeTab === 'history' ? 'text-emerald-400' : 'text-slate-400'}`}
+            onClick={() => setActiveTab("history")}
+          >
+            <History className="w-5 h-5 mb-1" />
+            <span className="text-xs">History</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
