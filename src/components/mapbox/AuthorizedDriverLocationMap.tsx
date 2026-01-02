@@ -94,7 +94,8 @@ const AuthorizedDriverLocationMap = ({ transfer }: AuthorizedDriverMapProps) => 
     const setupRealtimeTracking = async () => {
       console.log("[AuthorizedMap] Setting up for driver:", transfer.driver_id);
 
-      channel = supabase.channel("driver-locations", {
+      // IMPORTANT: Must use the same channel name as drivers use to publish their location
+      channel = supabase.channel("driver-tracking-presence", {
         config: { presence: { key: `viewer-${currentUserId}` } },
       });
 
