@@ -1,79 +1,23 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
 
 /**
- * Custom hook to automatically check in on login and check out on logout
- * UAE Labor Law compliant attendance tracking
+ * Custom hook for attendance tracking
+ * Auto check-in is DISABLED - users must manually check in
+ * Only handles auto check-out on logout
  */
 export const useAutoAttendance = () => {
   useEffect(() => {
-    const handleAutoCheckIn = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
-
-        // Check user roles - drivers track time through TadGo app, unless they also have admin roles
-        const { data: userRoles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id);
-
-        const roles = userRoles?.map(r => r.role) || [];
-        const isDriver = roles.includes('driver');
-        const hasAdminRole = roles.includes('admin') || roles.includes('super_admin') || roles.includes('driver_manager');
-
-        // Only skip auto check-in for pure drivers (no admin/manager roles)
-        if (isDriver && !hasAdminRole) {
-          console.log('Driver detected - skipping admin attendance (use TadGo app)');
-          return;
-        }
-
-        // Get employee record for current user using user_id
-        const { data: employee } = await supabase
-          .from('employees')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (!employee) return;
-
-        const today = format(new Date(), 'yyyy-MM-dd');
-
-        // Check if already checked in today
-        const { data: existingAttendance } = await supabase
-          .from('attendance_records')
-          .select('id, check_in_time, status')
-          .eq('employee_id', employee.id)
-          .eq('attendance_date', today)
-          .maybeSingle();
-
-        // Only auto check-in if no record exists
-        if (!existingAttendance) {
-          await supabase
-            .from('attendance_records')
-            .insert({
-              employee_id: employee.id,
-              attendance_date: today,
-              check_in_time: new Date().toISOString(),
-              status: 'checked_in',
-            });
-          
-          console.log('Auto check-in successful');
-        }
-      } catch (error) {
-        console.error('Auto check-in error:', error);
-      }
-    };
-
-    // Auto check-in when component mounts (user logs in)
-    handleAutoCheckIn();
-
-    // Listen for auth state changes
+    // Listen for auth state changes - only handle SIGN OUT for auto check-out
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          handleAutoCheckIn();
+        // Auto check-in is DISABLED
+        // Users must manually click "Check In" button
+        // This prevents accidental check-ins when laptop wakes from sleep
+        
+        if (event === 'SIGNED_OUT') {
+          // Optionally handle auto check-out on logout
+          console.log('User signed out - check-out should be done manually');
         }
       }
     );
