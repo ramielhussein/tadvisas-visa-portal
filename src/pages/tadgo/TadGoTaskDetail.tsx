@@ -55,6 +55,10 @@ interface Task {
     center_ref: string;
     nationality_code: string;
   };
+  driver?: {
+    full_name: string | null;
+    email: string | null;
+  };
 }
 
 const STATUS_FLOW = ['pending', 'accepted', 'pickup', 'in_transit', 'delivered', 'completed'];
@@ -70,6 +74,7 @@ const TadGoTaskDetail = () => {
   const [updating, setUpdating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [driverNotes, setDriverNotes] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Location tracking hook
   const { isTracking, error: locationError, startTracking, stopTracking } = useDriverLocation(id || null);
@@ -90,7 +95,14 @@ const TadGoTaskDetail = () => {
   }, []);
 
   useEffect(() => {
-    fetchTask();
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
+      }
+      fetchTask();
+    };
+    init();
   }, [id]);
 
   const fetchTask = async () => {
@@ -106,7 +118,19 @@ const TadGoTaskDetail = () => {
         .single();
 
       if (error) throw error;
-      setTask(data as any);
+      
+      // Fetch driver info if assigned
+      let driverInfo = null;
+      if (data?.driver_id) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', data.driver_id)
+          .single();
+        driverInfo = profileData;
+      }
+      
+      setTask({ ...data, driver: driverInfo } as any);
     } catch (error: any) {
       console.error('Error fetching task:', error);
       toast({
@@ -505,24 +529,41 @@ const TadGoTaskDetail = () => {
           </Card>
         )}
 
-        {/* Action Button */}
+        {/* Action Button or Assignment Info */}
         {nextStatus && (
-          <Button 
-            className="w-full h-14 text-lg bg-emerald-500 hover:bg-emerald-600"
-            onClick={handleUpdateStatus}
-            disabled={updating}
-          >
-            {updating ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+          <>
+            {/* If task is assigned to someone else, show who it's assigned to */}
+            {task.driver_id && task.driver_id !== currentUserId && task.driver_status === 'accepted' ? (
+              <Card className="bg-blue-900/30 border-blue-500/50">
+                <CardContent className="p-4 text-center">
+                  <User className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                  <p className="text-lg font-semibold text-white">
+                    Task Assigned to {task.driver?.full_name || task.driver?.email || 'Driver'}
+                  </p>
+                  <p className="text-sm text-blue-300 mt-1">
+                    This task has been assigned to another driver
+                  </p>
+                </CardContent>
+              </Card>
             ) : (
-              <>
-                {task.driver_status === 'pickup' && <Truck className="w-5 h-5 mr-2" />}
-                {task.driver_status === 'in_transit' && <CheckCircle2 className="w-5 h-5 mr-2" />}
-                {task.driver_status === 'delivered' && <CheckCircle2 className="w-5 h-5 mr-2" />}
-                {getStatusLabel(task.driver_status)}
-              </>
+              <Button 
+                className="w-full h-14 text-lg bg-emerald-500 hover:bg-emerald-600"
+                onClick={handleUpdateStatus}
+                disabled={updating}
+              >
+                {updating ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    {task.driver_status === 'pickup' && <Truck className="w-5 h-5 mr-2" />}
+                    {task.driver_status === 'in_transit' && <CheckCircle2 className="w-5 h-5 mr-2" />}
+                    {task.driver_status === 'delivered' && <CheckCircle2 className="w-5 h-5 mr-2" />}
+                    {getStatusLabel(task.driver_status)}
+                  </>
+                )}
+              </Button>
             )}
-          </Button>
+          </>
         )}
 
         {task.driver_status === 'completed' && (
