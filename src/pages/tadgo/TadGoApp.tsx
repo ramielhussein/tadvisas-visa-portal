@@ -76,19 +76,30 @@ const TadGoApp = () => {
   const { isTracking, startTracking, stopTracking } = useDriverLocation(null);
   const trackingStartedRef = useRef(false);
 
-  // Request push notification permission on mount
+  // Request push notification permission on mount - always ask when not subscribed
   useEffect(() => {
     const requestNotificationPermission = async () => {
-      if (isSupported && !isSubscribed && permission === 'default') {
-        setTimeout(async () => {
-          const result = await subscribe();
-          if (result) {
-            toast({
-              title: "Notifications Enabled",
-              description: "You'll receive alerts for new tasks and updates",
-            });
-          }
-        }, 1500);
+      // Always try to prompt for notifications if supported and not already subscribed
+      if (isSupported && !isSubscribed) {
+        // Only auto-prompt if permission is 'default' (not yet asked)
+        if (permission === 'default') {
+          setTimeout(async () => {
+            const result = await subscribe();
+            if (result) {
+              toast({
+                title: "Notifications Enabled",
+                description: "You'll receive alerts for new tasks and updates",
+              });
+            }
+          }, 1000);
+        } else if (permission === 'denied') {
+          // Show a toast to guide users to enable manually in browser settings
+          toast({
+            title: "Notifications Blocked",
+            description: "Please enable notifications in your browser settings to receive task alerts",
+            variant: "destructive",
+          });
+        }
       }
     };
 
