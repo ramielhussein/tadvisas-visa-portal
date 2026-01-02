@@ -34,6 +34,7 @@ const AVAILABLE_DRIVERS = [
   { id: "496c8a50-7828-4fee-b4e5-030ae7338455", name: "Yasin" },
   { id: "5af01730-5863-473f-b7be-e2261e6e22fa", name: "Mohd Talal" },
   { id: "e5ddce55-8111-45c0-b0a2-e1b752187516", name: "Rayaan" },
+  { id: "96ec7dd7-a68f-4cb0-a16c-71c0c0ac4f21", name: "Sakib" },
 ];
 
 const CreateTransferDialog = ({ open, onOpenChange, onSuccess }: CreateTransferDialogProps) => {
