@@ -34,6 +34,7 @@ import EtOc from "./pages/EtOc";
 import AfIc from "./pages/AfIc";
 import AfOc from "./pages/AfOc";
 import MyIc from "./pages/MyIc";
+import Ads from "./pages/Ads";
 import MyOc from "./pages/MyOc";
 import Hub from "./pages/Hub";
 import BookWorker from "./pages/BookWorker";
@@ -163,6 +164,7 @@ const App = () => (
           <Route path="/af-oc" element={<AfOc />} />
           <Route path="/my-ic" element={<MyIc />} />
           <Route path="/my-oc" element={<MyOc />} />
+          <Route path="/ads" element={<Ads />} />
           <Route path="/hub" element={<Hub />} />
           <Route path="/book-worker" element={<BookWorker />} />
           <Route path="/cvwizard" element={<ProtectedRoute><CVWizard /></ProtectedRoute>} />
