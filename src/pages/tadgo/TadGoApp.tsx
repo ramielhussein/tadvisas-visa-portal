@@ -219,6 +219,15 @@ const TadGoApp = () => {
 
       if (error) throw error;
 
+      // Send push notification to self (useful when accepting from PC, phone will get notified)
+      await supabase.functions.invoke('notify-transfer', {
+        body: {
+          transferId: taskId,
+          eventType: 'assigned',
+          driverId: user.id,
+        },
+      });
+
       toast({
         title: "Task Accepted",
         description: "The task has been assigned to you",
@@ -246,6 +255,15 @@ const TadGoApp = () => {
         .eq('id', taskId);
 
       if (error) throw error;
+
+      // Send push notification to the assigned driver
+      await supabase.functions.invoke('notify-transfer', {
+        body: {
+          transferId: taskId,
+          eventType: 'assigned',
+          driverId: driverId,
+        },
+      });
 
       const assignedDriver = drivers.find(d => d.id === driverId);
       toast({
