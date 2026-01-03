@@ -23,6 +23,8 @@ interface Contract {
   status: string;
   created_at: string;
   worker_name: string | null;
+  assigned_to: string | null;
+  created_by_name?: string | null;
 }
 
 const ContractsManagement = () => {
@@ -66,13 +68,19 @@ const ContractsManagement = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("deals")
-        .select("*")
+        .select("*, profiles:assigned_to(full_name)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      setContracts(data || []);
-      setFilteredContracts(data || []);
+      // Map the data to include created_by_name
+      const contractsWithCreator = (data || []).map((contract: any) => ({
+        ...contract,
+        created_by_name: contract.profiles?.full_name || null,
+      }));
+
+      setContracts(contractsWithCreator);
+      setFilteredContracts(contractsWithCreator);
 
       // Calculate stats - only Active contracts count towards Total Value
       const activeContractsData = data?.filter(d => d.status === 'Active') || [];
@@ -218,6 +226,7 @@ const ContractsManagement = () => {
                       <TableHead className="text-right">Value</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Created By</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -225,7 +234,7 @@ const ContractsManagement = () => {
                   <TableBody>
                     {filteredContracts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8">
+                        <TableCell colSpan={11} className="text-center py-8">
                           No contracts found. Create your first contract!
                         </TableCell>
                       </TableRow>
@@ -251,6 +260,9 @@ const ContractsManagement = () => {
                             <Badge className={cn("text-xs", getStatusColor(contract.status))}>
                               {contract.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {contract.created_by_name || "-"}
                           </TableCell>
                           <TableCell className="text-xs">
                             {new Date(contract.created_at).toLocaleDateString('en-GB')}
