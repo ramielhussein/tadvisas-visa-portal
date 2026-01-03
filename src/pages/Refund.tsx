@@ -222,13 +222,18 @@ const Refund = () => {
   };
 
   const isReturnedBeforeNextVATFiling = () => {
-    if (!formData.deliveredDate) return false;
-    
     const endDate = formData.reason === 'Runaway' && formData.abscondDate 
       ? formData.abscondDate 
       : formData.returnedDate;
     
     if (!endDate) return false;
+
+    // For Inside Country, use returnedDate as reference if no deliveredDate
+    // This handles cases where worker was delivered but date wasn't recorded
+    const referenceDate = formData.deliveredDate || 
+      (formData.location === 'Inside Country' ? endDate : null);
+    
+    if (!referenceDate) return false;
 
     const filingDates = [
       new Date(new Date().getFullYear(), 1, 29), // Feb 29
@@ -237,7 +242,7 @@ const Refund = () => {
       new Date(new Date().getFullYear(), 10, 29), // Nov 29
     ];
 
-    const nextFiling = filingDates.find(date => date > formData.deliveredDate!) || 
+    const nextFiling = filingDates.find(date => date > referenceDate) || 
                        new Date(new Date().getFullYear() + 1, 1, 29);
 
     return endDate < nextFiling;
