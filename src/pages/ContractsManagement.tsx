@@ -68,27 +68,43 @@ const ContractsManagement = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("deals")
-        .select("*, profiles:assigned_to(full_name)")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
+      // Get unique user IDs to fetch their names
+      const userIds = [...new Set((data || []).map(d => d.assigned_to).filter(Boolean))];
+      
+      let profilesMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", userIds);
+        
+        profilesMap = (profiles || []).reduce((acc, p) => {
+          acc[p.id] = p.full_name || '';
+          return acc;
+        }, {} as Record<string, string>);
+      }
+
       // Map the data to include created_by_name
       const contractsWithCreator = (data || []).map((contract: any) => ({
         ...contract,
-        created_by_name: contract.profiles?.full_name || null,
+        created_by_name: contract.assigned_to ? profilesMap[contract.assigned_to] || null : null,
       }));
 
       setContracts(contractsWithCreator);
       setFilteredContracts(contractsWithCreator);
 
       // Calculate stats - only Active contracts count towards Total Value
-      const activeContractsData = data?.filter(d => d.status === 'Active') || [];
+      const activeContractsData = (data || []).filter(d => d.status === 'Active');
       const stats = {
         totalContracts: data?.length || 0,
         totalValue: activeContractsData.reduce((sum, d) => sum + Number(d.total_amount), 0),
         activeContracts: activeContractsData.length,
-        closedContracts: data?.filter(d => d.status === 'Closed').length || 0,
+        closedContracts: (data || []).filter(d => d.status === 'Closed').length,
       };
       setStats(stats);
     } catch (error: any) {
