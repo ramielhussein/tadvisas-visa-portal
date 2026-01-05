@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3 } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Contract {
@@ -22,6 +25,7 @@ interface Contract {
   total_amount: number;
   status: string;
   created_at: string;
+  start_date: string | null;
   worker_name: string | null;
   assigned_to: string | null;
   created_by_name?: string | null;
@@ -36,6 +40,8 @@ const ContractsManagement = () => {
   const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
   const [stats, setStats] = useState({
     totalContracts: 0,
     totalValue: 0,
@@ -48,20 +54,53 @@ const ContractsManagement = () => {
   }, []);
 
   useEffect(() => {
+    filterContracts();
+  }, [searchQuery, contracts, dateFrom, dateTo]);
+
+  const filterContracts = () => {
+    let filtered = contracts;
+
+    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      setFilteredContracts(
-        contracts.filter(
-          (contract) =>
-            contract.client_name.toLowerCase().includes(query) ||
-            contract.client_phone.includes(query) ||
-            contract.deal_number.toLowerCase().includes(query)
-        )
+      filtered = filtered.filter(
+        (contract) =>
+          contract.client_name.toLowerCase().includes(query) ||
+          contract.client_phone.includes(query) ||
+          contract.deal_number.toLowerCase().includes(query)
       );
-    } else {
-      setFilteredContracts(contracts);
     }
-  }, [searchQuery, contracts]);
+
+    // Date range filter (based on start_date / deal date)
+    if (dateFrom) {
+      filtered = filtered.filter((c) => {
+        if (!c.start_date) return false;
+        const contractDate = new Date(c.start_date);
+        contractDate.setHours(0, 0, 0, 0);
+        const fromDate = new Date(dateFrom);
+        fromDate.setHours(0, 0, 0, 0);
+        return contractDate >= fromDate;
+      });
+    }
+
+    if (dateTo) {
+      filtered = filtered.filter((c) => {
+        if (!c.start_date) return false;
+        const contractDate = new Date(c.start_date);
+        contractDate.setHours(0, 0, 0, 0);
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59, 999);
+        return contractDate <= toDate;
+      });
+    }
+
+    setFilteredContracts(filtered);
+  };
+
+  const clearDateFilter = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+  };
 
   const fetchContracts = async () => {
     try {
@@ -211,8 +250,8 @@ const ContractsManagement = () => {
             </Card>
           </div>
 
-          {/* Search */}
-          <div className="mb-6">
+          {/* Search and Date Filter */}
+          <div className="mb-6 space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
@@ -221,6 +260,67 @@ const ContractsManagement = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
+            </div>
+
+            {/* Date Range Filter */}
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="text-sm font-medium text-muted-foreground">Deal Date:</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[180px] justify-start text-left font-normal",
+                      !dateFrom && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateFrom ? format(dateFrom, "dd MMM yyyy") : "From date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateFrom}
+                    onSelect={setDateFrom}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <span className="text-muted-foreground">to</span>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[180px] justify-start text-left font-normal",
+                      !dateTo && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateTo ? format(dateTo, "dd MMM yyyy") : "To date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateTo}
+                    onSelect={setDateTo}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {(dateFrom || dateTo) && (
+                <Button variant="ghost" size="sm" onClick={clearDateFilter}>
+                  <X className="mr-1 h-4 w-4" />
+                  Clear dates
+                </Button>
+              )}
             </div>
           </div>
 
@@ -239,6 +339,7 @@ const ContractsManagement = () => {
                       <TableHead>Phone</TableHead>
                       <TableHead>Service</TableHead>
                       <TableHead>Worker</TableHead>
+                      <TableHead>Deal Date</TableHead>
                       <TableHead className="text-right">Value</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead>Status</TableHead>
@@ -250,7 +351,7 @@ const ContractsManagement = () => {
                   <TableBody>
                     {filteredContracts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={11} className="text-center py-8">
+                        <TableCell colSpan={13} className="text-center py-8">
                           No contracts found. Create your first contract!
                         </TableCell>
                       </TableRow>
@@ -266,6 +367,9 @@ const ContractsManagement = () => {
                           </TableCell>
                           <TableCell>{contract.service_type}</TableCell>
                           <TableCell>{contract.worker_name || "-"}</TableCell>
+                          <TableCell className="text-xs">
+                            {contract.start_date ? format(new Date(contract.start_date), "dd MMM yyyy") : "-"}
+                          </TableCell>
                           <TableCell className="text-right">
                             {Number(contract.deal_value).toLocaleString()}
                           </TableCell>
