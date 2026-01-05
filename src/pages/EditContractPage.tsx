@@ -38,6 +38,7 @@ const EditContract = () => {
     payment_terms: "Full Payment",
     payment_method: "",
     bank_account: "",
+    paid_amount: "0",
     notes: "",
   });
 
@@ -122,6 +123,7 @@ const EditContract = () => {
         payment_terms: data.payment_terms || "Full Payment",
         payment_method: (data as any).payment_method || "",
         bank_account: (data as any).bank_account_id || "",
+        paid_amount: data.paid_amount?.toString() || "0",
         notes: data.notes || "",
       });
     } catch (error: any) {
@@ -190,6 +192,8 @@ const EditContract = () => {
       // Get primary service type (first service)
       const primaryServiceType = validServices[0].service_type;
 
+      const paidAmount = parseFloat(formData.paid_amount) || 0;
+
       const { error } = await supabase
         .from("deals")
         .update({
@@ -202,7 +206,8 @@ const EditContract = () => {
           vat_rate: parseFloat(formData.vat_rate) || 5,
           vat_amount: vatAmount,
           total_amount: totalAmount,
-          balance_due: totalAmount - (deal?.paid_amount || 0),
+          paid_amount: paidAmount,
+          balance_due: totalAmount - paidAmount,
           payment_terms: formData.payment_terms,
           notes: formData.notes.trim() || null,
           created_at: new Date(formData.deal_date).toISOString(),
@@ -445,6 +450,17 @@ const EditContract = () => {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="paid_amount">Received Amount (AED)</Label>
+                      <Input
+                        id="paid_amount"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={formData.paid_amount}
+                        onChange={(e) => setFormData({ ...formData, paid_amount: e.target.value })}
+                      />
                     </div>
                   </div>
                   <div className="space-y-2">
