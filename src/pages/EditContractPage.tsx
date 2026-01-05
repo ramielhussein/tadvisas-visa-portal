@@ -207,7 +207,6 @@ const EditContract = () => {
           vat_amount: vatAmount,
           total_amount: totalAmount,
           paid_amount: paidAmount,
-          balance_due: totalAmount - paidAmount,
           payment_terms: formData.payment_terms,
           notes: formData.notes.trim() || null,
           created_at: new Date(formData.deal_date).toISOString(),
