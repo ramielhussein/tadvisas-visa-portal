@@ -9,7 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+
+interface ServiceItem {
+  service_type: string;
+  service_description: string;
+  amount: string;
+}
 
 const EditContract = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,15 +33,17 @@ const EditContract = () => {
     client_name: "",
     client_phone: "",
     client_email: "",
-    service_type: "",
-    service_description: "",
-    deal_value: "",
+    deal_date: "",
     vat_rate: "5",
     payment_terms: "Full Payment",
     payment_method: "",
     bank_account: "",
     notes: "",
   });
+
+  const [services, setServices] = useState<ServiceItem[]>([
+    { service_type: "", service_description: "", amount: "0" }
+  ]);
 
   useEffect(() => {
     if (id) {
@@ -73,13 +82,42 @@ const EditContract = () => {
       if (error) throw error;
 
       setDeal(data);
+
+      // Parse services from service_description JSON or create single service
+      let parsedServices: ServiceItem[] = [];
+      try {
+        const parsed = JSON.parse(data.service_description || "[]");
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          parsedServices = parsed.map((s: any) => ({
+            service_type: s.service_type || data.service_type || "",
+            service_description: s.service_description || "",
+            amount: s.amount?.toString() || "0"
+          }));
+        }
+      } catch {
+        // If not valid JSON, create single service from deal
+        parsedServices = [{
+          service_type: data.service_type || "",
+          service_description: data.service_description || "",
+          amount: data.deal_value?.toString() || "0"
+        }];
+      }
+
+      if (parsedServices.length === 0) {
+        parsedServices = [{
+          service_type: data.service_type || "",
+          service_description: "",
+          amount: data.deal_value?.toString() || "0"
+        }];
+      }
+
+      setServices(parsedServices);
+
       setFormData({
         client_name: data.client_name || "",
         client_phone: data.client_phone || "",
         client_email: data.client_email || "",
-        service_type: data.service_type || "",
-        service_description: data.service_description || "",
-        deal_value: data.deal_value?.toString() || "0",
+        deal_date: data.created_at ? format(new Date(data.created_at), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
         vat_rate: data.vat_rate?.toString() || "5",
         payment_terms: data.payment_terms || "Full Payment",
         payment_method: (data as any).payment_method || "",
@@ -99,15 +137,58 @@ const EditContract = () => {
     }
   };
 
+  const addService = () => {
+    setServices([...services, { service_type: "", service_description: "", amount: "0" }]);
+  };
+
+  const removeService = (index: number) => {
+    if (services.length === 1) {
+      toast({
+        title: "Cannot remove",
+        description: "At least one service is required",
+        variant: "destructive",
+      });
+      return;
+    }
+    setServices(services.filter((_, i) => i !== index));
+  };
+
+  const updateService = (index: number, field: keyof ServiceItem, value: string) => {
+    const updated = [...services];
+    updated[index] = { ...updated[index], [field]: value };
+    setServices(updated);
+  };
+
+  const calculateTotals = () => {
+    const dealValue = services.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+    const vatRate = parseFloat(formData.vat_rate) || 0;
+    const vatAmount = (dealValue * vatRate) / 100;
+    const totalAmount = dealValue + vatAmount;
+    return { dealValue, vatAmount, totalAmount };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
     try {
-      const dealValue = parseFloat(formData.deal_value) || 0;
-      const vatRate = parseFloat(formData.vat_rate) || 5;
-      const vatAmount = (dealValue * vatRate) / 100;
-      const totalAmount = dealValue + vatAmount;
+      // Validate services
+      const validServices = services.filter(s => s.service_type.trim());
+      if (validServices.length === 0) {
+        throw new Error("At least one service with a type is required");
+      }
+
+      const { dealValue, vatAmount, totalAmount } = calculateTotals();
+
+      // Prepare service description as JSON
+      const serviceDescriptionJson = JSON.stringify(validServices.map(s => ({
+        service_type: s.service_type.trim(),
+        service_description: s.service_description.trim(),
+        amount: parseFloat(s.amount) || 0
+      })));
+
+      // Get primary service type (first service)
+      const primaryServiceType = validServices[0].service_type;
 
       const { error } = await supabase
         .from("deals")
@@ -115,14 +196,16 @@ const EditContract = () => {
           client_name: formData.client_name.trim(),
           client_phone: formData.client_phone.trim(),
           client_email: formData.client_email.trim() || null,
-          service_type: formData.service_type,
-          service_description: formData.service_description || null,
+          service_type: primaryServiceType,
+          service_description: serviceDescriptionJson,
           deal_value: dealValue,
-          vat_rate: vatRate,
+          vat_rate: parseFloat(formData.vat_rate) || 5,
           vat_amount: vatAmount,
           total_amount: totalAmount,
+          balance_due: totalAmount - (deal?.paid_amount || 0),
           payment_terms: formData.payment_terms,
           notes: formData.notes.trim() || null,
+          created_at: new Date(formData.deal_date).toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq("id", id);
@@ -147,6 +230,8 @@ const EditContract = () => {
     }
   };
 
+  const { dealValue, vatAmount, totalAmount } = calculateTotals();
+
   if (loading) {
     return (
       <Layout>
@@ -167,9 +252,6 @@ const EditContract = () => {
     );
   }
 
-  // Check if contract is editable (only Draft contracts can be edited)
-  const isEditable = deal.status === "Draft";
-
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
@@ -183,210 +265,242 @@ const EditContract = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Edit Contract - {deal.deal_number}</span>
-                {!isEditable && (
-                  <span className="text-sm font-normal text-destructive">
-                    ⚠️ Only Draft deals can be edited
-                  </span>
-                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {!isEditable ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground mb-4">
-                    This deal has been approved and can no longer be edited.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Status: <strong>{deal.status}</strong>
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => navigate(`/crm/contracts/${id}`)}
-                  >
-                    View Contract Details
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Client Information */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">Client Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="client_name">Client Name *</Label>
-                        <Input
-                          id="client_name"
-                          value={formData.client_name}
-                          onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="client_phone">Client Phone *</Label>
-                        <Input
-                          id="client_phone"
-                          value={formData.client_phone}
-                          onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="client_email">Client Email</Label>
-                        <Input
-                          id="client_email"
-                          type="email"
-                          value={formData.client_email}
-                          onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Service Details */}
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b pb-2">Service Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="service_type">Service Type *</Label>
-                        <Input
-                          id="service_type"
-                          value={formData.service_type}
-                          onChange={(e) => setFormData({ ...formData, service_type: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="deal_value">Deal Value (AED) *</Label>
-                        <Input
-                          id="deal_value"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={formData.deal_value}
-                          onChange={(e) => setFormData({ ...formData, deal_value: e.target.value })}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="vat_rate">VAT Rate (%)</Label>
-                        <Input
-                          id="vat_rate"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="100"
-                          value={formData.vat_rate}
-                          onChange={(e) => setFormData({ ...formData, vat_rate: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="payment_terms">Payment Terms</Label>
-                        <Select
-                          value={formData.payment_terms}
-                          onValueChange={(value) => setFormData({ ...formData, payment_terms: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Full Payment">Full Payment</SelectItem>
-                            <SelectItem value="50% Advance">50% Advance</SelectItem>
-                            <SelectItem value="Installments">Installments</SelectItem>
-                            <SelectItem value="Net 30">Net 30</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="payment_method">Payment Method</Label>
-                        <Select
-                          value={formData.payment_method}
-                          onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select payment method" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
-                            {paymentMethods.map((method) => (
-                              <SelectItem key={method.id} value={method.method_name}>
-                                {method.method_name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="bank_account">Bank Account</Label>
-                        <Select
-                          value={formData.bank_account}
-                          onValueChange={(value) => setFormData({ ...formData, bank_account: value })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select bank account" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
-                            {bankAccounts.map((account) => (
-                              <SelectItem key={account.id} value={account.id}>
-                                {account.bank_name} - {account.account_name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Client Information */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Client Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="client_name">Client Name *</Label>
+                      <Input
+                        id="client_name"
+                        value={formData.client_name}
+                        onChange={(e) => setFormData({ ...formData, client_name: e.target.value })}
+                        required
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="notes">Notes</Label>
-                      <Textarea
-                        id="notes"
-                        value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        rows={3}
+                      <Label htmlFor="client_phone">Client Phone *</Label>
+                      <Input
+                        id="client_phone"
+                        value={formData.client_phone}
+                        onChange={(e) => setFormData({ ...formData, client_phone: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="client_email">Client Email</Label>
+                      <Input
+                        id="client_email"
+                        type="email"
+                        value={formData.client_email}
+                        onChange={(e) => setFormData({ ...formData, client_email: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="deal_date">Deal Date *</Label>
+                      <Input
+                        id="deal_date"
+                        type="date"
+                        value={formData.deal_date}
+                        onChange={(e) => setFormData({ ...formData, deal_date: e.target.value })}
+                        required
                       />
                     </div>
                   </div>
+                </div>
 
-                  {/* Calculated Summary */}
-                  <div className="bg-muted p-4 rounded-lg">
-                    <h3 className="font-semibold mb-3">Financial Summary</h3>
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Base Amount:</span>
-                        <p className="font-medium">AED {(parseFloat(formData.deal_value) || 0).toLocaleString()}</p>
+                {/* Services Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <h3 className="font-semibold text-lg">Services</h3>
+                    <Button type="button" variant="outline" size="sm" onClick={addService}>
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Service
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {services.map((service, index) => (
+                      <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-muted-foreground">
+                            Service {index + 1}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeService(index)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="space-y-2">
+                            <Label>Service Type *</Label>
+                            <Input
+                              value={service.service_type}
+                              onChange={(e) => updateService(index, "service_type", e.target.value)}
+                              placeholder="e.g., Housemaid, Nanny"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Description</Label>
+                            <Input
+                              value={service.service_description}
+                              onChange={(e) => updateService(index, "service_description", e.target.value)}
+                              placeholder="Additional details"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Amount (AED) *</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={service.amount}
+                              onChange={(e) => updateService(index, "amount", e.target.value)}
+                              required
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">VAT ({formData.vat_rate}%):</span>
-                        <p className="font-medium">
-                          AED {((parseFloat(formData.deal_value) || 0) * (parseFloat(formData.vat_rate) || 0) / 100).toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground">Total:</span>
-                        <p className="font-medium text-primary">
-                          AED {((parseFloat(formData.deal_value) || 0) * (1 + (parseFloat(formData.vat_rate) || 0) / 100)).toLocaleString()}
-                        </p>
-                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Payment Details */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg border-b pb-2">Payment Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="vat_rate">VAT Rate (%)</Label>
+                      <Input
+                        id="vat_rate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={formData.vat_rate}
+                        onChange={(e) => setFormData({ ...formData, vat_rate: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="payment_terms">Payment Terms</Label>
+                      <Select
+                        value={formData.payment_terms}
+                        onValueChange={(value) => setFormData({ ...formData, payment_terms: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Full Payment">Full Payment</SelectItem>
+                          <SelectItem value="50% Advance">50% Advance</SelectItem>
+                          <SelectItem value="Installments">Installments</SelectItem>
+                          <SelectItem value="Net 30">Net 30</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="payment_method">Payment Method</Label>
+                      <Select
+                        value={formData.payment_method}
+                        onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {paymentMethods.map((method) => (
+                            <SelectItem key={method.id} value={method.method_name}>
+                              {method.method_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="bank_account">Bank Account</Label>
+                      <Select
+                        value={formData.bank_account}
+                        onValueChange={(value) => setFormData({ ...formData, bank_account: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select bank account" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {bankAccounts.map((account) => (
+                            <SelectItem key={account.id} value={account.id}>
+                              {account.bank_name} - {account.account_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-4 justify-end pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => navigate(`/crm/contracts/${id}`)}
-                      disabled={saving}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={saving}>
-                      {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      Save Changes
-                    </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Notes</Label>
+                    <Textarea
+                      id="notes"
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                      rows={3}
+                    />
                   </div>
-                </form>
-              )}
+                </div>
+
+                {/* Calculated Summary */}
+                <div className="bg-muted p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3">Financial Summary</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Base Amount:</span>
+                      <p className="font-medium">AED {dealValue.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">VAT ({formData.vat_rate}%):</span>
+                      <p className="font-medium">AED {vatAmount.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Total:</span>
+                      <p className="font-medium text-primary">AED {totalAmount.toLocaleString()}</p>
+                    </div>
+                    {deal?.paid_amount > 0 && (
+                      <div>
+                        <span className="text-muted-foreground">Balance Due:</span>
+                        <p className="font-medium text-orange-600">
+                          AED {(totalAmount - (deal.paid_amount || 0)).toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-4 justify-end pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate(`/crm/contracts/${id}`)}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={saving}>
+                    {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>
