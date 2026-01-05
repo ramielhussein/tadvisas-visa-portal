@@ -167,7 +167,7 @@ const Navbar = () => {
         'send_to': 'AW-17128942210'
       });
     }
-    window.open("https://wa.me/971565822258", "_blank");
+    window.open("https://wa.me/971567222248", "_blank");
   };
 
   const handleLogoDoubleClick = () => {
@@ -277,7 +277,7 @@ const Navbar = () => {
               </div>
             ) : (
               <Button asChild className="bg-green-500 hover:bg-green-600 text-white">
-                <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/971567222248" target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   WhatsApp Now
                 </a>
@@ -385,7 +385,7 @@ const Navbar = () => {
                     </Link>
                   </Button>
                   <Button asChild className="w-full bg-green-500 hover:bg-green-600 text-white">
-                    <a href="https://wa.me/971565822258" target="_blank" rel="noopener noreferrer">
+                    <a href="https://wa.me/971567222248" target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="w-4 h-4 mr-2" />
                       WhatsApp Now
                     </a>

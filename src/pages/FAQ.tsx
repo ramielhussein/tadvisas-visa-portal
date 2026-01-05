@@ -115,17 +115,17 @@ const FAQ = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3" onClick={() => {
                 const message = "Hi! I have a question about your 2-year maid visa service. Can you help me?";
-                window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+                window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
               }}>
                 Ask on WhatsApp
               </Button>
               <Button 
                 variant="outline" 
                 className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg font-semibold transition-all duration-300"
-                onClick={() => window.location.href = "tel:+971565822258"}
+                onClick={() => window.location.href = "tel:+971567222248"}
               >
                 <Phone className="w-5 h-5 mr-3" />
-                Call 0565822258 for help
+                Call 0567222248 for help
               </Button>
             </div>
           </div>
@@ -137,7 +137,7 @@ const FAQ = () => {
                 <span className="text-green-600 text-xl">📱</span>
               </div>
               <h3 className="font-semibold text-primary mb-2">WhatsApp</h3>
-              <p className="text-gray-600">+971565822258</p>
+              <p className="text-gray-600">+971567222248</p>
             </div>
             <div className="text-center bg-white rounded-xl p-6 shadow-md">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

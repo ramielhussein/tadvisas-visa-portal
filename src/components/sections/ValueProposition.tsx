@@ -61,7 +61,7 @@ const ValueProposition = () => {
                   });
                 }
                 const message = "Hi, I need help hiring a maid";
-                const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
+                const url = `https://wa.me/971567222248?text=${encodeURIComponent(message)}`;
                 window.open(url, '_blank');
               }}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"

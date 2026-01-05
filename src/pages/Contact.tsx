@@ -42,11 +42,11 @@ const Contact = () => {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
-    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCallClick = () => {
-    window.location.href = "tel:+971565822258";
+    window.location.href = "tel:+971567222248";
   };
 
   return (
@@ -196,7 +196,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">Phone</div>
-                      <div className="text-gray-600">+971565822258</div>
+                      <div className="text-gray-600">+971567222248</div>
                     </div>
                   </div>
                   
@@ -206,7 +206,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <div className="font-semibold text-primary">WhatsApp</div>
-                      <div className="text-gray-600">+971565822258</div>
+                      <div className="text-gray-600">+971567222248</div>
                     </div>
                   </div>
 

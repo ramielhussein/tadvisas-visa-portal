@@ -108,7 +108,7 @@ const ALHForm = () => {
       (window as any).gtag('event', 'whatsapp_fallback_click');
     }
     const message = "Hi! I'm interested in the ALH × TADMAIDS 72-Hour Pilot Program.";
-    window.open(`https://wa.me/971565822258?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   if (submitted) {
