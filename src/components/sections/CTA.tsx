@@ -4,7 +4,7 @@ import { Phone, MessageCircle } from "lucide-react";
 
 const CTA = () => {
   const handleCallClick = () => {
-    window.location.href = "tel:+971565822258";
+    window.location.href = "tel:+971567222248";
   };
 
   const handleWhatsAppClick = () => {
@@ -15,7 +15,7 @@ const CTA = () => {
       });
     }
     const message = "Hi! I'm ready to start my 2-year maid visa process. Can you help me?";
-    const url = `https://wa.me/971565822258?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/971567222248?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
 
@@ -44,12 +44,12 @@ const CTA = () => {
             className="px-8 py-4 text-lg font-semibold transition-all duration-300"
           >
             <Phone className="w-5 h-5 mr-3" />
-            Call 0565822258 for help
+            Call 0567222248 for help
           </Button>
         </div>
 
         <div className="mt-8 text-primary-100">
-          <p>📞 +971565822258 | 📧 tadbeer@tadmaids.com</p>
+          <p>📞 +971567222248 | 📧 tadbeer@tadmaids.com</p>
         </div>
       </div>
     </section>

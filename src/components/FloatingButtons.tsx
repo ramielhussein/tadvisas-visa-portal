@@ -150,7 +150,7 @@ const FloatingButtons = () => {
         'send_to': 'AW-17128942210'
       });
     }
-    const phoneNumber = "971565822258";
+    const phoneNumber = "971567222248";
     const message = "Hi, I need help hiring a maid";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");

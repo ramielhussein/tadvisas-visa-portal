@@ -22,7 +22,7 @@ const ALHFooter = () => {
             <h3 className="text-xl font-bold mb-4 text-[#F58220]">Contact</h3>
             <div className="space-y-2 text-[#B6BBC4] text-sm">
               <p>Phone: +971 4 355 1186</p>
-              <p>WhatsApp: +971 56 582 2258</p>
+              <p>WhatsApp: +971 56 722 2248</p>
               <p>Email: info@tadmaids.com</p>
             </div>
           </div>

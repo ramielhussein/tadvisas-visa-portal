@@ -10,7 +10,7 @@ const TopBanner = () => {
       });
     }
     const message = encodeURIComponent("Hello! I want to apply for my maid's visa online.");
-    window.open(`https://wa.me/971508882480?text=${message}`, "_blank");
+    window.open(`https://wa.me/971567222248?text=${message}`, "_blank");
   };
 
   return (
