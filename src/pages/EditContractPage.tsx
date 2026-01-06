@@ -358,14 +358,17 @@ const EditContract = () => {
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[400px] p-0 bg-background border shadow-lg z-50">
-                          <Command>
+                        <PopoverContent className="w-[400px] p-0 bg-background border shadow-lg z-50" align="start">
+                          <Command filter={(value, search) => {
+                            if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+                            return 0;
+                          }}>
                             <CommandInput placeholder="Search workers by name..." />
-                            <CommandList>
+                            <CommandList className="max-h-[300px]">
                               <CommandEmpty>No worker found.</CommandEmpty>
                               <CommandGroup>
                                 <CommandItem
-                                  value="none"
+                                  value="no-worker-linked"
                                   onSelect={() => setSelectedWorkerId("")}
                                 >
                                   <Check
@@ -379,7 +382,7 @@ const EditContract = () => {
                                 {workers.map((worker) => (
                                   <CommandItem
                                     key={worker.id}
-                                    value={`${worker.full_name} ${worker.nationality_code || ''} ${worker.passport_no || ''}`}
+                                    value={`${worker.full_name || ''} ${worker.nationality_code || ''} ${worker.passport_no || ''}`.trim()}
                                     onSelect={() => setSelectedWorkerId(worker.id)}
                                   >
                                     <Check
