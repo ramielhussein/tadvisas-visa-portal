@@ -118,7 +118,11 @@ const EditContract = () => {
         client_name: data.client_name || "",
         client_phone: data.client_phone || "",
         client_email: data.client_email || "",
-        deal_date: data.created_at ? format(new Date(data.created_at), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
+        deal_date: data.deal_date 
+          ? data.deal_date 
+          : data.created_at 
+            ? format(new Date(data.created_at), "yyyy-MM-dd") 
+            : format(new Date(), "yyyy-MM-dd"),
         vat_rate: data.vat_rate?.toString() || "5",
         payment_terms: data.payment_terms || "Full Payment",
         payment_method: (data as any).payment_method || "",
@@ -209,8 +213,7 @@ const EditContract = () => {
           paid_amount: paidAmount,
           payment_terms: formData.payment_terms,
           notes: formData.notes.trim() || null,
-          created_at: new Date(formData.deal_date).toISOString(),
-          updated_at: new Date().toISOString(),
+          deal_date: formData.deal_date,
         })
         .eq("id", id);
 
