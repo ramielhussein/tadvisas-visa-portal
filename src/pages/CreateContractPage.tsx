@@ -537,7 +537,8 @@ const CreateContract = () => {
           assigned_to: user?.id,
           status: "Draft",
           attachments: uploadedAttachments,
-          deal_date: format(dealDate, 'yyyy-MM-dd'),
+          // Format date correctly accounting for timezone - use local date components
+          deal_date: `${dealDate.getFullYear()}-${String(dealDate.getMonth() + 1).padStart(2, '0')}-${String(dealDate.getDate()).padStart(2, '0')}`,
           start_date: startDate,
           end_date: endDate,
           reminder_days_before: reminderDays,
