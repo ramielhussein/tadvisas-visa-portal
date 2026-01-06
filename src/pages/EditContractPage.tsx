@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Loader2, Plus, Trash2, User } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Trash2, User, Check, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface ServiceItem {
   service_type: string;
@@ -337,31 +340,66 @@ const EditContract = () => {
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="worker">Domestic Worker</Label>
-                      <Select
-                        value={selectedWorkerId}
-                        onValueChange={setSelectedWorkerId}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a worker to link">
-                            {selectedWorkerId && workers.find(w => w.id === selectedWorkerId) ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between"
+                          >
+                            {selectedWorkerId && selectedWorkerId !== "none" ? (
                               <span className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
-                                {workers.find(w => w.id === selectedWorkerId)?.full_name}
+                                {workers.find(w => w.id === selectedWorkerId)?.full_name || "Select a worker"}
                               </span>
                             ) : (
                               "Select a worker to link"
                             )}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">No worker linked</SelectItem>
-                          {workers.map((worker) => (
-                            <SelectItem key={worker.id} value={worker.id}>
-                              {worker.full_name} {worker.nationality_code ? `(${worker.nationality_code})` : ""} {worker.passport_no ? `- ${worker.passport_no}` : ""}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0 bg-background border shadow-lg z-50">
+                          <Command>
+                            <CommandInput placeholder="Search workers by name..." />
+                            <CommandList>
+                              <CommandEmpty>No worker found.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem
+                                  value="none"
+                                  onSelect={() => setSelectedWorkerId("")}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      !selectedWorkerId ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  No worker linked
+                                </CommandItem>
+                                {workers.map((worker) => (
+                                  <CommandItem
+                                    key={worker.id}
+                                    value={`${worker.full_name} ${worker.nationality_code || ''} ${worker.passport_no || ''}`}
+                                    onSelect={() => setSelectedWorkerId(worker.id)}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 h-4 w-4",
+                                        selectedWorkerId === worker.id ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                    <span className="flex-1">
+                                      {worker.full_name}
+                                      {worker.nationality_code && <span className="text-muted-foreground ml-1">({worker.nationality_code})</span>}
+                                      {worker.passport_no && <span className="text-muted-foreground ml-1">- {worker.passport_no}</span>}
+                                    </span>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       {deal?.worker_name && !selectedWorkerId && (
                         <p className="text-sm text-muted-foreground">
                           Previously linked: {deal.worker_name}
