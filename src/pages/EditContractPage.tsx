@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Trash2, User } from "lucide-react";
 import { format } from "date-fns";
 
 interface ServiceItem {
@@ -28,6 +28,8 @@ const EditContract = () => {
 
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [workers, setWorkers] = useState<any[]>([]);
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -51,8 +53,17 @@ const EditContract = () => {
       fetchDeal();
       fetchPaymentMethods();
       fetchBankAccounts();
+      fetchWorkers();
     }
   }, [id]);
+
+  const fetchWorkers = async () => {
+    const { data } = await supabase
+      .from("workers")
+      .select("id, full_name, nationality_code, passport_no")
+      .order("full_name");
+    setWorkers(data || []);
+  };
 
   const fetchPaymentMethods = async () => {
     const { data } = await supabase
@@ -83,6 +94,7 @@ const EditContract = () => {
       if (error) throw error;
 
       setDeal(data);
+      setSelectedWorkerId(data.worker_id || "");
 
       // Parse services from service_description JSON or create single service
       let parsedServices: ServiceItem[] = [];
@@ -198,6 +210,10 @@ const EditContract = () => {
 
       const paidAmount = parseFloat(formData.paid_amount) || 0;
 
+      // Get worker name if worker is selected
+      const selectedWorker = workers.find(w => w.id === selectedWorkerId);
+      const workerName = selectedWorker ? selectedWorker.full_name : null;
+
       const { error } = await supabase
         .from("deals")
         .update({
@@ -214,6 +230,8 @@ const EditContract = () => {
           payment_terms: formData.payment_terms,
           notes: formData.notes.trim() || null,
           deal_date: formData.deal_date,
+          worker_id: selectedWorkerId || null,
+          worker_name: workerName,
         })
         .eq("id", id);
 
@@ -316,6 +334,39 @@ const EditContract = () => {
                         onChange={(e) => setFormData({ ...formData, deal_date: e.target.value })}
                         required
                       />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="worker">Domestic Worker</Label>
+                      <Select
+                        value={selectedWorkerId}
+                        onValueChange={setSelectedWorkerId}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a worker to link">
+                            {selectedWorkerId && workers.find(w => w.id === selectedWorkerId) ? (
+                              <span className="flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                {workers.find(w => w.id === selectedWorkerId)?.full_name}
+                              </span>
+                            ) : (
+                              "Select a worker to link"
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No worker linked</SelectItem>
+                          {workers.map((worker) => (
+                            <SelectItem key={worker.id} value={worker.id}>
+                              {worker.full_name} {worker.nationality_code ? `(${worker.nationality_code})` : ""} {worker.passport_no ? `- ${worker.passport_no}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {deal?.worker_name && !selectedWorkerId && (
+                        <p className="text-sm text-muted-foreground">
+                          Previously linked: {deal.worker_name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
