@@ -8,12 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import * as XLSX from "xlsx";
 
 interface Contract {
   id: string;
@@ -171,6 +173,98 @@ const ContractsManagement = () => {
     return colors[status] || "bg-gray-500";
   };
 
+  const exportToExcel = (useFiltered: boolean) => {
+    const dataToExport = useFiltered ? filteredContracts : contracts;
+    const exportData = dataToExport.map((c) => ({
+      "Contract #": c.deal_number,
+      "Client Name": c.client_name,
+      "Phone": c.client_phone,
+      "Service": c.service_type,
+      "Worker": c.worker_name || "-",
+      "Deal Date": c.deal_date ? format(new Date(c.deal_date), "dd MMM yyyy") : "-",
+      "Deal Value": c.deal_value,
+      "Total Amount": c.total_amount,
+      "Status": c.status,
+      "Created By": c.created_by_name || "-",
+      "Created At": format(new Date(c.created_at), "dd MMM yyyy"),
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Contracts");
+    const fileName = useFiltered ? "contracts_filtered.xlsx" : "contracts_all.xlsx";
+    XLSX.writeFile(wb, fileName);
+    toast({ title: "Success", description: `Exported ${dataToExport.length} contracts to ${fileName}` });
+  };
+
+  const exportToPDF = async (useFiltered: boolean) => {
+    const dataToExport = useFiltered ? filteredContracts : contracts;
+    
+    // Create a printable HTML table
+    const printContent = `
+      <html>
+        <head>
+          <title>Contracts Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; font-size: 10px; margin: 20px; }
+            h1 { font-size: 18px; margin-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .text-right { text-align: right; }
+            .summary { margin-top: 20px; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <h1>Contracts Report${useFiltered ? " (Filtered)" : ""}</h1>
+          <p>Generated: ${format(new Date(), "dd MMM yyyy HH:mm")}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Contract #</th>
+                <th>Client Name</th>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Worker</th>
+                <th>Deal Date</th>
+                <th class="text-right">Value</th>
+                <th class="text-right">Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${dataToExport.map(c => `
+                <tr>
+                  <td>${c.deal_number}</td>
+                  <td>${c.client_name}</td>
+                  <td>${c.client_phone}</td>
+                  <td>${c.service_type}</td>
+                  <td>${c.worker_name || "-"}</td>
+                  <td>${c.deal_date ? format(new Date(c.deal_date), "dd MMM yyyy") : "-"}</td>
+                  <td class="text-right">${Number(c.deal_value).toLocaleString()}</td>
+                  <td class="text-right">${Number(c.total_amount).toLocaleString()}</td>
+                  <td>${c.status}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          <div class="summary">
+            <p><strong>Total Contracts:</strong> ${dataToExport.length}</p>
+            <p><strong>Total Value:</strong> AED ${dataToExport.reduce((sum, c) => sum + Number(c.total_amount), 0).toLocaleString()}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    toast({ title: "Success", description: "PDF print dialog opened" });
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -191,6 +285,32 @@ const ContractsManagement = () => {
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Contracts</h1>
             <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => exportToExcel(false)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Excel (All)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToExcel(true)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Excel (Filtered)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToPDF(false)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    PDF (All)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportToPDF(true)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    PDF (Filtered)
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button variant="outline" onClick={() => navigate("/crm/contracts/ar-report")}>
                 <BarChart3 className="w-4 h-4 mr-2" />
                 A/R Report
