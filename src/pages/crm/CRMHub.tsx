@@ -100,6 +100,7 @@ const CRMHub = () => {
   const [unassignedStatusFilter, setUnassignedStatusFilter] = useState<string>("all");
   const [adminStatusFilter, setAdminStatusFilter] = useState<string>("all");
   const [serviceTypeFilter, setServiceTypeFilter] = useState<string>("all");
+  const [myLeadsPhoneSearch, setMyLeadsPhoneSearch] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({
     "New Lead": 0,
@@ -990,7 +991,14 @@ const CRMHub = () => {
 
   // No client-side filtering needed - all filtering is done server-side now
   const filteredUnassignedLeads = useMemo(() => unassignedLeads, [unassignedLeads]);
-  const filteredMyLeads = useMemo(() => myLeads, [myLeads]);
+  const filteredMyLeads = useMemo(() => {
+    if (!myLeadsPhoneSearch.trim()) return myLeads;
+    const searchTerm = myLeadsPhoneSearch.trim().toLowerCase();
+    return myLeads.filter((lead) => 
+      lead.mobile_number?.toLowerCase().includes(searchTerm) ||
+      lead.client_name?.toLowerCase().includes(searchTerm)
+    );
+  }, [myLeads, myLeadsPhoneSearch]);
   const filteredAdminAllLeads = useMemo(() => adminAllLeads, [adminAllLeads]);
 
   const formatDate = (dateString: string | null) => {
@@ -1505,7 +1513,13 @@ const CRMHub = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4">
+              <div className="mb-4 space-y-2">
+                <Input
+                  placeholder="Search by phone number or name..."
+                  value={myLeadsPhoneSearch}
+                  onChange={(e) => setMyLeadsPhoneSearch(e.target.value)}
+                  className="w-full"
+                />
                 <Select value={myLeadsStatusFilter} onValueChange={setMyLeadsStatusFilter}>
                   <SelectTrigger className="w-full bg-background">
                     <SelectValue placeholder="Filter by status" />
