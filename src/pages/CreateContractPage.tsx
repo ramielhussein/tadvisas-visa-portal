@@ -537,7 +537,7 @@ const CreateContract = () => {
           assigned_to: user?.id,
           status: "Draft",
           attachments: uploadedAttachments,
-          created_at: dealDate.toISOString(),
+          deal_date: format(dealDate, 'yyyy-MM-dd'),
           start_date: startDate,
           end_date: endDate,
           reminder_days_before: reminderDays,

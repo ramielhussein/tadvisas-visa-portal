@@ -574,6 +574,7 @@ export type Database = {
           commission_amount: number | null
           commission_rate: number | null
           created_at: string
+          deal_date: string | null
           deal_number: string
           deal_value: number
           end_date: string | null
@@ -607,6 +608,7 @@ export type Database = {
           commission_amount?: number | null
           commission_rate?: number | null
           created_at?: string
+          deal_date?: string | null
           deal_number?: string
           deal_value: number
           end_date?: string | null
@@ -640,6 +642,7 @@ export type Database = {
           commission_amount?: number | null
           commission_rate?: number | null
           created_at?: string
+          deal_date?: string | null
           deal_number?: string
           deal_value?: number
           end_date?: string | null

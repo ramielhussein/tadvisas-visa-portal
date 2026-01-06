@@ -25,6 +25,7 @@ interface Contract {
   total_amount: number;
   status: string;
   created_at: string;
+  deal_date: string | null;
   start_date: string | null;
   worker_name: string | null;
   assigned_to: string | null;
@@ -71,11 +72,12 @@ const ContractsManagement = () => {
       );
     }
 
-    // Date range filter (based on start_date / deal date)
+    // Date range filter (based on deal_date)
     if (dateFrom) {
       filtered = filtered.filter((c) => {
-        if (!c.start_date) return false;
-        const contractDate = new Date(c.start_date);
+        const dealDateStr = c.deal_date || c.start_date;
+        if (!dealDateStr) return false;
+        const contractDate = new Date(dealDateStr);
         contractDate.setHours(0, 0, 0, 0);
         const fromDate = new Date(dateFrom);
         fromDate.setHours(0, 0, 0, 0);
@@ -85,8 +87,9 @@ const ContractsManagement = () => {
 
     if (dateTo) {
       filtered = filtered.filter((c) => {
-        if (!c.start_date) return false;
-        const contractDate = new Date(c.start_date);
+        const dealDateStr = c.deal_date || c.start_date;
+        if (!dealDateStr) return false;
+        const contractDate = new Date(dealDateStr);
         contractDate.setHours(0, 0, 0, 0);
         const toDate = new Date(dateTo);
         toDate.setHours(23, 59, 59, 999);
@@ -368,7 +371,11 @@ const ContractsManagement = () => {
                           <TableCell>{contract.service_type}</TableCell>
                           <TableCell>{contract.worker_name || "-"}</TableCell>
                           <TableCell className="text-xs">
-                            {contract.start_date ? format(new Date(contract.start_date), "dd MMM yyyy") : "-"}
+                            {contract.deal_date 
+                              ? format(new Date(contract.deal_date), "dd MMM yyyy") 
+                              : contract.start_date 
+                                ? format(new Date(contract.start_date), "dd MMM yyyy") 
+                                : "-"}
                           </TableCell>
                           <TableCell className="text-right">
                             {Number(contract.deal_value).toLocaleString()}
