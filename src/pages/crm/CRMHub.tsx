@@ -199,7 +199,8 @@ const CRMHub = () => {
       let unassignedQuery = supabase
         .from("leads")
         .select("*")
-        .is("assigned_to", null);
+        .is("assigned_to", null)
+        .or("deal_only.is.null,deal_only.eq.false"); // Exclude deal-only leads from queue
 
       // Filter archived leads unless toggle is on OR searching (show all when searching)
       if (!showArchived && !debouncedSearch) {
@@ -229,7 +230,8 @@ const CRMHub = () => {
       let myLeadsQuery = supabase
         .from("leads")
         .select("*")
-        .eq("assigned_to", user.id);
+        .eq("assigned_to", user.id)
+        .or("deal_only.is.null,deal_only.eq.false"); // Exclude deal-only leads from queue
 
       // Filter archived leads unless toggle is on OR searching (show all when searching)
       if (!showArchived && !debouncedSearch) {
