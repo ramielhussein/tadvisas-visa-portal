@@ -149,38 +149,51 @@ interface QuickLeadEntryProps {
         throw checkError;
       }
 
-      // Get the first result (function returns array)
-      const phoneCheck = checkResult?.[0];
+      // Get the first result (function returns array, but be defensive)
+      const phoneCheck = Array.isArray(checkResult) ? checkResult[0] : checkResult;
 
-      // If phone exists, fetch the full lead data
-      let existingLeadData = null;
-      if (phoneCheck?.phone_exists && phoneCheck?.lead_id) {
-        const { data: leadData, error: leadError } = await supabase
-          .from('leads')
-          .select('*')
-          .eq('id', phoneCheck.lead_id)
-          .maybeSingle();
+      // If the phone exists, try to load the lead (may fail due to RLS)
+      if (phoneCheck?.phone_exists) {
+        let existingLeadData: any = null;
 
-        if (leadError && leadError.code !== 'PGRST116') {
-          throw leadError;
+        if (phoneCheck?.lead_id) {
+          const { data: leadData, error: leadError } = await supabase
+            .from('leads')
+            .select('*')
+            .eq('id', phoneCheck.lead_id)
+            .maybeSingle();
+
+          if (leadError && leadError.code !== 'PGRST116') {
+            throw leadError;
+          }
+
+          existingLeadData = leadData;
         }
 
-        existingLeadData = leadData;
-      }
+        // Phone exists but user can't access the lead record (still block creation to avoid unique constraint error)
+        if (!existingLeadData) {
+          setExistingLead(null);
+          setFormStage('number-check');
+          toast({
+            title: "Lead Already Exists",
+            description: "This phone number is already in the system (you may not have access to view it). Please search instead of creating a new lead.",
+            variant: "destructive",
+          });
+          return;
+        }
 
-      if (existingLeadData) {
         // If lead is archived, unarchive it automatically
         if (existingLeadData.archived) {
           try {
             const { data: { user } } = await supabase.auth.getUser();
-            
+
             // Check if lead is assigned or unassigned
             const isAssigned = existingLeadData.assigned_to !== null;
-            
+
             // Unarchive and reset to "New Lead" status
             const { error: unarchiveError } = await supabase
               .from('leads')
-              .update({ 
+              .update({
                 archived: false,
                 status: 'New Lead'
               })
@@ -195,7 +208,7 @@ interface QuickLeadEntryProps {
                 user_id: user.id,
                 activity_type: "system",
                 title: "Lead Restored from Archive",
-                description: isAssigned 
+                description: isAssigned
                   ? "Archived lead restored and assigned salesperson notified"
                   : "Archived lead restored to incoming pool",
               });
@@ -234,52 +247,56 @@ interface QuickLeadEntryProps {
               variant: "destructive",
             });
           }
-        } else {
-          // Lead exists and is not archived - show duplicate error
-          setExistingLead(existingLeadData);
-          setFormData({
-            ...formData,
-            client_name: existingLeadData.client_name || "",
-            email: existingLeadData.email || "",
-            mobile_number: phoneValidation.formatted,
-            emirate: existingLeadData.emirate || "",
-            status: existingLeadData.status || "New Lead",
-            service_required: existingLeadData.service_required || "",
-            nationality_code: existingLeadData.nationality_code || "",
-            lead_source: existingLeadData.lead_source || "",
-            assigned_to: existingLeadData.assigned_to || "", // Add current assignment
-          });
-
-          // Fetch assignee information if lead is assigned
-          let assigneeInfo = "";
-          if (existingLeadData.assigned_to) {
-            const { data: assigneeData } = await supabase
-              .from("profiles")
-              .select("full_name, email")
-              .eq("id", existingLeadData.assigned_to)
-              .maybeSingle();
-            
-            if (assigneeData) {
-              assigneeInfo = ` Lead is assigned to ${assigneeData.full_name || assigneeData.email}.`;
-            }
-          } else {
-            assigneeInfo = " Lead is currently unassigned.";
-          }
-
-          toast({
-            title: "Lead Already Exists",
-            description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}.${assigneeInfo}`,
-            variant: "destructive",
-          });
+          return;
         }
-      } else {
-        setExistingLead(null);
-        setFormStage('quick-add'); // Move to quick add stage
-        toast({
-          title: "Phone Number Available",
-          description: "No existing lead found. Fill in source and service to continue.",
+
+        // Lead exists and is not archived - show duplicate error
+        setExistingLead(existingLeadData);
+        setFormData({
+          ...formData,
+          client_name: existingLeadData.client_name || "",
+          email: existingLeadData.email || "",
+          mobile_number: phoneValidation.formatted,
+          emirate: existingLeadData.emirate || "",
+          status: existingLeadData.status || "New Lead",
+          service_required: existingLeadData.service_required || "",
+          nationality_code: existingLeadData.nationality_code || "",
+          lead_source: existingLeadData.lead_source || "",
+          assigned_to: existingLeadData.assigned_to || "", // Add current assignment
         });
+
+        // Fetch assignee information if lead is assigned
+        let assigneeInfo = "";
+        if (existingLeadData.assigned_to) {
+          const { data: assigneeData } = await supabase
+            .from("profiles")
+            .select("full_name, email")
+            .eq("id", existingLeadData.assigned_to)
+            .maybeSingle();
+
+          if (assigneeData) {
+            assigneeInfo = ` Lead is assigned to ${assigneeData.full_name || assigneeData.email}.`;
+          }
+        } else {
+          assigneeInfo = " Lead is currently unassigned.";
+        }
+
+        toast({
+          title: "Lead Already Exists",
+          description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}.${assigneeInfo}`,
+          variant: "destructive",
+        });
+
+        return;
       }
+
+      // Phone does not exist
+      setExistingLead(null);
+      setFormStage('quick-add'); // Move to quick add stage
+      toast({
+        title: "Phone Number Available",
+        description: "No existing lead found. Fill in source and service to continue.",
+      });
     } catch (error: any) {
       console.error("Error checking lead:", error);
       toast({
@@ -367,17 +384,20 @@ interface QuickLeadEntryProps {
       }
 
       // Double-check for existing lead right before insert using RPC (bypasses RLS)
-      const { data: checkResult } = await supabase
+      const { data: checkResult, error: checkError } = await supabase
         .rpc('check_phone_exists' as any, { phone_number: phoneValidation.formatted });
-      
-      const phoneCheck = checkResult?.[0];
+
+      if (checkError) {
+        throw checkError;
+      }
+
+      const phoneCheck = Array.isArray(checkResult) ? checkResult[0] : checkResult;
       if (phoneCheck?.phone_exists) {
         toast({
           title: "Lead Already Exists",
-          description: "This number is already in the system. Please search again.",
+          description: "This number is already in the system (you may not have access to view it). Please search again.",
           variant: "destructive",
         });
-        setIsSubmitting(false);
         setFormStage('number-check'); // Reset to search stage
         return;
       }
@@ -395,7 +415,20 @@ interface QuickLeadEntryProps {
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        // Unique constraint can still hit in a race condition
+        if (insertError.code === '23505' && insertError.message?.includes('leads_mobile_number_unique')) {
+          toast({
+            title: "Duplicate Phone Number",
+            description: "A lead with this phone number already exists in the system.",
+            variant: "destructive",
+          });
+          setFormStage('number-check');
+          return;
+        }
+
+        throw insertError;
+      }
 
       toast({
         title: "Quick Lead Added",
@@ -406,11 +439,22 @@ interface QuickLeadEntryProps {
       onClose();
     } catch (error: any) {
       console.error("Error in quick add:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add lead",
-        variant: "destructive",
-      });
+
+      // Friendly message for duplicates (avoid showing raw DB constraint text)
+      if (error.code === '23505' && error.message?.includes('leads_mobile_number_unique')) {
+        toast({
+          title: "Duplicate Phone Number",
+          description: "A lead with this phone number already exists in the system.",
+          variant: "destructive",
+        });
+        setFormStage('number-check');
+      } else {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to add lead",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -632,10 +676,46 @@ interface QuickLeadEntryProps {
         }
       }
 
-      // Insert lead into database
-      const { data: newLead, error: dbError } = await supabase.from("leads").insert([leadData]).select().single();
+      // Prevent duplicates even when the existing lead isn't visible to this user (unique constraint is global)
+      const { data: phoneCheckResult, error: phoneCheckError } = await supabase
+        .rpc('check_phone_exists' as any, { phone_number: phoneValidation.formatted });
 
-      if (dbError) throw dbError;
+      if (phoneCheckError) {
+        throw phoneCheckError;
+      }
+
+      const phoneCheck = Array.isArray(phoneCheckResult) ? phoneCheckResult[0] : phoneCheckResult;
+      if (phoneCheck?.phone_exists) {
+        toast({
+          title: "Duplicate Phone Number",
+          description: "A lead with this phone number already exists in the system.",
+          variant: "destructive",
+        });
+        setFormStage('number-check');
+        return;
+      }
+
+      // Insert lead into database
+      const { data: newLead, error: dbError } = await supabase
+        .from("leads")
+        .insert([leadData])
+        .select()
+        .single();
+
+      if (dbError) {
+        // Race-condition safety
+        if (dbError.code === '23505' && dbError.message?.includes('leads_mobile_number_unique')) {
+          toast({
+            title: "Duplicate Phone Number",
+            description: "A lead with this phone number already exists in the system.",
+            variant: "destructive",
+          });
+          setFormStage('number-check');
+          return;
+        }
+
+        throw dbError;
+      }
 
       // Create notification for the assigned user
       if (newLead && assignedTo) {
