@@ -366,17 +366,15 @@ interface QuickLeadEntryProps {
         return;
       }
 
-      // Double-check for existing lead right before insert
-      const { data: existingCheck } = await supabase
-        .from('leads')
-        .select('id, client_name, assigned_to, archived')
-        .eq('mobile_number', phoneValidation.formatted)
-        .maybeSingle();
-
-      if (existingCheck) {
+      // Double-check for existing lead right before insert using RPC (bypasses RLS)
+      const { data: checkResult } = await supabase
+        .rpc('check_phone_exists' as any, { phone_number: phoneValidation.formatted });
+      
+      const phoneCheck = checkResult?.[0];
+      if (phoneCheck?.phone_exists) {
         toast({
           title: "Lead Already Exists",
-          description: `This number is already in the system${existingCheck.client_name ? ` for ${existingCheck.client_name}` : ''}. Please search again.`,
+          description: "This number is already in the system. Please search again.",
           variant: "destructive",
         });
         setIsSubmitting(false);
