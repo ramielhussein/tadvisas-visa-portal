@@ -1205,6 +1205,7 @@ export type Database = {
           color: string | null
           comments: string | null
           created_at: string
+          deal_only: boolean | null
           eid_back_url: string | null
           eid_front_url: string | null
           email: string | null
@@ -1235,6 +1236,7 @@ export type Database = {
           color?: string | null
           comments?: string | null
           created_at?: string
+          deal_only?: boolean | null
           eid_back_url?: string | null
           eid_front_url?: string | null
           email?: string | null
@@ -1265,6 +1267,7 @@ export type Database = {
           color?: string | null
           comments?: string | null
           created_at?: string
+          deal_only?: boolean | null
           eid_back_url?: string | null
           eid_front_url?: string | null
           email?: string | null
