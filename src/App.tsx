@@ -1,4 +1,4 @@
-
+import React from "react";
 import SendPersonalReports from "./pages/admin/SendPersonalReports";
 import ImportContracts from "./pages/admin/ImportContracts";
 import { Toaster } from "@/components/ui/toaster";
