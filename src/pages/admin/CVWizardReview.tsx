@@ -45,6 +45,7 @@ interface Worker {
   education?: any;
   files?: any;
   financials: any;
+  created_by_name?: string;
 }
 
 const CVWizardReview = () => {
@@ -73,12 +74,16 @@ const CVWizardReview = () => {
     try {
       const { data, error } = await supabase
         .from("workers")
-        .select("*")
+        .select("*, profiles:created_by(full_name)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      setWorkers((data || []) as any);
+      const workersWithCreator = (data || []).map((w: any) => ({
+        ...w,
+        created_by_name: w.profiles?.full_name || 'Unknown'
+      }));
+      setWorkers(workersWithCreator as any);
     } catch (error: any) {
       console.error("Error loading workers:", error);
       toast({
@@ -394,7 +399,7 @@ const CVWizardReview = () => {
               </CardHeader>
 
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Nationality</p>
                     <p className="font-medium">{worker.nationality_code}</p>
@@ -406,6 +411,10 @@ const CVWizardReview = () => {
                   <div>
                     <p className="text-sm text-muted-foreground">Age</p>
                     <p className="font-medium">{worker.age}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Created By</p>
+                    <p className="font-medium">{worker.created_by_name || 'Unknown'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
