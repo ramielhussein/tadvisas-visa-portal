@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProfileNameMap } from "@/lib/profileLookup";
 import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -101,7 +102,7 @@ const MyCVs = () => {
   const loadMyWorkers = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         toast({
           title: "Authentication Required",
@@ -114,7 +115,7 @@ const MyCVs = () => {
 
       let query = supabase
         .from("workers")
-        .select("*, profiles:created_by(full_name)")
+        .select("*")
         .order("created_at", { ascending: false });
 
       // Filter out staff CVs for non-admin/non-product users
@@ -122,18 +123,20 @@ const MyCVs = () => {
         query = query.eq("staff", false);
       }
 
+      // Non-admin/product OR admins viewing "My CVs" should only see their own.
       if (!((isAdmin || isProduct) && showAll)) {
         query = query.eq("created_by", user.id);
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
 
+      const creatorMap = await fetchProfileNameMap((data ?? []).map((w: any) => w.created_by));
       const workersWithCreator = (data || []).map((w: any) => ({
         ...w,
-        created_by_name: w.profiles?.full_name || 'Unknown'
+        created_by_name: w.created_by ? (creatorMap[w.created_by] || "Unknown") : "Unknown",
       }));
+
       setWorkers(workersWithCreator as any);
     } catch (error: any) {
       console.error("Error loading CVs:", error);
