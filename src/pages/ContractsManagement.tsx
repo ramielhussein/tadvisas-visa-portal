@@ -100,6 +100,15 @@ const ContractsManagement = () => {
     }
 
     setFilteredContracts(filtered);
+
+    // Update stats based on filtered data
+    const activeFiltered = filtered.filter(d => d.status === 'Active');
+    setStats({
+      totalContracts: filtered.length,
+      totalValue: activeFiltered.reduce((sum, d) => sum + Number(d.total_amount), 0),
+      activeContracts: activeFiltered.length,
+      closedContracts: filtered.filter(d => d.status === 'Closed').length,
+    });
   };
 
   const clearDateFilter = () => {
