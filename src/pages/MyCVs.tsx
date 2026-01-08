@@ -29,13 +29,25 @@ interface Worker {
   nationality_code: string;
   job1: string;
   job2?: string;
-  age: number;
+  date_of_birth?: string;
   status: string;
   created_at: string;
   maid_status: string;
   staff?: boolean;
   created_by_name?: string;
 }
+
+const calculateAge = (dob: string | undefined): number | null => {
+  if (!dob) return null;
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
 
 const MyCVs = () => {
   const { toast } = useToast();
@@ -331,7 +343,7 @@ const MyCVs = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Age</p>
-                      <p className="font-medium">{worker.age}</p>
+                      <p className="font-medium">{calculateAge(worker.date_of_birth) ?? 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Created By</p>
