@@ -132,156 +132,158 @@ const ContractRedirect = () => {
   return <Navigate to={`/crm/contracts/${id}`} replace />;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AppContent />
-      <Toaster />
-      <Sonner />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/hire-a-maid" element={<HireAMaid />} />
-          <Route path="/get-a-visa" element={<GetAVisa />} />
-          <Route path="/monthly-packages" element={<MonthlyPackages />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/start-here" element={<StartHere />} />
-          <Route path="/ALH" element={<ALH />} />
-          <Route path="/fcg" element={<FCG />} />
-          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-          <Route path="/client-submissions" element={<ClientSubmissions />} />
-          <Route path="/refund" element={<Refund />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/id-oc" element={<IdOc />} />
-          <Route path="/id-ic" element={<IdIc />} />
-          <Route path="/ph-ic" element={<PhIc />} />
-          <Route path="/ph-oc" element={<PhOc />} />
-          <Route path="/et-ic" element={<EtIc />} />
-          <Route path="/et-oc" element={<EtOc />} />
-          <Route path="/af-ic" element={<AfIc />} />
-          <Route path="/af-oc" element={<AfOc />} />
-          <Route path="/my-ic" element={<MyIc />} />
-          <Route path="/my-oc" element={<MyOc />} />
-          <Route path="/ads" element={<Ads />} />
-          <Route path="/hub" element={<Hub />} />
-          <Route path="/book-worker" element={<BookWorker />} />
-          <Route path="/cvwizard" element={<ProtectedRoute><CVWizard /></ProtectedRoute>} />
-          <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
-          <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
-          <Route path="/admin/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
-          <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
-          <Route path="/admin/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
-          <Route path="/admin/send-personal-reports" element={<ProtectedRoute><SendPersonalReports /></ProtectedRoute>} />
-          <Route path="/admin/client-submissions" element={<ProtectedRoute><ClientSubmissions /></ProtectedRoute>} />
-          <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
-          <Route path="/admin/reset-admin" element={<ResetAdmin />} />
-          <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
-          <Route path="/cv-prospects" element={<ProtectedRoute><CVProspects /></ProtectedRoute>} />
-          <Route path="/apply" element={<PublicCVApplication />} />
-          <Route path="/install" element={<InstallApp />} />
-          <Route path="/wizardalbum" element={<WizardAlbum />} />
-          <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
-          <Route path="/sop" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
-          <Route path="/sop/:slug" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
-          <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
-          
-          {/* Legacy redirects for backward compatibility */}
-          <Route path="/deals" element={<Navigate to="/crm/contracts" replace />} />
-          <Route path="/deals/create" element={<Navigate to="/crm/contracts/create" replace />} />
-          <Route path="/deals/:id" element={<ContractRedirect />} />
-          <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
-          <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
-          <Route path="/daily-sales-report" element={<Navigate to="/crm/daily-sales-report" replace />} />
-          
-          {/* CRM Module - Sales & Customer Management */}
-          <Route path="/crm" element={<ProtectedRoute><CRMHub /></ProtectedRoute>} />
-          <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
-          <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
-          <Route path="/crm/contracts" element={<ProtectedRoute><ContractsManagement /></ProtectedRoute>} />
-          <Route path="/crm/contracts/:id" element={<ProtectedRoute><ContractDetailPage /></ProtectedRoute>} />
-          <Route path="/crm/contracts/edit/:id" element={<ProtectedRoute><EditContractPage /></ProtectedRoute>} />
-          <Route path="/crm/contracts/create" element={<ProtectedRoute><CreateContractPage /></ProtectedRoute>} />
-          <Route path="/crm/contracts/ar-report" element={<ProtectedRoute><ContractsARReport /></ProtectedRoute>} />
-          <Route path="/crm/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
-          <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
-          <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
-          <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
-          <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
-          <Route path="/crm/lead-attendance-report" element={<ProtectedRoute><LeadAttendanceReport /></ProtectedRoute>} />
-          <Route path="/crm/sales-reports" element={<ProtectedRoute><SalesReportsCenter /></ProtectedRoute>} />
-          <Route path="/crm/my-dashboard" element={<ProtectedRoute><SalesPersonDashboard /></ProtectedRoute>} />
-          <Route path="/crm/team-dashboard" element={<ProtectedRoute><SalesManagerDashboard /></ProtectedRoute>} />
-          
-          {/* HR & Analytics */}
-          <Route path="/hr/dashboard" element={<ProtectedRoute><HRDashboard /></ProtectedRoute>} />
-          <Route path="/hr/attendance" element={<ProtectedRoute><HRAttendance /></ProtectedRoute>} />
-          <Route path="/hr/payroll" element={<ProtectedRoute><HRPayroll /></ProtectedRoute>} />
-          <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
-          
-          {/* Finance Module - Financial Management */}
-          <Route path="/finance" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
-          <Route path="/finance/dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
-          <Route path="/finance/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
-          <Route path="/finance/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
-          <Route path="/finance/bank-accounts" element={<ProtectedRoute><BankAccountsManagement /></ProtectedRoute>} />
-          <Route path="/finance/bank-transfers" element={<ProtectedRoute><BankTransfers /></ProtectedRoute>} />
-          <Route path="/finance/equity-accounts" element={<ProtectedRoute><EquityAccountsManagement /></ProtectedRoute>} />
-          <Route path="/finance/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
-          <Route path="/finance/expenses" element={<ProtectedRoute><ExpensesManagement /></ProtectedRoute>} />
-          <Route path="/finance/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
-          <Route path="/finance/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
-          <Route path="/finance/refunds-list" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
-          <Route path="/finance/absconded-workers" element={<ProtectedRoute><AbscondedWorkersReport /></ProtectedRoute>} />
-          <Route path="/finance/contract-revenue" element={<ProtectedRoute><ContractRevenue /></ProtectedRoute>} />
-          
-          {/* Product Module - Operations & Workers */}
-          <Route path="/product/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
-          
-          {/* Hub Routes - Role-Based Entry Points */}
-          <Route path="/hub/sales" element={<ProtectedRoute><SalesHub /></ProtectedRoute>} />
-          <Route path="/hub/finance" element={<ProtectedRoute><FinanceHub /></ProtectedRoute>} />
-          <Route path="/hub/client" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
-          <Route path="/product-dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
-          
-          {/* Product Management Routes */}
-          <Route path="/product/dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
-          <Route path="/product/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
-          <Route path="/product/receipt-orders" element={<ProtectedRoute><ReceiptOrders /></ProtectedRoute>} />
-          <Route path="/product/delivery-orders" element={<ProtectedRoute><DeliveryOrders /></ProtectedRoute>} />
-          <Route path="/product/daily-headcount" element={<ProtectedRoute><DailyHeadcount /></ProtectedRoute>} />
-          <Route path="/product/nationality-workflows" element={<ProtectedRoute><NationalityWorkflows /></ProtectedRoute>} />
-          <Route path="/product/worker-returns" element={<ProtectedRoute><WorkerReturns /></ProtectedRoute>} />
-          <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
-          
-          {/* Dashboards */}
-          <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
-          <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
-          <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
-          <Route path="/sales-dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
-          <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
-          <Route path="/admin/import-contracts" element={<ProtectedRoute><ImportContracts /></ProtectedRoute>} />
-          
-          {/* TadGo Driver App */}
-          <Route path="/tadgo" element={<TadGoLanding />} />
-          <Route path="/tadgo/login" element={<TadGoLogin />} />
-          <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
-          <Route path="/tadgo/dashboard" element={<Navigate to="/tadgo/app" replace />} />
-          <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
-          <Route path="/tadgo/print-station" element={<ProtectedRoute><PrintStation /></ProtectedRoute>} />
-          {/* Gym Timer */}
-          <Route path="/gym" element={<GymTimer />} />
-          
-          {/* Legacy URL redirects */}
-          <Route path="/chattest" element={<Navigate to="/" replace />} />
-          <Route path="/financial" element={<Navigate to="/finance" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <TooltipProvider>
+          <AppContent />
+          <Toaster />
+          <Sonner />
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/hire-a-maid" element={<HireAMaid />} />
+            <Route path="/get-a-visa" element={<GetAVisa />} />
+            <Route path="/monthly-packages" element={<MonthlyPackages />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/start-here" element={<StartHere />} />
+            <Route path="/ALH" element={<ALH />} />
+            <Route path="/fcg" element={<FCG />} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/client-submissions" element={<ClientSubmissions />} />
+            <Route path="/refund" element={<Refund />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/id-oc" element={<IdOc />} />
+            <Route path="/id-ic" element={<IdIc />} />
+            <Route path="/ph-ic" element={<PhIc />} />
+            <Route path="/ph-oc" element={<PhOc />} />
+            <Route path="/et-ic" element={<EtIc />} />
+            <Route path="/et-oc" element={<EtOc />} />
+            <Route path="/af-ic" element={<AfIc />} />
+            <Route path="/af-oc" element={<AfOc />} />
+            <Route path="/my-ic" element={<MyIc />} />
+            <Route path="/my-oc" element={<MyOc />} />
+            <Route path="/ads" element={<Ads />} />
+            <Route path="/hub" element={<Hub />} />
+            <Route path="/book-worker" element={<BookWorker />} />
+            <Route path="/cvwizard" element={<ProtectedRoute><CVWizard /></ProtectedRoute>} />
+            <Route path="/admin/cvwizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
+            <Route path="/admin/cvwizard-review" element={<ProtectedRoute><CVWizardReview /></ProtectedRoute>} />
+            <Route path="/admin/user-management" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
+            <Route path="/admin/user-list" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+            <Route path="/admin/send-personal-reports" element={<ProtectedRoute><SendPersonalReports /></ProtectedRoute>} />
+            <Route path="/admin/client-submissions" element={<ProtectedRoute><ClientSubmissions /></ProtectedRoute>} />
+            <Route path="/admin/cv-wizard-settings" element={<ProtectedRoute><CVWizardSettings /></ProtectedRoute>} />
+            <Route path="/admin/reset-admin" element={<ResetAdmin />} />
+            <Route path="/my-cvs" element={<ProtectedRoute><MyCVs /></ProtectedRoute>} />
+            <Route path="/cv-prospects" element={<ProtectedRoute><CVProspects /></ProtectedRoute>} />
+            <Route path="/apply" element={<PublicCVApplication />} />
+            <Route path="/install" element={<InstallApp />} />
+            <Route path="/wizardalbum" element={<WizardAlbum />} />
+            <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
+            <Route path="/sop" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
+            <Route path="/sop/:slug" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
+            <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
+            
+            {/* Legacy redirects for backward compatibility */}
+            <Route path="/deals" element={<Navigate to="/crm/contracts" replace />} />
+            <Route path="/deals/create" element={<Navigate to="/crm/contracts/create" replace />} />
+            <Route path="/deals/:id" element={<ContractRedirect />} />
+            <Route path="/contracts" element={<Navigate to="/crm/contracts" replace />} />
+            <Route path="/contracts/create" element={<Navigate to="/crm/contracts/create" replace />} />
+            <Route path="/daily-sales-report" element={<Navigate to="/crm/daily-sales-report" replace />} />
+            
+            {/* CRM Module - Sales & Customer Management */}
+            <Route path="/crm" element={<ProtectedRoute><CRMHub /></ProtectedRoute>} />
+            <Route path="/crm/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/crm/leads" element={<ProtectedRoute><LeadManagement /></ProtectedRoute>} />
+            <Route path="/crm/leads/:id" element={<ProtectedRoute><LeadDetail /></ProtectedRoute>} />
+            <Route path="/crm/contracts" element={<ProtectedRoute><ContractsManagement /></ProtectedRoute>} />
+            <Route path="/crm/contracts/:id" element={<ProtectedRoute><ContractDetailPage /></ProtectedRoute>} />
+            <Route path="/crm/contracts/edit/:id" element={<ProtectedRoute><EditContractPage /></ProtectedRoute>} />
+            <Route path="/crm/contracts/create" element={<ProtectedRoute><CreateContractPage /></ProtectedRoute>} />
+            <Route path="/crm/contracts/ar-report" element={<ProtectedRoute><ContractsARReport /></ProtectedRoute>} />
+            <Route path="/crm/sales-targets" element={<ProtectedRoute><SalesTargets /></ProtectedRoute>} />
+            <Route path="/crm/lead-sources" element={<ProtectedRoute><LeadSourcesManagement /></ProtectedRoute>} />
+            <Route path="/crm/inquiry-packages" element={<ProtectedRoute><InquiryPackagesManagement /></ProtectedRoute>} />
+            <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
+            <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
+            <Route path="/crm/lead-attendance-report" element={<ProtectedRoute><LeadAttendanceReport /></ProtectedRoute>} />
+            <Route path="/crm/sales-reports" element={<ProtectedRoute><SalesReportsCenter /></ProtectedRoute>} />
+            <Route path="/crm/my-dashboard" element={<ProtectedRoute><SalesPersonDashboard /></ProtectedRoute>} />
+            <Route path="/crm/team-dashboard" element={<ProtectedRoute><SalesManagerDashboard /></ProtectedRoute>} />
+            
+            {/* HR & Analytics */}
+            <Route path="/hr/dashboard" element={<ProtectedRoute><HRDashboard /></ProtectedRoute>} />
+            <Route path="/hr/attendance" element={<ProtectedRoute><HRAttendance /></ProtectedRoute>} />
+            <Route path="/hr/payroll" element={<ProtectedRoute><HRPayroll /></ProtectedRoute>} />
+            <Route path="/hr/nationality-dashboard" element={<ProtectedRoute><NationalityDashboard /></ProtectedRoute>} />
+            
+            {/* Finance Module - Financial Management */}
+            <Route path="/finance" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+            <Route path="/finance/dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+            <Route path="/finance/payments" element={<ProtectedRoute><PaymentsList /></ProtectedRoute>} />
+            <Route path="/finance/client-statement" element={<ProtectedRoute><ClientStatement /></ProtectedRoute>} />
+            <Route path="/finance/bank-accounts" element={<ProtectedRoute><BankAccountsManagement /></ProtectedRoute>} />
+            <Route path="/finance/bank-transfers" element={<ProtectedRoute><BankTransfers /></ProtectedRoute>} />
+            <Route path="/finance/equity-accounts" element={<ProtectedRoute><EquityAccountsManagement /></ProtectedRoute>} />
+            <Route path="/finance/owner-equity" element={<ProtectedRoute><OwnerEquity /></ProtectedRoute>} />
+            <Route path="/finance/expenses" element={<ProtectedRoute><ExpensesManagement /></ProtectedRoute>} />
+            <Route path="/finance/expense-categories" element={<ProtectedRoute><ExpenseCategoriesManagement /></ProtectedRoute>} />
+            <Route path="/finance/refunds-approval" element={<ProtectedRoute><RefundsApproval /></ProtectedRoute>} />
+            <Route path="/finance/refunds-list" element={<ProtectedRoute><RefundsList /></ProtectedRoute>} />
+            <Route path="/finance/absconded-workers" element={<ProtectedRoute><AbscondedWorkersReport /></ProtectedRoute>} />
+            <Route path="/finance/contract-revenue" element={<ProtectedRoute><ContractRevenue /></ProtectedRoute>} />
+            
+            {/* Product Module - Operations & Workers */}
+            <Route path="/product/suppliers" element={<ProtectedRoute><SuppliersManagement /></ProtectedRoute>} />
+            
+            {/* Hub Routes - Role-Based Entry Points */}
+            <Route path="/hub/sales" element={<ProtectedRoute><SalesHub /></ProtectedRoute>} />
+            <Route path="/hub/finance" element={<ProtectedRoute><FinanceHub /></ProtectedRoute>} />
+            <Route path="/hub/client" element={<ProtectedRoute><ClientPortal /></ProtectedRoute>} />
+            <Route path="/product-dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
+            
+            {/* Product Management Routes */}
+            <Route path="/product/dashboard" element={<ProtectedRoute><ProductHub /></ProtectedRoute>} />
+            <Route path="/product/purchase-orders" element={<ProtectedRoute><PurchaseOrders /></ProtectedRoute>} />
+            <Route path="/product/receipt-orders" element={<ProtectedRoute><ReceiptOrders /></ProtectedRoute>} />
+            <Route path="/product/delivery-orders" element={<ProtectedRoute><DeliveryOrders /></ProtectedRoute>} />
+            <Route path="/product/daily-headcount" element={<ProtectedRoute><DailyHeadcount /></ProtectedRoute>} />
+            <Route path="/product/nationality-workflows" element={<ProtectedRoute><NationalityWorkflows /></ProtectedRoute>} />
+            <Route path="/product/worker-returns" element={<ProtectedRoute><WorkerReturns /></ProtectedRoute>} />
+            <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
+            
+            {/* Dashboards */}
+            <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
+            <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
+            <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
+            <Route path="/sales-dashboard" element={<ProtectedRoute><SalesDashboard /></ProtectedRoute>} />
+            <Route path="/admin/data-backup" element={<ProtectedRoute><DataBackup /></ProtectedRoute>} />
+            <Route path="/admin/import-contracts" element={<ProtectedRoute><ImportContracts /></ProtectedRoute>} />
+            
+            {/* TadGo Driver App */}
+            <Route path="/tadgo" element={<TadGoLanding />} />
+            <Route path="/tadgo/login" element={<TadGoLogin />} />
+            <Route path="/tadgo/app" element={<ProtectedRoute><TadGoApp /></ProtectedRoute>} />
+            <Route path="/tadgo/dashboard" element={<Navigate to="/tadgo/app" replace />} />
+            <Route path="/tadgo/task/:id" element={<ProtectedRoute><TadGoTaskDetail /></ProtectedRoute>} />
+            <Route path="/tadgo/print-station" element={<ProtectedRoute><PrintStation /></ProtectedRoute>} />
+            {/* Gym Timer */}
+            <Route path="/gym" element={<GymTimer />} />
+            
+            {/* Legacy URL redirects */}
+            <Route path="/chattest" element={<Navigate to="/" replace />} />
+            <Route path="/financial" element={<Navigate to="/finance" replace />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
