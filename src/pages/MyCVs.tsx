@@ -34,6 +34,7 @@ interface Worker {
   created_at: string;
   maid_status: string;
   staff?: boolean;
+  created_by_name?: string;
 }
 
 const MyCVs = () => {
@@ -101,7 +102,7 @@ const MyCVs = () => {
 
       let query = supabase
         .from("workers")
-        .select("*")
+        .select("*, profiles:created_by(full_name)")
         .order("created_at", { ascending: false });
 
       // Filter out staff CVs for non-admin/non-product users
@@ -117,7 +118,11 @@ const MyCVs = () => {
 
       if (error) throw error;
 
-      setWorkers((data || []) as any);
+      const workersWithCreator = (data || []).map((w: any) => ({
+        ...w,
+        created_by_name: w.profiles?.full_name || 'Unknown'
+      }));
+      setWorkers(workersWithCreator as any);
     } catch (error: any) {
       console.error("Error loading CVs:", error);
       toast({
@@ -315,7 +320,7 @@ const MyCVs = () => {
                 </CardHeader>
 
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
                     <div>
                       <p className="text-sm text-muted-foreground">Nationality</p>
                       <p className="font-medium">{worker.nationality_code}</p>
@@ -327,6 +332,10 @@ const MyCVs = () => {
                     <div>
                       <p className="text-sm text-muted-foreground">Age</p>
                       <p className="font-medium">{worker.age}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Created By</p>
+                      <p className="font-medium">{worker.created_by_name || 'Unknown'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Submitted</p>
