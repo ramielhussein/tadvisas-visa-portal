@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProfileNameMap } from "@/lib/profileLookup";
 import { Loader2, Eye, CheckCircle, XCircle, CreditCard, Download, Building2, Edit, Save, X } from "lucide-react";
 import PullWorkerDialog from "@/components/cvwizard/PullWorkerDialog";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -74,15 +75,17 @@ const CVWizardReview = () => {
     try {
       const { data, error } = await supabase
         .from("workers")
-        .select("*, profiles:created_by(full_name)")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
+      const creatorMap = await fetchProfileNameMap((data ?? []).map((w: any) => w.created_by));
       const workersWithCreator = (data || []).map((w: any) => ({
         ...w,
-        created_by_name: w.profiles?.full_name || 'Unknown'
+        created_by_name: w.created_by ? (creatorMap[w.created_by] || "Unknown") : "Unknown",
       }));
+
       setWorkers(workersWithCreator as any);
     } catch (error: any) {
       console.error("Error loading workers:", error);
