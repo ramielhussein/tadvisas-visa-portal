@@ -459,8 +459,8 @@ const CreateContract = () => {
         service_type: services.map(s => s.service_type).filter(Boolean).join(", "),
         service_description: JSON.stringify(services),
         deal_value: calculatedAmounts.base_amount,
-        vat_rate: parseFloat(formData.vat_rate),
-        commission_rate: parseFloat(formData.commission_rate),
+        vat_rate: parseFloat(formData.vat_rate) || 0,
+        commission_rate: parseFloat(formData.commission_rate) || 0,
         notes: formData.notes.trim() || undefined,
       });
 
