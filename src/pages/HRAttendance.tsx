@@ -492,6 +492,37 @@ const HRAttendance = () => {
     },
   });
 
+  // Admin: Force break for a user
+  const forceBreakMutation = useMutation({
+    mutationFn: async (attendanceId: string) => {
+      // Insert a break record for the user
+      const { error: breakError } = await supabase
+        .from('break_records')
+        .insert({
+          attendance_record_id: attendanceId,
+          break_out_time: new Date().toISOString(),
+        });
+
+      if (breakError) throw breakError;
+
+      // Update status to on_break
+      const { error: statusError } = await supabase
+        .from('attendance_records')
+        .update({ status: 'on_break' })
+        .eq('id', attendanceId);
+
+      if (statusError) throw statusError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
+      queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
+      toast.success('Employee forced on break');
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to force break: ' + error.message);
+    },
+  });
+
   // Mark absent mutation
   const markAbsentMutation = useMutation({
     mutationFn: async (employeeId: string) => {
@@ -855,6 +886,18 @@ const HRAttendance = () => {
                           
                           {isAdmin && attendance.status !== 'checked_out' && (
                             <div className="flex gap-1">
+                              {attendance.status === 'checked_in' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => forceBreakMutation.mutate(attendance.id)}
+                                  disabled={forceBreakMutation.isPending}
+                                  title="Force break"
+                                  className="text-yellow-600 hover:text-yellow-700"
+                                >
+                                  <Coffee className="h-3 w-3" />
+                                </Button>
+                              )}
                               <Button
                                 variant="outline"
                                 size="sm"
