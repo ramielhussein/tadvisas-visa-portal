@@ -25,6 +25,7 @@ interface Contract {
   service_type: string;
   deal_value: number;
   total_amount: number;
+  paid_amount: number;
   status: string;
   created_at: string;
   deal_date: string | null;
@@ -48,6 +49,7 @@ const ContractsManagement = () => {
   const [stats, setStats] = useState({
     totalContracts: 0,
     totalValue: 0,
+    totalReceived: 0,
     activeContracts: 0,
     closedContracts: 0,
   });
@@ -107,6 +109,7 @@ const ContractsManagement = () => {
     setStats({
       totalContracts: nonVoidFiltered.length,
       totalValue: activeFiltered.reduce((sum, d) => sum + Number(d.total_amount), 0),
+      totalReceived: activeFiltered.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
       activeContracts: activeFiltered.length,
       closedContracts: filtered.filter(d => d.status === 'Closed').length,
     });
@@ -157,6 +160,7 @@ const ContractsManagement = () => {
       const stats = {
         totalContracts: data?.length || 0,
         totalValue: activeContractsData.reduce((sum, d) => sum + Number(d.total_amount), 0),
+        totalReceived: activeContractsData.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
         activeContracts: activeContractsData.length,
         closedContracts: (data || []).filter(d => d.status === 'Closed').length,
       };
@@ -194,6 +198,7 @@ const ContractsManagement = () => {
       "Deal Date": c.deal_date ? format(new Date(c.deal_date), "dd MMM yyyy") : "-",
       "Deal Value": c.deal_value,
       "Total Amount": c.total_amount,
+      "Received": c.paid_amount || 0,
       "Status": c.status,
       "Created By": c.created_by_name || "-",
       "Created At": format(new Date(c.created_at), "dd MMM yyyy"),
@@ -362,11 +367,11 @@ const ContractsManagement = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
-                  Active
+                  Received
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.activeContracts}</p>
+                <p className="text-2xl font-bold text-green-600">AED {stats.totalReceived.toLocaleString()}</p>
               </CardContent>
             </Card>
 
@@ -374,11 +379,11 @@ const ContractsManagement = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Closed
+                  Active / Closed
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.closedContracts}</p>
+                <p className="text-2xl font-bold">{stats.activeContracts} / {stats.closedContracts}</p>
               </CardContent>
             </Card>
           </div>
@@ -475,6 +480,7 @@ const ContractsManagement = () => {
                       <TableHead>Deal Date</TableHead>
                       <TableHead className="text-right">Value</TableHead>
                       <TableHead className="text-right">Total</TableHead>
+                      <TableHead className="text-right">Received</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Created By</TableHead>
                       <TableHead>Created</TableHead>
@@ -512,6 +518,9 @@ const ContractsManagement = () => {
                           </TableCell>
                           <TableCell className="text-right font-medium">
                             {Number(contract.total_amount).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-right text-green-600 font-medium">
+                            {Number(contract.paid_amount || 0).toLocaleString()}
                           </TableCell>
                           <TableCell>
                             <Badge className={cn("text-xs", getStatusColor(contract.status))}>
