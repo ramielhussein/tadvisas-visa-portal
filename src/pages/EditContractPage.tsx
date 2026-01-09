@@ -181,11 +181,13 @@ const EditContract = () => {
   };
 
   const calculateTotals = () => {
-    const dealValue = services.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
+    // Service amounts are VAT-inclusive, so we reverse-calculate base and VAT
+    const totalAmount = services.reduce((sum, s) => sum + (parseFloat(s.amount) || 0), 0);
     const vatRate = parseFloat(formData.vat_rate) || 0;
-    const vatAmount = (dealValue * vatRate) / 100;
-    const totalAmount = dealValue + vatAmount;
-    return { dealValue, vatAmount, totalAmount };
+    // Extract base from inclusive: base = total / (1 + rate/100)
+    const dealValue = vatRate > 0 ? totalAmount / (1 + vatRate / 100) : totalAmount;
+    const vatAmount = totalAmount - dealValue;
+    return { dealValue: Math.round(dealValue * 100) / 100, vatAmount: Math.round(vatAmount * 100) / 100, totalAmount };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
