@@ -190,12 +190,13 @@ interface QuickLeadEntryProps {
             // Check if lead is assigned or unassigned
             const isAssigned = existingLeadData.assigned_to !== null;
 
-            // Unarchive and reset to "New Lead" status
+            // Unarchive, reset to "New Lead" status, and bump to top
             const { error: unarchiveError } = await supabase
               .from('leads')
               .update({
                 archived: false,
-                status: 'New Lead'
+                status: 'New Lead',
+                bumped_at: new Date().toISOString()
               })
               .eq('id', existingLeadData.id);
 
@@ -250,7 +251,25 @@ interface QuickLeadEntryProps {
           return;
         }
 
-        // Lead exists and is not archived - show duplicate error
+        // Lead exists and is not archived - bump to top and show duplicate error
+        // Bump the lead to the top since someone is trying to add it (it's hot!)
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase
+          .from('leads')
+          .update({ bumped_at: new Date().toISOString() })
+          .eq('id', existingLeadData.id);
+
+        // Log the bump activity
+        if (user) {
+          await supabase.from("lead_activities").insert({
+            lead_id: existingLeadData.id,
+            user_id: user.id,
+            activity_type: "system",
+            title: "Lead Bumped - Duplicate Attempt",
+            description: "Lead bumped to top because someone tried to add it again (hot lead!)",
+          });
+        }
+
         setExistingLead(existingLeadData);
         setFormData({
           ...formData,
@@ -282,8 +301,8 @@ interface QuickLeadEntryProps {
         }
 
         toast({
-          title: "Lead Already Exists",
-          description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}.${assigneeInfo}`,
+          title: "Lead Already Exists - Bumped to Top!",
+          description: `This phone number is already in the system for ${existingLeadData.client_name || 'a client'}.${assigneeInfo} Lead has been bumped to the top.`,
           variant: "destructive",
         });
 
