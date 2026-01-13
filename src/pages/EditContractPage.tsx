@@ -52,12 +52,14 @@ const EditContract = () => {
   ]);
 
   useEffect(() => {
-    if (id) {
-      fetchDeal();
-      fetchPaymentMethods();
-      fetchBankAccounts();
-      fetchWorkers();
-    }
+    const initializeData = async () => {
+      if (id) {
+        // Fetch workers first, then deal - to ensure worker dropdown is populated before setting selected worker
+        await Promise.all([fetchPaymentMethods(), fetchBankAccounts(), fetchWorkers()]);
+        await fetchDeal();
+      }
+    };
+    initializeData();
   }, [id]);
 
   const fetchWorkers = async () => {
