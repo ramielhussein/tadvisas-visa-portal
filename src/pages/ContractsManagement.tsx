@@ -110,7 +110,7 @@ const ContractsManagement = () => {
     setStats({
       totalContracts: nonVoidFiltered.length,
       totalValue: activeAndDraftFiltered.reduce((sum, d) => sum + Number(d.total_amount), 0),
-      totalReceived: activeFiltered.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
+      totalReceived: activeAndDraftFiltered.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
       activeContracts: activeFiltered.length,
       closedContracts: filtered.filter(d => d.status === 'Closed').length,
     });
@@ -156,13 +156,13 @@ const ContractsManagement = () => {
       setContracts(contractsWithCreator);
       setFilteredContracts(contractsWithCreator);
 
-      // Calculate stats - Active + Draft contracts count towards Total Value
+      // Calculate stats - Active + Draft contracts count towards Total Value and Received
       const activeContractsData = (data || []).filter(d => d.status === 'Active');
       const activeAndDraftData = (data || []).filter(d => d.status === 'Active' || d.status === 'Draft');
       const stats = {
         totalContracts: data?.length || 0,
         totalValue: activeAndDraftData.reduce((sum, d) => sum + Number(d.total_amount), 0),
-        totalReceived: activeContractsData.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
+        totalReceived: activeAndDraftData.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
         activeContracts: activeContractsData.length,
         closedContracts: (data || []).filter(d => d.status === 'Closed').length,
       };
