@@ -153,7 +153,8 @@ const CRMHub = () => {
         let adminQuery = supabase
           .from("leads")
           .select("*")
-          .order("bumped_at", { ascending: false, nullsFirst: true })
+          // Sort bumped leads to the top (NULLs last)
+          .order("bumped_at", { ascending: false, nullsFirst: false })
           .order(sortBy, { ascending: adminAscending, nullsFirst: false });
 
         // Filter archived leads unless toggle is on OR searching (show all when searching)
@@ -278,13 +279,13 @@ const CRMHub = () => {
         myLeadsQuery = myLeadsQuery.or("status.eq.SOLD,client_converted.eq.true");
       }
 
-      // Apply sorting - bumped_at first (DESC, nulls last), then by sortBy
+      // Apply sorting - bumped_at first (DESC, NULLs last), then by sortBy
       const ascending = (sortBy === "created_at" || sortBy === "updated_at") ? false : true;
       unassignedQuery = unassignedQuery
-        .order("bumped_at", { ascending: false, nullsFirst: true })
+        .order("bumped_at", { ascending: false, nullsFirst: false })
         .order(sortBy, { ascending, nullsFirst: false });
       myLeadsQuery = myLeadsQuery
-        .order("bumped_at", { ascending: false, nullsFirst: true })
+        .order("bumped_at", { ascending: false, nullsFirst: false })
         .order(sortBy, { ascending, nullsFirst: false });
 
       const [unassignedResult, myLeadsResult] = await Promise.all([
