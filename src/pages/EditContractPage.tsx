@@ -65,8 +65,8 @@ const EditContract = () => {
   const fetchWorkers = async () => {
     const { data } = await supabase
       .from("workers")
-      .select("id, full_name, nationality_code, passport_no")
-      .order("full_name");
+      .select("id, name, nationality_code, passport_no")
+      .order("name");
     setWorkers(data || []);
   };
 
@@ -219,7 +219,7 @@ const EditContract = () => {
 
       // Get worker name if worker is selected
       const selectedWorker = workers.find(w => w.id === selectedWorkerId);
-      const workerName = selectedWorker ? selectedWorker.full_name : null;
+      const workerName = selectedWorker ? selectedWorker.name : null;
 
       const { error } = await supabase
         .from("deals")
@@ -354,7 +354,7 @@ const EditContract = () => {
                             {selectedWorkerId && selectedWorkerId !== "none" ? (
                               <span className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
-                                {workers.find(w => w.id === selectedWorkerId)?.full_name || "Select a worker"}
+                                {workers.find(w => w.id === selectedWorkerId)?.name || "Select a worker"}
                               </span>
                             ) : (
                               "Select a worker to link"
@@ -386,7 +386,7 @@ const EditContract = () => {
                                 {workers.map((worker) => (
                                   <CommandItem
                                     key={worker.id}
-                                    value={`${worker.full_name || ''} ${worker.nationality_code || ''} ${worker.passport_no || ''}`.trim()}
+                                    value={`${worker.name || ''} ${worker.nationality_code || ''} ${worker.passport_no || ''}`.trim()}
                                     onSelect={() => setSelectedWorkerId(worker.id)}
                                   >
                                     <Check
@@ -396,7 +396,7 @@ const EditContract = () => {
                                       )}
                                     />
                                     <span className="flex-1">
-                                      {worker.full_name}
+                                      {worker.name}
                                       {worker.nationality_code && <span className="text-muted-foreground ml-1">({worker.nationality_code})</span>}
                                       {worker.passport_no && <span className="text-muted-foreground ml-1">- {worker.passport_no}</span>}
                                     </span>
