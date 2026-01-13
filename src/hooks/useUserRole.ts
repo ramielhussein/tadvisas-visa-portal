@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type UserRole = 'super_admin' | 'admin' | 'sales' | 'finance' | 'product' | 'client' | 'user' | null;
+export type UserRole = 'super_admin' | 'admin' | 'sales_manager' | 'sales' | 'finance' | 'product' | 'client' | 'user' | null;
 
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>(null);
@@ -44,7 +44,7 @@ export const useUserRole = () => {
         return;
       }
 
-      // Priority order: super_admin > admin > finance > sales > product > client > user
+      // Priority order: super_admin > admin > finance > sales_manager > sales > product > client > user
       if (roles && roles.length > 0) {
         const userRoles = roles.map(r => r.role);
         const hasSuperAdmin = userRoles.includes('super_admin');
@@ -53,6 +53,7 @@ export const useUserRole = () => {
         if (hasSuperAdmin) setRole('super_admin');
         else if (userRoles.includes('admin')) setRole('admin');
         else if (userRoles.includes('finance')) setRole('finance');
+        else if (userRoles.includes('sales_manager')) setRole('sales_manager');
         else if (userRoles.includes('sales')) setRole('sales');
         else if (userRoles.includes('product')) setRole('product');
         else if (userRoles.includes('client')) setRole('client');
@@ -73,7 +74,7 @@ export const useUserRole = () => {
   };
 
   const isAdmin = role === 'admin' || role === 'super_admin';
-  const isSales = role === 'sales' || isAdmin;
+  const isSales = role === 'sales' || role === 'sales_manager' || isAdmin;
   const isFinance = role === 'finance' || isAdmin;
   const isProduct = role === 'product' || isAdmin;
   const isClient = role === 'client';
