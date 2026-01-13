@@ -2,6 +2,7 @@ import { ReactNode, useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import TopHeader from "./TopHeader";
+import Navbar from "./Navbar";
 import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
@@ -52,9 +53,28 @@ const Layout = ({ children }: LayoutProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Public layout - show old Navbar for non-authenticated users
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
+        <FloatingButtons />
+        <KeyboardShortcutsHelp 
+          open={showShortcutsHelp} 
+          onClose={() => setShowShortcutsHelp(false)} 
+        />
+      </div>
+    );
+  }
+
+  // Authenticated layout - show sidebar for staff users
   return (
     <SidebarProvider>
-      <div className={`min-h-screen flex w-full ${isAuthenticated ? 'bg-cyan-50' : 'bg-background'}`}>
+      <div className="min-h-screen flex w-full bg-cyan-50">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <TopHeader />
