@@ -1,8 +1,9 @@
 import { ReactNode, useState, useEffect } from "react";
-import Navbar from "./Navbar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
+import TopHeader from "./TopHeader";
 import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
-import AdminMenu from "./AdminMenu";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import DriversFloatingIsland from "./tadgo/DriversFloatingIsland";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,20 +53,24 @@ const Layout = ({ children }: LayoutProps) => {
   }, []);
 
   return (
-    <div className={`min-h-screen flex flex-col ${isAuthenticated ? 'bg-cyan-50' : 'bg-white'}`}>
-      <Navbar />
-      <main className="flex-1">
-        {children}
-      </main>
-      <Footer />
+    <SidebarProvider>
+      <div className={`min-h-screen flex w-full ${isAuthenticated ? 'bg-cyan-50' : 'bg-background'}`}>
+        <AppSidebar />
+        <div className="flex-1 flex flex-col min-w-0">
+          <TopHeader />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
+      </div>
       <FloatingButtons />
-      <AdminMenu />
       <DriversFloatingIsland />
       <KeyboardShortcutsHelp 
         open={showShortcutsHelp} 
         onClose={() => setShowShortcutsHelp(false)} 
       />
-    </div>
+    </SidebarProvider>
   );
 };
 
