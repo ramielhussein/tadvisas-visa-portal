@@ -262,6 +262,7 @@ const App = () => {
             <Route path="/product/worker-transfers" element={<ProtectedRoute><WorkerTransfers /></ProtectedRoute>} />
             
             {/* Dashboards */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/nationality-dashboard" element={<NationalityDashboard />} />
             <Route path="/sales-manager-dashboard" element={<SalesManagerDashboard />} />
             <Route path="/sales-person-dashboard" element={<SalesPersonDashboard />} />
