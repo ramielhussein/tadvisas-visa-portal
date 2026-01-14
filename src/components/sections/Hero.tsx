@@ -1,6 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, CheckCircle } from "lucide-react";
+import RamadanCountdown from "./RamadanCountdown";
 
 const Hero = () => {
   const handleCallClick = () => {
@@ -25,6 +25,9 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Content */}
           <div className="animate-fade-in">
+            <div className="mb-4">
+              <RamadanCountdown />
+            </div>
             <h1 className="text-4xl lg:text-6xl font-bold text-primary mb-6 text-shadow">
               Your Maid Visa,<br />
               <span className="text-accent">Done Right.</span><br />
