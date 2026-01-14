@@ -84,24 +84,30 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Right Column - Image/Visual */}
+          {/* Right Column - Ramadan Countdown */}
           <div className="hidden lg:block animate-slide-in">
-            <div className="bg-white rounded-2xl p-8 shadow-2xl hover-lift">
+            <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 rounded-2xl p-8 shadow-2xl hover-lift">
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-3xl font-bold">✓</span>
+                <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-yellow-300 text-4xl">🌙</span>
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-4">
-                  Licensed, Trusted & Listening
+                <h3 className="text-white/80 text-xl mb-4">
+                  Days to Ramadan 2026
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  One of only 125 MOHRE licensed centers in UAE. 
-                  Over 1700+ happy families trusted us with their visa needs.
-                  we are here to answer your questions and concerns. <span className="bg-yellow-500 px-1 rounded font-semibold text-black">WE DO NOT USE CHATBOTS</span>. Click on the chat button and ask away.
-                </p>
-                <div className="bg-gradient-gold text-white rounded-lg p-4">
-                  <div className="text-3xl font-bold">0 AED</div>
-                  <div className="text-sm opacity-90">Monthly Admin Fees</div>
+                <div className="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-orange-400 mb-2">
+                  {(() => {
+                    const ramadanStart = new Date("2026-02-17T00:00:00");
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const diffTime = ramadanStart.getTime() - today.getTime();
+                    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                  })()}
+                </div>
+                <div className="text-white/60 text-lg">
+                  days remaining
+                </div>
+                <div className="mt-6 text-white/40 text-sm">
+                  Expected: February 17, 2026
                 </div>
               </div>
             </div>
