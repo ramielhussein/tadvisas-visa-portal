@@ -1,6 +1,21 @@
-import visaWhatsApp from "@/assets/visa-whatsapp.png";
+import { useState, useEffect } from "react";
+import { Moon } from "lucide-react";
 
 const TopBanner = () => {
+  const [daysToRamadan, setDaysToRamadan] = useState(0);
+
+  useEffect(() => {
+    const calculateDays = () => {
+      const ramadanStart = new Date("2026-02-17T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffTime = ramadanStart.getTime() - today.getTime();
+      setDaysToRamadan(Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24))));
+    };
+    calculateDays();
+    const interval = setInterval(calculateDays, 1000 * 60 * 60);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleWhatsAppClick = () => {
     // Track WhatsApp click conversion
@@ -18,13 +33,25 @@ const TopBanner = () => {
       <section className="relative w-full bg-white overflow-hidden">
         <div className="container mx-auto px-4 py-6 lg:py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            {/* Left side - WhatsApp visa confirmation */}
-            <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[500px] overflow-hidden">
-              <img
-                src={visaWhatsApp}
-                alt="TadMaids visa WhatsApp confirmation"
-                className="w-full h-full object-contain animate-slide-up"
-              />
+            {/* Left side - Ramadan Countdown */}
+            <div className="relative w-full lg:w-1/2 flex items-center justify-center">
+              <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 rounded-2xl p-8 shadow-2xl w-full max-w-md">
+                <div className="text-center">
+                  <Moon className="w-16 h-16 text-yellow-300 animate-pulse mx-auto mb-4" />
+                  <h3 className="text-white/80 text-xl mb-2">
+                    Days to Ramadan 2026
+                  </h3>
+                  <div className="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-orange-400 mb-2">
+                    {daysToRamadan}
+                  </div>
+                  <div className="text-white/60 text-lg">
+                    days remaining
+                  </div>
+                  <div className="mt-4 text-white/40 text-sm">
+                    Expected: February 17, 2026
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right side - Call to action */}
