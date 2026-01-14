@@ -125,6 +125,7 @@ export function AppSidebar() {
         icon: Users,
         items: [
           { title: "Lead Management", path: "/crm", icon: Users },
+          { title: "Worker Hub", path: "/hub", icon: Globe },
           { title: "Contracts", path: "/crm/contracts", icon: Briefcase },
           { title: "Book Worker", path: "/book-worker", icon: Calendar },
           { title: "Client Submissions", path: "/admin/client-submissions", icon: FileText },
