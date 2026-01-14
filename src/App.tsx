@@ -112,6 +112,10 @@ import GymTimer from "./pages/GymTimer";
 
 // SOP Viewer
 import SOPViewer from "./pages/SOPViewer";
+
+// Test Pages
+import TestFront from "./pages/TestFront";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -274,6 +278,9 @@ const App = () => {
             <Route path="/tadgo/print-station" element={<ProtectedRoute><PrintStation /></ProtectedRoute>} />
             {/* Gym Timer */}
             <Route path="/gym" element={<GymTimer />} />
+            
+            {/* Test Pages */}
+            <Route path="/testfront" element={<TestFront />} />
             
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
