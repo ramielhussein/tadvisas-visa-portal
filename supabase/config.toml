@@ -74,3 +74,6 @@ verify_jwt = false
 
 [functions.notify-transfer]
 verify_jwt = false
+
+[functions.send-manychat-message]
+verify_jwt = false
