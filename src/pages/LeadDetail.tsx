@@ -30,8 +30,16 @@ import {
   CheckCircle2,
   Archive,
   ArchiveRestore,
-  Trash2
+  Trash2,
+  Send
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { LostReasonDialog } from "@/components/crm/LostReasonDialog";
 import { PreviouslyLostBadge } from "@/components/crm/PreviouslyLostBadge";
@@ -102,6 +110,9 @@ const LeadDetail = () => {
   const [deleting, setDeleting] = useState(false);
   const [reminderDate, setReminderDate] = useState<string>("");
   const [updatingReminder, setUpdatingReminder] = useState(false);
+  const [manyChatMessage, setManyChatMessage] = useState("");
+  const [manyChatDialogOpen, setManyChatDialogOpen] = useState(false);
+  const [sendingManyChat, setSendingManyChat] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -314,6 +325,62 @@ const LeadDetail = () => {
       
       const cleanNumber = lead.mobile_number.replace(/[^\d+]/g, '');
       window.open(`https://wa.me/${cleanNumber}`, '_blank');
+    }
+  };
+
+  const handleSendManyChat = async () => {
+    if (!lead?.mobile_number || !manyChatMessage.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a message",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSendingManyChat(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-manychat-message`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            phone: lead.mobile_number,
+            message: manyChatMessage.trim(),
+            leadId: lead.id,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to send message');
+      }
+
+      toast({
+        title: "Message Sent!",
+        description: "WhatsApp message sent via ManyChat API",
+      });
+      setManyChatMessage("");
+      setManyChatDialogOpen(false);
+      fetchActivities();
+    } catch (error: any) {
+      console.error("Error sending ManyChat message:", error);
+      toast({
+        title: "Failed to send",
+        description: error.message || "Could not send message via ManyChat",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingManyChat(false);
     }
   };
 
@@ -993,6 +1060,14 @@ const LeadDetail = () => {
                     <MessageSquare className="w-4 h-4 mr-2" />
                     WhatsApp
                   </Button>
+
+                  <Button 
+                    className="w-full justify-start bg-green-600 hover:bg-green-700 text-white" 
+                    onClick={() => setManyChatDialogOpen(true)}
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Send via ManyChat
+                  </Button>
                   
                   {lead.email && (
                     <Button 
@@ -1050,6 +1125,37 @@ const LeadDetail = () => {
           setEditingLead(false);
         }}
       />
+
+      <Dialog open={manyChatDialogOpen} onOpenChange={setManyChatDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send WhatsApp via ManyChat</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Send message to: <strong>{lead?.mobile_number}</strong>
+            </p>
+            <Textarea
+              placeholder="Type your message here..."
+              value={manyChatMessage}
+              onChange={(e) => setManyChatMessage(e.target.value)}
+              rows={4}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setManyChatDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSendManyChat} 
+              disabled={sendingManyChat || !manyChatMessage.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {sendingManyChat ? "Sending..." : "Send Message"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
