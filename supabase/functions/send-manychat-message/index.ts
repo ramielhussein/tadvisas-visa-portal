@@ -81,38 +81,69 @@ Deno.serve(async (req) => {
     const manyChatResult = await manyChatResponse.json()
     console.log('ManyChat API response:', JSON.stringify(manyChatResult))
 
-    // If first method fails, try the WhatsApp-specific endpoint
+    // If first method fails, try finding subscriber by phone first
     if (!manyChatResponse.ok || manyChatResult.status === 'error') {
-      console.log('Trying WhatsApp-specific endpoint...')
+      console.log('First method failed, trying to find subscriber by phone...')
       
-      // Try sending via WhatsApp API endpoint
-      const waResponse = await fetch('https://api.manychat.com/wa/sending/sendContent', {
+      // Try to find subscriber by phone number using WhatsApp API
+      const findSubResponse = await fetch(`https://api.manychat.com/fb/subscriber/findBySystemField`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          phone: cleanPhone,
-          data: {
-            version: 'v2',
-            content: {
-              messages: [
-                {
-                  type: 'text',
-                  text: message
-                }
-              ]
-            }
-          }
+          field_name: 'phone',
+          field_value: cleanPhone
         })
       })
 
-      const waResult = await waResponse.json()
-      console.log('ManyChat WA API response:', JSON.stringify(waResult))
+      let findSubResult
+      const findSubText = await findSubResponse.text()
+      try {
+        findSubResult = JSON.parse(findSubText)
+      } catch {
+        console.error('Failed to parse findSubscriber response:', findSubText.substring(0, 200))
+        throw new Error(`ManyChat API returned invalid response. The subscriber with phone ${cleanPhone} may not exist in ManyChat. They need to message your WhatsApp bot first.`)
+      }
+      
+      console.log('Find subscriber response:', JSON.stringify(findSubResult))
 
-      if (!waResponse.ok) {
-        throw new Error(`ManyChat API error: ${JSON.stringify(waResult)}`)
+      if (findSubResult.status === 'success' && findSubResult.data?.id) {
+        // Found subscriber, now send message
+        const sendResponse = await fetch('https://api.manychat.com/fb/sending/sendContent', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${MANYCHAT_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            subscriber_id: findSubResult.data.id,
+            data: {
+              version: 'v2',
+              content: {
+                messages: [{ type: 'text', text: message }]
+              }
+            }
+          })
+        })
+
+        let sendResult
+        const sendText = await sendResponse.text()
+        try {
+          sendResult = JSON.parse(sendText)
+        } catch {
+          console.error('Failed to parse send response:', sendText.substring(0, 200))
+          throw new Error('Failed to send message via ManyChat')
+        }
+        
+        console.log('Send message response:', JSON.stringify(sendResult))
+        
+        if (sendResult.status !== 'success') {
+          throw new Error(`ManyChat send error: ${sendResult.message || 'Unknown error'}`)
+        }
+      } else {
+        throw new Error(`Subscriber not found in ManyChat. The contact needs to message your WhatsApp bot first before you can send them messages.`)
       }
     }
 
