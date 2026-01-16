@@ -132,6 +132,7 @@ export function AppSidebar() {
           { title: "Client Submissions", path: "/admin/client-submissions", icon: FileText },
           { title: "Daily Sales Report", path: "/crm/daily-sales-report", icon: BarChart3 },
           { title: "Sales Reports", path: "/crm/sales-reports", icon: TrendingUp },
+          { title: "TADGo", path: "/tadgo/app", icon: Car },
         ],
       });
     }
