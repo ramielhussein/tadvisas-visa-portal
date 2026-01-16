@@ -126,11 +126,18 @@ export default function DataBackup() {
     setLoadingCounts(false);
   };
 
-  const exportTable = async (tableName: string, displayName: string, filter?: { column: string; value: string }) => {
-    setExporting(tableName);
+  // Helper function to fetch all rows using pagination (bypasses 1000 row limit)
+  const fetchAllRows = async (tableName: string, filter?: { column: string; value: string }) => {
+    const allData: any[] = [];
+    const pageSize = 1000;
+    let from = 0;
+    let hasMore = true;
 
-    try {
-      let query = supabase.from(tableName as any).select("*");
+    while (hasMore) {
+      let query = supabase
+        .from(tableName as any)
+        .select("*")
+        .range(from, from + pageSize - 1);
       
       // Apply filter if provided
       if (filter && filter.value !== "all") {
@@ -140,6 +147,25 @@ export default function DataBackup() {
       const { data, error } = await query;
 
       if (error) throw error;
+
+      if (data && data.length > 0) {
+        allData.push(...data);
+        from += pageSize;
+        hasMore = data.length === pageSize;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    return allData;
+  };
+
+  const exportTable = async (tableName: string, displayName: string, filter?: { column: string; value: string }) => {
+    setExporting(tableName);
+
+    try {
+      // Use pagination to fetch ALL records
+      const data = await fetchAllRows(tableName, filter);
 
       // Create Excel workbook
       const worksheet = XLSX.utils.json_to_sheet(data || []);
@@ -183,22 +209,21 @@ export default function DataBackup() {
       let tablesExported = 0;
 
       for (const table of tables) {
-        const { data, error } = await supabase
-          .from(table.name as any)
-          .select("*");
+        try {
+          // Use pagination to fetch ALL records for each table
+          const data = await fetchAllRows(table.name);
 
-        if (error) {
+          if (data && data.length > 0) {
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            // Sheet names max 31 chars
+            const sheetName = table.displayName.substring(0, 31);
+            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+            totalRecordsExported += data.length;
+            tablesExported++;
+          }
+        } catch (error) {
           console.error(`Error exporting ${table.name}:`, error);
           continue;
-        }
-
-        if (data && data.length > 0) {
-          const worksheet = XLSX.utils.json_to_sheet(data);
-          // Sheet names max 31 chars
-          const sheetName = table.displayName.substring(0, 31);
-          XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-          totalRecordsExported += data.length;
-          tablesExported++;
         }
       }
 
