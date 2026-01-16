@@ -36,7 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUserRole } from "@/hooks/useUserRole";
-import { format, formatDistance, differenceInDays, startOfMonth, endOfMonth } from "date-fns";
+import { format, formatDistance, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, parseISO } from "date-fns";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from "react-router-dom";
 import {
@@ -68,6 +68,10 @@ const HRAttendance = () => {
   
   // Filter state for detailed records table
   const [filterName, setFilterName] = useState<string>("");
+  
+  // Bulk mark absent state (for History tab)
+  const [showBulkMarkAbsentDialog, setShowBulkMarkAbsentDialog] = useState(false);
+  const [selectedEmployeeForBulkAbsent, setSelectedEmployeeForBulkAbsent] = useState<string>("");
 
   // Check if user has view-only attendance permission
   useEffect(() => {
@@ -548,6 +552,57 @@ const HRAttendance = () => {
     },
   });
 
+  // Bulk mark absent mutation (for History tab - mark absent for date range)
+  const bulkMarkAbsentMutation = useMutation({
+    mutationFn: async ({ employeeId, fromDate, toDate }: { employeeId: string; fromDate: string; toDate: string }) => {
+      const dates = eachDayOfInterval({
+        start: parseISO(fromDate),
+        end: parseISO(toDate),
+      });
+      
+      // Get existing attendance records for this employee in the date range
+      const { data: existingRecords } = await supabase
+        .from('attendance_records')
+        .select('attendance_date')
+        .eq('employee_id', employeeId)
+        .gte('attendance_date', fromDate)
+        .lte('attendance_date', toDate);
+      
+      const existingDates = new Set(existingRecords?.map(r => r.attendance_date) || []);
+      
+      // Filter to only dates that don't have a record yet
+      const datesToMark = dates
+        .map(d => format(d, 'yyyy-MM-dd'))
+        .filter(d => !existingDates.has(d));
+      
+      if (datesToMark.length === 0) {
+        throw new Error('All dates in this range already have attendance records');
+      }
+      
+      // Insert absent records for all missing dates
+      const { error } = await supabase
+        .from('attendance_records')
+        .insert(datesToMark.map(date => ({
+          employee_id: employeeId,
+          attendance_date: date,
+          status: 'absent' as const,
+        })));
+      
+      if (error) throw error;
+      
+      return datesToMark.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['attendance-history'] });
+      toast.success(`Marked absent for ${count} day${count > 1 ? 's' : ''}`);
+      setShowBulkMarkAbsentDialog(false);
+      setSelectedEmployeeForBulkAbsent("");
+    },
+    onError: (error: Error) => {
+      toast.error('Failed to mark absent: ' + error.message);
+    },
+  });
+
   const generatePDF = async () => {
     const element = document.createElement("div");
     element.innerHTML = `
@@ -963,6 +1018,10 @@ const HRAttendance = () => {
                     <Search className="h-4 w-4 mr-2" />
                     Search
                   </Button>
+                  <Button variant="outline" onClick={() => setShowBulkMarkAbsentDialog(true)}>
+                    <UserX className="h-4 w-4 mr-2" />
+                    Mark Absent
+                  </Button>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   Showing records from {format(new Date(startDate), 'MMM dd, yyyy')} to {format(new Date(endDate), 'MMM dd, yyyy')}
@@ -1261,6 +1320,55 @@ const HRAttendance = () => {
               disabled={!selectedEmployeeForAbsent || markAbsentMutation.isPending}
             >
               Mark Absent
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Mark Absent Dialog (History Tab) */}
+      <AlertDialog open={showBulkMarkAbsentDialog} onOpenChange={setShowBulkMarkAbsentDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <UserX className="h-5 w-5 text-muted-foreground" />
+              Mark Employee Absent for Date Range
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Select an employee to mark as absent for all dates from{' '}
+              <strong>{format(new Date(startDate), 'MMM dd, yyyy')}</strong> to{' '}
+              <strong>{format(new Date(endDate), 'MMM dd, yyyy')}</strong>.
+              Only dates without existing attendance records will be marked as absent.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Label htmlFor="bulk-absent-employee">Select Employee</Label>
+            <Select 
+              value={selectedEmployeeForBulkAbsent} 
+              onValueChange={setSelectedEmployeeForBulkAbsent}
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select an employee" />
+              </SelectTrigger>
+              <SelectContent>
+                {allEmployees?.map((emp) => (
+                  <SelectItem key={emp.id} value={emp.id}>
+                    {emp.full_name} - {emp.position || 'N/A'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedEmployeeForBulkAbsent("")}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => selectedEmployeeForBulkAbsent && bulkMarkAbsentMutation.mutate({
+                employeeId: selectedEmployeeForBulkAbsent,
+                fromDate: startDate,
+                toDate: endDate,
+              })}
+              disabled={!selectedEmployeeForBulkAbsent || bulkMarkAbsentMutation.isPending}
+            >
+              {bulkMarkAbsentMutation.isPending ? 'Marking...' : 'Mark Absent'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
