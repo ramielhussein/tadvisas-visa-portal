@@ -50,6 +50,7 @@ const ContractsManagement = () => {
     totalContracts: 0,
     totalValue: 0,
     totalReceived: 0,
+    paymentsInPeriod: 0,
     activeContracts: 0,
     closedContracts: 0,
   });
@@ -62,7 +63,7 @@ const ContractsManagement = () => {
     filterContracts();
   }, [searchQuery, contracts, dateFrom, dateTo]);
 
-  const filterContracts = () => {
+  const filterContracts = async () => {
     let filtered = contracts;
 
     // Search filter
@@ -103,6 +104,22 @@ const ContractsManagement = () => {
 
     setFilteredContracts(filtered);
 
+    // Calculate payments received in the selected date period
+    let paymentsInPeriod = 0;
+    if (dateFrom || dateTo) {
+      let paymentQuery = supabase.from("payments").select("amount, payment_date");
+      
+      if (dateFrom) {
+        paymentQuery = paymentQuery.gte("payment_date", format(dateFrom, "yyyy-MM-dd"));
+      }
+      if (dateTo) {
+        paymentQuery = paymentQuery.lte("payment_date", format(dateTo, "yyyy-MM-dd"));
+      }
+      
+      const { data: payments } = await paymentQuery;
+      paymentsInPeriod = (payments || []).reduce((sum, p) => sum + Number(p.amount || 0), 0);
+    }
+
     // Update stats based on filtered data - exclude Void contracts from count
     const nonVoidFiltered = filtered.filter(d => d.status !== 'Void');
     const activeFiltered = filtered.filter(d => d.status === 'Active');
@@ -111,6 +128,7 @@ const ContractsManagement = () => {
       totalContracts: nonVoidFiltered.length,
       totalValue: activeAndDraftFiltered.reduce((sum, d) => sum + Number(d.total_amount), 0),
       totalReceived: activeAndDraftFiltered.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
+      paymentsInPeriod,
       activeContracts: activeFiltered.length,
       closedContracts: filtered.filter(d => d.status === 'Closed').length,
     });
@@ -163,6 +181,7 @@ const ContractsManagement = () => {
         totalContracts: data?.length || 0,
         totalValue: activeAndDraftData.reduce((sum, d) => sum + Number(d.total_amount), 0),
         totalReceived: activeAndDraftData.reduce((sum, d) => sum + Number(d.paid_amount || 0), 0),
+        paymentsInPeriod: 0,
         activeContracts: activeContractsData.length,
         closedContracts: (data || []).filter(d => d.status === 'Closed').length,
       };
@@ -340,7 +359,7 @@ const ContractsManagement = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
@@ -369,13 +388,29 @@ const ContractsManagement = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
-                  Received
+                  Contract Received
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">AED {stats.totalReceived.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">Based on deal date</p>
               </CardContent>
             </Card>
+
+            {(dateFrom || dateTo) && (
+              <Card className="border-primary">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2 text-primary">
+                    <DollarSign className="w-4 h-4" />
+                    Payments in Period
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-primary">AED {stats.paymentsInPeriod.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Based on payment date</p>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader className="pb-3">
