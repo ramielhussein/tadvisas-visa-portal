@@ -13,6 +13,7 @@ import {
   Package,
   Truck,
   RefreshCw,
+  Car,
   ClipboardList,
   Globe,
   ShoppingCart,
@@ -169,6 +170,7 @@ export function AppSidebar() {
           { title: "Worker Returns", path: "/product/worker-returns", icon: ClipboardList },
           { title: "Daily Headcount", path: "/product/daily-headcount", icon: UserCheck },
           { title: "Nationality Workflows", path: "/product/nationality-workflows", icon: Globe },
+          { title: "TADGo", path: "/tadgo/app", icon: Car },
         ],
       });
     }
