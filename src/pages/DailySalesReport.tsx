@@ -67,11 +67,6 @@ const DailySalesReport = () => {
   const { data: reportData, isLoading } = useQuery({
     queryKey: ["daily-sales-report-detailed", selectedDate],
     queryFn: async () => {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setHours(23, 59, 59, 999);
-
       // Get profiles for our sales team
       const { data: profiles } = await supabase
         .from("profiles")
@@ -98,65 +93,27 @@ const DailySalesReport = () => {
             };
           }
 
-          // Get all leads assigned to this salesperson that were either:
-          // 1. Created today, OR
-          // 2. Assigned today (via assignment activity)
+          // Get all leads currently assigned to this salesperson that were updated today
+          // This captures all leads they worked on or were assigned today
           const { data: assignedLeads } = await supabase
             .from("leads")
-            .select("id, status, created_at")
-            .eq("assigned_to", profile.id);
+            .select("id, status, created_at, updated_at")
+            .eq("assigned_to", profile.id)
+            .gte("updated_at", `${selectedDate}T00:00:00`)
+            .lte("updated_at", `${selectedDate}T23:59:59`);
 
-          // Get assignment activities for today to find leads picked up today
-          const { data: assignmentActivities } = await supabase
-            .from("lead_activities")
-            .select("lead_id, metadata, created_at")
-            .eq("activity_type", "system")
-            .eq("title", "Assignment Changed")
-            .gte("created_at", startOfDay.toISOString())
-            .lte("created_at", endOfDay.toISOString());
-
-          // Find leads assigned to this user today
-          const leadsPickedUpToday = new Set<string>();
-          assignmentActivities?.forEach((activity: any) => {
-            const metadata = activity.metadata as any;
-            if (metadata?.new_assigned_to === profile.id) {
-              leadsPickedUpToday.add(activity.lead_id);
-            }
-          });
-
-          // Also include leads created today that are assigned to this user
-          assignedLeads?.forEach(lead => {
-            const createdAt = new Date(lead.created_at);
-            if (createdAt >= startOfDay && createdAt <= endOfDay) {
-              leadsPickedUpToday.add(lead.id);
-            }
-          });
-
-          // Get status changes for today
-          const { data: statusActivities } = await supabase
-            .from("lead_activities")
-            .select("lead_id, metadata, created_at")
-            .eq("user_id", profile.id)
-            .eq("activity_type", "system")
-            .eq("title", "Status Changed")
-            .gte("created_at", startOfDay.toISOString())
-            .lte("created_at", endOfDay.toISOString());
-
-          // Count status changes made today by this salesperson
+          // Count status breakdown of assigned leads
           const statusCounts: Record<string, number> = {};
-          statusActivities?.forEach((activity: any) => {
-            const metadata = activity.metadata as any;
-            const newStatus = metadata?.new_status;
-            if (newStatus) {
-              statusCounts[newStatus] = (statusCounts[newStatus] || 0) + 1;
-            }
+          assignedLeads?.forEach(lead => {
+            const status = lead.status || "Unknown";
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
           });
 
           return {
             id: profile.id,
             name: salesPerson.name,
             email: salesPerson.email,
-            totalLeadsTaken: leadsPickedUpToday.size,
+            totalLeadsTaken: assignedLeads?.length || 0,
             statusCounts,
           };
         })
@@ -233,11 +190,11 @@ const DailySalesReport = () => {
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <p className="text-2xl font-bold">{salesPerson.totalLeadsTaken}</p>
-                          <p className="text-xs text-muted-foreground">Leads Taken Today</p>
+                          <p className="text-xs text-muted-foreground">Leads Assigned Today</p>
                         </div>
                         {Object.keys(salesPerson.statusCounts).length > 0 && (
                           <Badge variant="secondary" className="ml-2">
-                            {Object.values(salesPerson.statusCounts).reduce((a, b) => a + b, 0)} actions
+                            {Object.values(salesPerson.statusCounts).reduce((a, b) => a + b, 0)} statuses
                           </Badge>
                         )}
                       </div>
@@ -245,9 +202,9 @@ const DailySalesReport = () => {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <div className="mt-2 ml-8 p-4 bg-muted/30 rounded-lg border">
-                      <h4 className="font-medium mb-3">Status Changes Today:</h4>
+                      <h4 className="font-medium mb-3">Status Breakdown of Assigned Leads:</h4>
                       {Object.keys(salesPerson.statusCounts).length === 0 ? (
-                        <p className="text-muted-foreground text-sm">No status changes recorded today</p>
+                        <p className="text-muted-foreground text-sm">No leads assigned today</p>
                       ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                           {LEAD_STATUSES.map((status) => {
@@ -311,13 +268,13 @@ const DailySalesReport = () => {
                 <div key={salesPerson.id} className="text-center p-3 rounded-lg bg-muted/50">
                   <p className="font-semibold">{salesPerson.name}</p>
                   <p className="text-2xl font-bold text-primary">{salesPerson.totalLeadsTaken}</p>
-                  <p className="text-xs text-muted-foreground">leads taken</p>
+                  <p className="text-xs text-muted-foreground">leads assigned</p>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-4 border-t">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total Leads Taken Today:</span>
+                <span className="font-medium">Total Leads Assigned Today:</span>
                 <span className="text-2xl font-bold text-primary">
                   {reportData.reduce((sum, sp) => sum + sp.totalLeadsTaken, 0)}
                 </span>
