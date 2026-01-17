@@ -12,12 +12,12 @@ import { cn } from "@/lib/utils";
 
 // Define the specific sales team members
 const SALES_TEAM = [
+  { name: "Ramadan", email: "sales1@tadmaids.com" },
   { name: "Mahmoud", email: "mahmoud@tadmaids.com" },
   { name: "Sameer", email: "sameer@tadmaids.com" },
-  { name: "Ramadan", email: "sales1@tadmaids.com" },
-  { name: "Jafar", email: "sales7@tadmaids.com" },
   { name: "Sakib", email: "sakib@tadmaids.com" },
   { name: "Gladys", email: "ph@tadmaids.com" },
+  { name: "Jafar", email: "sales7@tadmaids.com" },
 ];
 
 // All possible lead statuses
