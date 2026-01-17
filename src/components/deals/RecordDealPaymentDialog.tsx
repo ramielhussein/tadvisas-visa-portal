@@ -114,9 +114,12 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Generate payment number
-      const { data: paymentNumber, error: numberError } = await supabase.rpc('generate_payment_number');
-      if (numberError) throw numberError;
+      // Generate unique payment number with timestamp and random suffix
+      const now = new Date();
+      const datePart = now.toISOString().slice(0, 10).replace(/-/g, '');
+      const timePart = now.getTime().toString().slice(-6);
+      const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const paymentNumber = `PAY-${datePart}-${timePart}-${randomPart}`;
 
       // Create payment record
       const { error: paymentError } = await supabase
