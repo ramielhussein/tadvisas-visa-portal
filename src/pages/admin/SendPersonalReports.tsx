@@ -119,13 +119,22 @@ const SendPersonalReports = () => {
           .lte('remind_me', threeDaysFromNow.toISOString().split('T')[0])
           .order('remind_me', { ascending: true });
 
+        // Calculate status breakdown
+        const statusBreakdown: Record<string, number> = {};
+        for (const lead of allAssignedLeads || []) {
+          const status = lead.status || 'unknown';
+          statusBreakdown[status] = (statusBreakdown[status] || 0) + 1;
+        }
+
         // Create HTML for PDF
         const htmlContent = generateReportHTML(person, {
-          totalLeadsTaken,
-          untakenLeadsCount: untakenLeads.length,
+          totalLeadsAssigned: allAssignedLeads?.length || 0,
+          leadsWithAction: totalLeadsTaken,
+          leadsNoAction: untakenLeads.length,
+          statusBreakdown,
           activityCounts,
           reminders: reminders || [],
-          untakenLeads: untakenLeads.map(lead => ({
+          leadsNoActionList: untakenLeads.map(lead => ({
             client_name: lead.client_name || 'No name',
             mobile_number: lead.mobile_number,
             created_at: new Date(lead.created_at).toLocaleDateString('en-US'),
@@ -172,6 +181,16 @@ const SendPersonalReports = () => {
   };
 
   const generateReportHTML = (person: any, data: any) => {
+    // Generate status breakdown HTML
+    const statusBreakdownHTML = Object.entries(data.statusBreakdown || {})
+      .sort(([, a]: any, [, b]: any) => b - a)
+      .map(([status, count]) => `
+        <div style="background: white; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-left: 3px solid #667eea;">
+          <span style="text-transform: capitalize;">${status.replace(/_/g, ' ')}</span>
+          <strong>${count}</strong>
+        </div>
+      `).join('');
+
     return `
       <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px;">
@@ -182,15 +201,26 @@ const SendPersonalReports = () => {
 
         <div style="margin: 30px 0;">
           <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Lead Pipeline Overview</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
-            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; text-align: center;">
-              <div style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">Total Leads Taken</div>
-              <div style="font-size: 36px; font-weight: bold; color: #667eea;">${data.totalLeadsTaken}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #667eea;">
+              <div style="font-size: 12px; color: #6b7280; margin-bottom: 10px; text-transform: uppercase;">Total Leads Assigned</div>
+              <div style="font-size: 36px; font-weight: bold; color: #667eea;">${data.totalLeadsAssigned}</div>
             </div>
-            <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center;">
-              <div style="font-size: 14px; color: #92400e; margin-bottom: 10px;">Leads Not Yet Engaged</div>
-              <div style="font-size: 36px; font-weight: bold; color: #f59e0b;">${data.untakenLeadsCount}</div>
+            <div style="background: #d1fae5; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #10b981;">
+              <div style="font-size: 12px; color: #065f46; margin-bottom: 10px; text-transform: uppercase;">Leads With Action</div>
+              <div style="font-size: 36px; font-weight: bold; color: #10b981;">${data.leadsWithAction}</div>
             </div>
+            <div style="background: #fef3c7; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #f59e0b;">
+              <div style="font-size: 12px; color: #92400e; margin-bottom: 10px; text-transform: uppercase;">Leads No Action</div>
+              <div style="font-size: 36px; font-weight: bold; color: #f59e0b;">${data.leadsNoAction}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin: 30px 0;">
+          <h3 style="color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px;">Status Breakdown of All Assigned Leads</h3>
+          <div style="margin-top: 15px; background: #f3f4f6; padding: 15px; border-radius: 8px;">
+            ${statusBreakdownHTML || '<p style="color: #6b7280; text-align: center;">No leads assigned</p>'}
           </div>
         </div>
 
@@ -236,10 +266,11 @@ const SendPersonalReports = () => {
         </div>
         ` : ''}
 
-        ${data.untakenLeads.length > 0 ? `
+        ${data.leadsNoActionList && data.leadsNoActionList.length > 0 ? `
         <div style="margin: 30px 0; page-break-before: always;">
-          <h3 style="color: #dc2626; border-bottom: 2px solid #dc2626; padding-bottom: 10px;">Leads Needing Attention (${data.untakenLeads.length})</h3>
-          ${data.untakenLeads.map((lead: any) => `
+          <h3 style="color: #dc2626; border-bottom: 2px solid #dc2626; padding-bottom: 10px;">Leads Assigned But No Action Taken (${data.leadsNoActionList.length})</h3>
+          <p style="color: #dc2626; font-size: 14px; margin-bottom: 15px;">These leads haven't been called yet - take action soon!</p>
+          ${data.leadsNoActionList.map((lead: any) => `
             <div style="background: #fee2e2; padding: 12px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #dc2626;">
               <strong>${lead.client_name}</strong> - ${lead.mobile_number}<br>
               <span style="font-size: 12px;">Assigned: ${lead.created_at} | Status: ${lead.status} | Source: ${lead.lead_source}</span>

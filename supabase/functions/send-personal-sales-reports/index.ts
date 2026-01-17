@@ -14,9 +14,11 @@ interface PersonalReportData {
   salesPersonEmail: string;
   todayDate: string;
   leadMetrics: {
-    totalLeadsTaken: number;
-    totalLeadsAssignedNotTaken: number;
+    totalLeadsAssigned: number;
+    leadsWithAction: number;
+    leadsNoAction: number;
   };
+  statusBreakdown: Record<string, number>;
   activities: {
     callsMade: number;
     messagesSent: number;
@@ -34,7 +36,7 @@ interface PersonalReportData {
     mobile_number: string;
     last_activity: string;
   }>;
-  untakenLeads: Array<{
+  leadsNoActionList: Array<{
     lead_name: string;
     mobile_number: string;
     assigned_date: string;
@@ -90,7 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate report for each sales person
     for (const person of salesPeople || []) {
       try {
-        // Fetch all assigned leads to calculate metrics
+        // Fetch ALL assigned leads (this is the total)
         const { data: allAssignedLeads, error: leadsError } = await supabase
           .from("leads")
           .select("id, client_name, mobile_number, created_at, status, lead_source")
@@ -99,7 +101,9 @@ const handler = async (req: Request): Promise<Response> => {
 
         if (leadsError) throw leadsError;
 
-        // Get all activity lead IDs for this person to determine engagement
+        const totalLeadsAssigned = allAssignedLeads?.length || 0;
+
+        // Get all activity lead IDs for this person to determine if they've taken action
         const { data: allActivities, error: allActError } = await supabase
           .from("lead_activities")
           .select("lead_id")
@@ -109,9 +113,16 @@ const handler = async (req: Request): Promise<Response> => {
 
         const engagedLeadIds = new Set(allActivities?.map(a => a.lead_id) || []);
         
-        // Separate leads into taken and not taken
-        const totalLeadsTaken = allAssignedLeads?.filter(lead => engagedLeadIds.has(lead.id)).length || 0;
-        const untakenLeadsData = allAssignedLeads?.filter(lead => !engagedLeadIds.has(lead.id)) || [];
+        // Calculate leads with action vs no action
+        const leadsWithAction = allAssignedLeads?.filter(lead => engagedLeadIds.has(lead.id)).length || 0;
+        const leadsNoActionList = allAssignedLeads?.filter(lead => !engagedLeadIds.has(lead.id)) || [];
+
+        // Calculate status breakdown for ALL assigned leads
+        const statusBreakdown: Record<string, number> = {};
+        for (const lead of allAssignedLeads || []) {
+          const status = lead.status || 'unknown';
+          statusBreakdown[status] = (statusBreakdown[status] || 0) + 1;
+        }
 
         // Fetch today's activities for this person
         const { data: activities, error: actError } = await supabase
@@ -182,9 +193,11 @@ const handler = async (req: Request): Promise<Response> => {
             day: "numeric",
           }),
           leadMetrics: {
-            totalLeadsTaken,
-            totalLeadsAssignedNotTaken: untakenLeadsData.length,
+            totalLeadsAssigned,
+            leadsWithAction,
+            leadsNoAction: leadsNoActionList.length,
           },
+          statusBreakdown,
           activities: {
             callsMade,
             messagesSent,
@@ -195,7 +208,7 @@ const handler = async (req: Request): Promise<Response> => {
             remindersSet,
           },
           upcomingReminders,
-          untakenLeads: untakenLeadsData.map(lead => ({
+          leadsNoActionList: leadsNoActionList.map(lead => ({
             lead_name: lead.client_name || "Unknown",
             mobile_number: lead.mobile_number,
             assigned_date: new Date(lead.created_at).toLocaleDateString(),
@@ -254,6 +267,16 @@ const handler = async (req: Request): Promise<Response> => {
 function generateEmailHTML(data: PersonalReportData): string {
   const totalActivities = Object.values(data.activities).reduce((sum, val) => sum + val, 0);
 
+  // Generate status breakdown HTML
+  const statusBreakdownHTML = Object.entries(data.statusBreakdown)
+    .sort(([, a], [, b]) => b - a)
+    .map(([status, count]) => `
+      <div style="background: white; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="text-transform: capitalize;">${status.replace(/_/g, ' ')}</span>
+        <strong>${count}</strong>
+      </div>
+    `).join('');
+
   return `
     <!DOCTYPE html>
     <html>
@@ -264,12 +287,16 @@ function generateEmailHTML(data: PersonalReportData): string {
           .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .greeting { font-size: 18px; margin-bottom: 10px; }
           .metrics { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
-          .metrics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+          .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
           .metric-card { background: white; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #2563eb; }
+          .metric-card.success { border-left-color: #10b981; }
           .metric-card.warning { border-left-color: #f59e0b; background: #fffbeb; }
           .metric-card h3 { margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; }
           .metric-card p { margin: 10px 0 0 0; font-size: 36px; font-weight: bold; color: #2563eb; }
+          .metric-card.success p { color: #10b981; }
           .metric-card.warning p { color: #f59e0b; }
+          .status-breakdown { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
+          .status-breakdown h2 { margin: 0 0 15px 0; color: #1f2937; }
           .summary { background: #f3f4f6; padding: 20px; margin: 20px 0; border-radius: 8px; }
           .summary h2 { margin: 0 0 15px 0; color: #1f2937; }
           .activity-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
@@ -283,7 +310,6 @@ function generateEmailHTML(data: PersonalReportData): string {
           th { background: #f9fafb; font-weight: 600; }
           .urgent { color: #dc2626; font-weight: bold; }
           .soon { color: #f59e0b; }
-          .untaken-warning { background: #fef2f2; border-left: 4px solid #dc2626; padding: 15px; border-radius: 8px; margin: 10px 0; }
           .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; }
           .no-data { text-align: center; padding: 20px; color: #6b7280; font-style: italic; }
         </style>
@@ -300,22 +326,32 @@ function generateEmailHTML(data: PersonalReportData): string {
             <h2>📊 Lead Pipeline Overview</h2>
             <div class="metrics-grid">
               <div class="metric-card">
-                <h3>Total Leads Taken</h3>
-                <p>${data.leadMetrics.totalLeadsTaken}</p>
-                <small style="color: #6b7280;">Leads you've engaged with</small>
+                <h3>Total Leads Assigned</h3>
+                <p>${data.leadMetrics.totalLeadsAssigned}</p>
+                <small style="color: #6b7280;">All leads in your pipeline</small>
+              </div>
+              <div class="metric-card success">
+                <h3>Leads With Action</h3>
+                <p>${data.leadMetrics.leadsWithAction}</p>
+                <small style="color: #6b7280;">You've engaged with these</small>
               </div>
               <div class="metric-card warning">
-                <h3>Leads Assigned But Not Taken</h3>
-                <p>${data.leadMetrics.totalLeadsAssignedNotTaken}</p>
-                <small style="color: #92400e;">Need your attention!</small>
+                <h3>Leads No Action</h3>
+                <p>${data.leadMetrics.leadsNoAction}</p>
+                <small style="color: #92400e;">Haven't called yet!</small>
               </div>
             </div>
+          </div>
+
+          <div class="status-breakdown">
+            <h2>📈 Status Breakdown of All Assigned Leads</h2>
+            ${statusBreakdownHTML}
           </div>
 
           <div class="summary">
             <h2>Today's Activity Summary</h2>
             <p style="font-size: 16px; margin-bottom: 15px;">
-              Total Activities: <strong>${totalActivities}</strong>
+              Total Activities Today: <strong>${totalActivities}</strong>
             </p>
             
             <div class="activity-grid">
@@ -384,10 +420,10 @@ function generateEmailHTML(data: PersonalReportData): string {
             `}
           </div>
 
-          ${data.untakenLeads.length > 0 ? `
+          ${data.leadsNoActionList.length > 0 ? `
           <div class="section">
-            <h2>⚠️ Leads Assigned But Not Yet Engaged (${data.untakenLeads.length})</h2>
-            <p style="color: #dc2626; margin-bottom: 15px;">These leads have been assigned to you but haven't been contacted yet. Take action soon!</p>
+            <h2>⚠️ Leads Assigned But No Action Taken (${data.leadsNoActionList.length})</h2>
+            <p style="color: #dc2626; margin-bottom: 15px;">These leads have been assigned to you but you haven't called them yet. Take action soon!</p>
             <table>
               <thead>
                 <tr>
@@ -399,7 +435,7 @@ function generateEmailHTML(data: PersonalReportData): string {
                 </tr>
               </thead>
               <tbody>
-                ${data.untakenLeads.map(lead => `
+                ${data.leadsNoActionList.map(lead => `
                   <tr>
                     <td>${lead.lead_name}</td>
                     <td>${lead.mobile_number}</td>
