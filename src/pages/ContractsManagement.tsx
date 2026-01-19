@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
@@ -46,6 +47,9 @@ const ContractsManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [createdByFilter, setCreatedByFilter] = useState<string>("all");
   const [stats, setStats] = useState({
     totalContracts: 0,
     totalValue: 0,
@@ -55,13 +59,29 @@ const ContractsManagement = () => {
     closedContracts: 0,
   });
 
+  // Get unique values for filter dropdowns
+  const uniqueServices = useMemo(() => {
+    const services = [...new Set(contracts.map(c => c.service_type).filter(Boolean))];
+    return services.sort();
+  }, [contracts]);
+
+  const uniqueStatuses = useMemo(() => {
+    const statuses = [...new Set(contracts.map(c => c.status).filter(Boolean))];
+    return statuses.sort();
+  }, [contracts]);
+
+  const uniqueCreators = useMemo(() => {
+    const creators = [...new Set(contracts.map(c => c.created_by_name).filter(Boolean))];
+    return creators.sort() as string[];
+  }, [contracts]);
+
   useEffect(() => {
     fetchContracts();
   }, []);
 
   useEffect(() => {
     filterContracts();
-  }, [searchQuery, contracts, dateFrom, dateTo]);
+  }, [searchQuery, contracts, dateFrom, dateTo, serviceFilter, statusFilter, createdByFilter]);
 
   const filterContracts = async () => {
     let filtered = contracts;
@@ -73,8 +93,24 @@ const ContractsManagement = () => {
         (contract) =>
           contract.client_name.toLowerCase().includes(query) ||
           contract.client_phone.includes(query) ||
-          contract.deal_number.toLowerCase().includes(query)
+          contract.deal_number.toLowerCase().includes(query) ||
+          (contract.worker_name && contract.worker_name.toLowerCase().includes(query))
       );
+    }
+
+    // Service type filter
+    if (serviceFilter && serviceFilter !== "all") {
+      filtered = filtered.filter((c) => c.service_type === serviceFilter);
+    }
+
+    // Status filter
+    if (statusFilter && statusFilter !== "all") {
+      filtered = filtered.filter((c) => c.status === statusFilter);
+    }
+
+    // Created by filter
+    if (createdByFilter && createdByFilter !== "all") {
+      filtered = filtered.filter((c) => c.created_by_name === createdByFilter);
     }
 
     // Date range filter (based on deal_date)
@@ -138,6 +174,17 @@ const ContractsManagement = () => {
     setDateFrom(undefined);
     setDateTo(undefined);
   };
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setDateFrom(undefined);
+    setDateTo(undefined);
+    setServiceFilter("all");
+    setStatusFilter("all");
+    setCreatedByFilter("all");
+  };
+
+  const hasActiveFilters = searchQuery || dateFrom || dateTo || serviceFilter !== "all" || statusFilter !== "all" || createdByFilter !== "all";
 
   const fetchContracts = async () => {
     try {
@@ -425,32 +472,84 @@ const ContractsManagement = () => {
             </Card>
           </div>
 
-          {/* Search and Date Filter */}
+          {/* Search and Filters */}
           <div className="mb-6 space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by client name, phone, or contract number..."
+                placeholder="Search by client name, phone, contract number, or worker..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
               />
             </div>
 
-            {/* Date Range Filter */}
-            <div className="flex flex-wrap items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground">Deal Date:</span>
+            {/* Filter Row */}
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Filters:</span>
+              </div>
+
+              {/* Service Type Filter */}
+              <Select value={serviceFilter} onValueChange={setServiceFilter}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Service" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Services</SelectItem>
+                  {uniqueServices.map((service) => (
+                    <SelectItem key={service} value={service}>
+                      {service}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  {uniqueStatuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Created By Filter */}
+              <Select value={createdByFilter} onValueChange={setCreatedByFilter}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Created By" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Creators</SelectItem>
+                  {uniqueCreators.map((creator) => (
+                    <SelectItem key={creator} value={creator}>
+                      {creator}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Date Range */}
+              <span className="text-sm text-muted-foreground ml-2">Deal Date:</span>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    size="sm"
                     className={cn(
-                      "w-[180px] justify-start text-left font-normal",
+                      "w-[130px] justify-start text-left font-normal",
                       !dateFrom && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateFrom ? format(dateFrom, "dd MMM yyyy") : "From date"}
+                    {dateFrom ? format(dateFrom, "dd MMM yy") : "From"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -464,19 +563,20 @@ const ContractsManagement = () => {
                 </PopoverContent>
               </Popover>
 
-              <span className="text-muted-foreground">to</span>
+              <span className="text-muted-foreground">-</span>
 
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    size="sm"
                     className={cn(
-                      "w-[180px] justify-start text-left font-normal",
+                      "w-[130px] justify-start text-left font-normal",
                       !dateTo && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateTo ? format(dateTo, "dd MMM yyyy") : "To date"}
+                    {dateTo ? format(dateTo, "dd MMM yy") : "To"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -490,18 +590,41 @@ const ContractsManagement = () => {
                 </PopoverContent>
               </Popover>
 
-              {(dateFrom || dateTo) && (
-                <Button variant="ghost" size="sm" onClick={clearDateFilter}>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-destructive hover:text-destructive">
                   <X className="mr-1 h-4 w-4" />
-                  Clear dates
+                  Clear all
                 </Button>
               )}
             </div>
+
+            {/* Active Filter Summary */}
+            {hasActiveFilters && (
+              <div className="flex items-center gap-2 text-sm">
+                <Badge variant="secondary" className="font-normal">
+                  Showing {filteredContracts.length} of {contracts.length} contracts
+                </Badge>
+                {serviceFilter !== "all" && (
+                  <Badge variant="outline">{serviceFilter}</Badge>
+                )}
+                {statusFilter !== "all" && (
+                  <Badge variant="outline">{statusFilter}</Badge>
+                )}
+                {createdByFilter !== "all" && (
+                  <Badge variant="outline">By: {createdByFilter}</Badge>
+                )}
+                {(dateFrom || dateTo) && (
+                  <Badge variant="outline">
+                    {dateFrom ? format(dateFrom, "dd MMM") : "..."} - {dateTo ? format(dateTo, "dd MMM") : "..."}
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Contracts Table */}
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Contracts</CardTitle>
             </CardHeader>
             <CardContent>
@@ -528,7 +651,7 @@ const ContractsManagement = () => {
                     {filteredContracts.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={13} className="text-center py-8">
-                          No contracts found. Create your first contract!
+                          {hasActiveFilters ? "No contracts match the current filters." : "No contracts found. Create your first contract!"}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -584,6 +707,28 @@ const ContractsManagement = () => {
                     )}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Results Count Footer */}
+              <div className="mt-4 pt-4 border-t flex items-center justify-between text-sm text-muted-foreground">
+                <div className="flex items-center gap-4">
+                  <span className="font-medium text-foreground">
+                    {filteredContracts.length} {filteredContracts.length === 1 ? "contract" : "contracts"}
+                  </span>
+                  {hasActiveFilters && (
+                    <span>(filtered from {contracts.length} total)</span>
+                  )}
+                </div>
+                {hasActiveFilters && filteredContracts.length > 0 && (
+                  <div className="flex items-center gap-4">
+                    <span>
+                      Total Value: <span className="font-medium text-foreground">AED {filteredContracts.reduce((sum, c) => sum + Number(c.total_amount), 0).toLocaleString()}</span>
+                    </span>
+                    <span>
+                      Received: <span className="font-medium text-green-600">AED {filteredContracts.reduce((sum, c) => sum + Number(c.paid_amount || 0), 0).toLocaleString()}</span>
+                    </span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
