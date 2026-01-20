@@ -39,55 +39,64 @@ const ContractRevenue = () => {
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['contract-revenue'],
     queryFn: async () => {
-      // First fetch contracts with related data
+      // Fetch deals (contracts) with related worker data
       const { data: contractsData, error: contractsError } = await supabase
-        .from('contracts')
+        .from('deals')
         .select(`
           *,
-          products (name),
           workers (name)
         `)
-        .neq('status', 'Cancelled')
+        .eq('status', 'Active')
         .order('created_at', { ascending: false });
 
       if (contractsError) throw contractsError;
 
-      // Then fetch payments for each contract's client
+      // Then fetch payments for each deal's client
       const contractsWithRevenue = await Promise.all(
-        (contractsData || []).map(async (contract) => {
+        (contractsData || []).map(async (deal) => {
           const { data: payments } = await supabase
             .from('payments')
             .select('amount')
-            .eq('client_phone', contract.client_phone);
+            .eq('deal_id', deal.id);
 
           const totalPaid = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
           
           // Calculate months elapsed since start date
-          const startDate = new Date(contract.start_date);
+          const startDate = deal.start_date ? new Date(deal.start_date) : new Date();
           const today = new Date();
           const monthsElapsed = differenceInMonths(today, startDate);
           
+          // Parse duration from service_description (e.g., "P4 Monthly (24 months)")
+          let durationMonths = 0;
+          let monthlyAmount = 0;
+          if (deal.service_description) {
+            const durationMatch = deal.service_description.match(/\((\d+)\s*months?\)/i);
+            if (durationMatch) {
+              durationMonths = parseInt(durationMatch[1], 10);
+              monthlyAmount = durationMonths > 0 ? Number(deal.total_amount) / durationMonths : 0;
+            }
+          }
+          
           // Calculate expected revenue to date (for monthly contracts)
-          const monthlyAmount = Number(contract.monthly_amount || 0);
-          const expectedMonths = Math.min(monthsElapsed, contract.duration_months || 0);
-          const expectedRevenueToDate = monthlyAmount > 0 ? monthlyAmount * expectedMonths : Number(contract.total_amount);
+          const expectedMonths = Math.min(Math.max(monthsElapsed, 1), durationMonths || 1);
+          const expectedRevenueToDate = durationMonths > 0 ? monthlyAmount * expectedMonths : Number(deal.total_amount);
           
           // Calculate A/R (Outstanding)
           const outstandingAR = expectedRevenueToDate - totalPaid;
 
           return {
-            id: contract.id,
-            contract_number: contract.contract_number,
-            client_name: contract.client_name,
-            client_phone: contract.client_phone,
-            start_date: contract.start_date,
-            end_date: contract.end_date,
-            duration_months: contract.duration_months || 0,
+            id: deal.id,
+            contract_number: deal.deal_number,
+            client_name: deal.client_name,
+            client_phone: deal.client_phone,
+            start_date: deal.start_date || '',
+            end_date: deal.end_date || '',
+            duration_months: durationMonths,
             monthly_amount: monthlyAmount,
-            total_amount: Number(contract.total_amount),
-            status: contract.status,
-            product_name: contract.products?.name || 'N/A',
-            worker_name: contract.workers?.name || 'N/A',
+            total_amount: Number(deal.total_amount),
+            status: deal.status,
+            product_name: deal.service_type || 'N/A',
+            worker_name: deal.workers?.name || deal.worker_name || 'N/A',
             months_elapsed: monthsElapsed,
             expected_revenue_to_date: expectedRevenueToDate,
             total_paid: totalPaid,
