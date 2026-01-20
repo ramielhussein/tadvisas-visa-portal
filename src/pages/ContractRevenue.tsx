@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, DollarSign, TrendingUp, AlertCircle, FileText, Calendar } from "lucide-react";
@@ -39,12 +38,13 @@ const ContractRevenue = () => {
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['contract-revenue'],
     queryFn: async () => {
-      // Fetch deals (contracts) with related worker data
+      // Fetch deals (contracts) with optional related worker data
+      // NOTE: Use a LEFT join so deals without a linked worker are still returned.
       const { data: contractsData, error: contractsError } = await supabase
         .from('deals')
         .select(`
           *,
-          workers (name)
+          workers!left(name)
         `)
         .eq('status', 'Active')
         .order('created_at', { ascending: false });
