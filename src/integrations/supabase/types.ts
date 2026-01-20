@@ -1537,6 +1537,7 @@ export type Database = {
           payment_number: string
           recorded_by: string | null
           reference_number: string | null
+          service_type: string | null
           updated_at: string
         }
         Insert: {
@@ -1554,6 +1555,7 @@ export type Database = {
           payment_number: string
           recorded_by?: string | null
           reference_number?: string | null
+          service_type?: string | null
           updated_at?: string
         }
         Update: {
@@ -1571,6 +1573,7 @@ export type Database = {
           payment_number?: string
           recorded_by?: string | null
           reference_number?: string | null
+          service_type?: string | null
           updated_at?: string
         }
         Relationships: [

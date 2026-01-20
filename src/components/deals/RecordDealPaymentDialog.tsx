@@ -18,6 +18,7 @@ interface Deal {
   paid_amount: number;
   balance_due: number;
   status: string;
+  service_type?: string;
 }
 
 interface RecordDealPaymentDialogProps {
@@ -39,22 +40,38 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
     bank_account_id: "",
     reference_number: "",
     notes: "",
+    service_type: "",
   });
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
       fetchPaymentMethods();
       fetchBankAccounts();
+      fetchServiceTypes();
       
-      // Pre-fill amount with balance due
+      // Pre-fill amount with balance due and service type from deal
       if (deal) {
         setFormData(prev => ({
           ...prev,
-          amount: deal.balance_due.toString()
+          amount: deal.balance_due.toString(),
+          service_type: deal.service_type || ""
         }));
       }
     }
   }, [open, deal]);
+
+  const fetchServiceTypes = async () => {
+    const { data } = await supabase
+      .from("deals")
+      .select("service_type")
+      .not("service_type", "is", null);
+    
+    if (data) {
+      const uniqueTypes = [...new Set(data.map(d => d.service_type).filter(Boolean))];
+      setServiceTypes(uniqueTypes.sort());
+    }
+  };
 
   const fetchPaymentMethods = async () => {
     const { data } = await supabase
@@ -136,6 +153,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
           reference_number: formData.reference_number || null,
           notes: formData.notes || null,
           recorded_by: user.id,
+          service_type: formData.service_type || null,
         });
 
       if (paymentError) throw paymentError;
@@ -166,6 +184,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       bank_account_id: "",
       reference_number: "",
       notes: "",
+      service_type: "",
     });
     onClose();
   };
@@ -227,23 +246,47 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="bank_account">Bank Account * (Where was the money received?)</Label>
-            <Select 
-              value={formData.bank_account_id} 
-              onValueChange={(value) => setFormData({ ...formData, bank_account_id: value })}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select bank account that received payment" />
-              </SelectTrigger>
-              <SelectContent>
-                {bankAccounts.map((account) => (
-                  <SelectItem key={account.id} value={account.id}>
-                    {account.bank_name} - {account.account_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="service_type">Service Type</Label>
+              <Select 
+                value={formData.service_type} 
+                onValueChange={(value) => setFormData({ ...formData, service_type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select service type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {serviceTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Defaults to deal's service type. Change if payment is for different service.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="bank_account">Bank Account * (Where was the money received?)</Label>
+              <Select 
+                value={formData.bank_account_id} 
+                onValueChange={(value) => setFormData({ ...formData, bank_account_id: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select bank account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bankAccounts.map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.bank_name} - {account.account_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
