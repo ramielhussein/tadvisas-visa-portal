@@ -1056,9 +1056,15 @@ interface QuickLeadEntryProps {
                         const newAssignee = willUnassign ? null : (formData.assigned_to || existingLead.assigned_to);
 
                         try {
+                          // Bump to top when reassigning to a new user
+                          const updateData: any = { assigned_to: newAssignee };
+                          if (newAssignee && newAssignee !== existingLead.assigned_to) {
+                            updateData.bumped_at = new Date().toISOString();
+                          }
+
                           const { error } = await supabase
                             .from("leads")
-                            .update({ assigned_to: newAssignee })
+                            .update(updateData)
                             .eq("id", existingLead.id);
 
                           if (error) throw error;

@@ -138,10 +138,13 @@ Deno.serve(async (req) => {
       .eq('id', leadId)
       .single();
 
-    // Assign the lead
+    // Assign the lead and bump to top
     const { error: updateError } = await supabase
       .from('leads')
-      .update({ assigned_to: assignedUser.id })
+      .update({ 
+        assigned_to: assignedUser.id,
+        bumped_at: new Date().toISOString()
+      })
       .eq('id', leadId);
 
     if (updateError) {
