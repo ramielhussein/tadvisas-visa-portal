@@ -88,7 +88,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
     const { data } = await supabase
       .from("bank_accounts")
       .select("*")
-      .eq("status", "Active")
+      // Some records may have null/legacy status values; don't block payment recording.
+      .or("status.eq.Active,status.is.null")
       .order("account_name");
     
     setBankAccounts(data || []);
@@ -111,7 +112,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       return;
     }
 
-    if (amount - deal.balance_due > overpayTolerance) {
+    // Only enforce max amount when there is a positive balance due.
+    if (deal.balance_due > 0 && (amount - deal.balance_due > overpayTolerance)) {
       toast({
         title: "Amount Too High",
         description: `Payment cannot exceed balance due (${deal.balance_due.toLocaleString()} AED)`,
@@ -120,7 +122,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       return;
     }
 
-    if (!formData.bank_account_id) {
+    if (!formData.bank_account_id && bankAccounts.length > 0) {
       toast({
         title: "Bank Account Required",
         description: "Please select which bank account received the payment",

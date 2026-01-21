@@ -960,7 +960,7 @@ const ContractDetail = () => {
                     </div>
                   </div>
                   
-                  {deal.status !== 'Void' && deal.status !== 'Closed' && balanceDue > 0 && (
+                  {deal.status !== 'Void' && deal.status !== 'Closed' && (
                     <Button 
                       className="w-full" 
                       variant="default"
