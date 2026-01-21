@@ -645,6 +645,9 @@ const ContractDetail = () => {
     return null;
   }
 
+  // Prevent negative balance display due to minor rounding differences.
+  const balanceDue = Math.max(0, deal.balance_due);
+
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-b from-background to-muted py-8">
@@ -953,11 +956,11 @@ const ContractDetail = () => {
                     <Separator />
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Balance Due</span>
-                      <span className="font-bold text-lg text-orange-600">{deal.balance_due.toLocaleString()} AED</span>
+                      <span className="font-bold text-lg text-orange-600">{balanceDue.toLocaleString()} AED</span>
                     </div>
                   </div>
                   
-                  {deal.status !== 'Void' && deal.status !== 'Closed' && deal.balance_due > 0 && (
+                  {deal.status !== 'Void' && deal.status !== 'Closed' && balanceDue > 0 && (
                     <Button 
                       className="w-full" 
                       variant="default"
