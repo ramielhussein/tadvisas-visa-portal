@@ -616,9 +616,15 @@ const CRMHub = () => {
       const lead = [...myLeads, ...unassignedLeads, ...adminAllLeads].find(l => l.id === leadId);
       const oldAssigneeId = lead?.assigned_to;
 
+      // Bump to top when reassigning to a new user
+      const updateData: any = { assigned_to: userId };
+      if (userId && userId !== oldAssigneeId) {
+        updateData.bumped_at = new Date().toISOString();
+      }
+
       const { error } = await supabase
         .from("leads")
-        .update({ assigned_to: userId })
+        .update(updateData)
         .eq("id", leadId);
 
       if (error) throw error;
