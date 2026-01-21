@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye, Calendar, Clock } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { format, differenceInMonths, addMonths } from "date-fns";
+import { format, differenceInMonths, addMonths, startOfYear, startOfMonth, isAfter, parseISO } from "date-fns";
 
 interface FinancialStats {
   totalRevenue: number;
@@ -20,6 +20,8 @@ interface FinancialStats {
   totalCommissions: number;
   totalPayable: number;
   suppliersPending: number;
+  ytdRevenue: number;
+  mtdRevenue: number;
 }
 
 interface AccountBalance {
@@ -65,6 +67,8 @@ const FinancialDashboard = () => {
     totalCommissions: 0,
     totalPayable: 0,
     suppliersPending: 0,
+    ytdRevenue: 0,
+    mtdRevenue: 0,
   });
   const [accountBalances, setAccountBalances] = useState<AccountBalance[]>([]);
   const [supplierBalances, setSupplierBalances] = useState<any[]>([]);
@@ -100,6 +104,27 @@ const FinancialDashboard = () => {
       const totalCommissions = deals?.reduce((sum, d) => sum + Number(d.commission_amount || 0), 0) || 0;
       const activeDeals = deals?.length || 0;
 
+      // Calculate YTD and MTD revenue based on deal creation date
+      const today = new Date();
+      const yearStart = startOfYear(today);
+      const monthStart = startOfMonth(today);
+
+      const ytdRevenue = deals?.reduce((sum, d) => {
+        const dealDate = d.created_at ? parseISO(d.created_at) : null;
+        if (dealDate && isAfter(dealDate, yearStart)) {
+          return sum + Number(d.total_amount || 0);
+        }
+        return sum;
+      }, 0) || 0;
+
+      const mtdRevenue = deals?.reduce((sum, d) => {
+        const dealDate = d.created_at ? parseISO(d.created_at) : null;
+        if (dealDate && isAfter(dealDate, monthStart)) {
+          return sum + Number(d.total_amount || 0);
+        }
+        return sum;
+      }, 0) || 0;
+
       // Invoice stats for pending/overdue counts
       const pendingInvoices = invoices?.filter(inv => inv.status === 'Pending').length || 0;
       const overdueInvoices = invoices?.filter(inv => inv.status === 'Overdue').length || 0;
@@ -117,6 +142,8 @@ const FinancialDashboard = () => {
         totalCommissions,
         totalPayable,
         suppliersPending,
+        ytdRevenue,
+        mtdRevenue,
       });
 
       setAccountBalances(balances || []);
@@ -223,7 +250,7 @@ const FinancialDashboard = () => {
           <h1 className="text-4xl font-bold mb-8">Financial Dashboard</h1>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
@@ -233,7 +260,33 @@ const FinancialDashboard = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold">AED {stats.totalRevenue.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground mt-1">All invoices</p>
+                <p className="text-xs text-muted-foreground mt-1">Lifetime</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  YTD Sales
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-blue-600">AED {stats.ytdRevenue.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">Year to Date</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-purple-600" />
+                  MTD Sales
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-purple-600">AED {stats.mtdRevenue.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">Month to Date</p>
               </CardContent>
             </Card>
 
