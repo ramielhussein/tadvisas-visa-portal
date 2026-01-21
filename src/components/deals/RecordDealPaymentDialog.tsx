@@ -54,7 +54,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       if (deal) {
         setFormData(prev => ({
           ...prev,
-          amount: deal.balance_due.toString(),
+          // Avoid pre-filling a negative amount if the deal is already (slightly) overpaid due to rounding.
+          amount: Math.max(0, deal.balance_due).toString(),
           service_type: deal.service_type || ""
         }));
       }
@@ -98,6 +99,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
     if (!deal) return;
 
     const amount = parseFloat(formData.amount);
+    // Allow tiny overpayments to handle rounding (e.g. 4,679.98 total paid as 4,680.00 cash).
+    const overpayTolerance = 0.05;
     
     if (amount <= 0) {
       toast({
@@ -108,7 +111,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       return;
     }
 
-    if (amount > deal.balance_due) {
+    if (amount - deal.balance_due > overpayTolerance) {
       toast({
         title: "Amount Too High",
         description: `Payment cannot exceed balance due (${deal.balance_due.toLocaleString()} AED)`,
