@@ -18,6 +18,10 @@ const Layout = ({ children }: LayoutProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
+  // Enable activity tracker for authenticated users - auto check-in and auto break-back
+  // Must be called unconditionally to follow Rules of Hooks
+  useActivityTracker(isAuthenticated);
+
   useEffect(() => {
     // Check initial auth state
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -71,9 +75,6 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
     );
   }
-
-  // Enable activity tracker for authenticated users - auto check-in and auto break-back
-  useActivityTracker();
 
   // Authenticated layout - show sidebar for staff users
   return (

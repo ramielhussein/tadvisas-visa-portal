@@ -10,12 +10,14 @@ import { toast } from 'sonner';
  * 
  * Debounced to avoid excessive database calls
  */
-export const useActivityTracker = () => {
+export const useActivityTracker = (enabled: boolean = true) => {
   const lastActivityCheck = useRef<number>(0);
   const isProcessing = useRef(false);
   const DEBOUNCE_MS = 30000; // Only check every 30 seconds max
 
   useEffect(() => {
+    // Skip if not enabled (user not authenticated)
+    if (!enabled) return;
     const handleActivity = async () => {
       const now = Date.now();
       
