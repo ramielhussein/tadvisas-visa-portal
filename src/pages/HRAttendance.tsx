@@ -351,12 +351,19 @@ const HRAttendance = () => {
         .eq('id', todayAttendance.id);
 
       if (statusError) throw statusError;
+
+      // IMPORTANT: Break out should also sign the user out of the app.
+      // They can only return by logging in again.
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
     },
     onSuccess: () => {
-      setOnBreak(true);
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
-      toast.success('Break started - you are now signed out');
+
+      toast.success('Break started. Please log in again to continue.');
+      // Redirect to login explicitly (in case route guards/layout don\'t redirect immediately)
+      navigate('/auth', { replace: true });
     },
     onError: (error: Error) => {
       toast.error('Failed to start break: ' + error.message);
