@@ -6,9 +6,7 @@ import { toast } from 'sonner';
 /**
  * Hook that tracks user activity and automatically:
  * 1. Checks in users who are active but haven't checked in
- * 
- * Note: Auto break-back is DISABLED. Users must manually click "Break Back"
- * after logging back in from a break.
+ * 2. Ends breaks for users who are on break but log back in
  * 
  * Debounced to avoid excessive database calls
  */
@@ -78,10 +76,57 @@ export const useActivityTracker = (enabled: boolean = true) => {
           return;
         }
 
-        // Case 2: User is on break - do NOT auto break back
-        // They must manually click "Break Back" button after logging in
+        // Case 2: User is on break but logged back in - auto break back
         if (attendance.status === 'on_break') {
-          // Do nothing - user needs to manually end their break
+          // Find the open break record
+          const { data: openBreak } = await supabase
+            .from('break_records')
+            .select('id, break_out_time')
+            .eq('attendance_record_id', attendance.id)
+            .is('break_back_time', null)
+            .order('break_out_time', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (openBreak) {
+            const breakBackTime = new Date().toISOString();
+            const breakDuration = Math.floor(
+              (new Date(breakBackTime).getTime() - new Date(openBreak.break_out_time).getTime()) / 60000
+            );
+
+            // Update break record
+            await supabase
+              .from('break_records')
+              .update({
+                break_back_time: breakBackTime,
+                break_duration_minutes: breakDuration,
+              })
+              .eq('id', openBreak.id);
+
+            // Recalculate total break minutes
+            const { data: allBreaks } = await supabase
+              .from('break_records')
+              .select('break_duration_minutes')
+              .eq('attendance_record_id', attendance.id)
+              .not('break_duration_minutes', 'is', null);
+
+            const totalBreakMinutes = (allBreaks || []).reduce(
+              (sum, b) => sum + (b.break_duration_minutes || 0),
+              0
+            );
+
+            // Update attendance status and clear check_out_time (sign back in)
+            await supabase
+              .from('attendance_records')
+              .update({
+                status: 'checked_in',
+                check_out_time: null,
+                total_break_minutes: totalBreakMinutes,
+              })
+              .eq('id', attendance.id);
+
+            toast.success('Welcome back! Break ended automatically.');
+          }
           isProcessing.current = false;
           return;
         }
