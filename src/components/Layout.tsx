@@ -8,6 +8,7 @@ import FloatingButtons from "./FloatingButtons";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import DriversFloatingIsland from "./tadgo/DriversFloatingIsland";
 import { supabase } from "@/integrations/supabase/client";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 
 interface LayoutProps {
   children: ReactNode;
@@ -70,6 +71,9 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
     );
   }
+
+  // Enable activity tracker for authenticated users - auto check-in and auto break-back
+  useActivityTracker();
 
   // Authenticated layout - show sidebar for staff users
   return (
