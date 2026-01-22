@@ -110,12 +110,13 @@ const FloatingButtons = () => {
 
       if (attendanceError) throw attendanceError;
 
-      // Update attendance record status and total break minutes
+      // Update attendance record status, clear checkout time (sign back in), and update total break minutes
       const totalBreakMinutes = (attendance?.total_break_minutes || 0) + breakDuration;
       const { error: updateAttendanceError } = await supabase
         .from('attendance_records')
         .update({
           status: 'checked_in',
+          check_out_time: null, // Clear checkout time to sign back in
           total_break_minutes: totalBreakMinutes,
         })
         .eq('id', breakRecord.attendance_record_id);
