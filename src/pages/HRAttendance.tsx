@@ -326,11 +326,12 @@ const HRAttendance = () => {
     },
   });
 
-  // Break out mutation
+  // Break out mutation - now also checks out the user
   const breakOutMutation = useMutation({
     mutationFn: async () => {
       if (!todayAttendance?.id) throw new Error('No check-in record found');
 
+      // Create break record
       const { error: breakError } = await supabase
         .from('break_records')
         .insert({
@@ -340,9 +341,13 @@ const HRAttendance = () => {
 
       if (breakError) throw breakError;
 
+      // Update status to on_break AND set check_out_time (break out = check out)
       const { error: statusError } = await supabase
         .from('attendance_records')
-        .update({ status: 'on_break' })
+        .update({ 
+          status: 'on_break',
+          check_out_time: new Date().toISOString(),
+        })
         .eq('id', todayAttendance.id);
 
       if (statusError) throw statusError;
@@ -351,14 +356,14 @@ const HRAttendance = () => {
       setOnBreak(true);
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
-      toast.success('Break started');
+      toast.success('Break started - you are now signed out');
     },
     onError: (error: Error) => {
       toast.error('Failed to start break: ' + error.message);
     },
   });
 
-  // Break back mutation
+  // Break back mutation - now also clears checkout time (sign back in)
   const breakBackMutation = useMutation({
     mutationFn: async () => {
       if (!todayAttendance?.id) throw new Error("No attendance record found");
@@ -402,11 +407,13 @@ const HRAttendance = () => {
         0
       );
 
+      // Update status to checked_in AND clear check_out_time (break back = sign back in)
       await supabase
         .from("attendance_records")
         .update({
           status: "checked_in",
           total_break_minutes: totalBreakMinutes,
+          check_out_time: null, // Clear checkout time - user is signed back in
         })
         .eq("id", todayAttendance.id);
     },
@@ -414,7 +421,7 @@ const HRAttendance = () => {
       setOnBreak(false);
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
-      toast.success("Break ended successfully");
+      toast.success("Break ended - you are now signed back in");
     },
     onError: (error: Error) => {
       toast.error('Failed to end break: ' + error.message);
