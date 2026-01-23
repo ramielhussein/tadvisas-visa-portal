@@ -33,6 +33,8 @@ const EditContract = () => {
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [workers, setWorkers] = useState<any[]>([]);
   const [selectedWorkerId, setSelectedWorkerId] = useState<string>("");
+  const [salespeople, setSalespeople] = useState<any[]>([]);
+  const [selectedSalespersonId, setSelectedSalespersonId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     client_name: "",
@@ -54,13 +56,21 @@ const EditContract = () => {
   useEffect(() => {
     const initializeData = async () => {
       if (id) {
-        // Fetch workers first, then deal - to ensure worker dropdown is populated before setting selected worker
-        await Promise.all([fetchPaymentMethods(), fetchBankAccounts(), fetchWorkers()]);
+        // Fetch workers and salespeople first, then deal - to ensure dropdowns are populated before setting selected values
+        await Promise.all([fetchPaymentMethods(), fetchBankAccounts(), fetchWorkers(), fetchSalespeople()]);
         await fetchDeal();
       }
     };
     initializeData();
   }, [id]);
+
+  const fetchSalespeople = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .order("full_name");
+    setSalespeople(data || []);
+  };
 
   const fetchWorkers = async () => {
     const { data } = await supabase
@@ -100,6 +110,7 @@ const EditContract = () => {
 
       setDeal(data);
       setSelectedWorkerId(data.worker_id || "");
+      setSelectedSalespersonId(data.assigned_to || "");
 
       // Parse services from service_description JSON or create single service
       let parsedServices: ServiceItem[] = [];
@@ -239,6 +250,7 @@ const EditContract = () => {
           deal_date: formData.deal_date,
           worker_id: selectedWorkerId || null,
           worker_name: workerName,
+          assigned_to: selectedSalespersonId || null,
         })
         .eq("id", id);
 
@@ -341,6 +353,25 @@ const EditContract = () => {
                         onChange={(e) => setFormData({ ...formData, deal_date: e.target.value })}
                         required
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="salesperson">Salesperson</Label>
+                      <Select
+                        value={selectedSalespersonId}
+                        onValueChange={(value) => setSelectedSalespersonId(value === "none" ? "" : value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select salesperson" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No salesperson</SelectItem>
+                          {salespeople.map((person) => (
+                            <SelectItem key={person.id} value={person.id}>
+                              {person.full_name || person.email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="worker">Domestic Worker</Label>
