@@ -73,55 +73,89 @@ const FloatingButtons = () => {
   };
 
   const handleBreakBack = async () => {
-    if (!activeBreakId) return;
-
     try {
-      // Fetch the break record to get break_out_time and attendance_record_id
-      const { data: breakRecord, error: fetchError } = await supabase
-        .from('break_records')
-        .select('break_out_time, attendance_record_id')
-        .eq('id', activeBreakId)
-        .single();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (fetchError || !breakRecord) throw new Error('Break record not found');
+      // Get employee record
+      const { data: employee } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      const breakBackTime = new Date().toISOString();
-      const breakDuration = Math.floor(
-        (new Date(breakBackTime).getTime() - new Date(breakRecord.break_out_time).getTime()) / 60000
-      );
+      if (!employee) {
+        toast.error('Employee record not found');
+        return;
+      }
 
-      // Update break record with back time and duration
-      const { error: updateBreakError } = await supabase
-        .from('break_records')
-        .update({
-          break_back_time: breakBackTime,
-          break_duration_minutes: breakDuration,
-        })
-        .eq('id', activeBreakId);
+      const today = format(new Date(), 'yyyy-MM-dd');
 
-      if (updateBreakError) throw updateBreakError;
-
-      // Fetch attendance record to get current total break minutes
-      const { data: attendance, error: attendanceError } = await supabase
+      // Get today's attendance record
+      const { data: attendance } = await supabase
         .from('attendance_records')
-        .select('total_break_minutes')
-        .eq('id', breakRecord.attendance_record_id)
-        .single();
+        .select('id, total_break_minutes')
+        .eq('employee_id', employee.id)
+        .eq('attendance_date', today)
+        .maybeSingle();
 
-      if (attendanceError) throw attendanceError;
+      if (!attendance) {
+        toast.error('No attendance record found for today');
+        return;
+      }
 
-      // Update attendance record status, clear checkout time (sign back in), and update total break minutes
-      const totalBreakMinutes = (attendance?.total_break_minutes || 0) + breakDuration;
-      const { error: updateAttendanceError } = await supabase
+      // Find open break record (if any)
+      const { data: openBreak } = await supabase
+        .from('break_records')
+        .select('id, break_out_time')
+        .eq('attendance_record_id', attendance.id)
+        .is('break_back_time', null)
+        .order('break_out_time', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      let totalBreakMinutes = attendance.total_break_minutes || 0;
+
+      // If there's an open break, close it properly
+      if (openBreak) {
+        const breakBackTime = new Date().toISOString();
+        const breakDuration = Math.floor(
+          (new Date(breakBackTime).getTime() - new Date(openBreak.break_out_time).getTime()) / 60000
+        );
+
+        await supabase
+          .from('break_records')
+          .update({
+            break_back_time: breakBackTime,
+            break_duration_minutes: breakDuration,
+          })
+          .eq('id', openBreak.id);
+
+        // Recalculate total break minutes
+        const { data: allBreaks } = await supabase
+          .from('break_records')
+          .select('break_duration_minutes')
+          .eq('attendance_record_id', attendance.id)
+          .not('break_duration_minutes', 'is', null);
+
+        totalBreakMinutes = (allBreaks || []).reduce(
+          (sum, b) => sum + (b.break_duration_minutes || 0),
+          0
+        );
+      }
+      // If no open break but we're here, just fix the attendance status (recovery mode)
+
+      // Update attendance record status and clear checkout time
+      const { error: updateError } = await supabase
         .from('attendance_records')
         .update({
           status: 'checked_in',
-          check_out_time: null, // Clear checkout time to sign back in
+          check_out_time: null,
           total_break_minutes: totalBreakMinutes,
         })
-        .eq('id', breakRecord.attendance_record_id);
+        .eq('id', attendance.id);
 
-      if (updateAttendanceError) throw updateAttendanceError;
+      if (updateError) throw updateError;
 
       toast.success('Welcome back! Break ended.');
       setOnBreak(false);
@@ -129,7 +163,7 @@ const FloatingButtons = () => {
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error('Failed to end break: ' + error.message);
     }
   };
 

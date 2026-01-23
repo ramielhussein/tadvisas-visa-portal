@@ -78,7 +78,7 @@ export const useActivityTracker = (enabled: boolean = true) => {
 
         // Case 2: User is on break but logged back in - auto break back
         if (attendance.status === 'on_break') {
-          // Find the open break record
+          // Find the open break record (if any)
           const { data: openBreak } = await supabase
             .from('break_records')
             .select('id, break_out_time')
@@ -88,6 +88,16 @@ export const useActivityTracker = (enabled: boolean = true) => {
             .limit(1)
             .maybeSingle();
 
+          // Get current total break minutes from attendance record
+          const { data: currentAttendance } = await supabase
+            .from('attendance_records')
+            .select('total_break_minutes')
+            .eq('id', attendance.id)
+            .single();
+
+          let totalBreakMinutes = currentAttendance?.total_break_minutes || 0;
+
+          // If there's an open break, close it properly
           if (openBreak) {
             const breakBackTime = new Date().toISOString();
             const breakDuration = Math.floor(
@@ -110,23 +120,24 @@ export const useActivityTracker = (enabled: boolean = true) => {
               .eq('attendance_record_id', attendance.id)
               .not('break_duration_minutes', 'is', null);
 
-            const totalBreakMinutes = (allBreaks || []).reduce(
+            totalBreakMinutes = (allBreaks || []).reduce(
               (sum, b) => sum + (b.break_duration_minutes || 0),
               0
             );
-
-            // Update attendance status and clear check_out_time (sign back in)
-            await supabase
-              .from('attendance_records')
-              .update({
-                status: 'checked_in',
-                check_out_time: null,
-                total_break_minutes: totalBreakMinutes,
-              })
-              .eq('id', attendance.id);
-
-            toast.success('Welcome back! Break ended automatically.');
           }
+          // If no open break but status is on_break, just fix the status (recovery mode)
+
+          // Update attendance status and clear check_out_time (sign back in)
+          await supabase
+            .from('attendance_records')
+            .update({
+              status: 'checked_in',
+              check_out_time: null,
+              total_break_minutes: totalBreakMinutes,
+            })
+            .eq('id', attendance.id);
+
+          toast.success('Welcome back! Break ended automatically.');
           isProcessing.current = false;
           return;
         }
