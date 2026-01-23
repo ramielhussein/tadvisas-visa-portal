@@ -377,6 +377,7 @@ const HRAttendance = () => {
   });
 
   // Break back mutation - now also clears checkout time (sign back in)
+  // Handles edge case where status is 'on_break' but no open break record exists
   const breakBackMutation = useMutation({
     mutationFn: async () => {
       if (!todayAttendance?.id) throw new Error("No attendance record found");
@@ -388,37 +389,40 @@ const HRAttendance = () => {
         .is("break_back_time", null)
         .order("break_out_time", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (!lastBreak.data) throw new Error("No active break found");
+      let totalBreakMinutes = todayAttendance.total_break_minutes || 0;
 
-      const breakBackTime = new Date().toISOString();
-      const breakDuration = Math.floor(
-        (new Date(breakBackTime).getTime() - new Date(lastBreak.data.break_out_time).getTime()) / 60000
-      );
+      // If there's an open break record, close it properly
+      if (lastBreak.data) {
+        const breakBackTime = new Date().toISOString();
+        const breakDuration = Math.floor(
+          (new Date(breakBackTime).getTime() - new Date(lastBreak.data.break_out_time).getTime()) / 60000
+        );
 
-      await supabase
-        .from("break_records")
-        .update({
-          break_back_time: breakBackTime,
-          break_duration_minutes: breakDuration,
-        })
-        .eq("id", lastBreak.data.id);
+        await supabase
+          .from("break_records")
+          .update({
+            break_back_time: breakBackTime,
+            break_duration_minutes: breakDuration,
+          })
+          .eq("id", lastBreak.data.id);
 
-      // Calculate total from all break records for *this* attendance record (today)
-      const { data: allBreaks, error: breaksError } = await supabase
-        .from("break_records")
-        .select("break_duration_minutes")
-        .eq("attendance_record_id", todayAttendance.id)
-        .not("break_duration_minutes", "is", null);
+        // Calculate total from all break records for *this* attendance record (today)
+        const { data: allBreaks, error: breaksError } = await supabase
+          .from("break_records")
+          .select("break_duration_minutes")
+          .eq("attendance_record_id", todayAttendance.id)
+          .not("break_duration_minutes", "is", null);
 
-      if (breaksError) throw breaksError;
+        if (breaksError) throw breaksError;
 
-      // NOTE: `allBreaks` already includes the break we just updated above, so don't add `breakDuration` again.
-      const totalBreakMinutes = (allBreaks || []).reduce(
-        (sum, b) => sum + (b.break_duration_minutes || 0),
-        0
-      );
+        totalBreakMinutes = (allBreaks || []).reduce(
+          (sum, b) => sum + (b.break_duration_minutes || 0),
+          0
+        );
+      }
+      // If no open break but status is on_break, just fix the status (recovery mode)
 
       // Update status to checked_in AND clear check_out_time (break back = sign back in)
       await supabase
