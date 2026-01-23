@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { TrendingUp, Users, DollarSign, Clock, Target, ArrowRight } from "lucide-react";
+import { TrendingUp, Users, DollarSign, Clock, Target, ArrowRight, Phone, PhoneOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 
@@ -13,6 +13,8 @@ interface ConversionData {
   revenueBySource: Record<string, { leads: number; deals: number; revenue: number }>;
   lostLeads: number;
   activeLeads: number;
+  callAttempts: number;
+  successfulContacts: number;
 }
 
 export const ConversionMetrics = () => {
@@ -36,10 +38,30 @@ export const ConversionMetrics = () => {
         .from("deals")
         .select("id, lead_id, deal_value, total_amount, created_at, status");
 
+      // Fetch call attempt activities
+      const { data: callActivities } = await supabase
+        .from("lead_activities")
+        .select("id, activity_type, activity_subtype, title")
+        .or("activity_type.eq.call,activity_subtype.eq.call_attempt");
+
       if (!leads || !deals) {
         setLoading(false);
         return;
       }
+
+      // Count call attempts and successful contacts
+      const callAttempts = callActivities?.filter(a => 
+        a.activity_subtype === "call_attempt" || 
+        a.title?.includes("Call Attempt") ||
+        a.title?.includes("No Answer")
+      ).length || 0;
+      
+      const successfulContacts = callActivities?.filter(a => 
+        a.activity_type === "call" && 
+        !a.title?.includes("No Answer") && 
+        !a.title?.includes("No Connection") &&
+        a.activity_subtype !== "call_attempt"
+      ).length || 0;
 
       // Create a map of lead_id to deal info
       const leadToDeals = new Map<string, { dealCreatedAt: string; revenue: number }>();
@@ -95,7 +117,9 @@ export const ConversionMetrics = () => {
         avgTimeToConversion,
         revenueBySource,
         lostLeads,
-        activeLeads
+        activeLeads,
+        callAttempts,
+        successfulContacts
       });
     } catch (error) {
       console.error("Error fetching conversion metrics:", error);
@@ -131,7 +155,7 @@ export const ConversionMetrics = () => {
   return (
     <div className="space-y-6">
       {/* Main KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -192,6 +216,39 @@ export const ConversionMetrics = () => {
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Lead to deal
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <PhoneOff className="h-4 w-4" />
+              Call Attempts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-600">{data.callAttempts}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              No answer / No connection
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              Successful Contacts
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{data.successfulContacts}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {data.callAttempts + data.successfulContacts > 0 
+                ? `${((data.successfulContacts / (data.callAttempts + data.successfulContacts)) * 100).toFixed(0)}% contact rate`
+                : "—"
+              }
             </p>
           </CardContent>
         </Card>

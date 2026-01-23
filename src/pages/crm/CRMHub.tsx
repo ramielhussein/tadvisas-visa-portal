@@ -685,6 +685,25 @@ const CRMHub = () => {
 
       if (error) throw error;
 
+      // Log activity for call attempt statuses so salespeople get credit
+      const callAttemptStatuses = ["Called No Answer", "Called Unanswer 2", "No Connection", "Called Engaged", "Called COLD"];
+      if (callAttemptStatuses.includes(newStatus) && user) {
+        const activityTitle = newStatus === "Called No Answer" || newStatus === "Called Unanswer 2" 
+          ? "Call Attempt - No Answer" 
+          : newStatus === "No Connection" 
+            ? "Call Attempt - No Connection"
+            : `Call - ${newStatus.replace("Called ", "")}`;
+        
+        await supabase.from("lead_activities").insert({
+          lead_id: leadId,
+          user_id: user.id,
+          activity_type: "call",
+          activity_subtype: "call_attempt",
+          title: activityTitle,
+          description: `Status changed to ${newStatus}`,
+        });
+      }
+
       let description = `Lead status updated to ${newStatus}`;
       if (newStatus === "Called No Answer" || newStatus === "Called Unanswer 2") {
         description += " and reminder set to tomorrow";

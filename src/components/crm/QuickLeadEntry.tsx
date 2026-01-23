@@ -533,6 +533,28 @@ interface QuickLeadEntryProps {
 
         if (error) throw error;
 
+        // Log activity for call attempt statuses so salespeople get credit
+        const callAttemptStatuses = ["Called No Answer", "Called Unanswer 2", "No Connection", "Called Engaged", "Called COLD"];
+        if (callAttemptStatuses.includes(formData.status) && formData.status !== lead.status) {
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (currentUser) {
+            const activityTitle = formData.status === "Called No Answer" || formData.status === "Called Unanswer 2" 
+              ? "Call Attempt - No Answer" 
+              : formData.status === "No Connection" 
+                ? "Call Attempt - No Connection"
+                : `Call - ${formData.status.replace("Called ", "")}`;
+            
+            await supabase.from("lead_activities").insert({
+              lead_id: lead.id,
+              user_id: currentUser.id,
+              activity_type: "call",
+              activity_subtype: "call_attempt",
+              title: activityTitle,
+              description: `Status changed to ${formData.status}`,
+            });
+          }
+        }
+
         // Create notification if lead is assigned to someone and assignment changed
         if (formData.assigned_to && formData.assigned_to !== lead.assigned_to) {
           try {
