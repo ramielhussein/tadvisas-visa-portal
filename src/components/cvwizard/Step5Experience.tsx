@@ -14,7 +14,7 @@ interface Props {
 
 const countries = [
   "UAE", "Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman",
-  "Jordan", "Lebanon", "Egypt", "Singapore", "Hong Kong", "Other"
+  "Jordan", "Lebanon", "Egypt", "Iraq", "Singapore", "Hong Kong", "Other"
 ];
 
 const Step5Experience = ({ formData, updateFormData }: Props) => {
