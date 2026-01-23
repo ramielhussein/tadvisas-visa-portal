@@ -43,8 +43,7 @@ const CreateContract = () => {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [salesPackages, setSalesPackages] = useState<any[]>([]);
-  const [salespeople, setSalespeople] = useState<any[]>([]);
-  const [selectedSalesperson, setSelectedSalesperson] = useState<string>("");
+  const [currentUserId, setCurrentUserId] = useState<string>("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [services, setServices] = useState<Array<{
     id: string;
@@ -67,7 +66,7 @@ const CreateContract = () => {
     fetchPaymentMethods();
     fetchBankAccounts();
     fetchSalesPackages();
-    fetchSalespeople();
+    fetchCurrentUser();
   }, []);
 
   const [dealDate, setDealDate] = useState<Date>(new Date());
@@ -149,19 +148,10 @@ const CreateContract = () => {
     setSalesPackages(data || []);
   };
 
-  const fetchSalespeople = async () => {
-    // Fetch users who have sales role or deals.create permission
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, full_name, email")
-      .order("full_name");
-    
-    setSalespeople(data || []);
-    
-    // Set current user as default salesperson
+  const fetchCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      setSelectedSalesperson(user.id);
+      setCurrentUserId(user.id);
     }
   };
 
@@ -553,7 +543,7 @@ const CreateContract = () => {
           commission_amount: calculatedAmounts.commission_amount,
           paid_amount: parseFloat(formData.received_amount) || 0,
           notes: validated.notes || null,
-          assigned_to: selectedSalesperson || user?.id,
+          assigned_to: currentUserId || user?.id,
           status: "Draft",
           attachments: uploadedAttachments,
           // Format date correctly accounting for timezone - use local date components
@@ -618,57 +608,37 @@ const CreateContract = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Deal Date and Salesperson Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Deal Date */}
-                  <div className="space-y-2">
-                    <Label>Deal Date *</Label>
-                    <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !dealDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dealDate ? format(dealDate, "PPP") : <span>Pick a date</span>}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={dealDate}
-                          onSelect={(date) => {
-                            if (date) {
-                              setDealDate(date);
-                              setDatePickerOpen(false);
-                            }
-                          }}
-                          initialFocus
-                          className="pointer-events-auto"
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  {/* Salesperson Selector */}
-                  <div className="space-y-2">
-                    <Label>Salesperson *</Label>
-                    <Select value={selectedSalesperson} onValueChange={setSelectedSalesperson}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select salesperson" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {salespeople.map((person) => (
-                          <SelectItem key={person.id} value={person.id}>
-                            {person.full_name || person.email}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                {/* Deal Date */}
+                <div className="space-y-2">
+                  <Label>Deal Date *</Label>
+                  <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dealDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dealDate ? format(dealDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dealDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setDealDate(date);
+                            setDatePickerOpen(false);
+                          }
+                        }}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 {/* Link to Lead */}
