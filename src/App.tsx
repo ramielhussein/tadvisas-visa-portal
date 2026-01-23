@@ -87,6 +87,7 @@ import ReceiptOrders from "./pages/ReceiptOrders";
 import DeliveryOrders from "./pages/DeliveryOrders";
 import DailySalesReport from "./pages/DailySalesReport";
 import SalesReportsCenter from "./pages/SalesReportsCenter";
+import SalespersonDealsReport from "./pages/SalespersonDealsReport";
 import LeadAttendanceReport from "./pages/LeadAttendanceReport";
 import ALH from "./pages/ALH";
 import FCG from "./pages/FCG";
@@ -216,6 +217,7 @@ const App = () => {
             <Route path="/crm/sales-packages" element={<ProtectedRoute><SalesPackagesManagement /></ProtectedRoute>} />
             <Route path="/crm/daily-sales-report" element={<ProtectedRoute><DailySalesReport /></ProtectedRoute>} />
             <Route path="/crm/lead-attendance-report" element={<ProtectedRoute><LeadAttendanceReport /></ProtectedRoute>} />
+            <Route path="/crm/salesperson-deals-report" element={<ProtectedRoute><SalespersonDealsReport /></ProtectedRoute>} />
             <Route path="/crm/sales-reports" element={<ProtectedRoute><SalesReportsCenter /></ProtectedRoute>} />
             <Route path="/crm/my-dashboard" element={<ProtectedRoute><SalesPersonDashboard /></ProtectedRoute>} />
             <Route path="/crm/team-dashboard" element={<ProtectedRoute><SalesManagerDashboard /></ProtectedRoute>} />

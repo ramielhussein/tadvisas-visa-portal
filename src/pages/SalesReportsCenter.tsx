@@ -27,6 +27,14 @@ const SalesReportsCenter = () => {
       adminOnly: true
     },
     {
+      title: "Salesperson Deals Report",
+      description: "View deals by salesperson with date filtering and download reports as PDF",
+      icon: FileBarChart,
+      path: "/crm/salesperson-deals-report",
+      color: "text-green-600",
+      adminOnly: false
+    },
+    {
       title: "Daily Sales Report",
       description: "Track daily activity for each salesperson - leads picked up, updated, and closed",
       icon: BarChart3,
