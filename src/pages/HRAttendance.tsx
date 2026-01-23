@@ -314,11 +314,17 @@ const HRAttendance = () => {
         .eq('id', todayAttendance.id);
 
       if (error) throw error;
+
+      // Sign out the user after checkout
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) throw signOutError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
-      toast.success('Checked out successfully!');
+      toast.success('Checked out successfully. Please log in again to continue.');
+      // Redirect to login
+      navigate('/auth', { replace: true });
     },
     onError: (error: Error) => {
       console.error('Checkout error:', error);
