@@ -145,12 +145,11 @@ const FloatingButtons = () => {
       }
       // If no open break but we're here, just fix the attendance status (recovery mode)
 
-      // Update attendance record status and clear checkout time
+      // Update attendance record status - no need to clear check_out_time since break doesn't set it
       const { error: updateError } = await supabase
         .from('attendance_records')
         .update({
           status: 'checked_in',
-          check_out_time: null,
           total_break_minutes: totalBreakMinutes,
         })
         .eq('id', attendance.id);

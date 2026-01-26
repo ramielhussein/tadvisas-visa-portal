@@ -332,7 +332,8 @@ const HRAttendance = () => {
     },
   });
 
-  // Break out mutation - now also checks out the user
+  // Break out mutation - sets status to on_break and logs user out
+  // check_out_time is NOT set - user is just on break, not checked out
   const breakOutMutation = useMutation({
     mutationFn: async () => {
       if (!todayAttendance?.id) throw new Error('No check-in record found');
@@ -347,19 +348,18 @@ const HRAttendance = () => {
 
       if (breakError) throw breakError;
 
-      // Update status to on_break AND set check_out_time (break out = check out)
+      // Update status to on_break only - do NOT set check_out_time
+      // Break is different from checkout - user is still "at work" just on break
       const { error: statusError } = await supabase
         .from('attendance_records')
         .update({ 
           status: 'on_break',
-          check_out_time: new Date().toISOString(),
         })
         .eq('id', todayAttendance.id);
 
       if (statusError) throw statusError;
 
-      // IMPORTANT: Break out should also sign the user out of the app.
-      // They can only return by logging in again.
+      // Sign the user out - they must log back in to end break
       const { error: signOutError } = await supabase.auth.signOut();
       if (signOutError) throw signOutError;
     },
@@ -376,7 +376,7 @@ const HRAttendance = () => {
     },
   });
 
-  // Break back mutation - now also clears checkout time (sign back in)
+  // Break back mutation - ends break and resumes work
   // Handles edge case where status is 'on_break' but no open break record exists
   const breakBackMutation = useMutation({
     mutationFn: async () => {
@@ -424,13 +424,12 @@ const HRAttendance = () => {
       }
       // If no open break but status is on_break, just fix the status (recovery mode)
 
-      // Update status to checked_in AND clear check_out_time (break back = sign back in)
+      // Update status to checked_in - no need to touch check_out_time since break doesn't set it
       await supabase
         .from("attendance_records")
         .update({
           status: "checked_in",
           total_break_minutes: totalBreakMinutes,
-          check_out_time: null, // Clear checkout time - user is signed back in
         })
         .eq("id", todayAttendance.id);
     },
