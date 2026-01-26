@@ -127,12 +127,11 @@ export const useActivityTracker = (enabled: boolean = true) => {
           }
           // If no open break but status is on_break, just fix the status (recovery mode)
 
-          // Update attendance status and clear check_out_time (sign back in)
+          // Update attendance status - no need to clear check_out_time since break doesn't set it
           await supabase
             .from('attendance_records')
             .update({
               status: 'checked_in',
-              check_out_time: null,
               total_break_minutes: totalBreakMinutes,
             })
             .eq('id', attendance.id);
