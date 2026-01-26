@@ -43,8 +43,10 @@ const CreateContract = () => {
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [bankAccounts, setBankAccounts] = useState<any[]>([]);
   const [salesPackages, setSalesPackages] = useState<any[]>([]);
-  const [currentUserId, setCurrentUserId] = useState<string>("");
+const [currentUserId, setCurrentUserId] = useState<string>("");
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [salespeople, setSalespeople] = useState<any[]>([]);
+  const [selectedSalespersonId, setSelectedSalespersonId] = useState<string>("");
   const [services, setServices] = useState<Array<{
     id: string;
     service_type: string;
@@ -67,6 +69,7 @@ const CreateContract = () => {
     fetchBankAccounts();
     fetchSalesPackages();
     fetchCurrentUser();
+    fetchSalespeople();
   }, []);
 
   const [dealDate, setDealDate] = useState<Date>(new Date());
@@ -152,7 +155,16 @@ const CreateContract = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setCurrentUserId(user.id);
+      setSelectedSalespersonId(user.id); // Default to current user
     }
+  };
+
+  const fetchSalespeople = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .order("full_name");
+    setSalespeople(data || []);
   };
 
   const searchLeads = async (query: string) => {
@@ -543,7 +555,7 @@ const CreateContract = () => {
           commission_amount: calculatedAmounts.commission_amount,
           paid_amount: parseFloat(formData.received_amount) || 0,
           notes: validated.notes || null,
-          assigned_to: currentUserId || user?.id,
+          assigned_to: selectedSalespersonId || currentUserId || user?.id,
           status: "Draft",
           attachments: uploadedAttachments,
           // Format date correctly accounting for timezone - use local date components
@@ -639,6 +651,26 @@ const CreateContract = () => {
                       />
                     </PopoverContent>
                   </Popover>
+                </div>
+
+                {/* Salesperson */}
+                <div className="space-y-2">
+                  <Label>Salesperson *</Label>
+                  <Select
+                    value={selectedSalespersonId}
+                    onValueChange={setSelectedSalespersonId}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select salesperson" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {salespeople.map((person) => (
+                        <SelectItem key={person.id} value={person.id}>
+                          {person.full_name || person.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Link to Lead */}
