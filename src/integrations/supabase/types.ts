@@ -71,6 +71,7 @@ export type Database = {
           is_early_leave: boolean | null
           is_late: boolean | null
           late_minutes: number | null
+          late_reason: string | null
           net_working_hours: number | null
           notes: string | null
           overtime_hours: number | null
@@ -90,6 +91,7 @@ export type Database = {
           is_early_leave?: boolean | null
           is_late?: boolean | null
           late_minutes?: number | null
+          late_reason?: string | null
           net_working_hours?: number | null
           notes?: string | null
           overtime_hours?: number | null
@@ -109,6 +111,7 @@ export type Database = {
           is_early_leave?: boolean | null
           is_late?: boolean | null
           late_minutes?: number | null
+          late_reason?: string | null
           net_working_hours?: number | null
           notes?: string | null
           overtime_hours?: number | null

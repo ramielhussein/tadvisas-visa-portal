@@ -60,17 +60,26 @@ export const useActivityTracker = (enabled: boolean = true) => {
 
         // Case 1: No attendance record - auto check-in
         if (!attendance) {
+          const now = new Date();
+          const isLate = now.getHours() >= 11;
+          
           const { error } = await supabase
             .from('attendance_records')
             .insert({
               employee_id: employee.id,
               attendance_date: today,
-              check_in_time: new Date().toISOString(),
+              check_in_time: now.toISOString(),
               status: 'checked_in',
+              is_late: isLate,
+              late_reason: isLate ? 'Auto check-in (late - please update reason)' : null,
             });
 
           if (!error) {
-            toast.info('Auto check-in: You were not checked in but are active');
+            if (isLate) {
+              toast.info('Auto check-in: You were checked in late. Please update your late reason in HR Attendance.');
+            } else {
+              toast.info('Auto check-in: You were not checked in but are active');
+            }
           }
           isProcessing.current = false;
           return;

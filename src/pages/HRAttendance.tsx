@@ -49,6 +49,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { LateReasonDialog } from "@/components/attendance/LateReasonDialog";
 
 const HRAttendance = () => {
   const queryClient = useQueryClient();
@@ -61,6 +62,7 @@ const HRAttendance = () => {
   const [showMarkAbsentDialog, setShowMarkAbsentDialog] = useState(false);
   const [selectedEmployeeForAbsent, setSelectedEmployeeForAbsent] = useState<string>("");
   const [canViewTeamAttendance, setCanViewTeamAttendance] = useState(false);
+  const [showLateReasonDialog, setShowLateReasonDialog] = useState(false);
   
   // Date range state for history
   const [startDate, setStartDate] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
@@ -224,9 +226,15 @@ const HRAttendance = () => {
     return Array.from(statsMap.values()).sort((a, b) => b.daysWorked - a.daysWorked);
   })() : [];
 
-  // Check in mutation
+  // Helper to check if current time is after 11 AM
+  const isLateCheckIn = () => {
+    const now = new Date();
+    return now.getHours() >= 11;
+  };
+
+  // Check in mutation - accepts optional late reason
   const checkInMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (lateReason?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
@@ -238,13 +246,18 @@ const HRAttendance = () => {
 
       if (!employee) throw new Error('Employee record not found');
 
+      const now = new Date();
+      const isLate = now.getHours() >= 11;
+
       const { error } = await supabase
         .from('attendance_records')
         .insert({
           employee_id: employee.id,
-          attendance_date: format(new Date(), 'yyyy-MM-dd'),
-          check_in_time: new Date().toISOString(),
+          attendance_date: format(now, 'yyyy-MM-dd'),
+          check_in_time: now.toISOString(),
           status: 'checked_in',
+          is_late: isLate,
+          late_reason: lateReason || null,
         });
 
       if (error) throw error;
@@ -252,12 +265,27 @@ const HRAttendance = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['today-attendance'] });
       queryClient.invalidateQueries({ queryKey: ['staff-attendance-today'] });
+      setShowLateReasonDialog(false);
       toast.success('Checked in successfully!');
     },
     onError: (error: Error) => {
       toast.error('Failed to check in: ' + error.message);
     },
   });
+
+  // Handle check-in button click - show dialog if late
+  const handleCheckInClick = () => {
+    if (isLateCheckIn()) {
+      setShowLateReasonDialog(true);
+    } else {
+      checkInMutation.mutate(undefined);
+    }
+  };
+
+  // Handle late reason submission
+  const handleLateReasonSubmit = (reason: string) => {
+    checkInMutation.mutate(reason);
+  };
 
   // Check out mutation
   const checkOutMutation = useMutation({
@@ -783,7 +811,7 @@ const HRAttendance = () => {
                   <div className="text-center py-8">
                     <Button
                       size="lg"
-                      onClick={() => checkInMutation.mutate()}
+                      onClick={handleCheckInClick}
                       disabled={checkInMutation.isPending}
                       className="w-full max-w-xs"
                     >
@@ -823,9 +851,16 @@ const HRAttendance = () => {
                     </div>
 
                     {todayAttendance.is_late && (
-                      <div className="flex items-center gap-2 text-sm text-destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <span>Late by {todayAttendance.late_minutes} minutes</span>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm text-destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>Late by {todayAttendance.late_minutes} minutes</span>
+                        </div>
+                        {(todayAttendance as any).late_reason && (
+                          <p className="text-sm text-muted-foreground ml-6">
+                            Reason: {(todayAttendance as any).late_reason}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1396,6 +1431,14 @@ const HRAttendance = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Late Reason Dialog */}
+      <LateReasonDialog
+        open={showLateReasonDialog}
+        onOpenChange={setShowLateReasonDialog}
+        onConfirm={handleLateReasonSubmit}
+        isLoading={checkInMutation.isPending}
+      />
     </Layout>
   );
 };
