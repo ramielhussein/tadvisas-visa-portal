@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfileNameMap } from "@/lib/profileLookup";
-import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X } from "lucide-react";
+import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X, Link } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import LinkWithCustomerDialog from "@/components/cvwizard/LinkWithCustomerDialog";
 
 interface Worker {
   id: string;
@@ -62,6 +63,8 @@ const MyCVs = () => {
   const [searchName, setSearchName] = useState("");
   const [filterNationality, setFilterNationality] = useState<string>("all");
   const [filterProfession, setFilterProfession] = useState<string>("all");
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [workerToLink, setWorkerToLink] = useState<{ id: string; name: string } | null>(null);
 
   // Get unique nationalities and professions for filter dropdowns
   const nationalities = useMemo(() => {
@@ -382,14 +385,27 @@ const MyCVs = () => {
                     )}
 
                     {(isAdmin || isProduct) && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteClick(worker.id)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setWorkerToLink({ id: worker.id, name: worker.name });
+                            setLinkDialogOpen(true);
+                          }}
+                        >
+                          <Link className="mr-2 h-4 w-4" />
+                          Link with Customer
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteClick(worker.id)}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </Button>
+                      </>
                     )}
 
                     {!canEdit(worker) && !(isAdmin || isProduct) && (
@@ -424,6 +440,22 @@ const MyCVs = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {workerToLink && (
+        <LinkWithCustomerDialog
+          open={linkDialogOpen}
+          onOpenChange={setLinkDialogOpen}
+          workerId={workerToLink.id}
+          workerName={workerToLink.name}
+          onSuccess={() => {
+            setWorkerToLink(null);
+            toast({
+              title: "Linked Successfully",
+              description: "The worker has been linked to the customer's deal",
+            });
+          }}
+        />
+      )}
     </Layout>
   );
 };
