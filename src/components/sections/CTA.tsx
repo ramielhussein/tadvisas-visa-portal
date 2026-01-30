@@ -4,6 +4,14 @@ import { Phone, MessageCircle } from "lucide-react";
 
 const CTA = () => {
   const handleCallClick = () => {
+    // Track phone call click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210',
+        'event_category': 'call',
+        'event_label': 'cta_call_button'
+      });
+    }
     window.location.href = "tel:+971567222248";
   };
 

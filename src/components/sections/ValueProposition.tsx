@@ -70,7 +70,17 @@ const ValueProposition = () => {
               Hire a Maid
             </Button>
             <Button
-              onClick={() => window.location.href = "tel:+97143551186"}
+              onClick={() => {
+                // Track phone call click conversion
+                if ((window as any).gtag) {
+                  (window as any).gtag('event', 'conversion', {
+                    'send_to': 'AW-17128942210',
+                    'event_category': 'call',
+                    'event_label': 'value_prop_call_button'
+                  });
+                }
+                window.location.href = "tel:+97143551186";
+              }}
               variant="outline"
               className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 text-lg font-semibold transition-all duration-300"
             >

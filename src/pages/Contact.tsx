@@ -46,6 +46,14 @@ const Contact = () => {
   };
 
   const handleCallClick = () => {
+    // Track phone call click conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17128942210',
+        'event_category': 'call',
+        'event_label': 'contact_page_call'
+      });
+    }
     window.location.href = "tel:+971567222248";
   };
 
