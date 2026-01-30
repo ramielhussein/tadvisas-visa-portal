@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/Layout";
-import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye, Calendar, Clock } from "lucide-react";
+import { DollarSign, TrendingUp, FileText, AlertCircle, Users, Building2, Eye, Calendar, Clock, RotateCcw, Banknote } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { format, differenceInMonths, addMonths, startOfYear, startOfMonth, isAfter, parseISO } from "date-fns";
@@ -22,6 +22,8 @@ interface FinancialStats {
   suppliersPending: number;
   ytdRevenue: number;
   mtdRevenue: number;
+  totalRefunds: number;
+  netAmountReceived: number;
 }
 
 interface AccountBalance {
@@ -69,6 +71,8 @@ const FinancialDashboard = () => {
     suppliersPending: 0,
     ytdRevenue: 0,
     mtdRevenue: 0,
+    totalRefunds: 0,
+    netAmountReceived: 0,
   });
   const [accountBalances, setAccountBalances] = useState<AccountBalance[]>([]);
   const [supplierBalances, setSupplierBalances] = useState<any[]>([]);
@@ -96,6 +100,12 @@ const FinancialDashboard = () => {
 
       // Fetch supplier balances
       const { data: suppliers } = await supabase.from("supplier_balances").select("*");
+
+      // Fetch refunds (finalized/approved only)
+      const { data: refunds } = await supabase
+        .from("refunds")
+        .select("total_refund_amount, status")
+        .in("status", ["finalized", "approved"]);
 
       // Calculate sales from active deals
       const totalSalesRevenue = deals?.reduce((sum, d) => sum + Number(d.total_amount || 0), 0) || 0;
@@ -132,6 +142,12 @@ const FinancialDashboard = () => {
       const totalPayable = suppliers?.reduce((sum, s) => sum + Number(s.total_outstanding || 0), 0) || 0;
       const suppliersPending = suppliers?.reduce((sum, s) => sum + Number(s.pending_invoices || 0), 0) || 0;
 
+      // Calculate total refunds
+      const totalRefunds = refunds?.reduce((sum, r) => sum + Number(r.total_refund_amount || 0), 0) || 0;
+      
+      // Net amount received = Total Paid - Total Refunds
+      const netAmountReceived = totalPaidFromDeals - totalRefunds;
+
       setStats({
         totalRevenue: totalSalesRevenue,
         totalPaid: totalPaidFromDeals,
@@ -144,6 +160,8 @@ const FinancialDashboard = () => {
         suppliersPending,
         ytdRevenue,
         mtdRevenue,
+        totalRefunds,
+        netAmountReceived,
       });
 
       setAccountBalances(balances || []);
@@ -250,7 +268,7 @@ const FinancialDashboard = () => {
           <h1 className="text-4xl font-bold mb-8">Financial Dashboard</h1>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-9 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
@@ -350,6 +368,32 @@ const FinancialDashboard = () => {
                 <p className="text-xs text-muted-foreground mt-1">
                   {stats.suppliersPending} pending bills
                 </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-rose-200 bg-rose-50/50 dark:bg-rose-950/20 dark:border-rose-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4 text-rose-600" />
+                  Refunds
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-rose-600">AED {stats.totalRefunds.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">Total refunded</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Banknote className="w-4 h-4 text-emerald-600" />
+                  Net Received
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold text-emerald-600">AED {stats.netAmountReceived.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mt-1">Collected - Refunds</p>
               </CardContent>
             </Card>
           </div>
