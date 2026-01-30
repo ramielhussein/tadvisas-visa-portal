@@ -10,7 +10,7 @@ import Layout from "@/components/Layout";
 import RecordDealPaymentDialog from "@/components/deals/RecordDealPaymentDialog";
 import VoidContractDialog from "@/components/deals/VoidContractDialog";
 import DealCostsSection from "@/components/deals/DealCostsSection";
-import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download, CreditCard, Printer, Send } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download, CreditCard, Printer, Send, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
 import html2pdf from "html2pdf.js";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -602,6 +602,23 @@ const ContractDetail = () => {
               onClick={() => navigate(`/crm/contracts/edit/${deal.id}`)}
             >
               Edit
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const params = new URLSearchParams({
+                  deal_id: deal.id,
+                  contract_no: deal.deal_number,
+                  client_name: deal.client_name,
+                  client_phone: deal.client_phone,
+                  worker_name: deal.worker_name || '',
+                  total_amount: deal.total_amount.toString(),
+                });
+                navigate(`/refund?${params.toString()}`);
+              }}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Record Refund
             </Button>
             <Button
               variant="destructive"
