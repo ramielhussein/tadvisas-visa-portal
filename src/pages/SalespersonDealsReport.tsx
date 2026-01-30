@@ -294,82 +294,80 @@ const SalespersonDealsReport = () => {
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <FileText className="w-6 h-6 text-primary" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FileText className="w-5 h-5 text-primary" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Deals</p>
-                  <p className="text-2xl font-bold">{deals.length}</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Total Deals</p>
+                <p className="text-xl font-bold">{deals.length}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-blue-600" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <DollarSign className="w-5 h-5 text-blue-600" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Value</p>
-                  <p className="text-2xl font-bold">AED {totalAmount.toLocaleString()}</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Total Value</p>
+                <p className="text-xl font-bold">AED {totalAmount.toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-green-600" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Collected</p>
-                  <p className="text-2xl font-bold text-green-600">AED {totalPaid.toLocaleString()}</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Collected</p>
+                <p className="text-xl font-bold text-green-600">AED {totalPaid.toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-orange-100 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-orange-600" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <DollarSign className="w-5 h-5 text-orange-600" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Outstanding</p>
-                  <p className="text-2xl font-bold text-orange-600">AED {totalBalance.toLocaleString()}</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Outstanding</p>
+                <p className="text-xl font-bold text-orange-600">AED {totalBalance.toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-rose-200 bg-rose-50/50 dark:bg-rose-950/20">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-rose-100 rounded-lg">
-                  <RotateCcw className="w-6 h-6 text-rose-600" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-rose-100 rounded-lg">
+                    <RotateCcw className="w-5 h-5 text-rose-600" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Refunds</p>
-                  <p className="text-2xl font-bold text-rose-600">AED {totalRefunds.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">{refunds.length} refunds</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Refunds ({refunds.length})</p>
+                <p className="text-xl font-bold text-rose-600">AED {totalRefunds.toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-emerald-100 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-emerald-600" />
+            <CardContent className="p-4">
+              <div className="text-center">
+                <div className="flex justify-center mb-2">
+                  <div className="p-2 bg-emerald-100 rounded-lg">
+                    <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Net Received</p>
-                  <p className="text-2xl font-bold text-emerald-600">AED {netReceived.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Collected - Refunds</p>
-                </div>
+                <p className="text-xs text-muted-foreground">Net Received</p>
+                <p className="text-xl font-bold text-emerald-600">AED {netReceived.toLocaleString()}</p>
               </div>
             </CardContent>
           </Card>

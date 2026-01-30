@@ -57,7 +57,24 @@ const ContractsManagement = () => {
     paymentsInPeriod: 0,
     activeContracts: 0,
     closedContracts: 0,
+    totalRefunds: 0,
   });
+
+  // Fetch total refunds
+  const [totalRefunds, setTotalRefunds] = useState(0);
+  
+  useEffect(() => {
+    const fetchRefunds = async () => {
+      const { data } = await supabase
+        .from("refunds")
+        .select("total_refund_amount")
+        .in("status", ["finalized", "approved"]);
+      
+      const refundSum = (data || []).reduce((sum, r) => sum + Number(r.total_refund_amount || 0), 0);
+      setTotalRefunds(refundSum);
+    };
+    fetchRefunds();
+  }, []);
 
   // Get unique values for filter dropdowns
   const uniqueServices = useMemo(() => {
@@ -167,6 +184,7 @@ const ContractsManagement = () => {
       paymentsInPeriod,
       activeContracts: activeFiltered.length,
       closedContracts: filtered.filter(d => d.status === 'Closed').length,
+      totalRefunds: 0,
     });
   };
 
@@ -231,6 +249,7 @@ const ContractsManagement = () => {
         paymentsInPeriod: 0,
         activeContracts: activeContractsData.length,
         closedContracts: (data || []).filter(d => d.status === 'Closed').length,
+        totalRefunds: 0,
       };
       setStats(stats);
     } catch (error: any) {
@@ -406,71 +425,95 @@ const ContractsManagement = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2">
                   <FileText className="w-4 h-4" />
                   Total Contracts
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.totalContracts}</p>
+                <p className="text-xl font-bold">{stats.totalContracts}</p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
                   Total Value
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">AED {stats.totalValue.toLocaleString()}</p>
+                <p className="text-xl font-bold">AED {stats.totalValue.toLocaleString()}</p>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
                   Contract Received
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-green-600">AED {stats.totalReceived.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Based on deal date</p>
+                <p className="text-xl font-bold text-green-600">AED {stats.totalReceived.toLocaleString()}</p>
               </CardContent>
             </Card>
 
-            {(dateFrom || dateTo) && (
-              <Card className="border-primary">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2 text-primary">
-                    <DollarSign className="w-4 h-4" />
-                    Payments in Period
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-primary">AED {stats.paymentsInPeriod.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Based on payment date</p>
-                </CardContent>
-              </Card>
-            )}
+            <Card className="border-rose-200 bg-rose-50/50 dark:bg-rose-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-rose-600">
+                  <DollarSign className="w-4 h-4" />
+                  Total Refunds
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-rose-600">AED {totalRefunds.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-emerald-600">
+                  <TrendingUp className="w-4 h-4" />
+                  Net Received
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-emerald-600">AED {(stats.totalReceived - totalRefunds).toLocaleString()}</p>
+              </CardContent>
+            </Card>
 
             <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm flex items-center gap-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2">
                   <Clock className="w-4 h-4" />
                   Active / Closed
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{stats.activeContracts} / {stats.closedContracts}</p>
+                <p className="text-xl font-bold">{stats.activeContracts} / {stats.closedContracts}</p>
               </CardContent>
             </Card>
           </div>
+          
+          {/* Payments in Period - Show when date filter is active */}
+          {(dateFrom || dateTo) && (
+            <Card className="border-primary mb-6">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-primary" />
+                    <span className="font-medium text-primary">Payments in Selected Period:</span>
+                  </div>
+                  <p className="text-2xl font-bold text-primary">AED {stats.paymentsInPeriod.toLocaleString()}</p>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Based on payment date</p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Search and Filters */}
           <div className="mb-6 space-y-4">
