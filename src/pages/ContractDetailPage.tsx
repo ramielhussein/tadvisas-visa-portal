@@ -612,9 +612,9 @@ const ContractDetail = () => {
                   client_name: deal.client_name,
                   client_phone: deal.client_phone,
                   worker_name: deal.worker_name || '',
-                  total_amount: deal.total_amount.toString(),
+                  amount: deal.total_amount.toString(),
                 });
-                navigate(`/refund?${params.toString()}`);
+                navigate(`/quick-refund?${params.toString()}`);
               }}
             >
               <RotateCcw className="w-4 h-4 mr-2" />

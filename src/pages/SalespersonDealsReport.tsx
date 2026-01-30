@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Download, FileText, Calendar, User, DollarSign, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Download, FileText, Calendar, User, DollarSign, TrendingUp, RotateCcw } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import html2pdf from "html2pdf.js";
 
@@ -66,6 +67,37 @@ const SalespersonDealsReport = () => {
     },
   });
 
+  // Fetch refunds based on filters  
+  const { data: refunds = [], isLoading: refundsLoading } = useQuery({
+    queryKey: ["salesperson-refunds", selectedSalesperson, startDate, endDate],
+    queryFn: async () => {
+      let query = supabase
+        .from("refunds")
+        .select(`
+          id,
+          contract_no,
+          client_name,
+          worker_name,
+          total_refund_amount,
+          status,
+          prepared_by,
+          created_at
+        `)
+        .gte("created_at", startDate)
+        .lte("created_at", endDate + "T23:59:59")
+        .in("status", ["finalized", "approved"])
+        .order("created_at", { ascending: false });
+
+      if (selectedSalesperson !== "all") {
+        query = query.eq("prepared_by", selectedSalesperson);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Get salesperson name by ID
   const getSalespersonName = (id: string) => {
     const person = salespeople.find((p) => p.id === id);
@@ -76,18 +108,29 @@ const SalespersonDealsReport = () => {
   const totalAmount = deals.reduce((sum, deal) => sum + (deal.total_amount || 0), 0);
   const totalPaid = deals.reduce((sum, deal) => sum + (deal.paid_amount || 0), 0);
   const totalBalance = deals.reduce((sum, deal) => sum + (deal.balance_due || 0), 0);
+  const totalRefunds = refunds.reduce((sum, r) => sum + (r.total_refund_amount || 0), 0);
+  const netReceived = totalPaid - totalRefunds;
 
   // Group deals by salesperson for summary
   const dealsBySalesperson = deals.reduce((acc, deal) => {
     const key = deal.assigned_to || "unassigned";
     if (!acc[key]) {
-      acc[key] = { count: 0, total: 0, paid: 0 };
+      acc[key] = { count: 0, total: 0, paid: 0, refunds: 0 };
     }
     acc[key].count++;
     acc[key].total += deal.total_amount || 0;
     acc[key].paid += deal.paid_amount || 0;
     return acc;
-  }, {} as Record<string, { count: number; total: number; paid: number }>);
+  }, {} as Record<string, { count: number; total: number; paid: number; refunds: number }>);
+
+  // Add refunds to salesperson summary
+  refunds.forEach(refund => {
+    const key = refund.prepared_by || "unassigned";
+    if (!dealsBySalesperson[key]) {
+      dealsBySalesperson[key] = { count: 0, total: 0, paid: 0, refunds: 0 };
+    }
+    dealsBySalesperson[key].refunds += refund.total_refund_amount || 0;
+  });
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -249,7 +292,7 @@ const SalespersonDealsReport = () => {
         </Card>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
@@ -302,6 +345,34 @@ const SalespersonDealsReport = () => {
               </div>
             </CardContent>
           </Card>
+          <Card className="border-rose-200 bg-rose-50/50 dark:bg-rose-950/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-rose-100 rounded-lg">
+                  <RotateCcw className="w-6 h-6 text-rose-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Refunds</p>
+                  <p className="text-2xl font-bold text-rose-600">AED {totalRefunds.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">{refunds.length} refunds</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-emerald-100 rounded-lg">
+                  <TrendingUp className="w-6 h-6 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Net Received</p>
+                  <p className="text-2xl font-bold text-emerald-600">AED {netReceived.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Collected - Refunds</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Salesperson Summary (when showing all) */}
@@ -316,11 +387,19 @@ const SalespersonDealsReport = () => {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {Object.entries(dealsBySalesperson).map(([id, data]) => (
-                  <div key={id} className="p-4 bg-muted/50 rounded-lg text-center">
+                  <div key={id} className="p-4 bg-muted/50 rounded-lg text-center space-y-1">
                     <p className="font-semibold truncate">{getSalespersonName(id)}</p>
                     <p className="text-2xl font-bold text-primary">{data.count}</p>
                     <p className="text-xs text-muted-foreground">deals</p>
-                    <p className="text-sm font-medium mt-1">AED {data.total.toLocaleString()}</p>
+                    <p className="text-sm font-medium">AED {data.total.toLocaleString()}</p>
+                    {data.refunds > 0 && (
+                      <p className="text-sm font-medium text-rose-600">
+                        -{data.refunds.toLocaleString()} refunds
+                      </p>
+                    )}
+                    <p className="text-xs font-semibold text-emerald-600">
+                      Net: {(data.paid - data.refunds).toLocaleString()}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -328,73 +407,143 @@ const SalespersonDealsReport = () => {
           </Card>
         )}
 
-        {/* Deals Table */}
-        <Card ref={reportRef}>
-          <CardHeader>
-            <CardTitle className="text-lg">Deals List</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : deals.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No deals found for the selected criteria
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Deal #</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Client</TableHead>
-                      <TableHead>Service</TableHead>
-                      {selectedSalesperson === "all" && <TableHead>Salesperson</TableHead>}
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead className="text-right">Paid</TableHead>
-                      <TableHead className="text-right">Balance</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {deals.map((deal) => (
-                      <TableRow key={deal.id}>
-                        <TableCell className="font-medium">{deal.deal_number}</TableCell>
-                        <TableCell>
-                          {deal.deal_date ? format(new Date(deal.deal_date), "dd/MM/yyyy") : '-'}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{deal.client_name}</p>
-                            <p className="text-xs text-muted-foreground">{deal.client_phone}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{deal.service_type}</TableCell>
-                        {selectedSalesperson === "all" && (
-                          <TableCell>{getSalespersonName(deal.assigned_to)}</TableCell>
-                        )}
-                        <TableCell className="text-right">
-                          AED {(deal.total_amount || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right text-green-600">
-                          AED {(deal.paid_amount || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right text-orange-600">
-                          AED {(deal.balance_due || 0).toLocaleString()}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(deal.status)}</TableCell>
-                      </TableRow>
+        {/* Deals & Refunds Tabs */}
+        <Tabs defaultValue="deals" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="deals">Deals ({deals.length})</TabsTrigger>
+            <TabsTrigger value="refunds">Refunds ({refunds.length})</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="deals">
+            <Card ref={reportRef}>
+              <CardHeader>
+                <CardTitle className="text-lg">Deals List</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Skeleton key={i} className="h-12 w-full" />
                     ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  </div>
+                ) : deals.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No deals found for the selected criteria
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Deal #</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Client</TableHead>
+                          <TableHead>Service</TableHead>
+                          {selectedSalesperson === "all" && <TableHead>Salesperson</TableHead>}
+                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead className="text-right">Paid</TableHead>
+                          <TableHead className="text-right">Balance</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {deals.map((deal) => (
+                          <TableRow key={deal.id}>
+                            <TableCell className="font-medium">{deal.deal_number}</TableCell>
+                            <TableCell>
+                              {deal.deal_date ? format(new Date(deal.deal_date), "dd/MM/yyyy") : '-'}
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{deal.client_name}</p>
+                                <p className="text-xs text-muted-foreground">{deal.client_phone}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>{deal.service_type}</TableCell>
+                            {selectedSalesperson === "all" && (
+                              <TableCell>{getSalespersonName(deal.assigned_to)}</TableCell>
+                            )}
+                            <TableCell className="text-right">
+                              AED {(deal.total_amount || 0).toLocaleString()}
+                            </TableCell>
+                            <TableCell className="text-right text-green-600">
+                              AED {(deal.paid_amount || 0).toLocaleString()}
+                            </TableCell>
+                            <TableCell className="text-right text-orange-600">
+                              AED {(deal.balance_due || 0).toLocaleString()}
+                            </TableCell>
+                            <TableCell>{getStatusBadge(deal.status)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="refunds">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <RotateCcw className="w-5 h-5 text-rose-600" />
+                  Refunds List
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {refundsLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Skeleton key={i} className="h-12 w-full" />
+                    ))}
+                  </div>
+                ) : refunds.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No refunds found for the selected criteria
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Reference</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Client</TableHead>
+                          <TableHead>Worker</TableHead>
+                          {selectedSalesperson === "all" && <TableHead>Recorded By</TableHead>}
+                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {refunds.map((refund) => (
+                          <TableRow key={refund.id}>
+                            <TableCell className="font-medium">{refund.contract_no}</TableCell>
+                            <TableCell>
+                              {format(new Date(refund.created_at), "dd/MM/yyyy")}
+                            </TableCell>
+                            <TableCell>{refund.client_name}</TableCell>
+                            <TableCell>{refund.worker_name}</TableCell>
+                            {selectedSalesperson === "all" && (
+                              <TableCell>{getSalespersonName(refund.prepared_by)}</TableCell>
+                            )}
+                            <TableCell className="text-right text-rose-600 font-semibold">
+                              AED {(refund.total_refund_amount || 0).toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">{refund.status}</Badge>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );

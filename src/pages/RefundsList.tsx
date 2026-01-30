@@ -108,7 +108,7 @@ const RefundsList = () => {
                 <FileText className="w-4 h-4 mr-2" />
                 Absconded Report
               </Button>
-              <Button onClick={() => navigate('/refund')}>
+              <Button onClick={() => navigate('/quick-refund')}>
                 <FileText className="w-4 h-4 mr-2" />
                 Create New Refund
               </Button>
