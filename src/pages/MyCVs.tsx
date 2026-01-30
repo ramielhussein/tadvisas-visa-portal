@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfileNameMap } from "@/lib/profileLookup";
-import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X, Link } from "lucide-react";
+import { Loader2, Eye, Edit, Plus, FileText, Trash2, Search, X, Link as LinkIcon } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
   AlertDialog,
@@ -394,7 +394,7 @@ const MyCVs = () => {
                             setLinkDialogOpen(true);
                           }}
                         >
-                          <Link className="mr-2 h-4 w-4" />
+                          <LinkIcon className="mr-2 h-4 w-4" />
                           Link with Customer
                         </Button>
                         <Button
