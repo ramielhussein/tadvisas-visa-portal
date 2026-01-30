@@ -1871,6 +1871,7 @@ export type Database = {
           contract_no: string
           created_at: string
           days_worked: number | null
+          deal_id: string | null
           delivered_date: string | null
           direct_hire: boolean | null
           doc_cancel: boolean | null
@@ -1933,6 +1934,7 @@ export type Database = {
           contract_no: string
           created_at?: string
           days_worked?: number | null
+          deal_id?: string | null
           delivered_date?: string | null
           direct_hire?: boolean | null
           doc_cancel?: boolean | null
@@ -1995,6 +1997,7 @@ export type Database = {
           contract_no?: string
           created_at?: string
           days_worked?: number | null
+          deal_id?: string | null
           delivered_date?: string | null
           direct_hire?: boolean | null
           doc_cancel?: boolean | null
@@ -2047,6 +2050,13 @@ export type Database = {
             columns: ["agent_supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
             referencedColumns: ["id"]
           },
           {

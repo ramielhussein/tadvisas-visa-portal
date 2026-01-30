@@ -632,6 +632,7 @@ const Refund = () => {
         // Abscond classification (for Runaway cases)
         abscond_classification: formData.reason === 'Runaway' && formData.abscondClassification ? formData.abscondClassification : null,
         insurance_provider: formData.abscondClassification === 'INSURED' ? formData.insuranceProvider : null,
+        deal_id: linkedDealId || null,
         status: 'finalized',
       };
 
