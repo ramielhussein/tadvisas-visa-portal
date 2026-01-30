@@ -1,4 +1,5 @@
 
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -22,18 +24,8 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you within 24 hours.",
-    });
-    setFormData({
-      name: '',
-      phone: '',
-      email: '',
-      nationality: '',
-      visaStatus: '',
-      message: ''
-    });
+    // Redirect to thank you page for conversion tracking
+    navigate('/thank-you');
   };
 
   const handleInputChange = (field: string, value: string) => {

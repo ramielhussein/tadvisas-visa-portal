@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const StartHere = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const leadId = searchParams.get('lead_id');
   const [inquiryPackages, setInquiryPackages] = useState<Array<{ id: string; package_name: string }>>([]);
@@ -205,8 +206,8 @@ const StartHere = () => {
         }
       }
 
-      // Show success page
-      setIsSubmitted(true);
+      // Redirect to thank you page for conversion tracking
+      navigate('/thank-you');
 
       // Reset form
       setFormData({ 

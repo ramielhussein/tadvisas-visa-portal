@@ -13,6 +13,7 @@ import GetAVisa from "./pages/GetAVisa";
 import MonthlyPackages from "./pages/MonthlyPackages";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import ThankYou from "./pages/ThankYou";
 import StartHere from "./pages/StartHere";
 import Admin from "./pages/Admin";
 import ClientSubmissions from "./pages/ClientSubmissions";
@@ -154,6 +155,7 @@ const App = () => {
             <Route path="/monthly-packages" element={<MonthlyPackages />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/start-here" element={<StartHere />} />
             <Route path="/ALH" element={<ALH />} />
             <Route path="/fcg" element={<FCG />} />
