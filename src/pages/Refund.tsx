@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,6 +93,7 @@ interface Client {
 const Refund = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { isAdmin } = useAdminCheck();
   const [currentStep, setCurrentStep] = useState(1);
   const [authorizedUsers, setAuthorizedUsers] = useState<Array<{ id: string; full_name: string }>>([]);
@@ -101,6 +102,7 @@ const Refund = () => {
   const [workerSearch, setWorkerSearch] = useState('');
   const [clientSearch, setClientSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [linkedDealId, setLinkedDealId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     preparedBy: '',
     contractNo: '',
@@ -140,6 +142,36 @@ const Refund = () => {
     abscondClassification: '',
     insuranceProvider: '',
   });
+
+  // Pre-fill form from URL params (when coming from a deal)
+  useEffect(() => {
+    const dealId = searchParams.get('deal_id');
+    const contractNo = searchParams.get('contract_no');
+    const clientName = searchParams.get('client_name');
+    const clientPhone = searchParams.get('client_phone');
+    const workerName = searchParams.get('worker_name');
+    const totalAmount = searchParams.get('total_amount');
+
+    if (dealId) {
+      setLinkedDealId(dealId);
+    }
+
+    if (contractNo || clientName || clientPhone || workerName || totalAmount) {
+      setFormData(prev => ({
+        ...prev,
+        contractNo: contractNo || prev.contractNo,
+        clientName: clientName || prev.clientName,
+        clientMobile: clientPhone || prev.clientMobile,
+        workerName: workerName || prev.workerName,
+        priceInclVAT: totalAmount || prev.priceInclVAT,
+      }));
+
+      toast({
+        title: "Deal linked",
+        description: `Pre-filled from deal ${contractNo}`,
+      });
+    }
+  }, [searchParams]);
 
   // Load users with refund.create permission
   useEffect(() => {
