@@ -65,6 +65,7 @@ const MyCVs = () => {
   const [filterProfession, setFilterProfession] = useState<string>("all");
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [workerToLink, setWorkerToLink] = useState<{ id: string; name: string } | null>(null);
+  const [linkedWorkerIds, setLinkedWorkerIds] = useState<Set<string>>(new Set());
 
   // Get unique nationalities and professions for filter dropdowns
   const nationalities = useMemo(() => {
@@ -100,7 +101,25 @@ const MyCVs = () => {
 
   useEffect(() => {
     loadMyWorkers();
+    loadLinkedWorkerIds();
   }, [showAll, isAdmin, isProduct]);
+
+  const loadLinkedWorkerIds = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("deals")
+        .select("worker_id")
+        .not("worker_id", "is", null)
+        .in("status", ["Active", "Draft", "Completed"]);
+      
+      if (error) throw error;
+      
+      const ids = new Set((data || []).map(d => d.worker_id).filter(Boolean) as string[]);
+      setLinkedWorkerIds(ids);
+    } catch (error) {
+      console.error("Error loading linked worker IDs:", error);
+    }
+  };
 
   const loadMyWorkers = async () => {
     try {
@@ -386,17 +405,19 @@ const MyCVs = () => {
 
                     {(isAdmin || isProduct) && (
                       <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setWorkerToLink({ id: worker.id, name: worker.name });
-                            setLinkDialogOpen(true);
-                          }}
-                        >
-                          <LinkIcon className="mr-2 h-4 w-4" />
-                          Link with Customer
-                        </Button>
+                        {!linkedWorkerIds.has(worker.id) && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setWorkerToLink({ id: worker.id, name: worker.name });
+                              setLinkDialogOpen(true);
+                            }}
+                          >
+                            <LinkIcon className="mr-2 h-4 w-4" />
+                            Link with Customer
+                          </Button>
+                        )}
                         <Button
                           variant="destructive"
                           size="sm"
@@ -449,6 +470,7 @@ const MyCVs = () => {
           workerName={workerToLink.name}
           onSuccess={() => {
             setWorkerToLink(null);
+            loadLinkedWorkerIds();
             toast({
               title: "Linked Successfully",
               description: "The worker has been linked to the customer's deal",
