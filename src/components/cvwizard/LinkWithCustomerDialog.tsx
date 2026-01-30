@@ -51,7 +51,7 @@ const LinkWithCustomerDialog = ({ open, onOpenChange, workerId, workerName, onSu
 
   useEffect(() => {
     if (open) {
-      loadLeads();
+      searchLeads("");
     } else {
       setSearch("");
       setSelectedLead(null);
@@ -66,13 +66,30 @@ const LinkWithCustomerDialog = ({ open, onOpenChange, workerId, workerName, onSu
     }
   }, [selectedLead]);
 
-  const loadLeads = async () => {
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (open && !selectedLead) {
+        searchLeads(search);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search, open, selectedLead]);
+
+  const searchLeads = async (searchTerm: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("leads")
         .select("id, client_name, mobile_number, status, service_required")
-        .eq("archived", false)
+        .eq("archived", false);
+
+      if (searchTerm.trim()) {
+        // Server-side search by name or phone
+        query = query.or(`client_name.ilike.%${searchTerm}%,mobile_number.ilike.%${searchTerm}%`);
+      }
+
+      const { data, error } = await query
         .order("created_at", { ascending: false })
         .limit(50);
 
@@ -105,13 +122,8 @@ const LinkWithCustomerDialog = ({ open, onOpenChange, workerId, workerName, onSu
     }
   };
 
-  const filteredLeads = leads.filter(lead => {
-    const searchLower = search.toLowerCase();
-    return (
-      (lead.client_name?.toLowerCase() || "").includes(searchLower) ||
-      lead.mobile_number.includes(search)
-    );
-  });
+  // Leads are now already filtered server-side
+  const filteredLeads = leads;
 
   const handleLink = async () => {
     if (!selectedDeal) {
