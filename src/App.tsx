@@ -52,6 +52,7 @@ import FinancialDashboard from "./pages/FinancialDashboard";
 import SuppliersManagement from "./pages/SuppliersManagement";
 import WizardAlbum from "./pages/WizardAlbum";
 import RefundsList from "./pages/RefundsList";
+import QuickRefund from "./pages/QuickRefund";
 import AbscondedWorkersReport from "./pages/AbscondedWorkersReport";
 import SiteGuide from "./pages/SiteGuide";
 // ContractManagement and CreateContract removed - consolidated into ContractsManagement
@@ -159,6 +160,7 @@ const App = () => {
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/client-submissions" element={<ClientSubmissions />} />
             <Route path="/refund" element={<Refund />} />
+            <Route path="/quick-refund" element={<ProtectedRoute><QuickRefund /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/id-oc" element={<IdOc />} />
             <Route path="/id-ic" element={<IdIc />} />
