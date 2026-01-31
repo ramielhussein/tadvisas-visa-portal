@@ -1,10 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle } from "lucide-react";
+import { trackContact } from "@/lib/metaTracking";
 
 const CTA = () => {
   const handleCallClick = () => {
-    // Track phone call click conversion
+    // Track phone call - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210',
@@ -12,16 +12,20 @@ const CTA = () => {
         'event_label': 'cta_call_button'
       });
     }
+    // Track phone call - Meta Pixel + CAPI
+    trackContact();
     window.location.href = "tel:+971567222248";
   };
 
   const handleWhatsAppClick = () => {
-    // Track WhatsApp click conversion
+    // Track WhatsApp - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210'
       });
     }
+    // Track WhatsApp - Meta Pixel + CAPI
+    trackContact();
     const message = "Hi! I'm ready to start my 2-year maid visa process. Can you help me?";
     const url = `https://wa.me/971567222248?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

@@ -1,17 +1,20 @@
-
 import { MessageCircle } from "lucide-react";
+import { trackContact } from "@/lib/metaTracking";
 
 const WhatsAppButton = () => {
   const whatsappNumber = "+971567222248";
   const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
   
   const handleWhatsAppClick = () => {
-    // Track WhatsApp click conversion
+    // Track WhatsApp click - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210'
       });
     }
+    // Track WhatsApp click - Meta Pixel + CAPI
+    trackContact();
+    
     const url = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Moon } from "lucide-react";
+import { trackContact } from "@/lib/metaTracking";
 
 const TopBanner = () => {
   const [daysToRamadan, setDaysToRamadan] = useState(0);
@@ -18,12 +19,14 @@ const TopBanner = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    // Track WhatsApp click conversion
+    // Track WhatsApp - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210'
       });
     }
+    // Track WhatsApp - Meta Pixel + CAPI
+    trackContact();
     const message = encodeURIComponent("Hello! I want to apply for my maid's visa online.");
     window.open(`https://wa.me/971567222248?text=${message}`, "_blank");
   };

@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, CheckCircle } from "lucide-react";
 import RamadanCountdown from "./RamadanCountdown";
+import { trackContact } from "@/lib/metaTracking";
 
 const Hero = () => {
   const handleCallClick = () => {
-    // Track phone call click conversion
+    // Track phone call - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210',
@@ -12,16 +13,20 @@ const Hero = () => {
         'event_label': 'hero_call_button'
       });
     }
+    // Track phone call - Meta Pixel + CAPI
+    trackContact();
     window.location.href = "tel:+97143551186";
   };
 
   const handleWhatsAppClick = () => {
-    // Track WhatsApp click conversion
+    // Track WhatsApp - Google Ads
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-17128942210'
       });
     }
+    // Track WhatsApp - Meta Pixel + CAPI
+    trackContact();
     const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
     const url = `https://wa.me/971567222248?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
