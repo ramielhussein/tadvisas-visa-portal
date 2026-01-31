@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, DollarSign } from "lucide-react";
@@ -41,6 +42,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
     reference_number: "",
     notes: "",
     service_type: "",
+    reduces_balance: true,
   });
   const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
@@ -152,6 +154,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
           notes: formData.notes || null,
           recorded_by: user.id,
           service_type: formData.service_type || null,
+          reduces_balance: formData.reduces_balance,
         });
 
       if (paymentError) throw paymentError;
@@ -183,6 +186,7 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       reference_number: "",
       notes: "",
       service_type: "",
+      reduces_balance: true,
     });
     onClose();
   };
@@ -327,6 +331,22 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
               placeholder="Additional notes..."
               rows={3}
             />
+          </div>
+
+          <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
+            <Checkbox
+              id="reduces_balance"
+              checked={formData.reduces_balance}
+              onCheckedChange={(checked) => setFormData({ ...formData, reduces_balance: checked === true })}
+            />
+            <div className="flex flex-col">
+              <Label htmlFor="reduces_balance" className="cursor-pointer font-medium">
+                Reduce balance due
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Uncheck if this is a separate transaction that shouldn't affect the deal's balance
+              </p>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

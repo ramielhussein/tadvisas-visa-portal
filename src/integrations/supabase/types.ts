@@ -1539,6 +1539,7 @@ export type Database = {
           payment_method: string | null
           payment_number: string
           recorded_by: string | null
+          reduces_balance: boolean
           reference_number: string | null
           service_type: string | null
           updated_at: string
@@ -1557,6 +1558,7 @@ export type Database = {
           payment_method?: string | null
           payment_number: string
           recorded_by?: string | null
+          reduces_balance?: boolean
           reference_number?: string | null
           service_type?: string | null
           updated_at?: string
@@ -1575,6 +1577,7 @@ export type Database = {
           payment_method?: string | null
           payment_number?: string
           recorded_by?: string | null
+          reduces_balance?: boolean
           reference_number?: string | null
           service_type?: string | null
           updated_at?: string
