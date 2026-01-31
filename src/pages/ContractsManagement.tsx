@@ -60,21 +60,47 @@ const ContractsManagement = () => {
     totalRefunds: 0,
   });
 
-  // Fetch total refunds
+  // Fetch total refunds - filtered by date if date filters are active
   const [totalRefunds, setTotalRefunds] = useState(0);
+  const [filteredRefunds, setFilteredRefunds] = useState(0);
   
   useEffect(() => {
     const fetchRefunds = async () => {
-      const { data } = await supabase
+      // Fetch all refunds for the total
+      const { data: allRefunds } = await supabase
         .from("refunds")
         .select("total_refund_amount")
         .in("status", ["finalized", "approved"]);
       
-      const refundSum = (data || []).reduce((sum, r) => sum + Number(r.total_refund_amount || 0), 0);
-      setTotalRefunds(refundSum);
+      const totalSum = (allRefunds || []).reduce((sum, r) => sum + Number(r.total_refund_amount || 0), 0);
+      setTotalRefunds(totalSum);
+      
+      // If date filters are active, also fetch filtered refunds
+      if (dateFrom || dateTo) {
+        let refundQuery = supabase
+          .from("refunds")
+          .select("total_refund_amount, created_at")
+          .in("status", ["finalized", "approved"]);
+        
+        if (dateFrom) {
+          refundQuery = refundQuery.gte("created_at", format(dateFrom, "yyyy-MM-dd"));
+        }
+        if (dateTo) {
+          // Add one day to include the entire 'to' day
+          const toDateEnd = new Date(dateTo);
+          toDateEnd.setDate(toDateEnd.getDate() + 1);
+          refundQuery = refundQuery.lt("created_at", format(toDateEnd, "yyyy-MM-dd"));
+        }
+        
+        const { data: periodRefunds } = await refundQuery;
+        const periodSum = (periodRefunds || []).reduce((sum, r) => sum + Number(r.total_refund_amount || 0), 0);
+        setFilteredRefunds(periodSum);
+      } else {
+        setFilteredRefunds(totalSum);
+      }
     };
     fetchRefunds();
-  }, []);
+  }, [dateFrom, dateTo]);
 
   // Get unique values for filter dropdowns
   const uniqueServices = useMemo(() => {
@@ -466,11 +492,11 @@ const ContractsManagement = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs flex items-center gap-2 text-rose-600">
                   <DollarSign className="w-4 h-4" />
-                  Total Refunds
+                  Total Refunds {(dateFrom || dateTo) && <span className="text-[10px] font-normal">(in period)</span>}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-bold text-rose-600">AED {totalRefunds.toLocaleString()}</p>
+                <p className="text-xl font-bold text-rose-600">AED {filteredRefunds.toLocaleString()}</p>
               </CardContent>
             </Card>
 
@@ -478,11 +504,11 @@ const ContractsManagement = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs flex items-center gap-2 text-emerald-600">
                   <TrendingUp className="w-4 h-4" />
-                  Net Received
+                  Net Received {(dateFrom || dateTo) && <span className="text-[10px] font-normal">(in period)</span>}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-bold text-emerald-600">AED {(stats.totalReceived - totalRefunds).toLocaleString()}</p>
+                <p className="text-xl font-bold text-emerald-600">AED {(stats.totalReceived - filteredRefunds).toLocaleString()}</p>
               </CardContent>
             </Card>
 
