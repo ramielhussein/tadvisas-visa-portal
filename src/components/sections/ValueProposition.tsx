@@ -1,7 +1,7 @@
-
 import { Shield, Clock, CreditCard, Users, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { trackContact } from "@/lib/metaTracking";
 
 const ValueProposition = () => {
   const values = [
@@ -54,12 +54,14 @@ const ValueProposition = () => {
           <div className="flex justify-start md:justify-center gap-4 mt-6">
             <Button
               onClick={() => {
-                // Track WhatsApp click conversion
+                // Track WhatsApp - Google Ads
                 if ((window as any).gtag) {
                   (window as any).gtag('event', 'conversion', {
                     'send_to': 'AW-17128942210'
                   });
                 }
+                // Track WhatsApp - Meta Pixel + CAPI
+                trackContact();
                 const message = "Hi, I need help hiring a maid";
                 const url = `https://wa.me/971567222248?text=${encodeURIComponent(message)}`;
                 window.open(url, '_blank');
@@ -71,7 +73,7 @@ const ValueProposition = () => {
             </Button>
             <Button
               onClick={() => {
-                // Track phone call click conversion
+                // Track phone call - Google Ads
                 if ((window as any).gtag) {
                   (window as any).gtag('event', 'conversion', {
                     'send_to': 'AW-17128942210',
@@ -79,6 +81,8 @@ const ValueProposition = () => {
                     'event_label': 'value_prop_call_button'
                   });
                 }
+                // Track phone call - Meta Pixel + CAPI
+                trackContact();
                 window.location.href = "tel:+97143551186";
               }}
               variant="outline"

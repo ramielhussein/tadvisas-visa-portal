@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Home, Phone, MessageCircle } from "lucide-react";
+import { trackLead } from "@/lib/metaTracking";
 
 const ThankYou = () => {
   const navigate = useNavigate();
@@ -15,10 +16,8 @@ const ThankYou = () => {
       });
     }
 
-    // Fire Meta Pixel conversion event
-    if ((window as any).fbq) {
-      (window as any).fbq('track', 'Lead');
-    }
+    // Fire Meta Pixel + CAPI Lead event with deduplication
+    trackLead();
   }, []);
 
   const handleWhatsAppClick = () => {
