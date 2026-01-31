@@ -112,15 +112,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
       return;
     }
 
-    // Only enforce max amount when there is a positive balance due.
-    if (deal.balance_due > 0 && (amount - deal.balance_due > overpayTolerance)) {
-      toast({
-        title: "Amount Too High",
-        description: `Payment cannot exceed balance due (${deal.balance_due.toLocaleString()} AED)`,
-        variant: "destructive",
-      });
-      return;
-    }
+    // Removed max amount validation - users can record any payment amount
+    // The database trigger will add it incrementally to paid_amount
 
     if (!formData.bank_account_id && bankAccounts.length > 0) {
       toast({
