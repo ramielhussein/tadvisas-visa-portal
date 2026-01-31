@@ -11,7 +11,7 @@ const ThankYou = () => {
     // Fire Google Ads conversion on page load
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17128942210/form_submission',
+        'send_to': 'AW-17918343259/form_submission',
         'event_category': 'form',
         'event_label': 'contact_form_submission'
       });
@@ -31,7 +31,7 @@ const ThankYou = () => {
   const handleCallClick = () => {
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17128942210',
+        'send_to': 'AW-17918343259/call_conversion',
         'event_category': 'call',
         'event_label': 'thank_you_page_call'
       });
