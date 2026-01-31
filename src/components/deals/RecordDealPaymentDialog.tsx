@@ -194,8 +194,8 @@ const RecordDealPaymentDialog = ({ open, deal, onClose, onSuccess }: RecordDealP
   if (!deal) return null;
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl">
+    <Dialog open={open} onOpenChange={handleClose} modal>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <DollarSign className="w-5 h-5" />
