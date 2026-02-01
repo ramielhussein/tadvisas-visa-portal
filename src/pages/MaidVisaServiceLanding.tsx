@@ -75,6 +75,15 @@ const MaidVisaServiceLanding = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // SHA-256 hash function for Enhanced Conversions
+  const hashUserData = async (value: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(value.toLowerCase().trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -97,7 +106,32 @@ const MaidVisaServiceLanding = () => {
 
       if (error) throw error;
 
-      // Track lead conversion
+      // Google Ads Enhanced Conversion - Form Submission
+      if ((window as any).gtag) {
+        const hashedEmail = await hashUserData(formData.email);
+        const hashedPhone = await hashUserData(formData.phone.replace(/\s/g, ''));
+        const nameParts = formData.name.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
+        (window as any).gtag('set', 'user_data', {
+          email: hashedEmail,
+          phone_number: hashedPhone,
+          address: {
+            first_name: await hashUserData(firstName),
+            last_name: await hashUserData(lastName),
+            country: 'AE'
+          }
+        });
+        
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-17918343259/ucbYCIqSm_AbENvwkOBC',
+          'value': 1.0,
+          'currency': 'AED'
+        });
+      }
+
+      // Track lead conversion - Meta Pixel + CAPI
       await trackLead({
         email: formData.email,
         phone: formData.phone,
@@ -127,11 +161,12 @@ const MaidVisaServiceLanding = () => {
 
   const handleCallClick = () => {
     trackContact();
+    // Google Ads Enhanced Conversion - Click to Call
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17918343259',
-        'event_category': 'call',
-        'event_label': 'landing_page_call'
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
       });
     }
     window.location.href = "tel:+971567222248";
