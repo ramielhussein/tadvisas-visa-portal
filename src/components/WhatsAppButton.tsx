@@ -6,10 +6,12 @@ const WhatsAppButton = () => {
   const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
   
   const handleWhatsAppClick = () => {
-    // Track WhatsApp click - Google Ads
+    // Track WhatsApp click - Google Ads Enhanced Conversion
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17128942210'
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
       });
     }
     // Track WhatsApp click - Meta Pixel + CAPI

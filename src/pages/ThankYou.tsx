@@ -21,16 +21,25 @@ const ThankYou = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
+    // Track WhatsApp - Google Ads Enhanced Conversion
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
+      });
+    }
     const message = "Hi! I just submitted my inquiry on your website. Can you help me?";
     window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleCallClick = () => {
+    // Track phone call - Google Ads Enhanced Conversion
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17918343259/call_conversion',
-        'event_category': 'call',
-        'event_label': 'thank_you_page_call'
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
       });
     }
     window.location.href = "tel:+971567222248";

@@ -5,12 +5,12 @@ import { trackContact } from "@/lib/metaTracking";
 
 const Hero = () => {
   const handleCallClick = () => {
-    // Track phone call - Google Ads
+    // Track phone call - Google Ads Enhanced Conversion
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17128942210',
-        'event_category': 'call',
-        'event_label': 'hero_call_button'
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
       });
     }
     // Track phone call - Meta Pixel + CAPI
@@ -19,10 +19,12 @@ const Hero = () => {
   };
 
   const handleWhatsAppClick = () => {
-    // Track WhatsApp - Google Ads
+    // Track WhatsApp - Google Ads Enhanced Conversion
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-17128942210'
+        'send_to': 'AW-17918343259/CqN5CN-Uj_AbENvwkOBC',
+        'value': 1.0,
+        'currency': 'AED'
       });
     }
     // Track WhatsApp - Meta Pixel + CAPI
