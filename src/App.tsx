@@ -116,8 +116,9 @@ import GymTimer from "./pages/GymTimer";
 // SOP Viewer
 import SOPViewer from "./pages/SOPViewer";
 
-// Landing Page
+// Landing Pages
 import Land from "./pages/Land";
+import MaidVisaServiceLanding from "./pages/MaidVisaServiceLanding";
 
 // Test Pages
 import TestFront from "./pages/TestFront";
@@ -292,9 +293,10 @@ const App = () => {
             {/* Test Pages */}
             <Route path="/testfront" element={<TestFront />} />
             
-            {/* Landing Page */}
+            {/* Landing Pages */}
             <Route path="/land" element={<Land />} />
-            
+            <Route path="/maid-visa-service-uae-lp" element={<MaidVisaServiceLanding />} />
+
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
             <Route path="/financial" element={<Navigate to="/finance" replace />} />
