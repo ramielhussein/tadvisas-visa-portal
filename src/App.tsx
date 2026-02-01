@@ -116,6 +116,9 @@ import GymTimer from "./pages/GymTimer";
 // SOP Viewer
 import SOPViewer from "./pages/SOPViewer";
 
+// Landing Page
+import Land from "./pages/Land";
+
 // Test Pages
 import TestFront from "./pages/TestFront";
 
@@ -288,6 +291,9 @@ const App = () => {
             
             {/* Test Pages */}
             <Route path="/testfront" element={<TestFront />} />
+            
+            {/* Landing Page */}
+            <Route path="/land" element={<Land />} />
             
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
