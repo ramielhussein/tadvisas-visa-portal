@@ -163,22 +163,29 @@ const ContractsManagement = () => {
     return breakdown;
   }, [filteredContracts]);
 
-  // Track clients with multiple contracts (by phone number)
-  const repeatClients = useMemo(() => {
-    const phoneCount: Record<string, number> = {};
-    // Count contracts per phone (excluding Void)
-    contracts.filter(c => c.status !== 'Void').forEach(contract => {
-      const phone = contract.client_phone;
-      if (phone) {
-        phoneCount[phone] = (phoneCount[phone] || 0) + 1;
+  // Track potential duplicate contracts (client name + worker name + amount ±100)
+  const duplicateContractIds = useMemo(() => {
+    const nonVoidContracts = contracts.filter(c => c.status !== 'Void');
+    const duplicateIds = new Set<string>();
+    
+    for (let i = 0; i < nonVoidContracts.length; i++) {
+      for (let j = i + 1; j < nonVoidContracts.length; j++) {
+        const a = nonVoidContracts[i];
+        const b = nonVoidContracts[j];
+        
+        const clientNameMatch = (a.client_name || '').toLowerCase().trim() === (b.client_name || '').toLowerCase().trim();
+        const workerNameMatch = (a.worker_name || '').toLowerCase().trim() === (b.worker_name || '').toLowerCase().trim();
+        const amountDiff = Math.abs((a.total_amount || 0) - (b.total_amount || 0));
+        const amountMatch = amountDiff <= 100;
+        
+        if (clientNameMatch && workerNameMatch && amountMatch) {
+          duplicateIds.add(a.id);
+          duplicateIds.add(b.id);
+        }
       }
-    });
-    // Return set of phones with more than 1 contract
-    return new Set(
-      Object.entries(phoneCount)
-        .filter(([_, count]) => count > 1)
-        .map(([phone]) => phone)
-    );
+    }
+    
+    return duplicateIds;
   }, [contracts]);
 
   useEffect(() => {
@@ -850,14 +857,14 @@ const ContractsManagement = () => {
                           <TableCell>
                             <div className="flex items-center gap-1">
                               {contract.client_name}
-                              {repeatClients.has(contract.client_phone) && (
+                              {duplicateContractIds.has(contract.id) && contract.status !== 'Void' && (
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger>
                                       <AlertTriangle className="w-4 h-4 text-amber-500" />
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Repeat client - has multiple contracts</p>
+                                      <p>Potential duplicate - same client, worker & amount (±100)</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
