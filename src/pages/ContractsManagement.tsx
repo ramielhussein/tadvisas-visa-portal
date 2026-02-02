@@ -35,6 +35,7 @@ interface Contract {
   worker_name: string | null;
   assigned_to: string | null;
   created_by_name?: string | null;
+  refund_amount?: number | null;
 }
 
 const ContractsManagement = () => {
@@ -327,10 +328,29 @@ const ContractsManagement = () => {
         }, {} as Record<string, string>);
       }
 
-      // Map the data to include created_by_name
+      // Fetch refunds linked to deals
+      const dealIds = (data || []).map(d => d.id);
+      let refundsMap: Record<string, number> = {};
+      if (dealIds.length > 0) {
+        const { data: refunds } = await supabase
+          .from("refunds")
+          .select("deal_id, total_refund_amount")
+          .in("deal_id", dealIds)
+          .in("status", ["finalized", "approved"]);
+        
+        refundsMap = (refunds || []).reduce((acc, r) => {
+          if (r.deal_id) {
+            acc[r.deal_id] = (acc[r.deal_id] || 0) + Number(r.total_refund_amount || 0);
+          }
+          return acc;
+        }, {} as Record<string, number>);
+      }
+
+      // Map the data to include created_by_name and refund_amount
       const contractsWithCreator = (data || []).map((contract: any) => ({
         ...contract,
         created_by_name: contract.assigned_to ? profilesMap[contract.assigned_to] || null : null,
+        refund_amount: refundsMap[contract.id] || null,
       }));
 
       setContracts(contractsWithCreator);
@@ -383,6 +403,7 @@ const ContractsManagement = () => {
       "Deal Value": c.deal_value,
       "Total Amount": c.total_amount,
       "Received": c.paid_amount || 0,
+      "Refund": c.refund_amount ? -c.refund_amount : 0,
       "Status": c.status,
       "Created By": c.created_by_name || "-",
       "Created At": format(new Date(c.created_at), "dd MMM yyyy"),
@@ -836,6 +857,7 @@ const ContractsManagement = () => {
                       <TableHead className="text-right">Value</TableHead>
                       <TableHead className="text-right">Total</TableHead>
                       <TableHead className="text-right">Received</TableHead>
+                      <TableHead className="text-right">Refund</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Created By</TableHead>
                       <TableHead>Created</TableHead>
@@ -845,7 +867,7 @@ const ContractsManagement = () => {
                   <TableBody>
                     {filteredContracts.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={13} className="text-center py-8">
+                        <TableCell colSpan={14} className="text-center py-8">
                           {hasActiveFilters ? "No contracts match the current filters." : "No contracts found. Create your first contract!"}
                         </TableCell>
                       </TableRow>
@@ -901,6 +923,9 @@ const ContractsManagement = () => {
                           </TableCell>
                           <TableCell className="text-right text-green-600 font-medium">
                             {Number(contract.paid_amount || 0).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-right text-red-600 font-medium">
+                            {contract.refund_amount ? `-${Number(contract.refund_amount).toLocaleString()}` : "-"}
                           </TableCell>
                           <TableCell>
                             <Badge className={cn("text-xs", getStatusColor(contract.status))}>
