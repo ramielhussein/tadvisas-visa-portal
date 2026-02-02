@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
@@ -117,6 +117,50 @@ const ContractsManagement = () => {
     const creators = [...new Set(contracts.map(c => c.created_by_name).filter(Boolean))];
     return creators.sort() as string[];
   }, [contracts]);
+
+  // Package breakdown calculation - uses filtered contracts
+  const packageBreakdown = useMemo(() => {
+    const breakdown = {
+      p1: { count: 0, amount: 0 },
+      p5: { count: 0, amount: 0 },
+      p4: { count: 0, amount: 0 },
+      directHire: { count: 0, amount: 0 },
+    };
+
+    // Only count Active and Draft contracts
+    const activeContracts = filteredContracts.filter(c => c.status === 'Active' || c.status === 'Draft');
+
+    activeContracts.forEach(contract => {
+      const serviceType = (contract.service_type || '').toUpperCase();
+      const amount = Number(contract.total_amount) || 0;
+
+      // Check for P1 (case-insensitive)
+      if (serviceType.includes('P1')) {
+        breakdown.p1.count += 1;
+        breakdown.p1.amount += amount;
+      }
+
+      // Check for P5 (case-insensitive)
+      if (serviceType.includes('P5')) {
+        breakdown.p5.count += 1;
+        breakdown.p5.amount += amount;
+      }
+
+      // Check for P4 (case-insensitive)
+      if (serviceType.includes('P4')) {
+        breakdown.p4.count += 1;
+        breakdown.p4.amount += amount;
+      }
+
+      // Check for Direct Hire (case-insensitive)
+      if (serviceType.includes('DIRECT')) {
+        breakdown.directHire.count += 1;
+        breakdown.directHire.amount += amount;
+      }
+    });
+
+    return breakdown;
+  }, [filteredContracts]);
 
   useEffect(() => {
     fetchContracts();
@@ -521,6 +565,61 @@ const ContractsManagement = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-xl font-bold">{stats.activeContracts} / {stats.closedContracts}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Package Breakdown Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-blue-600">
+                  <Package className="w-4 h-4" />
+                  P1 Package
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-blue-600">{packageBreakdown.p1.count}</p>
+                <p className="text-sm text-blue-500">AED {packageBreakdown.p1.amount.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-purple-200 bg-purple-50/50 dark:bg-purple-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-purple-600">
+                  <Package className="w-4 h-4" />
+                  P5 Package
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-purple-600">{packageBreakdown.p5.count}</p>
+                <p className="text-sm text-purple-500">AED {packageBreakdown.p5.amount.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-amber-600">
+                  <Package className="w-4 h-4" />
+                  P4 Package
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-amber-600">{packageBreakdown.p4.count}</p>
+                <p className="text-sm text-amber-500">AED {packageBreakdown.p4.amount.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-teal-200 bg-teal-50/50 dark:bg-teal-950/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs flex items-center gap-2 text-teal-600">
+                  <Package className="w-4 h-4" />
+                  Direct Hire
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xl font-bold text-teal-600">{packageBreakdown.directHire.count}</p>
+                <p className="text-sm text-teal-500">AED {packageBreakdown.directHire.amount.toLocaleString()}</p>
               </CardContent>
             </Card>
           </div>
