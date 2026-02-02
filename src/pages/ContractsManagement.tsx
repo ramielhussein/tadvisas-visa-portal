@@ -45,6 +45,7 @@ const ContractsManagement = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dismissedDuplicates, setDismissedDuplicates] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
@@ -857,14 +858,23 @@ const ContractsManagement = () => {
                           <TableCell>
                             <div className="flex items-center gap-1">
                               {contract.client_name}
-                              {duplicateContractIds.has(contract.id) && contract.status !== 'Void' && (
+                              {duplicateContractIds.has(contract.id) && contract.status !== 'Void' && !dismissedDuplicates.has(contract.id) && (
                                 <TooltipProvider>
                                   <Tooltip>
-                                    <TooltipTrigger>
-                                      <AlertTriangle className="w-4 h-4 text-amber-500" />
+                                    <TooltipTrigger asChild>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setDismissedDuplicates(prev => new Set([...prev, contract.id]));
+                                          toast({ title: "Warning dismissed", description: "Duplicate warning hidden for this session" });
+                                        }}
+                                        className="hover:opacity-70 transition-opacity"
+                                      >
+                                        <AlertTriangle className="w-4 h-4 text-amber-500" />
+                                      </button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Potential duplicate - same client, worker & amount (±100)</p>
+                                      <p>Potential duplicate - click to dismiss</p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
