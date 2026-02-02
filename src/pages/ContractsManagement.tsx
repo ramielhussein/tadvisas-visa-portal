@@ -14,7 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import Layout from "@/components/Layout";
-import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter, Package } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter, Package, AlertTriangle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import * as XLSX from "xlsx";
 
@@ -161,6 +162,24 @@ const ContractsManagement = () => {
 
     return breakdown;
   }, [filteredContracts]);
+
+  // Track clients with multiple contracts (by phone number)
+  const repeatClients = useMemo(() => {
+    const phoneCount: Record<string, number> = {};
+    // Count contracts per phone (excluding Void)
+    contracts.filter(c => c.status !== 'Void').forEach(contract => {
+      const phone = contract.client_phone;
+      if (phone) {
+        phoneCount[phone] = (phoneCount[phone] || 0) + 1;
+      }
+    });
+    // Return set of phones with more than 1 contract
+    return new Set(
+      Object.entries(phoneCount)
+        .filter(([_, count]) => count > 1)
+        .map(([phone]) => phone)
+    );
+  }, [contracts]);
 
   useEffect(() => {
     fetchContracts();
@@ -828,7 +847,23 @@ const ContractsManagement = () => {
                           <TableCell className="font-mono font-medium">
                             {contract.deal_number}
                           </TableCell>
-                          <TableCell>{contract.client_name}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              {contract.client_name}
+                              {repeatClients.has(contract.client_phone) && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger>
+                                      <AlertTriangle className="w-4 h-4 text-amber-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Repeat client - has multiple contracts</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell className="font-mono text-xs">
                             {contract.client_phone}
                           </TableCell>
