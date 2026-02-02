@@ -145,6 +145,14 @@ const SalespersonDealsReport = () => {
   const handleDownloadPDF = async () => {
     if (!reportRef.current) return;
 
+    // Filter out voided/cancelled deals for PDF
+    const activeDeals = deals.filter(deal => !['Void', 'Cancelled'].includes(deal.status));
+    
+    // Calculate totals for active deals only
+    const pdfTotalAmount = activeDeals.reduce((sum, deal) => sum + (deal.total_amount || 0), 0);
+    const pdfTotalPaid = activeDeals.reduce((sum, deal) => sum + (deal.paid_amount || 0), 0);
+    const pdfTotalBalance = activeDeals.reduce((sum, deal) => sum + (deal.balance_due || 0), 0);
+
     const salespersonLabel = selectedSalesperson === "all" 
       ? "All Salespeople" 
       : getSalespersonName(selectedSalesperson);
@@ -161,19 +169,19 @@ const SalespersonDealsReport = () => {
         <div style="display: flex; gap: 20px; margin-bottom: 20px;">
           <div style="flex: 1; background: #f0f4f8; padding: 15px; border-radius: 8px; text-align: center;">
             <p style="margin: 0; color: #666; font-size: 12px;">Total Deals</p>
-            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #1e3a5f;">${deals.length}</p>
+            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #1e3a5f;">${activeDeals.length}</p>
           </div>
           <div style="flex: 1; background: #f0f4f8; padding: 15px; border-radius: 8px; text-align: center;">
             <p style="margin: 0; color: #666; font-size: 12px;">Total Value</p>
-            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #1e3a5f;">AED ${totalAmount.toLocaleString()}</p>
+            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #1e3a5f;">AED ${pdfTotalAmount.toLocaleString()}</p>
           </div>
           <div style="flex: 1; background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center;">
             <p style="margin: 0; color: #666; font-size: 12px;">Collected</p>
-            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #16a34a;">AED ${totalPaid.toLocaleString()}</p>
+            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #16a34a;">AED ${pdfTotalPaid.toLocaleString()}</p>
           </div>
           <div style="flex: 1; background: #fff3e0; padding: 15px; border-radius: 8px; text-align: center;">
             <p style="margin: 0; color: #666; font-size: 12px;">Outstanding</p>
-            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #ea580c;">AED ${totalBalance.toLocaleString()}</p>
+            <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #ea580c;">AED ${pdfTotalBalance.toLocaleString()}</p>
           </div>
         </div>
 
@@ -191,7 +199,7 @@ const SalespersonDealsReport = () => {
             </tr>
           </thead>
           <tbody>
-            ${deals.map((deal, index) => `
+            ${activeDeals.map((deal, index) => `
               <tr style="background: ${index % 2 === 0 ? '#fff' : '#f9f9f9'};">
                 <td style="padding: 6px; border: 1px solid #ddd;">${deal.deal_number}</td>
                 <td style="padding: 6px; border: 1px solid #ddd;">${deal.deal_date ? format(new Date(deal.deal_date), "dd/MM/yyyy") : '-'}</td>
@@ -207,8 +215,8 @@ const SalespersonDealsReport = () => {
           <tfoot>
             <tr style="background: #1e3a5f; color: white; font-weight: bold;">
               <td colspan="${selectedSalesperson === "all" ? 5 : 4}" style="padding: 8px; border: 1px solid #ddd;">TOTAL</td>
-              <td style="padding: 8px; text-align: right; border: 1px solid #ddd;">AED ${totalAmount.toLocaleString()}</td>
-              <td style="padding: 8px; text-align: right; border: 1px solid #ddd;">AED ${totalPaid.toLocaleString()}</td>
+              <td style="padding: 8px; text-align: right; border: 1px solid #ddd;">AED ${pdfTotalAmount.toLocaleString()}</td>
+              <td style="padding: 8px; text-align: right; border: 1px solid #ddd;">AED ${pdfTotalPaid.toLocaleString()}</td>
               <td style="padding: 8px; border: 1px solid #ddd;"></td>
             </tr>
           </tfoot>
