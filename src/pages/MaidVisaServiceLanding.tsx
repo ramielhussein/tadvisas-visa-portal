@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { trackContact, trackLead } from "@/lib/metaTracking";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
@@ -140,8 +141,9 @@ const MaidVisaServiceLanding = () => {
       });
       
       navigate('/thank-you');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form submission error:', error);
+      toast.error(error?.message || 'Something went wrong. Please try again or call us directly.');
     } finally {
       setIsSubmitting(false);
     }
