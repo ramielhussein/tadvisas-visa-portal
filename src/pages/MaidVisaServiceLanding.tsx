@@ -17,6 +17,7 @@ import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
 import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
 import audienceHomeowners from "@/assets/audience-homeowners.jpg";
 import audienceNewParents from "@/assets/audience-new-parents.jpg";
+import whyChooseBg from "@/assets/why-choose-tadmaids-bg.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
 
@@ -898,99 +899,118 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* Why Choose TADMAIDS - Premium Section */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')` }}
-        />
-        {/* Dark Gradient Overlay for Readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-accent/85" />
-        {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <span className="inline-block px-5 py-2 bg-white/10 backdrop-blur-sm text-amber-300 font-semibold text-sm rounded-full mb-4 border border-amber-400/30">
-              TRUSTED BY 5000+ UAE FAMILIES
-            </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Why Choose <span className="text-amber-400">TADMAIDS?</span>
-            </h2>
-            <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
-              Dubai's Premier Government-Licensed Tadbeer Center – We Handle the Stress So You Don't Have To
-            </p>
-          </div>
-
-          {/* Pain Points & Solutions Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {whyChooseUs.map((item, index) => (
-              <div 
-                key={index} 
-                className="group bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/20 hover:border-amber-400/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <div className="text-white [&>svg]:w-7 [&>svg]:h-7">{item.icon}</div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-white text-lg mb-2 group-hover:text-amber-300 transition-colors">{item.title}</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">{item.description}</p>
-                  </div>
+      {/* Why Choose TADMAIDS - Premium Split Section */}
+      <section className="relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row min-h-[800px]">
+          {/* Left Side - Image with Light Overlay */}
+          <div className="relative lg:w-1/2 h-[400px] lg:h-auto">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${whyChooseBg})` }}
+            />
+            {/* Subtle overlay to blend */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/30 lg:to-primary/50" />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent lg:hidden" />
+            
+            {/* Floating Stats on Image - Mobile */}
+            <div className="absolute bottom-6 left-6 right-6 lg:hidden">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                  <div className="text-2xl font-bold text-primary">19+</div>
+                  <div className="text-xs text-gray-600">Years Experience</div>
+                </div>
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
+                  <div className="text-2xl font-bold text-primary">5000+</div>
+                  <div className="text-xs text-gray-600">Visas Processed</div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center gap-8 mb-12 pb-12 border-b border-white/20">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">19+</div>
-              <div className="text-white/80 text-sm">Years Experience</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">5000+</div>
-              <div className="text-white/80 text-sm">Visas Processed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">100%</div>
-              <div className="text-white/80 text-sm">Legal & Licensed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">24/7</div>
-              <div className="text-white/80 text-sm">Support Available</div>
             </div>
           </div>
 
-          {/* Persuasive CTA Section */}
-          <div className="text-center">
-            <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-              <span className="font-semibold text-amber-300">Stop worrying about visa paperwork.</span> Our expert team is ready to guide you through every step – from document collection to visa delivery.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button 
-                onClick={handleWhatsAppClick} 
-                size="lg" 
-                className="bg-green-500 hover:bg-green-600 text-white text-lg px-10 py-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-105"
-              >
-                <MessageCircle className="w-6 h-6 mr-3" />
-                WhatsApp Now
-              </Button>
-              <Button 
-                onClick={handleCallClick} 
-                size="lg" 
-                className="bg-white text-primary hover:bg-amber-50 text-lg px-10 py-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-105"
-              >
-                <Phone className="w-6 h-6 mr-3" />
-                Call for Visa Support
-              </Button>
+          {/* Right Side - Content */}
+          <div className="lg:w-1/2 bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-6 lg:px-12 xl:px-16 relative">
+            {/* Decorative Elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
+            
+            <div className="relative z-10 max-w-xl">
+              {/* Section Header */}
+              <span className="inline-block px-4 py-2 bg-amber-500/20 text-amber-300 font-semibold text-sm rounded-full mb-6 border border-amber-400/30">
+                TRUSTED BY 5000+ UAE FAMILIES
+              </span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                Why Choose <span className="text-amber-400">TADMAIDS?</span>
+              </h2>
+              <p className="text-lg text-white/90 mb-10">
+                Dubai's Premier Government-Licensed Tadbeer Center – We Handle the Stress So You Don't Have To
+              </p>
+
+              {/* Benefits List */}
+              <div className="space-y-4 mb-10">
+                {whyChooseUs.slice(0, 4).map((item, index) => (
+                  <div 
+                    key={index} 
+                    className="flex items-start gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/15 hover:border-amber-400/30 transition-all duration-300"
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
+                      <div className="text-white [&>svg]:w-6 [&>svg]:h-6">{item.icon}</div>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white text-base mb-1">{item.title}</h3>
+                      <p className="text-white/70 text-sm leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Trust Stats - Desktop Only */}
+              <div className="hidden lg:flex gap-6 mb-10 pb-8 border-b border-white/20">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-amber-400">19+</div>
+                  <div className="text-white/70 text-xs">Years</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-amber-400">5000+</div>
+                  <div className="text-white/70 text-xs">Visas</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-amber-400">100%</div>
+                  <div className="text-white/70 text-xs">Legal</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-amber-400">24/7</div>
+                  <div className="text-white/70 text-xs">Support</div>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="space-y-3">
+                <p className="text-white/80 text-sm mb-4">
+                  <span className="font-semibold text-amber-300">Stop worrying about visa paperwork.</span> Get expert help now!
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={handleWhatsAppClick} 
+                    size="lg" 
+                    className="bg-green-500 hover:bg-green-600 text-white text-base px-8 py-5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex-1"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    WhatsApp Now
+                  </Button>
+                  <Button 
+                    onClick={handleCallClick} 
+                    size="lg" 
+                    className="bg-white text-primary hover:bg-amber-50 text-base px-8 py-5 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex-1"
+                  >
+                    <Phone className="w-5 h-5 mr-2" />
+                    Call Us
+                  </Button>
+                </div>
+                <p className="text-white/60 text-xs text-center mt-4">
+                  Available 7 days a week • Response within 5 minutes
+                </p>
+              </div>
             </div>
-            <p className="mt-6 text-white/70 text-sm">
-              Available 7 days a week • Response within 5 minutes
-            </p>
           </div>
         </div>
       </section>
