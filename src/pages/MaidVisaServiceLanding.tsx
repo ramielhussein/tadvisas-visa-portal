@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { 
   Phone, MessageCircle, CheckCircle, X, Star, Shield, Award, Clock, 
   Users, FileCheck, Zap, Building, BadgeCheck, ThumbsUp, ArrowRight,
-  MapPin, FileText, ClipboardCheck, Landmark
+  MapPin, FileText, ClipboardCheck, Landmark, AlertTriangle
 } from "lucide-react";
 import { trackContact, trackLead } from "@/lib/metaTracking";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
 import audienceHomeowners from "@/assets/audience-homeowners.jpg";
 import audienceNewParents from "@/assets/audience-new-parents.jpg";
 import whyChooseBg from "@/assets/why-choose-tadmaids-bg.jpg";
+import ctaMaidVisaHappy from "@/assets/cta-maid-visa-happy.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
 
@@ -1328,16 +1329,150 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* Final CTA with Background */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-accent/90 to-primary/95" />
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">Ready to Get Your Maid Visa Today?</h2>
-          <p className="text-xl md:text-2xl mb-10 text-white/90">Start your hassle-free visa journey now. Get a FREE consultation from our visa experts!</p>
-          <Button onClick={scrollToForm} size="lg" className="bg-white text-primary hover:bg-gray-100 text-xl px-12 py-8 font-bold transition-all duration-300 hover:scale-110 hover:shadow-2xl">
-            BOOK YOUR FREE CONSULTATION NOW
-          </Button>
+      {/* Final CTA with Urgency - Last Chance to Convert */}
+      <section className="py-16 md:py-24 relative overflow-hidden bg-gradient-to-br from-red-900 via-primary to-red-900">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{ 
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)' 
+          }} />
+        </div>
+        
+        {/* Urgency Pulse Animation */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+          <div className="flex items-center gap-2 bg-red-500/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold animate-pulse shadow-lg shadow-red-500/30">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Limited Slots Available This Month</span>
+          </div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            
+            {/* Left Side - Image */}
+            <div className="relative order-2 lg:order-1">
+              <div className="relative">
+                {/* Glow Effect */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-amber-400/30 via-white/20 to-amber-400/30 blur-2xl rounded-3xl" />
+                
+                {/* Image Container */}
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20">
+                  <img 
+                    src={ctaMaidVisaHappy} 
+                    alt="Happy Filipino maid with 2-year UAE visa" 
+                    className="w-full h-auto object-cover"
+                  />
+                  
+                  {/* Overlay Badge */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                          <CheckCircle className="w-7 h-7 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-primary text-lg">2-Year Visa Approved!</p>
+                          <p className="text-sm text-gray-600">Join 1,700+ happy families in UAE</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 bg-amber-400 text-primary font-bold px-4 py-2 rounded-full text-sm shadow-lg animate-bounce">
+                  ✨ Stress-Free Process
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Side - Content */}
+            <div className="text-center lg:text-left order-1 lg:order-2 pt-8 lg:pt-0">
+              {/* Warning Icon */}
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-6 ring-4 ring-red-500/30">
+                <AlertTriangle className="w-8 h-8 text-amber-400" />
+              </div>
+              
+              {/* Main Headline */}
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight">
+                Don't Risk <span className="text-amber-400">Fines</span> or <span className="text-amber-400">Delays</span>
+              </h2>
+              
+              {/* Subheadline */}
+              <p className="text-xl md:text-2xl text-white/90 mb-6 font-medium">
+                Consult with Our Expert Now to Start Your Maid Visa Process
+              </p>
+              
+              {/* Pain Points */}
+              <div className="space-y-3 mb-8">
+                <div className="flex items-center gap-3 text-white/80">
+                  <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <span>Avoid AED 50,000+ fines for visa violations</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/80">
+                  <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <span>No more confusion with paperwork & approvals</span>
+                </div>
+                <div className="flex items-center gap-3 text-white/80">
+                  <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <span>Stop wasting time on rejected applications</span>
+                </div>
+              </div>
+              
+              {/* Benefits */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 mb-8 border border-white/20">
+                <p className="text-white font-semibold text-lg mb-3">With TADMAIDS, You Get:</p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2 text-green-300">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>100% Approval Rate</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-300">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>1-Week Processing</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-300">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>FREE Consultation</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-300">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>19+ Years Experience</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* CTA Button */}
+              <div className="space-y-4">
+                <Button 
+                  onClick={scrollToForm} 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 text-primary hover:from-amber-300 hover:to-amber-300 text-lg md:text-xl px-10 py-7 font-bold rounded-xl shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 group"
+                >
+                  <span className="mr-2">📋</span>
+                  BOOK YOUR FREE CONSULTATION NOW
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                
+                <p className="text-white/70 text-sm flex items-center justify-center lg:justify-start gap-2">
+                  <Shield className="w-4 h-4" />
+                  No commitment required • 100% Free • Takes 2 minutes
+                </p>
+              </div>
+              
+              {/* Trust Badge */}
+              <div className="mt-8 flex items-center justify-center lg:justify-start gap-4 text-white/60 text-sm">
+                <span className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                </span>
+                <span>Trusted by 5,000+ UAE Families</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
