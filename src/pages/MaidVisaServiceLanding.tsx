@@ -332,7 +332,7 @@ const MaidVisaServiceLanding = () => {
                   <CheckCircle className="w-5 h-5 text-green-400" /> Zero Admin Fees
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-5 h-5 text-green-400" /> VIP Transport Included
+                  <CheckCircle className="w-5 h-5 text-green-400" /> We Handle All Paperwork
                 </span>
               </div>
               <div className="flex flex-wrap gap-4">
