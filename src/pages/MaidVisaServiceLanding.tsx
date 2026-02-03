@@ -554,18 +554,18 @@ const MaidVisaServiceLanding = () => {
       </section>
 
       {/* Trust Badges - Clean & Premium */}
-      <section className="py-6 md:py-8 bg-gradient-to-r from-gray-50 via-white to-gray-50">
+      <section className="py-6 md:py-8 bg-gradient-to-r from-gray-50 via-white to-gray-50 overflow-x-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 md:gap-x-12 lg:gap-x-16">
+          <div className="flex justify-center items-center gap-6 md:gap-10 lg:gap-14 min-w-max">
             {trustBadges.map((badge, index) => (
               <div 
                 key={index} 
-                className="flex items-center gap-2.5 group"
+                className="flex items-center gap-2 group flex-shrink-0"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  {badge.icon}
+                <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                  <div className="scale-75 md:scale-90">{badge.icon}</div>
                 </div>
-                <span className="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors duration-300">{badge.text}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors duration-300 whitespace-nowrap">{badge.text}</span>
               </div>
             ))}
           </div>
