@@ -270,7 +270,12 @@ const MaidVisaServiceLanding = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             <div className="flex-shrink-0">
-              <img src="/tadmaids-logo.png" alt="TADMAIDS Logo" className="h-10 md:h-14 w-auto" />
+              <img
+                src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png"
+                alt="TADMAIDS"
+                className="h-10 md:h-14 w-auto"
+                draggable={false}
+              />
             </div>
             <div className="flex items-center gap-2 md:gap-4">
               <a 
