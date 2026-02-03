@@ -542,22 +542,13 @@ const MaidVisaServiceLanding = () => {
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">Hiring a new maid (we don't supply maids)</span>
+                  <span className="text-gray-600">Hiring a new maid</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <span className="text-gray-600">Temporary or part-time maid arrangements</span>
                 </li>
               </ul>
-              <div className="mt-6 p-4 bg-white rounded-xl border border-gray-200">
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold text-primary">Need a maid?</span> Visit{" "}
-                  <a href="https://tadmaids.com/hub" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-medium">
-                    tadmaids.com
-                  </a>{" "}
-                  to hire from our trusted pool of domestic helpers.
-                </p>
-              </div>
             </div>
           </div>
 
