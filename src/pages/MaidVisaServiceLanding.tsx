@@ -321,9 +321,17 @@ const MaidVisaServiceLanding = () => {
               <p className="text-lg md:text-xl text-white/95 mb-6 leading-relaxed drop-shadow-md">
                 MOHRE Licensed Tadbeer Center in Dubai. No hidden fees, no monthly charges. We handle everything from medical to Emirates ID with VIP transport included.
               </p>
-              <p className="text-base md:text-lg text-white/90 mb-8 drop-shadow-md">
-                ✅ Government Approved &nbsp; ✅ 5000+ Visas Processed &nbsp; ✅ Zero Admin Fees
-              </p>
+              <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8 text-base md:text-lg text-white/90 drop-shadow-md">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-5 h-5 text-green-400" /> Government Approved
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-5 h-5 text-green-400" /> 5000+ Visas Processed
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-5 h-5 text-green-400" /> Zero Admin Fees
+                </span>
+              </div>
               <div className="flex flex-wrap gap-4">
                 <Button onClick={handleWhatsAppClick} size="lg" className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl">
                   <MessageCircle className="w-5 h-5 mr-2" />
