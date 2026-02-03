@@ -14,6 +14,9 @@ import { trackContact, trackLead } from "@/lib/metaTracking";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
+import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
+import audienceHomeowners from "@/assets/audience-homeowners.jpg";
+import audienceNewParents from "@/assets/audience-new-parents.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
 
@@ -493,27 +496,76 @@ const MaidVisaServiceLanding = () => {
       </section>
 
       {/* Who This Is For */}
-      <section className="py-16 md:py-20 bg-white">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Who Is This Service For?</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">Our 2-year maid visa service is designed for expat families and UAE residents who need reliable, legal domestic help.</p>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Join thousands of UAE families who trust us with their domestic staffing needs. Our service is tailored for busy professionals like you.
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-blue-50 rounded-2xl p-6 border-2 border-blue-100 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <div className="text-4xl mb-4">👨‍👩‍👧‍👦</div>
-              <h3 className="text-xl font-bold text-primary mb-3">Expat Families</h3>
-              <p className="text-gray-600">Busy professionals who need reliable domestic help while maintaining full legal compliance with UAE labor laws.</p>
+            {/* Expat Families Card */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="h-52 overflow-hidden">
+                <img 
+                  src={audienceExpatFamily} 
+                  alt="Expat family in Dubai" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-white border-t-4 border-primary">
+                <h3 className="text-xl font-bold text-primary mb-3">Busy Expat Families</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  You work hard to give your family the best life in the UAE. Let us handle the paperwork so you can focus on what matters – quality time with your loved ones.
+                </p>
+                <div className="mt-4 flex items-center text-sm text-primary font-medium">
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                  Full legal compliance guaranteed
+                </div>
+              </div>
             </div>
-            <div className="bg-green-50 rounded-2xl p-6 border-2 border-green-100 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <div className="text-4xl mb-4">🏠</div>
-              <h3 className="text-xl font-bold text-primary mb-3">Homeowners</h3>
-              <p className="text-gray-600">UAE residents who want to sponsor their own maid with a legal visa, ensuring peace of mind and avoiding monthly agency fees.</p>
+
+            {/* Homeowners Card */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="h-52 overflow-hidden">
+                <img 
+                  src={audienceHomeowners} 
+                  alt="UAE homeowners" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6 bg-gradient-to-br from-green-50 to-white border-t-4 border-green-500">
+                <h3 className="text-xl font-bold text-primary mb-3">Property Owners & Residents</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Your home deserves the best care. Sponsor your own domestic helper with a proper 2-year visa and say goodbye to monthly agency fees forever.
+                </p>
+                <div className="mt-4 flex items-center text-sm text-primary font-medium">
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                  Zero monthly admin fees
+                </div>
+              </div>
             </div>
-            <div className="bg-orange-50 rounded-2xl p-6 border-2 border-orange-100 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-              <div className="text-4xl mb-4">👶</div>
-              <h3 className="text-xl font-bold text-primary mb-3">New Parents</h3>
-              <p className="text-gray-600">Families with young children or elderly parents who require dedicated in-home care and support on a daily basis.</p>
+
+            {/* New Parents Card */}
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="h-52 overflow-hidden">
+                <img 
+                  src={audienceNewParents} 
+                  alt="New parents with baby" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-6 bg-gradient-to-br from-orange-50 to-white border-t-4 border-orange-400">
+                <h3 className="text-xl font-bold text-primary mb-3">Growing Families</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  With a new baby or elderly parents at home, you need reliable support. Get a dedicated helper who's legally employed and ready to care for your family.
+                </p>
+                <div className="mt-4 flex items-center text-sm text-primary font-medium">
+                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                  Trusted by 5000+ families
+                </div>
+              </div>
             </div>
           </div>
         </div>
