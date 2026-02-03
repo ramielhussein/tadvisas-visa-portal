@@ -900,55 +900,54 @@ const MaidVisaServiceLanding = () => {
       </section>
 
       {/* Why Choose TADMAIDS - Premium Split Section */}
-      <section className="relative overflow-hidden bg-primary">
-        {/* Mobile/Tablet: Full Image Display */}
+      <section className="relative overflow-hidden">
+        {/* Mobile/Tablet: Full Width Image */}
         <div className="lg:hidden">
-          {/* Full Image Container - Responsive */}
-          <div className="relative w-full aspect-square max-h-[500px]">
+          {/* Full Width Cinematic Image */}
+          <div className="relative w-full">
             <img 
               src={whyChooseBg} 
-              alt="Happy expat family with their domestic helper in luxury Dubai apartment"
-              className="w-full h-full object-contain bg-gradient-to-b from-amber-50 to-white"
+              alt="Happy expat family relaxing with their domestic helper in luxury Dubai apartment"
+              className="w-full h-auto object-cover object-left"
             />
-            {/* Subtle gradient overlay at bottom for transition */}
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-primary to-transparent" />
-          </div>
-          
-          {/* Floating Stats - Mobile */}
-          <div className="absolute top-4 left-4 right-4 z-10">
-            <div className="flex justify-center gap-3">
-              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
-                <div className="text-xl font-bold text-amber-400">19+</div>
-                <div className="text-xs text-white/80">Years</div>
-              </div>
-              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
-                <div className="text-xl font-bold text-amber-400">5000+</div>
-                <div className="text-xs text-white/80">Visas</div>
-              </div>
-              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
-                <div className="text-xl font-bold text-amber-400">100%</div>
-                <div className="text-xs text-white/80">Legal</div>
+            {/* Gradient overlay for text readability and transition */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" />
+            
+            {/* Floating Stats on Image */}
+            <div className="absolute bottom-4 left-4 right-4 z-10">
+              <div className="flex justify-start gap-2">
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-center shadow-lg">
+                  <div className="text-lg font-bold text-primary">19+</div>
+                  <div className="text-[10px] text-gray-600">Years</div>
+                </div>
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-center shadow-lg">
+                  <div className="text-lg font-bold text-primary">5000+</div>
+                  <div className="text-[10px] text-gray-600">Visas</div>
+                </div>
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg px-3 py-2 text-center shadow-lg">
+                  <div className="text-lg font-bold text-primary">100%</div>
+                  <div className="text-[10px] text-gray-600">Legal</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Desktop: Split Layout */}
-        <div className="hidden lg:flex flex-row min-h-[800px]">
-          {/* Left Side - Full Image Display */}
-          <div className="relative w-1/2 flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-amber-100 p-8">
+        <div className="hidden lg:flex flex-row min-h-[700px]">
+          {/* Left Side - Full Bleed Image */}
+          <div className="relative w-[55%] overflow-hidden">
             <img 
               src={whyChooseBg} 
-              alt="Happy expat family with their domestic helper in luxury Dubai apartment"
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+              alt="Happy expat family relaxing with their domestic helper in luxury Dubai apartment"
+              className="absolute inset-0 w-full h-full object-cover object-left"
             />
-            {/* Subtle decorative elements */}
-            <div className="absolute top-10 left-10 w-32 h-32 bg-amber-400/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+            {/* Subtle right edge gradient for smooth transition to content */}
+            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-primary to-transparent" />
           </div>
 
           {/* Right Side - Content (Desktop) */}
-          <div className="w-1/2 bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-6 lg:px-12 xl:px-16 relative">
+          <div className="w-[45%] bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-8 lg:px-12 xl:px-16 relative flex items-center">
             {/* Decorative Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
