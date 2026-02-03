@@ -499,72 +499,118 @@ const MaidVisaServiceLanding = () => {
       <section className="py-16 md:py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Who Is This Service For?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">This Service Is For You If...</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Join thousands of UAE families who trust us with their domestic staffing needs. Our service is tailored for busy professionals like you.
+              Our 2-year maid visa service is designed for UAE residents who already have a domestic helper and need legal sponsorship.
             </p>
           </div>
+
+          {/* Eligibility Criteria - Two Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+            {/* This Is For You */}
+            <div className="bg-green-50 rounded-2xl p-6 border-2 border-green-200 shadow-md">
+              <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center gap-2">
+                <CheckCircle className="w-6 h-6" />
+                Perfect For You If:
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">You already have a maid</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">Maid visa is expiring / needs renewal</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">You want 2-year legal sponsorship</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">Golden Visa holders</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* This Is NOT For */}
+            <div className="bg-red-50 rounded-2xl p-6 border-2 border-red-200 shadow-md">
+              <h3 className="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
+                <X className="w-6 h-6" />
+                Not For:
+              </h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-600">Hiring a new maid (we don't supply maids)</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-600">Temporary or part-time maid arrangements</span>
+                </li>
+              </ul>
+              <div className="mt-6 p-4 bg-white rounded-xl border border-gray-200">
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold text-primary">Need a maid?</span> Visit{" "}
+                  <a href="https://tadmaids.com/hub" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline font-medium">
+                    tadmaids.com
+                  </a>{" "}
+                  to hire from our trusted pool of domestic helpers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Persona Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Expat Families Card */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-              <div className="h-52 overflow-hidden">
+              <div className="h-48 overflow-hidden">
                 <img 
                   src={audienceExpatFamily} 
                   alt="Expat family in Dubai" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="p-6 bg-gradient-to-br from-blue-50 to-white border-t-4 border-primary">
-                <h3 className="text-xl font-bold text-primary mb-3">Busy Expat Families</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  You work hard to give your family the best life in the UAE. Let us handle the paperwork so you can focus on what matters – quality time with your loved ones.
+              <div className="p-5 bg-gradient-to-br from-blue-50 to-white border-t-4 border-primary">
+                <h3 className="text-lg font-bold text-primary mb-2">Busy Expat Families</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Already have a helper? We'll handle the visa paperwork so you can focus on family.
                 </p>
-                <div className="mt-4 flex items-center text-sm text-primary font-medium">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                  Full legal compliance guaranteed
-                </div>
               </div>
             </div>
 
             {/* Homeowners Card */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-              <div className="h-52 overflow-hidden">
+              <div className="h-48 overflow-hidden">
                 <img 
                   src={audienceHomeowners} 
                   alt="UAE homeowners" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="p-6 bg-gradient-to-br from-green-50 to-white border-t-4 border-green-500">
-                <h3 className="text-xl font-bold text-primary mb-3">Property Owners & Residents</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Your home deserves the best care. Sponsor your own domestic helper with a proper 2-year visa and say goodbye to monthly agency fees forever.
+              <div className="p-5 bg-gradient-to-br from-green-50 to-white border-t-4 border-green-500">
+                <h3 className="text-lg font-bold text-primary mb-2">Property Owners & Golden Visa Holders</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Sponsor your maid with a legal 2-year visa. Zero monthly fees.
                 </p>
-                <div className="mt-4 flex items-center text-sm text-primary font-medium">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                  Zero monthly admin fees
-                </div>
               </div>
             </div>
 
-            {/* New Parents Card */}
+            {/* Visa Renewal Card */}
             <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
-              <div className="h-52 overflow-hidden">
+              <div className="h-48 overflow-hidden">
                 <img 
                   src={audienceNewParents} 
-                  alt="New parents with baby" 
+                  alt="Growing family with helper" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="p-6 bg-gradient-to-br from-orange-50 to-white border-t-4 border-orange-400">
-                <h3 className="text-xl font-bold text-primary mb-3">Growing Families</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  With a new baby or elderly parents at home, you need reliable support. Get a dedicated helper who's legally employed and ready to care for your family.
+              <div className="p-5 bg-gradient-to-br from-orange-50 to-white border-t-4 border-orange-400">
+                <h3 className="text-lg font-bold text-primary mb-2">Visa Expiring Soon?</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Renew or transfer your maid's visa seamlessly. We handle everything.
                 </p>
-                <div className="mt-4 flex items-center text-sm text-primary font-medium">
-                  <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                  Trusted by 5000+ families
-                </div>
               </div>
             </div>
           </div>
