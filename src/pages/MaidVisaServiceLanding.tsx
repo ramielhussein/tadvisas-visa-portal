@@ -17,6 +17,44 @@ import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
 
+// Extract UTM parameters from URL for source tracking
+const getUtmParams = () => {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get('utm_source'),
+    utm_medium: params.get('utm_medium'),
+    utm_campaign: params.get('utm_campaign'),
+    utm_content: params.get('utm_content'),
+    utm_term: params.get('utm_term'),
+    gclid: params.get('gclid'), // Google Ads click ID
+    fbclid: params.get('fbclid'), // Meta/Facebook click ID
+  };
+};
+
+// Generate lead source based on UTM params
+const generateLeadSource = () => {
+  const utm = getUtmParams();
+  
+  // Google Ads detection
+  if (utm.gclid || utm.utm_source?.toLowerCase().includes('google')) {
+    return `Google Ads${utm.utm_campaign ? ` - ${utm.utm_campaign}` : ''}`;
+  }
+  
+  // Meta/Facebook Ads detection
+  if (utm.fbclid || utm.utm_source?.toLowerCase().includes('facebook') || utm.utm_source?.toLowerCase().includes('meta') || utm.utm_source?.toLowerCase().includes('instagram')) {
+    return `Meta Ads${utm.utm_campaign ? ` - ${utm.utm_campaign}` : ''}`;
+  }
+  
+  // Other UTM sources
+  if (utm.utm_source) {
+    const source = utm.utm_source.charAt(0).toUpperCase() + utm.utm_source.slice(1);
+    return `${source}${utm.utm_medium ? ` (${utm.utm_medium})` : ''}${utm.utm_campaign ? ` - ${utm.utm_campaign}` : ''}`;
+  }
+  
+  // Default fallback
+  return 'LP: Maid Visa UAE';
+};
+
 const MaidVisaServiceLanding = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement>(null);
@@ -94,15 +132,30 @@ const MaidVisaServiceLanding = () => {
     setIsSubmitting(true);
     
     try {
-      // Save to database with landing page source
+      const leadSource = generateLeadSource();
+      const utm = getUtmParams();
+      
+      // Build detailed source info for comments
+      const sourceDetails = [
+        formData.message,
+        '',
+        `[Source: ${LANDING_PAGE_URL}]`,
+        utm.utm_source ? `[UTM Source: ${utm.utm_source}]` : '',
+        utm.utm_medium ? `[UTM Medium: ${utm.utm_medium}]` : '',
+        utm.utm_campaign ? `[UTM Campaign: ${utm.utm_campaign}]` : '',
+        utm.gclid ? `[Google Click ID: ${utm.gclid}]` : '',
+        utm.fbclid ? `[Meta Click ID: ${utm.fbclid}]` : '',
+      ].filter(Boolean).join('\n');
+      
+      // Save to database with dynamic lead source
       const { error } = await supabase.from('leads').insert([{
         client_name: formData.name,
         mobile_number: formData.phone,
         email: formData.email,
         nationality_code: formData.nationality,
         service_required: formData.visaStatus,
-        comments: `${formData.message}\n\n[Source: ${LANDING_PAGE_URL}]`,
-        lead_source: 'Landing Page - Maid Visa Service',
+        comments: sourceDetails,
+        lead_source: leadSource,
         status: 'New Lead' as const
       }]);
 
