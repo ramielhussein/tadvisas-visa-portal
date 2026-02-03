@@ -161,6 +161,20 @@ const MaidVisaServiceLanding = () => {
 
       if (error) throw error;
 
+      // Send email notification (fire and forget - don't block form submission)
+      supabase.functions.invoke('send-landing-lead-email', {
+        body: {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          nationality: formData.nationality,
+          visaStatus: formData.visaStatus,
+          message: formData.message,
+          leadSource: leadSource,
+          utmParams: utm
+        }
+      }).catch(err => console.error('Email notification failed:', err));
+
       // Google Ads Enhanced Conversion - Form Submission
       if ((window as any).gtag) {
         const hashedEmail = await hashUserData(formData.email);
