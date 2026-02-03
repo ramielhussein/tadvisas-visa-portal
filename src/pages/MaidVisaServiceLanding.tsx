@@ -748,22 +748,152 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Our Simple 4-Step Process</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">Get Your Maid Visa Processed Without the Stress</p>
+      {/* Process Section - Premium Design */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-blue-50/30 to-amber-50/20" />
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-amber-500" />
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold text-sm rounded-full mb-4">
+              SIMPLE & STRESS-FREE
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-4">
+              Your Visa Journey in <span className="text-amber-500">4 Easy Steps</span>
+            </h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              While you focus on your family, we handle everything – from documents to doorstep delivery
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {processSteps.map((step, index) => (
-              <div key={index} className="relative text-center hover:scale-105 transition-all duration-300">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-white mb-4">{step.icon}</div>
-                <div className="absolute -top-2 left-1/2 transform -translate-x-8 w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center font-bold text-lg">{index + 1}</div>
-                <h3 className="text-lg font-bold text-primary mb-2">{step.title}</h3>
-                <p className="text-gray-600 text-sm">{step.description}</p>
+
+          {/* Process Steps */}
+          <div className="relative">
+            {/* Connecting Line - Desktop */}
+            <div className="hidden lg:block absolute top-24 left-[12%] right-[12%] h-1 bg-gradient-to-r from-primary via-accent to-amber-500 rounded-full" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+              {/* Step 1 */}
+              <div className="group relative">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
+                  {/* Step Number */}
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white">
+                    1
+                  </div>
+                  
+                  {/* Icon */}
+                  <div className="mt-4 mb-6 flex justify-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <MessageCircle className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <h3 className="text-xl font-bold text-primary mb-3 text-center">WhatsApp Us</h3>
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Send your maid's passport copy and basic info. We respond within <span className="font-semibold text-primary">30 minutes</span>.
+                  </p>
+                  
+                  {/* Time indicator */}
+                  <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>5 minutes</span>
+                  </div>
+                </div>
               </div>
-            ))}
+
+              {/* Step 2 */}
+              <div className="group relative">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white">
+                    2
+                  </div>
+                  
+                  <div className="mt-4 mb-6 flex justify-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <FileCheck className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-primary mb-3 text-center">We Verify & Prepare</h3>
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Our experts verify documents, prepare applications, and handle all <span className="font-semibold text-primary">GDRFA submissions</span>.
+                  </p>
+                  
+                  <div className="mt-4 flex items-center justify-center gap-2 text-sm text-blue-600 font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>1-2 days</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="group relative">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white">
+                    3
+                  </div>
+                  
+                  <div className="mt-4 mb-6 flex justify-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Building className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-primary mb-3 text-center">Medical & Emirates ID</h3>
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    We arrange appointments with <span className="font-semibold text-primary">FREE VIP chauffeur</span> for all medical and ID processing.
+                  </p>
+                  
+                  <div className="mt-4 flex items-center justify-center gap-2 text-sm text-purple-600 font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>3-5 days</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="group relative">
+                <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full relative overflow-hidden">
+                  {/* Premium highlight */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-amber-500/10 rounded-bl-full" />
+                  
+                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white">
+                    4
+                  </div>
+                  
+                  <div className="mt-4 mb-6 flex justify-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <BadgeCheck className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-primary mb-3 text-center">2-Year Visa Issued! 🎉</h3>
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Your maid receives a <span className="font-semibold text-amber-600">fully legal 2-year UAE residence visa</span>. Done!
+                  </p>
+                  
+                  <div className="mt-4 flex items-center justify-center gap-2 text-sm text-amber-600 font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>Total: ~2 weeks</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-16 text-center">
+            <p className="text-gray-600 mb-6 text-lg">Ready to start your hassle-free visa journey?</p>
+            <Button 
+              onClick={scrollToForm} 
+              size="lg" 
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-lg px-10 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              Start My Visa Process Now
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </div>
         </div>
       </section>
