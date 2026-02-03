@@ -544,8 +544,13 @@ const MaidVisaServiceLanding = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Message (Optional)</label>
                   <Textarea value={formData.message} onChange={(e) => handleInputChange('message', e.target.value)} placeholder="Tell us about your requirements..." rows={3} />
                 </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full bg-accent hover:bg-accent/90 text-white py-4 text-lg font-bold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
-                  {isSubmitting ? 'Submitting...' : 'BOOK MY FREE CONSULTATION NOW'}
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-accent hover:bg-accent/90 text-white py-4 text-sm sm:text-base md:text-lg font-bold transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+                  {isSubmitting ? 'Submitting...' : (
+                    <>
+                      <span className="hidden sm:inline">BOOK MY FREE CONSULTATION NOW</span>
+                      <span className="sm:hidden">BOOK FREE CONSULTATION</span>
+                    </>
+                  )}
                 </Button>
               </form>
             </div>
@@ -1481,11 +1486,12 @@ const MaidVisaServiceLanding = () => {
                 <Button 
                   onClick={scrollToForm} 
                   size="lg" 
-                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 text-primary hover:from-amber-300 hover:to-amber-300 text-lg md:text-xl px-10 py-7 font-bold rounded-xl shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 group"
+                  className="w-full sm:w-auto bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 text-primary hover:from-amber-300 hover:to-amber-300 text-sm sm:text-base md:text-lg lg:text-xl px-5 sm:px-8 md:px-10 py-5 sm:py-6 md:py-7 font-bold rounded-xl shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 group"
                 >
-                  <span className="mr-2">📋</span>
-                  BOOK YOUR FREE CONSULTATION NOW
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <span className="mr-1 sm:mr-2">📋</span>
+                  <span className="hidden sm:inline">BOOK YOUR FREE CONSULTATION NOW</span>
+                  <span className="sm:hidden">BOOK FREE CONSULTATION</span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 
                 <p className="text-white/70 text-sm flex items-center justify-center lg:justify-start gap-2">
