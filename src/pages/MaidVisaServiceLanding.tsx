@@ -773,9 +773,11 @@ const MaidVisaServiceLanding = () => {
             <Button 
               onClick={scrollToForm} 
               size="lg" 
-              className="bg-primary hover:bg-primary/90 text-white text-lg px-10 py-6 transition-all duration-300 hover:scale-110 hover:shadow-2xl"
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 transition-all duration-300 hover:scale-105 md:hover:scale-110 hover:shadow-2xl"
             >
-              Get Your Free Visa Consultation <ArrowRight className="w-5 h-5 ml-2" />
+              <span className="hidden sm:inline">Get Your Free Visa Consultation</span>
+              <span className="sm:hidden">Free Visa Consultation</span>
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 flex-shrink-0" />
             </Button>
           </div>
         </div>
