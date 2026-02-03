@@ -559,18 +559,19 @@ const MaidVisaServiceLanding = () => {
       </section>
 
       {/* Trust Badges - Clean & Premium */}
-      <section className="py-6 md:py-8 bg-gradient-to-r from-gray-50 via-white to-gray-50 overflow-x-auto">
+      <section className="py-6 md:py-8 bg-gradient-to-r from-gray-50 via-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center gap-6 md:gap-10 lg:gap-14 min-w-max">
+          {/* Mobile: 2-column grid, Tablet: 3-column, Desktop: single row */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:justify-center lg:items-center gap-4 sm:gap-5 lg:gap-10 xl:gap-14">
             {trustBadges.map((badge, index) => (
               <div 
                 key={index} 
-                className="flex items-center gap-2 group flex-shrink-0"
+                className="flex items-center gap-2 group justify-center lg:justify-start"
               >
-                <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <div className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 flex-shrink-0">
                   <div className="scale-75 md:scale-90">{badge.icon}</div>
                 </div>
-                <span className="text-xs md:text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors duration-300 whitespace-nowrap">{badge.text}</span>
+                <span className="text-xs md:text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors duration-300">{badge.text}</span>
               </div>
             ))}
           </div>
