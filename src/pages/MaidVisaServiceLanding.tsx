@@ -331,6 +331,9 @@ const MaidVisaServiceLanding = () => {
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="w-5 h-5 text-green-400" /> Zero Admin Fees
                 </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-5 h-5 text-green-400" /> VIP Transport Included
+                </span>
               </div>
               <div className="flex flex-wrap gap-4">
                 <Button onClick={handleWhatsAppClick} size="lg" className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl">
