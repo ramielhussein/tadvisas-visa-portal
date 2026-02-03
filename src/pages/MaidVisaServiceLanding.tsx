@@ -900,35 +900,55 @@ const MaidVisaServiceLanding = () => {
       </section>
 
       {/* Why Choose TADMAIDS - Premium Split Section */}
-      <section className="relative overflow-hidden">
-        <div className="flex flex-col lg:flex-row min-h-[800px]">
-          {/* Left Side - Image with Light Overlay */}
-          <div className="relative lg:w-1/2 h-[400px] lg:h-auto">
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${whyChooseBg})` }}
+      <section className="relative overflow-hidden bg-primary">
+        {/* Mobile/Tablet: Full Image Display */}
+        <div className="lg:hidden">
+          {/* Full Image Container - Responsive */}
+          <div className="relative w-full aspect-square max-h-[500px]">
+            <img 
+              src={whyChooseBg} 
+              alt="Happy expat family with their domestic helper in luxury Dubai apartment"
+              className="w-full h-full object-contain bg-gradient-to-b from-amber-50 to-white"
             />
-            {/* Subtle overlay to blend */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-primary/30 lg:to-primary/50" />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent lg:hidden" />
-            
-            {/* Floating Stats on Image - Mobile */}
-            <div className="absolute bottom-6 left-6 right-6 lg:hidden">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                  <div className="text-2xl font-bold text-primary">19+</div>
-                  <div className="text-xs text-gray-600">Years Experience</div>
-                </div>
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg">
-                  <div className="text-2xl font-bold text-primary">5000+</div>
-                  <div className="text-xs text-gray-600">Visas Processed</div>
-                </div>
+            {/* Subtle gradient overlay at bottom for transition */}
+            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-primary to-transparent" />
+          </div>
+          
+          {/* Floating Stats - Mobile */}
+          <div className="absolute top-4 left-4 right-4 z-10">
+            <div className="flex justify-center gap-3">
+              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
+                <div className="text-xl font-bold text-amber-400">19+</div>
+                <div className="text-xs text-white/80">Years</div>
+              </div>
+              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
+                <div className="text-xl font-bold text-amber-400">5000+</div>
+                <div className="text-xs text-white/80">Visas</div>
+              </div>
+              <div className="bg-primary/90 backdrop-blur-sm rounded-xl px-4 py-2 text-center shadow-lg border border-amber-400/30">
+                <div className="text-xl font-bold text-amber-400">100%</div>
+                <div className="text-xs text-white/80">Legal</div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Side - Content */}
-          <div className="lg:w-1/2 bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-6 lg:px-12 xl:px-16 relative">
+        {/* Desktop: Split Layout */}
+        <div className="hidden lg:flex flex-row min-h-[800px]">
+          {/* Left Side - Full Image Display */}
+          <div className="relative w-1/2 flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-amber-100 p-8">
+            <img 
+              src={whyChooseBg} 
+              alt="Happy expat family with their domestic helper in luxury Dubai apartment"
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+            />
+            {/* Subtle decorative elements */}
+            <div className="absolute top-10 left-10 w-32 h-32 bg-amber-400/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-10 right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl" />
+          </div>
+
+          {/* Right Side - Content (Desktop) */}
+          <div className="w-1/2 bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-6 lg:px-12 xl:px-16 relative">
             {/* Decorative Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
@@ -963,8 +983,8 @@ const MaidVisaServiceLanding = () => {
                 ))}
               </div>
 
-              {/* Trust Stats - Desktop Only */}
-              <div className="hidden lg:flex gap-6 mb-10 pb-8 border-b border-white/20">
+              {/* Trust Stats */}
+              <div className="flex gap-6 mb-10 pb-8 border-b border-white/20">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-amber-400">19+</div>
                   <div className="text-white/70 text-xs">Years</div>
@@ -1010,6 +1030,70 @@ const MaidVisaServiceLanding = () => {
                   Available 7 days a week • Response within 5 minutes
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Content Section */}
+        <div className="lg:hidden bg-gradient-to-br from-primary via-primary to-accent py-12 px-6 relative">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl" />
+          
+          <div className="relative z-10 max-w-xl mx-auto">
+            {/* Section Header */}
+            <span className="inline-block px-4 py-2 bg-amber-500/20 text-amber-300 font-semibold text-sm rounded-full mb-4 border border-amber-400/30">
+              TRUSTED BY 5000+ UAE FAMILIES
+            </span>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">
+              Why Choose <span className="text-amber-400">TADMAIDS?</span>
+            </h2>
+            <p className="text-base text-white/90 mb-8">
+              Dubai's Premier Government-Licensed Tadbeer Center
+            </p>
+
+            {/* Benefits List - Mobile */}
+            <div className="space-y-3 mb-8">
+              {whyChooseUs.slice(0, 4).map((item, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg">
+                    <div className="text-white [&>svg]:w-5 [&>svg]:h-5">{item.icon}</div>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-sm mb-0.5">{item.title}</h3>
+                    <p className="text-white/70 text-xs leading-relaxed">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA Buttons - Mobile */}
+            <div className="space-y-3">
+              <p className="text-white/80 text-sm mb-3 text-center">
+                <span className="font-semibold text-amber-300">Stop worrying about visa paperwork.</span>
+              </p>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={handleWhatsAppClick} 
+                  size="lg" 
+                  className="bg-green-500 hover:bg-green-600 text-white text-base px-6 py-5 rounded-xl shadow-lg w-full"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  WhatsApp Now
+                </Button>
+                <Button 
+                  onClick={handleCallClick} 
+                  size="lg" 
+                  className="bg-white text-primary hover:bg-amber-50 text-base px-6 py-5 rounded-xl shadow-lg w-full"
+                >
+                  <Phone className="w-5 h-5 mr-2" />
+                  Call Us
+                </Button>
+              </div>
+              <p className="text-white/60 text-xs text-center mt-3">
+                Available 7 days a week • Response within 5 minutes
+              </p>
             </div>
           </div>
         </div>
