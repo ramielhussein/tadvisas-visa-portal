@@ -305,15 +305,16 @@ const MaidVisaServiceLanding = () => {
       <section ref={formRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroBackground})` }}
+          className="absolute inset-0 bg-cover bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBackground})`, backgroundPosition: 'left center' }}
         />
-        {/* Gradient Overlay - stronger on left for text, lighter on right to show people */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent lg:to-primary/30" />
+        {/* Global overlay (keep background visible) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/35 via-primary/15 to-transparent" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            <div className="text-white">
+            {/* Text panel for readability without hiding the background */}
+            <div className="text-white rounded-2xl bg-primary/55 backdrop-blur-sm p-6 md:p-8">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                 Get Your 2-Year Maid Visa in UAE – <span className="text-accent">Fast, Legal & Hassle-Free</span>
               </h1>
@@ -336,7 +337,7 @@ const MaidVisaServiceLanding = () => {
             </div>
 
             {/* Form */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
+            <div className="bg-background/90 backdrop-blur-md border border-border/40 rounded-2xl p-6 md:p-8 shadow-2xl">
               <h2 className="text-2xl md:text-3xl font-bold text-primary text-center mb-6">GET YOUR MAID VISA</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
