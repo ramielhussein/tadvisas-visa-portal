@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { 
   Phone, MessageCircle, CheckCircle, X, Star, Shield, Award, Clock, 
   Users, FileCheck, Zap, Building, BadgeCheck, ThumbsUp, ArrowRight,
-  MapPin
+  MapPin, FileText, ClipboardCheck, Landmark
 } from "lucide-react";
 import { trackContact, trackLead } from "@/lib/metaTracking";
 import { supabase } from "@/integrations/supabase/client";
@@ -608,7 +608,97 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Our Maid Visa Services Section */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Our Maid Visa Services Include</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Comprehensive visa solutions tailored for UAE residents with domestic helpers
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* Maid Visa Renewal */}
+            <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                <FileText className="w-7 h-7 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">Maid Visa Renewal in Dubai</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Seamless renewal process for your helper's expiring visa. We handle all GDRFA submissions and approvals.
+              </p>
+            </div>
+
+            {/* Tadbeer Sponsorship */}
+            <div className="bg-gradient-to-br from-green-50 to-white rounded-2xl p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
+                <Shield className="w-7 h-7 text-green-600" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">Tadbeer Maid Visa Sponsorship</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Legal 2-year sponsorship through our licensed Tadbeer center. Full compliance with UAE labor laws.
+              </p>
+            </div>
+
+            {/* Golden Visa Sponsorship */}
+            <div className="bg-gradient-to-br from-amber-50 to-white rounded-2xl p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 group-hover:bg-amber-500/20 transition-colors">
+                <Award className="w-7 h-7 text-amber-600" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">Golden Visa Maid Sponsorship</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Special visa processing for Golden Visa holders. Sponsor your helper under your premium residency.
+              </p>
+            </div>
+
+            {/* Housemaid Visa Processing */}
+            <div className="bg-gradient-to-br from-purple-50 to-white rounded-2xl p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-purple-500/10 flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
+                <Users className="w-7 h-7 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">Housemaid Visa Processing</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Complete end-to-end visa processing for your domestic helper. From application to stamping.
+              </p>
+            </div>
+
+            {/* Documents Support */}
+            <div className="bg-gradient-to-br from-teal-50 to-white rounded-2xl p-6 border border-teal-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-teal-500/10 flex items-center justify-center mb-4 group-hover:bg-teal-500/20 transition-colors">
+                <ClipboardCheck className="w-7 h-7 text-teal-600" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">Visa Renewal Documents Support</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Expert guidance on required documents. We ensure your paperwork is complete and accurate.
+              </p>
+            </div>
+
+            {/* GDRFA & Amer Processing */}
+            <div className="bg-gradient-to-br from-orange-50 to-white rounded-2xl p-6 border border-orange-100 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+              <div className="w-14 h-14 rounded-full bg-orange-500/10 flex items-center justify-center mb-4 group-hover:bg-orange-500/20 transition-colors">
+                <Landmark className="w-7 h-7 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-bold text-primary mb-2">GDRFA & Amer Processing</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                Direct liaison with immigration authorities. Fast-track your applications through official channels.
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Button 
+              onClick={scrollToForm} 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90 text-white text-lg px-10 py-6 transition-all duration-300 hover:scale-110 hover:shadow-2xl"
+            >
+              Get Your Free Visa Consultation <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Packages Section */}
       <section className="py-16 md:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
