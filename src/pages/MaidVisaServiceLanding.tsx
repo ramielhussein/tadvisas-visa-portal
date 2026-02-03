@@ -902,31 +902,16 @@ const MaidVisaServiceLanding = () => {
       {/* Why Choose TADMAIDS - Premium Split Section */}
       <section className="relative overflow-hidden">
         {/* Mobile/Tablet: Full Width Image */}
-        <div className="lg:hidden">
-          {/* Full Width Cinematic Image */}
-          <div className="relative w-full bg-gradient-to-b from-amber-50 via-white to-amber-100">
-            {/* Keep a stable frame so the whole scene stays visible (no cropping) */}
-            <div className="relative w-full aspect-[3/4] sm:aspect-[4/3] max-h-[78vh]">
-              {/* Backdrop fills the frame for a premium look */}
-              <img
-                src={whyChooseBg}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover object-left scale-110 blur-md opacity-35"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent" />
-
-              {/* Foreground stays full-length and never crops */}
-              <div className="absolute inset-0 flex items-center justify-start px-4">
-                <img
-                  src={whyChooseBg}
-                  alt="Happy family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
-                  className="h-full w-auto max-w-full object-contain object-left drop-shadow-xl"
-                />
-              </div>
-              {/* Gradient overlay for readability + transition into content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-transparent" />
-            </div>
+        <div className="lg:hidden relative">
+          {/* Full-bleed image - no gaps */}
+          <div className="relative w-full">
+            <img
+              src={whyChooseBg}
+              alt="Happy expat family being served by their Filipina domestic helper in luxury Dubai apartment"
+              className="w-full h-auto object-cover"
+            />
+            {/* Gradient overlay for transition to content */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent" />
             
             {/* Floating Stats on Image */}
             <div className="absolute bottom-4 left-4 right-4 z-10">
@@ -948,33 +933,21 @@ const MaidVisaServiceLanding = () => {
           </div>
         </div>
 
-        {/* Desktop: Split Layout */}
-        <div className="hidden lg:flex flex-row min-h-[700px]">
-          {/* Left Side - Full Bleed Image */}
-          <div className="relative w-[55%] overflow-hidden bg-gradient-to-br from-amber-50 via-white to-amber-100">
-            {/* Backdrop fills the entire left column (no awkward empty space) */}
+        {/* Desktop: Split Layout - Full Height */}
+        <div className="hidden lg:flex flex-row">
+          {/* Left Side - Full Bleed Image, matches content height */}
+          <div className="relative w-[50%]">
             <img
               src={whyChooseBg}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover object-left scale-110 blur-md opacity-30"
+              alt="Happy expat family being served by their Filipina domestic helper in luxury Dubai apartment"
+              className="absolute inset-0 w-full h-full object-cover object-top"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/65 via-white/10 to-transparent" />
-
-            {/* Foreground is full-length and never cropped */}
-            <div className="relative z-10 h-full w-full flex items-stretch justify-start px-10">
-              <img
-                src={whyChooseBg}
-                alt="Happy family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
-                className="h-full w-auto max-w-full object-contain object-left drop-shadow-2xl"
-              />
-            </div>
             {/* Subtle right edge gradient for smooth transition to content */}
-            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-primary to-transparent pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-primary to-transparent" />
           </div>
 
           {/* Right Side - Content (Desktop) */}
-          <div className="w-[45%] bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-8 lg:px-12 xl:px-16 relative flex items-center">
+          <div className="w-[50%] bg-gradient-to-br from-primary via-primary to-accent py-16 lg:py-20 px-8 lg:px-12 xl:px-16 relative flex items-center">
             {/* Decorative Elements */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
