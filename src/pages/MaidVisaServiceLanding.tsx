@@ -904,14 +904,17 @@ const MaidVisaServiceLanding = () => {
         {/* Mobile/Tablet: Full Width Image */}
         <div className="lg:hidden">
           {/* Full Width Cinematic Image */}
-          <div className="relative w-full">
-            <img 
-              src={whyChooseBg} 
-              alt="Happy expat family relaxing with their domestic helper in luxury Dubai apartment"
-              className="w-full h-auto object-cover object-left"
-            />
-            {/* Gradient overlay for text readability and transition */}
-            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" />
+          <div className="relative w-full bg-gradient-to-b from-amber-50 via-white to-amber-100">
+            {/* Keep a stable frame so the whole scene stays visible (no cropping) */}
+            <div className="relative w-full aspect-[16/9]">
+              <img
+                src={whyChooseBg}
+                alt="Happy expat family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
+                className="absolute inset-0 w-full h-full object-contain object-left"
+              />
+              {/* Gradient overlay for readability + transition into content */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/30 to-transparent" />
+            </div>
             
             {/* Floating Stats on Image */}
             <div className="absolute bottom-4 left-4 right-4 z-10">
@@ -936,14 +939,17 @@ const MaidVisaServiceLanding = () => {
         {/* Desktop: Split Layout */}
         <div className="hidden lg:flex flex-row min-h-[700px]">
           {/* Left Side - Full Bleed Image */}
-          <div className="relative w-[55%] overflow-hidden">
-            <img 
-              src={whyChooseBg} 
-              alt="Happy expat family relaxing with their domestic helper in luxury Dubai apartment"
-              className="absolute inset-0 w-full h-full object-cover object-left"
-            />
+          <div className="relative w-[55%] bg-gradient-to-br from-amber-50 via-white to-amber-100">
+            {/* Use object-contain so the full aspirational scene is always visible (no crop) */}
+            <div className="h-full w-full flex items-center justify-start px-8 py-10">
+              <img
+                src={whyChooseBg}
+                alt="Happy expat family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
+                className="w-full h-full max-h-[640px] object-contain object-left"
+              />
+            </div>
             {/* Subtle right edge gradient for smooth transition to content */}
-            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-primary to-transparent" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-primary to-transparent pointer-events-none" />
           </div>
 
           {/* Right Side - Content (Desktop) */}
