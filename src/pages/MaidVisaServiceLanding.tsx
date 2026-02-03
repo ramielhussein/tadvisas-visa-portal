@@ -268,26 +268,13 @@ const MaidVisaServiceLanding = () => {
       {/* Sticky Header */}
       <header className={`w-full z-50 transition-all duration-300 ${isHeaderSticky ? 'fixed top-0 left-0 right-0 bg-white shadow-lg' : 'relative bg-white'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
+          <div className="flex justify-center items-center h-16 md:h-20">
             <div className="flex-shrink-0">
-              <img src="/lovable-uploads/d6769e1c-16cd-4161-ba27-7732b8108940.png" alt="TADMAIDS Logo" className="h-10 md:h-14 w-auto" />
-            </div>
-            <div className="flex items-center gap-2 md:gap-4">
-              <a 
-                href="tel:+971567222248"
-                onClick={handleCallClick}
-                className="flex items-center gap-2 text-primary hover:text-accent transition-all duration-300 font-semibold text-sm md:text-base hover:scale-105"
-              >
-                <Phone className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="hidden sm:inline">+971 56 722 2248</span>
-              </a>
-              <Button 
-                onClick={handleWhatsAppClick}
-                className="bg-green-500 hover:bg-green-600 text-white text-sm md:text-base px-3 md:px-4 transition-all duration-300 hover:scale-105"
-              >
-                <MessageCircle className="w-4 h-4 mr-1 md:mr-2" />
-                <span className="hidden sm:inline">WhatsApp</span>
-              </Button>
+              <img 
+                src="/lovable-uploads/d6769e1c-16cd-4161-ba27-7732b8108940.png" 
+                alt="TADMAIDS - MOHRE Licensed Tadbeer Center" 
+                className="h-12 md:h-16 w-auto"
+              />
             </div>
           </div>
         </div>
