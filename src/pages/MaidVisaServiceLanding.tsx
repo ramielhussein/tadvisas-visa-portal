@@ -381,37 +381,66 @@ const MaidVisaServiceLanding = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Sticky Header */}
-      <header className={`w-full z-50 transition-all duration-300 ${isHeaderSticky ? 'fixed top-0 left-0 right-0 bg-white shadow-lg' : 'relative bg-white'}`}>
+      {/* Premium Sticky Header */}
+      <header className={`w-full z-50 transition-all duration-500 ${isHeaderSticky ? 'fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-2xl border-b border-gray-100' : 'relative bg-gradient-to-r from-white via-gray-50/50 to-white'}`}>
+        {/* Top accent bar - only visible when not sticky */}
+        {!isHeaderSticky && (
+          <div className="bg-gradient-to-r from-primary via-accent to-primary h-1" />
+        )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
-            <div className="flex-shrink-0">
-              <img
-                src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png"
-                alt="TADMAIDS"
-                className="h-10 md:h-14 w-auto"
-                draggable={false}
-              />
+          <div className="flex justify-between items-center h-18 md:h-22 py-3">
+            {/* Logo with premium styling */}
+            <div className="flex-shrink-0 group">
+              <div className="relative">
+                <img
+                  src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png"
+                  alt="TADMAIDS - UAE Maid Visa Services"
+                  className="h-12 md:h-16 w-auto transition-transform duration-300 group-hover:scale-105"
+                  draggable={false}
+                />
+                {/* Subtle glow effect on hover */}
+                <div className="absolute inset-0 bg-primary/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+              </div>
             </div>
-            <div className="flex items-center gap-2 md:gap-4">
+
+            {/* Right side - Phone & CTA */}
+            <div className="flex items-center gap-3 md:gap-5">
+              {/* Premium Phone Button */}
               <a 
                 href="tel:+971567222248"
                 onClick={handleCallClick}
-                className="flex items-center gap-2 text-primary hover:text-accent transition-all duration-300 font-semibold text-sm md:text-base hover:scale-105"
+                className="group flex items-center gap-2.5 px-4 py-2.5 md:px-5 md:py-3 rounded-full bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20 hover:border-primary/40 hover:from-primary/10 hover:to-accent/10 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
               >
-                <Phone className="w-4 h-4 md:w-5 md:h-5" />
-                <span className="hidden sm:inline">+971 56 722 2248</span>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-75" />
+                  <div className="relative flex items-center justify-center w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-primary to-accent rounded-full shadow-md group-hover:shadow-lg transition-all duration-300">
+                    <Phone className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                </div>
+                <div className="hidden sm:flex flex-col items-start">
+                  <span className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">Call Now</span>
+                  <span className="text-sm md:text-base font-bold text-primary group-hover:text-accent transition-colors duration-300">+971 56 722 2248</span>
+                </div>
               </a>
+
+              {/* Premium WhatsApp CTA Button */}
               <Button 
                 onClick={handleWhatsAppClick}
-                className="bg-green-500 hover:bg-green-600 text-white text-sm md:text-base px-3 md:px-4 transition-all duration-300 hover:scale-105"
+                className="relative group bg-gradient-to-r from-green-500 via-green-500 to-emerald-500 hover:from-green-600 hover:via-green-600 hover:to-emerald-600 text-white text-sm md:text-base px-5 md:px-7 py-5 md:py-6 rounded-full font-bold shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all duration-300 hover:scale-105 overflow-hidden"
               >
-                <MessageCircle className="w-4 h-4 mr-1 md:mr-2" />
-                <span className="hidden sm:inline">WhatsApp</span>
+                {/* Shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                <MessageCircle className="w-5 h-5 md:w-6 md:h-6 mr-2" />
+                <span className="hidden sm:inline">WhatsApp Us</span>
+                <span className="sm:hidden">Chat</span>
               </Button>
             </div>
           </div>
         </div>
+        {/* Bottom gradient line when sticky */}
+        {isHeaderSticky && (
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+        )}
       </header>
 
       {isHeaderSticky && <div className="h-16 md:h-20" />}
