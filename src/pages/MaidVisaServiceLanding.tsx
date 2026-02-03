@@ -1285,28 +1285,9 @@ const MaidVisaServiceLanding = () => {
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6">
                     <div className="pl-16">
-                      <p className="text-gray-600 leading-relaxed mb-5">
+                      <p className="text-gray-600 leading-relaxed">
                         {faq.answer}
                       </p>
-                      <div className="flex flex-wrap gap-3">
-                        <Button 
-                          onClick={handleWhatsAppClick}
-                          size="sm"
-                          className="bg-green-500 hover:bg-green-600 text-white rounded-full px-5 transition-all duration-300 hover:scale-105"
-                        >
-                          <MessageCircle className="w-4 h-4 mr-2" />
-                          Ask on WhatsApp
-                        </Button>
-                        <Button 
-                          onClick={handleCallClick}
-                          size="sm"
-                          variant="outline"
-                          className="border-primary text-primary hover:bg-primary hover:text-white rounded-full px-5 transition-all duration-300"
-                        >
-                          <Phone className="w-4 h-4 mr-2" />
-                          Call Expert Now
-                        </Button>
-                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
