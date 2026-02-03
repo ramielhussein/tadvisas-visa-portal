@@ -352,10 +352,30 @@ const MaidVisaServiceLanding = () => {
   ];
 
   const faqs = [
-    { question: "How long does the maid visa process take?", answer: "The complete visa process typically takes 2-3 weeks, depending on document verification and appointment availability. We ensure fast-track processing with our VIP service." },
-    { question: "What documents are required for maid visa?", answer: "You'll need your Emirates ID, passport copy, tenancy contract or title deed, salary certificate, and your maid's passport with valid entry permit. We guide you through every step." },
-    { question: "Are there any hidden fees or monthly charges?", answer: "No hidden fees! Our TADVISA package offers ZERO monthly admin fees. All costs are transparent and disclosed upfront before you proceed." },
-    { question: "Can I transfer my existing maid's visa to TADMAIDS?", answer: "Yes, we handle visa transfers from other Tadbeer centers. The process is seamless and we take care of all the paperwork and cancellation procedures." }
+    { 
+      question: "Can Golden Visa holders sponsor a maid?", 
+      answer: "Absolutely! Golden Visa holders enjoy premium benefits when sponsoring domestic workers in the UAE. As a Golden Visa holder, you can sponsor housemaids, nannies, and other domestic staff with simplified requirements. Our expert team specializes in Golden Visa maid sponsorship and will guide you through the entire process seamlessly. Contact us now for a personalized consultation!",
+      icon: <Award className="w-5 h-5" />,
+      highlight: true
+    },
+    { 
+      question: "What is the maid visa cost in UAE?", 
+      answer: "The maid visa cost varies based on your specific requirements, nationality of the worker, and package chosen. We offer competitive, transparent pricing with ZERO hidden fees and flexible payment options. Our packages start from the most affordable rates in Dubai. Contact our visa experts now to get a personalized quote tailored to your situation!",
+      icon: <Landmark className="w-5 h-5" />,
+      highlight: false
+    },
+    { 
+      question: "What documents are required for maid visa?", 
+      answer: "The standard documents include your Emirates ID, passport copy, tenancy contract (Ejari) or title deed, DEWA bill, and your maid's passport with valid entry status. For African nationalities, a Police Clearance Certificate may be required. Don't worry about the paperwork – our team handles everything and guides you step-by-step. WhatsApp us your maid's passport to get started!",
+      icon: <FileText className="w-5 h-5" />,
+      highlight: false
+    },
+    { 
+      question: "How long does maid visa renewal take?", 
+      answer: "With TADMAIDS, maid visa renewal typically takes 7-12 working days from document submission to visa issuance. We fast-track the entire process including medical tests, Emirates ID biometrics, and government approvals. Our VIP chauffeur service ensures no time wasted. Ready to renew? Contact us today and we'll handle everything!",
+      icon: <Clock className="w-5 h-5" />,
+      highlight: false
+    }
   ];
 
   return (
@@ -1210,22 +1230,119 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* FAQs Section */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600">Everything You Need to Know About Maid Visa in UAE</p>
+      {/* FAQs Section - Keyword Optimized */}
+      <section className="py-16 md:py-24 bg-gradient-to-b from-white via-gray-50/50 to-white relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-20 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-x-1/2" />
+        <div className="absolute bottom-20 right-0 w-80 h-80 bg-amber-400/5 rounded-full blur-3xl translate-x-1/2" />
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Section Header */}
+          <div className="text-center mb-14">
+            <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold text-sm rounded-full mb-4">
+              💬 Got Questions? We've Got Answers
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-4">
+              Maid Visa UAE – <span className="text-amber-500">FAQs</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Everything UAE families need to know about sponsoring domestic workers
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          
+          {/* FAQ Cards */}
+          <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <Accordion key={index} type="single" collapsible className="bg-gray-50 rounded-xl">
-                <AccordionItem value={`faq-${index}`} className="border-none">
-                  <AccordionTrigger className="px-6 py-4 text-left font-semibold text-primary hover:text-accent hover:no-underline">{faq.question}</AccordionTrigger>
-                  <AccordionContent className="px-6 pb-4 text-gray-600">{faq.answer}</AccordionContent>
+              <Accordion key={index} type="single" collapsible>
+                <AccordionItem 
+                  value={`faq-${index}`} 
+                  className={`border-0 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ${
+                    faq.highlight 
+                      ? 'bg-gradient-to-r from-primary/5 via-amber-50 to-primary/5 border-2 border-amber-400/30' 
+                      : 'bg-white border border-gray-100'
+                  }`}
+                >
+                  <AccordionTrigger className="px-6 py-5 text-left hover:no-underline group">
+                    <div className="flex items-center gap-4 w-full">
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm ${
+                        faq.highlight 
+                          ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white' 
+                          : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300'
+                      }`}>
+                        {faq.icon}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-primary transition-colors duration-300 pr-8">
+                          {faq.question}
+                        </h3>
+                        {faq.highlight && (
+                          <span className="inline-block mt-1 text-xs font-semibold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+                            ⭐ Popular Question
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6">
+                    <div className="pl-16">
+                      <p className="text-gray-600 leading-relaxed mb-5">
+                        {faq.answer}
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        <Button 
+                          onClick={handleWhatsAppClick}
+                          size="sm"
+                          className="bg-green-500 hover:bg-green-600 text-white rounded-full px-5 transition-all duration-300 hover:scale-105"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Ask on WhatsApp
+                        </Button>
+                        <Button 
+                          onClick={handleCallClick}
+                          size="sm"
+                          variant="outline"
+                          className="border-primary text-primary hover:bg-primary hover:text-white rounded-full px-5 transition-all duration-300"
+                        >
+                          <Phone className="w-4 h-4 mr-2" />
+                          Call Expert Now
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionContent>
                 </AccordionItem>
               </Accordion>
             ))}
+          </div>
+          
+          {/* Bottom CTA */}
+          <div className="mt-14 bg-gradient-to-r from-primary via-accent to-primary rounded-3xl p-8 md:p-10 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')] opacity-5 bg-cover bg-center" />
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                Have More Questions About Maid Visa?
+              </h3>
+              <p className="text-white/90 mb-6 max-w-xl mx-auto">
+                Our visa experts are ready to answer all your questions and provide a FREE personalized consultation
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  onClick={handleWhatsAppClick}
+                  size="lg"
+                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Chat with Expert Now
+                </Button>
+                <Button 
+                  onClick={handleCallClick}
+                  size="lg"
+                  className="bg-white text-primary hover:bg-amber-50 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <Phone className="w-5 h-5 mr-2" />
+                  Call 0567222248
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
