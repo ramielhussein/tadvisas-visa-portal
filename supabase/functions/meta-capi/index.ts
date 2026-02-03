@@ -42,8 +42,12 @@ serve(async (req) => {
     console.log(`Processing Meta CAPI event: ${event_name}`, { event_id });
 
     // Build user_data with hashing
+    // Extract only the first IP from x-forwarded-for (client's real IP)
+    const forwardedFor = req.headers.get('x-forwarded-for') || '';
+    const clientIp = forwardedFor.split(',')[0]?.trim() || req.headers.get('cf-connecting-ip') || '';
+    
     const hashedUserData: Record<string, any> = {
-      client_ip_address: req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || '',
+      client_ip_address: clientIp,
       client_user_agent: req.headers.get('user-agent') || '',
     };
 
