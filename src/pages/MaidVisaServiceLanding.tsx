@@ -898,30 +898,99 @@ const MaidVisaServiceLanding = () => {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-16 md:py-20 bg-primary text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose TADMAIDS?</h2>
-            <p className="text-lg text-white/90 max-w-3xl mx-auto">Dubai's Trusted Tadbeer Center for Maid Visa Services</p>
+      {/* Why Choose TADMAIDS - Premium Section */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')` }}
+        />
+        {/* Dark Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-accent/85" />
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <span className="inline-block px-5 py-2 bg-white/10 backdrop-blur-sm text-amber-300 font-semibold text-sm rounded-full mb-4 border border-amber-400/30">
+              TRUSTED BY 5000+ UAE FAMILIES
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              Why Choose <span className="text-amber-400">TADMAIDS?</span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
+              Dubai's Premier Government-Licensed Tadbeer Center – We Handle the Stress So You Don't Have To
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+
+          {/* Pain Points & Solutions Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {whyChooseUs.map((item, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur rounded-xl p-6 hover:bg-white/20 transition-all duration-300 hover:scale-105">
+              <div 
+                key={index} 
+                className="group bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/20 hover:border-amber-400/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+              >
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 text-accent">{item.icon}</div>
-                  <div><h3 className="font-bold mb-1">{item.title}</h3><p className="text-white/80 text-sm">{item.description}</p></div>
+                  <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="text-white [&>svg]:w-7 [&>svg]:h-7">{item.icon}</div>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-white text-lg mb-2 group-hover:text-amber-300 transition-colors">{item.title}</h3>
+                    <p className="text-white/80 text-sm leading-relaxed">{item.description}</p>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button onClick={handleWhatsAppClick} size="lg" className="bg-green-500 hover:bg-green-600 text-white text-lg px-8 transition-all duration-300 hover:scale-110 hover:shadow-xl">
-              <MessageCircle className="w-5 h-5 mr-2" />🟢 WhatsApp Now
-            </Button>
-            <Button onClick={handleCallClick} size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 transition-all duration-300 hover:scale-110">
-              <Phone className="w-5 h-5 mr-2" />📞 Call for Visa Support
-            </Button>
+
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap justify-center gap-8 mb-12 pb-12 border-b border-white/20">
+            <div className="text-center">
+              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">19+</div>
+              <div className="text-white/80 text-sm">Years Experience</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">5000+</div>
+              <div className="text-white/80 text-sm">Visas Processed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">100%</div>
+              <div className="text-white/80 text-sm">Legal & Licensed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl md:text-5xl font-bold text-amber-400 mb-1">24/7</div>
+              <div className="text-white/80 text-sm">Support Available</div>
+            </div>
+          </div>
+
+          {/* Persuasive CTA Section */}
+          <div className="text-center">
+            <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+              <span className="font-semibold text-amber-300">Stop worrying about visa paperwork.</span> Our expert team is ready to guide you through every step – from document collection to visa delivery.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button 
+                onClick={handleWhatsAppClick} 
+                size="lg" 
+                className="bg-green-500 hover:bg-green-600 text-white text-lg px-10 py-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-105"
+              >
+                <MessageCircle className="w-6 h-6 mr-3" />
+                WhatsApp Now
+              </Button>
+              <Button 
+                onClick={handleCallClick} 
+                size="lg" 
+                className="bg-white text-primary hover:bg-amber-50 text-lg px-10 py-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-105"
+              >
+                <Phone className="w-6 h-6 mr-3" />
+                Call for Visa Support
+              </Button>
+            </div>
+            <p className="mt-6 text-white/70 text-sm">
+              Available 7 days a week • Response within 5 minutes
+            </p>
           </div>
         </div>
       </section>
