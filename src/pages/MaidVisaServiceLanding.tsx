@@ -308,20 +308,20 @@ const MaidVisaServiceLanding = () => {
           className="absolute inset-0 bg-cover bg-no-repeat"
           style={{ backgroundImage: `url(${heroBackground})`, backgroundPosition: 'left center' }}
         />
-        {/* Global overlay (keep background visible) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/35 via-primary/15 to-transparent" />
+        {/* Gradient Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/85 via-primary/60 to-primary/40" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Text panel for readability without hiding the background */}
-            <div className="text-white rounded-2xl bg-primary/55 backdrop-blur-sm p-6 md:p-8">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+            {/* Text Content */}
+            <div className="text-white">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight drop-shadow-lg">
                 Get Your 2-Year Maid Visa in UAE – <span className="text-accent">Fast, Legal & Hassle-Free</span>
               </h1>
-              <p className="text-lg md:text-xl text-white/90 mb-6 leading-relaxed">
+              <p className="text-lg md:text-xl text-white/95 mb-6 leading-relaxed drop-shadow-md">
                 MOHRE Licensed Tadbeer Center in Dubai. No hidden fees, no monthly charges. We handle everything from medical to Emirates ID with VIP transport included.
               </p>
-              <p className="text-base md:text-lg text-white/80 mb-8">
+              <p className="text-base md:text-lg text-white/90 mb-8 drop-shadow-md">
                 ✅ Government Approved &nbsp; ✅ 5000+ Visas Processed &nbsp; ✅ Zero Admin Fees
               </p>
               <div className="flex flex-wrap gap-4">
@@ -337,7 +337,7 @@ const MaidVisaServiceLanding = () => {
             </div>
 
             {/* Form */}
-            <div className="bg-background/90 backdrop-blur-md border border-border/40 rounded-2xl p-6 md:p-8 shadow-2xl">
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
               <h2 className="text-2xl md:text-3xl font-bold text-primary text-center mb-6">GET YOUR MAID VISA</h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
