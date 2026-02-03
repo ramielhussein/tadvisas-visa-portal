@@ -856,13 +856,14 @@ const MaidVisaServiceLanding = () => {
 
               {/* Step 4 */}
               <div className="group relative">
+                {/* Step Number - Outside overflow-hidden container */}
+                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white z-10">
+                  4
+                </div>
+                
                 <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full relative overflow-hidden">
                   {/* Premium highlight */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-400/20 to-amber-500/10 rounded-bl-full" />
-                  
-                  <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center font-bold text-lg shadow-lg ring-4 ring-white">
-                    4
-                  </div>
                   
                   <div className="mt-4 mb-6 flex justify-center">
                     <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
