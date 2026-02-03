@@ -302,14 +302,14 @@ const MaidVisaServiceLanding = () => {
       {isHeaderSticky && <div className="h-16 md:h-20" />}
 
       {/* Hero Banner Section */}
-      <section ref={formRef} className="relative min-h-[90vh] flex items-center">
+      <section ref={formRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
-        {/* Gradient Overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/75 to-primary/50" />
+        {/* Gradient Overlay - stronger on left for text, lighter on right to show people */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-transparent lg:to-primary/30" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
