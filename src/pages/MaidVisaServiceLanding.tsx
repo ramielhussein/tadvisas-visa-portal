@@ -906,7 +906,7 @@ const MaidVisaServiceLanding = () => {
           {/* Full Width Cinematic Image */}
           <div className="relative w-full bg-gradient-to-b from-amber-50 via-white to-amber-100">
             {/* Keep a stable frame so the whole scene stays visible (no cropping) */}
-            <div className="relative w-full aspect-[16/9]">
+            <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] max-h-[70vh]">
               <img
                 src={whyChooseBg}
                 alt="Happy expat family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
@@ -941,11 +941,11 @@ const MaidVisaServiceLanding = () => {
           {/* Left Side - Full Bleed Image */}
           <div className="relative w-[55%] bg-gradient-to-br from-amber-50 via-white to-amber-100">
             {/* Use object-contain so the full aspirational scene is always visible (no crop) */}
-            <div className="h-full w-full flex items-center justify-start px-8 py-10">
+            <div className="relative h-full w-full">
               <img
                 src={whyChooseBg}
                 alt="Happy expat family enjoying time together while their domestic helper serves refreshments in a luxury Dubai apartment"
-                className="w-full h-full max-h-[640px] object-contain object-left"
+                className="absolute inset-0 w-full h-full object-contain object-left"
               />
             </div>
             {/* Subtle right edge gradient for smooth transition to content */}
