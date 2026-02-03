@@ -316,7 +316,7 @@ const MaidVisaServiceLanding = () => {
             {/* Text Content */}
             <div className="text-white">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight drop-shadow-lg">
-                Get Your 2-Year Maid Visa in UAE – <span className="text-yellow-300">Fast, Legal & Hassle-Free</span>
+                Get Your 2-Year Maid Visa in UAE – <span className="text-fcg-gold-light">Fast, Legal & Hassle-Free</span>
               </h1>
               <p className="text-lg md:text-xl text-white/95 mb-6 leading-relaxed drop-shadow-md">
                 MOHRE Licensed Tadbeer Center in Dubai. No hidden fees, no monthly charges. We handle everything from medical to Emirates ID with VIP transport included.
