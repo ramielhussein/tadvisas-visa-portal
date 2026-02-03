@@ -705,28 +705,45 @@ const MaidVisaServiceLanding = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Our Maid Visa Packages</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">Complete 2-Year Maid Visa Solutions for UAE Residents</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {packages.map((pkg, index) => (
-              <div key={index} className={`relative bg-white rounded-2xl p-6 shadow-lg border-4 ${pkg.color} ${pkg.highlight ? 'ring-4 ring-primary/20 scale-105' : ''} hover:shadow-2xl transition-all duration-300 hover:scale-[1.03]`}>
-                {pkg.highlight && <div className="absolute -top-4 left-1/2 transform -translate-x-1/2"><span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">MOST POPULAR</span></div>}
+              <div 
+                key={index} 
+                className={`relative bg-white rounded-2xl p-6 shadow-lg border-4 ${pkg.color} ${pkg.highlight ? 'ring-4 ring-primary/20 md:scale-105' : ''} hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 isolate z-0 hover:z-10`}
+              >
+                {pkg.highlight && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold">MOST POPULAR</span>
+                  </div>
+                )}
                 <div className="text-center mb-6">
                   <h3 className="text-xl font-bold text-primary mb-2">{pkg.name}</h3>
-                  <div className="mb-2"><span className="text-4xl font-bold text-primary">{pkg.price}</span><span className="text-gray-600"> AED</span></div>
+                  <div className="mb-2">
+                    <span className="text-4xl font-bold text-primary">{pkg.price}</span>
+                    <span className="text-gray-600"> AED</span>
+                  </div>
                   <p className="text-sm text-gray-500">{pkg.monthly} AED/month</p>
                   <p className="text-sm text-primary font-medium mt-2">{pkg.description}</p>
                 </div>
                 <div className="space-y-2 mb-6">
-                  {pkg.included.map((item, i) => (<div key={i} className="flex items-start gap-2"><CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" /><span className="text-sm text-gray-700">{item}</span></div>))}
-                  {pkg.notIncluded.map((item, i) => (<div key={i} className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" /><span className="text-sm text-gray-500">{item}</span></div>))}
+                  {pkg.included.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">{item}</span>
+                    </div>
+                  ))}
+                  {pkg.notIncluded.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <X className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-500">{item}</span>
+                    </div>
+                  ))}
                 </div>
-                <Button onClick={scrollToForm} className="w-full bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-105">Get Started</Button>
+                <Button onClick={scrollToForm} className="w-full bg-primary hover:bg-primary/90 transition-all duration-300">
+                  Get Started
+                </Button>
               </div>
             ))}
-          </div>
-          <div className="text-center">
-            <Button onClick={scrollToForm} size="lg" className="bg-accent hover:bg-accent/90 text-white text-lg px-10 py-6 transition-all duration-300 hover:scale-110 hover:shadow-2xl">
-              BOOK YOUR FREE CONSULTATION NOW <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
           </div>
         </div>
       </section>
