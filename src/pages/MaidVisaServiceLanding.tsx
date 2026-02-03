@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { trackContact, trackLead } from "@/lib/metaTracking";
 import { supabase } from "@/integrations/supabase/client";
+import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
 
@@ -301,8 +302,14 @@ const MaidVisaServiceLanding = () => {
       {isHeaderSticky && <div className="h-16 md:h-20" />}
 
       {/* Hero Banner Section */}
-      <section ref={formRef} className="relative min-h-[90vh] flex items-center" style={{ background: 'linear-gradient(135deg, rgba(0, 51, 102, 0.95) 0%, rgba(0, 102, 153, 0.9) 50%, rgba(0, 51, 102, 0.95) 100%)' }}>
-        <div className="absolute inset-0 opacity-15" style={{ backgroundImage: `url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+      <section ref={formRef} className="relative min-h-[90vh] flex items-center">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBackground})` }}
+        />
+        {/* Gradient Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/75 to-primary/50" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
