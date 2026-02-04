@@ -1309,6 +1309,168 @@ export type Database = {
           },
         ]
       }
+      mind_map_collaborators: {
+        Row: {
+          created_at: string
+          id: string
+          map_id: string
+          permission: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          map_id: string
+          permission?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          map_id?: string
+          permission?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mind_map_collaborators_map_id_fkey"
+            columns: ["map_id"]
+            isOneToOne: false
+            referencedRelation: "mind_maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mind_map_edges: {
+        Row: {
+          animated: boolean | null
+          created_at: string
+          edge_id: string
+          edge_type: string | null
+          id: string
+          label: string | null
+          map_id: string
+          source_node_id: string
+          target_node_id: string
+        }
+        Insert: {
+          animated?: boolean | null
+          created_at?: string
+          edge_id: string
+          edge_type?: string | null
+          id?: string
+          label?: string | null
+          map_id: string
+          source_node_id: string
+          target_node_id: string
+        }
+        Update: {
+          animated?: boolean | null
+          created_at?: string
+          edge_id?: string
+          edge_type?: string | null
+          id?: string
+          label?: string | null
+          map_id?: string
+          source_node_id?: string
+          target_node_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mind_map_edges_map_id_fkey"
+            columns: ["map_id"]
+            isOneToOne: false
+            referencedRelation: "mind_maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mind_map_nodes: {
+        Row: {
+          color: string | null
+          content: string
+          created_at: string
+          height: number | null
+          id: string
+          map_id: string
+          node_id: string
+          node_type: string | null
+          parent_node_id: string | null
+          position_x: number
+          position_y: number
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          color?: string | null
+          content?: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          map_id: string
+          node_id: string
+          node_type?: string | null
+          parent_node_id?: string | null
+          position_x?: number
+          position_y?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          color?: string | null
+          content?: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          map_id?: string
+          node_id?: string
+          node_type?: string | null
+          parent_node_id?: string | null
+          position_x?: number
+          position_y?: number
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mind_map_nodes_map_id_fkey"
+            columns: ["map_id"]
+            isOneToOne: false
+            referencedRelation: "mind_maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mind_maps: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_shared: boolean | null
+          owner_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_shared?: boolean | null
+          owner_id: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_shared?: boolean | null
+          owner_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       nationality_workflows: {
         Row: {
           agent_informed_date: string | null
