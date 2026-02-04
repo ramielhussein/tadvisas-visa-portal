@@ -116,6 +116,9 @@ import GymTimer from "./pages/GymTimer";
 // SOP Viewer
 import SOPViewer from "./pages/SOPViewer";
 
+// Mind Map
+import MindMap from "./pages/MindMap";
+
 // Landing Pages
 import Land from "./pages/Land";
 import MaidVisaServiceLanding from "./pages/MaidVisaServiceLanding";
@@ -199,6 +202,8 @@ const App = () => {
             <Route path="/siteguide" element={<ProtectedRoute><SiteGuide /></ProtectedRoute>} />
             <Route path="/sop" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
             <Route path="/sop/:slug" element={<ProtectedRoute><SOPViewer /></ProtectedRoute>} />
+            <Route path="/mindmap" element={<ProtectedRoute><MindMap /></ProtectedRoute>} />
+            <Route path="/mindmap/:id" element={<ProtectedRoute><MindMap /></ProtectedRoute>} />
             <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
             
             {/* Legacy redirects for backward compatibility */}
