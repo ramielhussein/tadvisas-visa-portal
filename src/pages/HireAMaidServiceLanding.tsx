@@ -1056,7 +1056,7 @@ const HireAMaidServiceLanding = () => {
             <img
               src={whyChooseBg}
               alt="Happy expat family with their Filipina housemaid - best maid agency near me"
-              className="absolute inset-0 w-full h-full object-cover object-top"
+              className="absolute inset-0 w-full h-full object-cover object-[center_top]"
             />
             {/* Subtle right edge gradient for smooth transition to content */}
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-primary to-transparent" />
