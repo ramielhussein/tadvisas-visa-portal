@@ -122,6 +122,7 @@ import MindMap from "./pages/MindMap";
 // Landing Pages
 import Land from "./pages/Land";
 import MaidVisaServiceLanding from "./pages/MaidVisaServiceLanding";
+import HireAMaidServiceLanding from "./pages/HireAMaidServiceLanding";
 
 // Test Pages
 import TestFront from "./pages/TestFront";
@@ -294,6 +295,10 @@ const App = () => {
             <Route path="/tadgo/print-station" element={<ProtectedRoute><PrintStation /></ProtectedRoute>} />
             {/* Gym Timer */}
             <Route path="/gym" element={<GymTimer />} />
+            
+            {/* Landing Pages */}
+            <Route path="/maid-visa-service-uae-lp" element={<MaidVisaServiceLanding />} />
+            <Route path="/hire-a-maid-service-uae-lp" element={<HireAMaidServiceLanding />} />
             
             {/* Test Pages */}
             <Route path="/testfront" element={<TestFront />} />
