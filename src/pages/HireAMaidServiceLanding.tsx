@@ -447,13 +447,13 @@
  
        {/* Hero Banner Section */}
        <section ref={formRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background Image - positioned to show on left/text side */}
+        {/* Background Image - positioned so family shows on left/text side */}
           <div 
             className="absolute inset-0 bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url(${heroBackground})`, backgroundPosition: '25% center' }}
+            style={{ backgroundImage: `url(${heroBackground})`, backgroundPosition: 'right center' }}
           />
           {/* Gradient Overlay - lighter on left to show image, darker on right for form */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/60 to-primary/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/40 via-primary/55 to-primary/90" />
          
          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
