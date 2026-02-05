@@ -18,7 +18,7 @@ import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
 import audienceHomeowners from "@/assets/audience-homeowners.jpg";
 import audienceNewParents from "@/assets/audience-new-parents.jpg";
 import whyChooseBg from "@/assets/why-choose-hire-maid.jpg";
-import ctaMaidVisaHappy from "@/assets/cta-maid-visa-happy.jpg";
+import ctaHireMaidDiverse from "@/assets/cta-hire-maid-diverse.jpg";
 import maidCleaningLivingRoom from "@/assets/maid-cleaning-living-room.jpg";
 import nannyWithChild from "@/assets/nanny-with-child.jpg";
 import cookPreparingFood from "@/assets/cook-preparing-food.jpg";
@@ -1405,9 +1405,9 @@ const HireAMaidServiceLanding = () => {
                 
                 {/* Image Container */}
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20">
-                  <img 
-                    src={ctaMaidVisaHappy} 
-                    alt="Happy Filipina housemaid serving family - best maid service in UAE" 
+                                <img 
+                                  src={ctaHireMaidDiverse} 
+                                  alt="Happy diverse nationality maids - Filipino, Ethiopian, Indonesian - best maid service in UAE"
                     className="w-full h-auto object-cover"
                   />
                   
