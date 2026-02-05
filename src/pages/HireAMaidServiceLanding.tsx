@@ -17,7 +17,7 @@ import heroBackground from "@/assets/hero-hire-maid-bg.jpg";
 import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
 import audienceHomeowners from "@/assets/audience-homeowners.jpg";
 import audienceNewParents from "@/assets/audience-new-parents.jpg";
-import whyChooseBg from "@/assets/why-choose-tadmaids-bg.jpg";
+import whyChooseBg from "@/assets/why-choose-hire-maid.jpg";
 import ctaMaidVisaHappy from "@/assets/cta-maid-visa-happy.jpg";
 import maidCleaningLivingRoom from "@/assets/maid-cleaning-living-room.jpg";
 import nannyWithChild from "@/assets/nanny-with-child.jpg";

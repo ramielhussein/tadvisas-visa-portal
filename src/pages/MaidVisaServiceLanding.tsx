@@ -17,7 +17,7 @@ import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
 import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
 import audienceHomeowners from "@/assets/audience-homeowners.jpg";
 import audienceNewParents from "@/assets/audience-new-parents.jpg";
-import whyChooseBg from "@/assets/why-choose-tadmaids-bg.jpg";
+import whyChooseBg from "@/assets/why-choose-visa-service.jpg";
 import ctaMaidVisaHappy from "@/assets/cta-maid-visa-happy.jpg";
 
 const LANDING_PAGE_URL = "/maid-visa-service-uae-lp";
