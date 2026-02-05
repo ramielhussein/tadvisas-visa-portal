@@ -13,7 +13,7 @@
  import { trackContact, trackLead } from "@/lib/metaTracking";
  import { supabase } from "@/integrations/supabase/client";
  import { toast } from "sonner";
- import heroBackground from "@/assets/hero-maid-visa-bg.jpg";
+ import heroBackground from "@/assets/hero-hire-maid-bg.jpg";
  import audienceExpatFamily from "@/assets/audience-expat-family.jpg";
  import audienceHomeowners from "@/assets/audience-homeowners.jpg";
  import audienceNewParents from "@/assets/audience-new-parents.jpg";
