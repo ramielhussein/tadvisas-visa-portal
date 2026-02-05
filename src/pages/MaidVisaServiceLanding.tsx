@@ -230,7 +230,7 @@ const MaidVisaServiceLanding = () => {
 
   const handleWhatsAppClick = () => {
     trackContact();
-    const message = "Hi! I'm interested in your 2-year maid visa service. Can you help me?";
+    const message = "Hi, I saw your ad, and I'm interested in your 2-year maid visa service. Can you help me?";
     window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
   };
 
