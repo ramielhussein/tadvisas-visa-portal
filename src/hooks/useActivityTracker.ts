@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 /**
  * Hook that tracks user activity and automatically ends breaks
  * when users log back in after being on break.
- * 
+ *
  * AUTO CHECK-IN IS DISABLED - users must manually check in.
  * AUTO CHECKOUT IS DISABLED - users must manually check out.
- * 
+ *
  * This hook ONLY handles:
  * - Auto break-back when user is on_break and becomes active
  */
