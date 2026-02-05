@@ -233,7 +233,7 @@ const HireAMaidServiceLanding = () => {
 
   const handleWhatsAppClick = () => {
     trackContact();
-    const message = "Hi! I need a maid service for my home. Can you help me find a housemaid?";
+    const message = "Hi, I saw your ad, and I need a maid service for my home. Can you help me find a housemaid?";
     window.open(`https://wa.me/971567222248?text=${encodeURIComponent(message)}`, '_blank');
   };
 
