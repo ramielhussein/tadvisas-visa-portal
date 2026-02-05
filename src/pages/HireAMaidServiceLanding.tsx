@@ -447,13 +447,13 @@
  
        {/* Hero Banner Section */}
        <section ref={formRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background Image - subjects positioned on left of image */}
+        {/* Background Image - full continuous scene */}
           <div 
-            className="absolute inset-0 bg-cover bg-no-repeat"
-            style={{ backgroundImage: `url(${heroBackground})`, backgroundPosition: 'left center' }}
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${heroBackground})` }}
           />
-          {/* Gradient Overlay - transparent on left to show image, darker on right for form readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-primary/50 to-primary/85" />
+          {/* Gradient Overlay - lighter on left for image visibility, darker on right for form readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/75" />
          
          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
