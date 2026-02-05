@@ -1,33 +1,31 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 
 /**
- * Hook that tracks user activity and automatically:
- * 1. Checks in users who are active but haven't checked in
- * 2. Ends breaks for users who are on break but log back in
+ * Hook that tracks user activity and automatically ends breaks
+ * when users log back in after being on break.
  * 
- * Debounced to avoid excessive database calls
+ * AUTO CHECK-IN IS DISABLED - users must manually check in.
+ * AUTO CHECKOUT IS DISABLED - users must manually check out.
+ * 
+ * This hook ONLY handles:
+ * - Auto break-back when user is on_break and becomes active
  */
 export const useActivityTracker = (enabled: boolean = true) => {
   const lastActivityCheck = useRef<number>(0);
   const isProcessing = useRef(false);
-  const DEBOUNCE_MS = 30000; // Only check every 30 seconds max
+  const hasCheckedOnMount = useRef(false);
+  const DEBOUNCE_MS = 60000; // Only check every 60 seconds max
 
   useEffect(() => {
-    // Skip if not enabled (user not authenticated)
     if (!enabled) return;
 
-    const handleActivity = async () => {
-      const now = Date.now();
-      
-      // Debounce: don't check more than once per 30 seconds
-      if (now - lastActivityCheck.current < DEBOUNCE_MS) return;
-      if (isProcessing.current) return;
-      
-      lastActivityCheck.current = now;
+    // Only run once on mount to handle break-back scenario
+    const handleBreakBack = async () => {
+      if (hasCheckedOnMount.current) return;
       isProcessing.current = true;
+      hasCheckedOnMount.current = true;
 
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -50,7 +48,7 @@ export const useActivityTracker = (enabled: boolean = true) => {
 
         const today = format(new Date(), 'yyyy-MM-dd');
 
-        // Check if user has an attendance record for today
+        // Check attendance record for today
         const { data: attendance } = await supabase
           .from('attendance_records')
           .select('id, status')
@@ -58,36 +56,12 @@ export const useActivityTracker = (enabled: boolean = true) => {
           .eq('attendance_date', today)
           .maybeSingle();
 
-        // Case 1: No attendance record - auto check-in
-        if (!attendance) {
-          const now = new Date();
-          const isLate = now.getHours() >= 11;
-          
-          const { error } = await supabase
-            .from('attendance_records')
-            .insert({
-              employee_id: employee.id,
-              attendance_date: today,
-              check_in_time: now.toISOString(),
-              status: 'checked_in',
-              is_late: isLate,
-              late_reason: isLate ? 'Auto check-in (late - please update reason)' : null,
-            });
+        // No attendance record - do nothing, user must manually check in
+        if (!attendance) return;
 
-          if (!error) {
-            if (isLate) {
-              toast.info('Auto check-in: You were checked in late. Please update your late reason in HR Attendance.');
-            } else {
-              toast.info('Auto check-in: You were not checked in but are active');
-            }
-          }
-          isProcessing.current = false;
-          return;
-        }
-
-        // Case 2: User is on break but logged back in - auto break back
+        // User is on break but logged back in - auto break back
+        // This is the ONLY automatic action we perform
         if (attendance.status === 'on_break') {
-          // Find the open break record (if any)
           const { data: openBreak } = await supabase
             .from('break_records')
             .select('id, break_out_time')
@@ -97,7 +71,6 @@ export const useActivityTracker = (enabled: boolean = true) => {
             .limit(1)
             .maybeSingle();
 
-          // Get current total break minutes from attendance record
           const { data: currentAttendance } = await supabase
             .from('attendance_records')
             .select('total_break_minutes')
@@ -106,14 +79,12 @@ export const useActivityTracker = (enabled: boolean = true) => {
 
           let totalBreakMinutes = currentAttendance?.total_break_minutes || 0;
 
-          // If there's an open break, close it properly
           if (openBreak) {
             const breakBackTime = new Date().toISOString();
             const breakDuration = Math.floor(
               (new Date(breakBackTime).getTime() - new Date(openBreak.break_out_time).getTime()) / 60000
             );
 
-            // Update break record
             await supabase
               .from('break_records')
               .update({
@@ -122,7 +93,6 @@ export const useActivityTracker = (enabled: boolean = true) => {
               })
               .eq('id', openBreak.id);
 
-            // Recalculate total break minutes
             const { data: allBreaks } = await supabase
               .from('break_records')
               .select('break_duration_minutes')
@@ -134,9 +104,7 @@ export const useActivityTracker = (enabled: boolean = true) => {
               0
             );
           }
-          // If no open break but status is on_break, just fix the status (recovery mode)
 
-          // Update attendance status - no need to clear check_out_time since break doesn't set it
           await supabase
             .from('attendance_records')
             .update({
@@ -144,15 +112,6 @@ export const useActivityTracker = (enabled: boolean = true) => {
               total_break_minutes: totalBreakMinutes,
             })
             .eq('id', attendance.id);
-
-          toast.success('Welcome back! Break ended automatically.');
-          isProcessing.current = false;
-          return;
-        }
-
-        // Case 3: User is checked out but active - just notify them
-        if (attendance.status === 'checked_out') {
-          toast.warning('You checked out earlier but are still active. Consider checking in again if needed.');
         }
 
       } catch (error) {
@@ -162,24 +121,9 @@ export const useActivityTracker = (enabled: boolean = true) => {
       }
     };
 
-    // Listen to various activity events
-    const events = ['click', 'keydown', 'scroll', 'mousemove'];
-    
-    events.forEach(event => {
-      document.addEventListener(event, handleActivity, { passive: true });
-    });
+    // Run once on mount
+    handleBreakBack();
 
-    // Also run on route changes (via popstate)
-    window.addEventListener('popstate', handleActivity);
-
-    // Check on mount
-    handleActivity();
-
-    return () => {
-      events.forEach(event => {
-        document.removeEventListener(event, handleActivity);
-      });
-      window.removeEventListener('popstate', handleActivity);
-    };
+    return () => {};
   }, [enabled]);
 };

@@ -158,7 +158,7 @@ serve(async (req) => {
           employee_id: employee.id,
           attendance_date: today,
           check_in_time: punchTime.toISOString(),
-          status: 'present',
+          status: 'checked_in',
           notes: `Biometric check-in from device ${deviceSn || 'BioTime'}`
         });
 
@@ -186,7 +186,8 @@ serve(async (req) => {
         .from('attendance_records')
         .update({
           check_out_time: punchTime.toISOString(),
-          notes: (existingRecord.notes || '') + ` | Biometric check-out`
+          status: 'checked_out',
+          notes: (existingRecord.notes || '') + ` | Biometric check-out at ${punchTime.toISOString()}`
         })
         .eq('id', existingRecord.id);
 
@@ -215,6 +216,12 @@ serve(async (req) => {
         });
 
       if (breakError) throw breakError;
+
+      // Update attendance status to on_break
+      await supabase
+        .from('attendance_records')
+        .update({ status: 'on_break' })
+        .eq('id', existingRecord.id);
 
       console.log('[ZKTeco] Recorded break-out for:', employee.full_name);
       
@@ -255,7 +262,8 @@ serve(async (req) => {
         await supabase
           .from('attendance_records')
           .update({
-            total_break_minutes: existingRecord.total_break_minutes + breakDuration
+            total_break_minutes: existingRecord.total_break_minutes + breakDuration,
+            status: 'checked_in'
           })
           .eq('id', existingRecord.id);
 
@@ -279,7 +287,7 @@ serve(async (req) => {
         .from('attendance_records')
         .update({
           check_in_time: punchTime.toISOString(),
-          status: 'present'
+          status: 'checked_in'
         })
         .eq('id', existingRecord.id);
 
