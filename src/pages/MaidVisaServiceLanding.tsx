@@ -1025,7 +1025,7 @@ const MaidVisaServiceLanding = () => {
             <img
               src={whyChooseBg}
               alt="Happy expat family being served by their Filipina domestic helper in luxury Dubai apartment"
-              className="absolute inset-0 w-full h-full object-cover object-center"
+              className="absolute inset-0 w-full h-full object-cover object-left"
             />
             {/* Subtle right edge gradient for smooth transition to content */}
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-primary to-transparent" />
