@@ -452,8 +452,8 @@
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${heroBackground})` }}
           />
-          {/* Gradient Overlay - lighter on left for image visibility, darker on right for form readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/75" />
+          {/* Gradient Overlay - balanced for text readability while showing image */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary/55 to-primary/80" />
          
          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
