@@ -31,9 +31,22 @@ interface LeadSubmission {
 // Detect which landing page the lead came from
 const getPageContext = (data: LeadSubmission) => {
   const source = (data.leadSource || '').toLowerCase();
-  const isRedeem = source.includes('redeem') || (data as any).pageType === 'redeem';
-  const isP4 = !isRedeem && (source.includes('p4') || source.includes('hire a maid') || !!data.serviceType);
+  const pageType = (data as any).pageType || '';
+  const isApplication = pageType === 'application' || source.includes('start application');
+  const isRedeem = source.includes('redeem') || pageType === 'redeem';
+  const isP4 = !isRedeem && !isApplication && (source.includes('p4') || source.includes('hire a maid') || !!data.serviceType);
   
+  if (isApplication) {
+    return {
+      isP4: false,
+      label: 'Worker Application',
+      emoji: '📋',
+      headerColor: '#065f46',
+      headerGradient: 'linear-gradient(135deg, #065f46 0%, #0d9488 100%)',
+      subjectPrefix: '📋 NEW WORKER APPLICATION',
+    };
+  }
+
   if (isRedeem) {
     return {
       isP4: false,

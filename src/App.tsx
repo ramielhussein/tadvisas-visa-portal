@@ -130,6 +130,9 @@ import TestFront from "./pages/TestFront";
 // Redeem Landing
 import RedeemLanding from "./pages/RedeemLanding";
 
+// Start Application
+import StartApplication from "./pages/StartApplication";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -308,6 +311,9 @@ const App = () => {
 
             {/* Redeem Landing */}
             <Route path="/redeem" element={<RedeemLanding />} />
+            
+            {/* Start Application */}
+            <Route path="/start-application" element={<StartApplication />} />
             
             {/* Landing Pages */}
             <Route path="/land" element={<Land />} />
