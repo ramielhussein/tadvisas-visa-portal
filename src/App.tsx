@@ -127,6 +127,9 @@ import HireAMaidServiceLanding from "./pages/HireAMaidServiceLanding";
 // Test Pages
 import TestFront from "./pages/TestFront";
 
+// Redeem Landing
+import RedeemLanding from "./pages/RedeemLanding";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -302,6 +305,9 @@ const App = () => {
             
             {/* Test Pages */}
             <Route path="/testfront" element={<TestFront />} />
+
+            {/* Redeem Landing */}
+            <Route path="/redeem" element={<RedeemLanding />} />
             
             {/* Landing Pages */}
             <Route path="/land" element={<Land />} />
