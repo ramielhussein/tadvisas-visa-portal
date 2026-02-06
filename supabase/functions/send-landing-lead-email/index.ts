@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email with page-specific subject line
     const { error: emailError } = await resend.emails.send({
-      from: "TAD Maids Leads <leads@tadvisas.com>",
+      from: "TAD Maids Leads <onboarding@resend.dev>",
       to: ["tadmaidsdrive@gmail.com"],
       subject: `${ctx.subjectPrefix}: ${data.name || data.phone}`,
       html: emailHtml,
