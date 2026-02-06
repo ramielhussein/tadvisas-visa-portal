@@ -255,13 +255,13 @@ const HireAMaidServiceLanding = () => {
       name: "MONTHLY MAID",
       price: "2,100",
       monthly: "2,100",
-      description: "Flexible Monthly Maid Service",
+      description: "Flexible Maid Monthly Service",
       included: [
-        "Trained house maid for cleaning",
+        "Trained Tadbeer housemaid for cleaning",
         "Legal MOHRE domestic worker contract",
         "Medical insurance covered",
         "Free replacement guarantee",
-        "24/7 maid company support",
+        "24/7 maid agency support",
         "Cancel anytime – no lock-in"
       ],
       notIncluded: ["Visa sponsorship"],
@@ -272,9 +272,9 @@ const HireAMaidServiceLanding = () => {
       name: "2-YEAR CONTRACT",
       price: "8,400",
       monthly: "From 150",
-      description: "Full Sponsorship Package",
+      description: "Full Tadbeer Maids Sponsorship",
       included: [
-        "Trained & experienced housemaid",
+        "Trained & experienced Tadbeer housemaid",
         "2-Year visa sponsorship",
         "Medical insurance included",
         "Emirates ID processing",
@@ -291,11 +291,11 @@ const HireAMaidServiceLanding = () => {
       monthly: "Custom",
       description: "Temporary Maid for 1 Month+",
       included: [
-        "Short-term maid service monthly",
+        "Short-term maid monthly service",
         "Perfect for temporary needs",
-        "Background verified workers",
+        "Background verified maids for hire",
         "Flexible contract duration",
-        "Premium maid agency support",
+        "Premium maid company support",
         "Quick 3-day placement"
       ],
       notIncluded: [],
@@ -305,19 +305,19 @@ const HireAMaidServiceLanding = () => {
   ];
 
   const processSteps = [
-    { icon: <MessageCircle className="w-8 h-8" />, title: "Contact Our Maid Agency", description: "WhatsApp us your house maid service requirements and preferred nationality" },
-    { icon: <Users className="w-8 h-8" />, title: "View Maid Profiles", description: "We share profiles of trained, experienced domestic workers ready near you" },
-    { icon: <FileCheck className="w-8 h-8" />, title: "Interview & Select", description: "Meet your candidates via video call or at our maid company center" },
-    { icon: <BadgeCheck className="w-8 h-8" />, title: "Maid Arrives at Home", description: "We handle all paperwork and deliver your maid with MOHRE contract" }
+    { icon: <MessageCircle className="w-8 h-8" />, title: "Contact Our Maid Agency", description: "WhatsApp us your requirements and preferred nationality for maids for hire" },
+    { icon: <Users className="w-8 h-8" />, title: "View Tadbeer Maids Profiles", description: "We share profiles of pre-screened Tadbeer maids ready for placement near you" },
+    { icon: <FileCheck className="w-8 h-8" />, title: "Interview & Select", description: "Meet candidates via video call or at our maid company center" },
+    { icon: <BadgeCheck className="w-8 h-8" />, title: "Maid Arrives at Home", description: "We handle your MOHRE domestic worker contract and deliver your maid" }
   ];
 
   const whyChooseUs = [
     { icon: <Shield className="w-6 h-6" />, title: "MOHRE Licensed Maid Agency", description: "Official Tadbeer maids center approved by Ministry of Human Resources" },
-    { icon: <Award className="w-6 h-6" />, title: "Pre-Screened Maids", description: "All house maids are background checked, medically tested & professionally trained" },
-    { icon: <Clock className="w-6 h-6" />, title: "Fast Maid Placement", description: "Get your maid service within 3-7 days for monthly maid contracts" },
-    { icon: <Users className="w-6 h-6" />, title: "1700+ Happy Families", description: "Trusted maid company serving families across UAE since 2005" },
-    { icon: <ThumbsUp className="w-6 h-6" />, title: "Replacement Guarantee", description: "Free maid replacement if worker doesn't meet your expectations" },
-    { icon: <Zap className="w-6 h-6" />, title: "24/7 Maid Support", description: "Round-the-clock support for any house maid service issues" }
+    { icon: <Award className="w-6 h-6" />, title: "Pre-Screened Tadbeer Maids", description: "All maids for hire are background checked, medically tested & professionally trained" },
+    { icon: <Clock className="w-6 h-6" />, title: "Fast Maid Placement", description: "Get your monthly maid within 3-7 days from our maid company" },
+    { icon: <Users className="w-6 h-6" />, title: "1700+ Happy Families", description: "Trusted maid agency near me serving families across UAE since 2005" },
+    { icon: <ThumbsUp className="w-6 h-6" />, title: "Replacement Guarantee", description: "Free replacement if your Tadbeer housemaid doesn't meet expectations" },
+    { icon: <Zap className="w-6 h-6" />, title: "24/7 Maid Agency Support", description: "Round-the-clock support for any maid monthly service issues" }
   ];
 
   const testimonials = [
@@ -325,7 +325,7 @@ const HireAMaidServiceLanding = () => {
       name: "Sarah Al Maktoum", 
       location: "Dubai Marina", 
       rating: 5, 
-      text: "I searched 'maid service near me' and found TADMAIDS. Within a week, they matched us with the perfect Filipina housemaid. She keeps our apartment spotless! The monthly maid service gave us flexibility to try before committing.",
+      text: "I searched 'maid agency near me' and found TADMAIDS. Within a week, their Tadbeer maids center matched us with the perfect Filipina. She keeps our apartment spotless! The monthly maid service gave us flexibility to try before committing to a maid monthly plan.",
       service: "Monthly Maid Service",
       timeAgo: "2 weeks ago"
     },
@@ -333,7 +333,7 @@ const HireAMaidServiceLanding = () => {
       name: "Ahmed & Fatima Hassan", 
       location: "Abu Dhabi", 
       rating: 5, 
-      text: "As busy professionals, we needed reliable house maid services near me urgently. This maid agency delivered – our Ethiopian helper is hardworking and trustworthy. Their MOHRE domestic worker contract gave us peace of mind.",
+      text: "As busy professionals, we needed maids for hire urgently. This maid agency delivered – our Ethiopian helper is hardworking and trustworthy. Their MOHRE domestic worker contract gave us complete peace of mind. Best maid company in UAE!",
       service: "2-Year Contract",
       timeAgo: "1 month ago"
     },
@@ -341,8 +341,8 @@ const HireAMaidServiceLanding = () => {
       name: "Jennifer Williams", 
       location: "JBR", 
       rating: 5, 
-      text: "Third maid company I tried and finally got it right! Their residential maid service is thorough – our nanny came with experience certificates and medical clearance. Best maid agency near me by far!",
-      service: "Nanny Hiring",
+      text: "Third maid company I tried and finally got it right! Their Tadbeer housemaid came with experience certificates and medical clearance. Best maid agency near me by far! Now we have a maid monthly and couldn't be happier.",
+      service: "Tadbeer Nanny Hiring",
       timeAgo: "3 weeks ago"
     }
   ];
@@ -357,38 +357,38 @@ const HireAMaidServiceLanding = () => {
 
   const faqs = [
     { 
-      question: "How much does maid service cost in UAE?", 
-      answer: "Our monthly maid service starts from AED 2,100/month with no long-term commitment – perfect for those searching 'cheap maid service'. For 2-year contracts with full visa sponsorship, packages start from AED 8,400 plus monthly fees from AED 150. We offer affordable maid home cleaning services for every budget. WhatsApp our maid agency for a personalized quote!",
+      question: "How much does a monthly maid cost in UAE?", 
+      answer: "Our monthly maid service starts from AED 2,100/month with no long-term commitment. For 2-year contracts with full visa sponsorship, packages start from AED 8,400 plus maid monthly fees from AED 150. As a licensed Tadbeer maids center, we offer affordable maids for hire at every budget. WhatsApp our maid agency for a personalized quote!",
       icon: <Landmark className="w-5 h-5" />,
       highlight: true
     },
     { 
-      question: "What house maid services do you offer?", 
-      answer: "Our Tadbeer maids center provides comprehensive maid cleaning service including: housemaids for daily cleaning, laundry and ironing; nannies and babysitters for childcare; cooks for meal preparation; elderly caregivers; and all-rounder domestic workers. Whether you need residential maid service or apartment maid service, we have trained workers for every need.",
+      question: "What services does your Tadbeer maids center offer?", 
+      answer: "Our Tadbeer maids center provides comprehensive services including: Tadbeer housemaid for daily cleaning, laundry and ironing; Tadbeer nanny for childcare and infant care; cooks for meal preparation; elderly caregivers; and all-rounder maids for hire. Every placement from our maid agency comes with a MOHRE domestic worker contract for full legal compliance.",
       icon: <Home className="w-5 h-5" />,
       highlight: false
     },
     { 
-      question: "How quickly can I get a maid near me?", 
-      answer: "For monthly maid service, we can place a trained housemaid within 3-7 days. For 2-year visa sponsorship packages, the process typically takes 2-4 weeks. As the leading maid agency near me in Dubai and UAE, we always have pre-screened candidates ready. Contact our maid company today!",
+      question: "How quickly can your maid agency place a maid?", 
+      answer: "For monthly maid placement, our maid company can deliver a trained Tadbeer housemaid within 3-7 days. For 2-year visa sponsorship packages, the process typically takes 2-4 weeks. As the leading maid agency near me in Dubai and UAE, we always have pre-screened Tadbeer maids ready for immediate placement.",
       icon: <Clock className="w-5 h-5" />,
       highlight: false
     },
     { 
-      question: "Do you offer temporary maid for 1 month?", 
-      answer: "Yes! We offer flexible maid service monthly options including temporary maid for 1 month or longer. Perfect for families with short-term needs, Ramadan help, or trial periods before committing to longer contracts. Our cleaning and maid services are fully flexible.",
+      question: "Do you offer a temporary maid for 1 month?", 
+      answer: "Yes! We offer flexible maid monthly options including temporary maid for 1 month or longer. Perfect for families with short-term needs, Ramadan help, or trial periods before committing to a longer contract with our maid company. All temporary maids for hire come with a MOHRE domestic worker contract.",
       icon: <Calendar className="w-5 h-5" />,
       highlight: false
     },
     { 
       question: "Is your maid agency MOHRE licensed?", 
-      answer: "Absolutely! TADMAIDS is an official MOHRE-licensed Tadbeer maids center operating since 2005. Every maid service comes with a legal MOHRE domestic worker contract ensuring full legal compliance. We're one of only 125 licensed maid companies in UAE.",
+      answer: "Absolutely! TADMAIDS is an official MOHRE-licensed Tadbeer maids center operating since 2005. Every Tadbeer housemaid and Tadbeer nanny placement comes with a legal MOHRE domestic worker contract ensuring full compliance. We're one of only 125 licensed maid companies in UAE.",
       icon: <FileText className="w-5 h-5" />,
       highlight: false
     },
     { 
-      question: "What if the maid doesn't work out?", 
-      answer: "We offer a free replacement guarantee! If your domestic worker doesn't meet expectations within the first 30 days, we'll provide a replacement at no extra cost. Unlike other city maids cleaning services, your satisfaction is our priority – contact us immediately if you face any issues with your house maid service.",
+      question: "What if the Tadbeer housemaid doesn't work out?", 
+      answer: "We offer a free replacement guarantee! If your Tadbeer housemaid or Tadbeer nanny doesn't meet expectations within the first 30 days, our maid agency will provide a replacement at no extra cost. Unlike other maid companies, your satisfaction is our priority – contact our maid company immediately if you face any issues.",
       icon: <Heart className="w-5 h-5" />,
       highlight: false
     }
@@ -396,16 +396,16 @@ const HireAMaidServiceLanding = () => {
 
   const services = [
     {
-      title: "House Maid Cleaning Service",
-      description: "Professional maid cleaning service for your home. Our trained housemaids handle all cleaning tasks – dusting, mopping, laundry, ironing, and maintaining a spotless residence.",
+      title: "Tadbeer Housemaid Service",
+      description: "Professional maids for hire for your home. Our Tadbeer housemaid handles all cleaning tasks – dusting, mopping, laundry, ironing – with a full MOHRE domestic worker contract.",
       icon: <Home className="w-7 h-7" />,
       image: maidCleaningLivingRoom,
       color: "from-blue-50 to-white",
       borderColor: "border-blue-100"
     },
     {
-      title: "Nanny & Babysitter Service",
-      description: "Experienced nannies for infant care, toddler development, and children's activities. Our childcare experts become part of your family.",
+      title: "Tadbeer Nanny & Babysitter",
+      description: "Experienced Tadbeer nanny for infant care, toddler development, and children's activities. Licensed through our Tadbeer maids center with full background checks.",
       icon: <Heart className="w-7 h-7" />,
       image: nannyWithChild,
       color: "from-green-50 to-white",
@@ -413,7 +413,7 @@ const HireAMaidServiceLanding = () => {
     },
     {
       title: "Cook & Home Chef Service",
-      description: "Skilled cooks trained in multiple cuisines – Arabic, Filipino, Indian, continental and more. Fresh home-cooked meals every day.",
+      description: "Skilled cooks from our maid agency trained in multiple cuisines – Arabic, Filipino, Indian, continental and more. Fresh home-cooked meals every day.",
       icon: <Sparkles className="w-7 h-7" />,
       image: cookPreparingFood,
       color: "from-orange-50 to-white",
@@ -502,14 +502,14 @@ const HireAMaidServiceLanding = () => {
             {/* Text Content */}
             <div className="text-white">
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight drop-shadow-lg">
-                Best <span className="text-fcg-gold-light">Maid Service</span> in UAE – House Maids Near You
+                Top <span className="text-fcg-gold-light">Maid Agency</span> in UAE – Maids for Hire Near You
               </h1>
               <p className="text-lg md:text-xl text-white/95 mb-6 leading-relaxed drop-shadow-md">
-                Looking for reliable <strong>maid service near me</strong>? TADMAIDS is UAE's trusted <strong>maid agency</strong> since 2005. Get trained housemaids, nannies, and cooks with MOHRE domestic worker contract. <span className="text-fcg-gold-light font-semibold">Monthly maid from AED 2,100</span>.
+                Looking for a trusted <strong>maid agency near me</strong>? TADMAIDS is a licensed <strong>Tadbeer maids</strong> center since 2005. Hire pre-screened <strong>Tadbeer housemaid</strong>, <strong>Tadbeer nanny</strong>, and cooks with <strong>MOHRE domestic worker contract</strong>. <span className="text-fcg-gold-light font-semibold">Monthly maid from AED 2,100</span>.
               </p>
               <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8 text-base md:text-lg text-white/90 drop-shadow-md">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-5 h-5 text-green-400" /> Maid Cleaning Service
+                  <CheckCircle className="w-5 h-5 text-green-400" /> Tadbeer Maids Center
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="w-5 h-5 text-green-400" /> 1700+ Happy Families
@@ -518,7 +518,7 @@ const HireAMaidServiceLanding = () => {
                   <CheckCircle className="w-5 h-5 text-green-400" /> Free Replacement
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle className="w-5 h-5 text-green-400" /> 3-7 Day Placement
+                  <CheckCircle className="w-5 h-5 text-green-400" /> Maid Monthly from 2,100
                 </span>
               </div>
               <div className="flex flex-wrap gap-4">
@@ -627,9 +627,9 @@ const HireAMaidServiceLanding = () => {
       <section className="py-16 md:py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Who Needs Our Maid Service?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Who Needs Our Maid Agency Services?</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our house maid services are designed for UAE families who need reliable, professional household help.
+              Our Tadbeer maids center provides reliable, professional maids for hire to UAE families who need household help.
             </p>
           </div>
 
@@ -639,24 +639,24 @@ const HireAMaidServiceLanding = () => {
             <div className="bg-green-50 rounded-2xl p-6 border-2 border-green-200 shadow-md">
               <h3 className="text-xl font-bold text-green-700 mb-4 flex items-center gap-2">
                 <CheckCircle className="w-6 h-6" />
-                Our Maid Service Is For You If:
+                Our Maid Agency Is For You If:
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 font-medium">You need maid cleaning service for your home</span>
+                  <span className="text-gray-700 font-medium">You need a monthly maid for your home</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 font-medium">You want trained house maids near you</span>
+                  <span className="text-gray-700 font-medium">You want a Tadbeer housemaid or Tadbeer nanny</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 font-medium">You prefer monthly maid or 2-year contracts</span>
+                  <span className="text-gray-700 font-medium">You need maid monthly or 2-year contract</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700 font-medium">You need temporary maid for 1 month</span>
+                  <span className="text-gray-700 font-medium">You need a temporary maid for 1 month</span>
                 </li>
               </ul>
             </div>
@@ -674,7 +674,7 @@ const HireAMaidServiceLanding = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <X className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-600">Already have a maid and just need visa</span>
+                  <span className="text-gray-600">Already have a maid and just need visa service</span>
                 </li>
               </ul>
             </div>
@@ -694,7 +694,7 @@ const HireAMaidServiceLanding = () => {
               <div className="p-5 bg-gradient-to-br from-blue-50 to-white border-t-4 border-primary">
                 <h3 className="text-lg font-bold text-primary mb-2">Busy Expat Families</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Need reliable house maid service for kids and housework? Our maid agency matches you with the perfect helper.
+                  Need a reliable maid agency for kids and housework? Our Tadbeer maids center matches you with the perfect maids for hire.
                 </p>
               </div>
             </div>
@@ -711,7 +711,7 @@ const HireAMaidServiceLanding = () => {
               <div className="p-5 bg-gradient-to-br from-green-50 to-white border-t-4 border-green-500">
                 <h3 className="text-lg font-bold text-primary mb-2">Working Professionals</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Focus on your career while our residential maid service manages your home – apartment or villa.
+                  Focus on your career while our maid company manages your home – apartment or villa maid monthly service.
                 </p>
               </div>
             </div>
@@ -728,7 +728,7 @@ const HireAMaidServiceLanding = () => {
               <div className="p-5 bg-gradient-to-br from-orange-50 to-white border-t-4 border-orange-400">
                 <h3 className="text-lg font-bold text-primary mb-2">New Parents</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Get experienced nannies from our maid company who'll care for your little ones like family.
+                  Get an experienced Tadbeer nanny from our maid agency who'll care for your little ones like family.
                 </p>
               </div>
             </div>
@@ -741,11 +741,11 @@ const HireAMaidServiceLanding = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold text-sm rounded-full mb-4">
-              OUR MAID SERVICES
+              TADBEER MAIDS SERVICES
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Maid Home Cleaning Services & More</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Maids for Hire – Full Maid Agency Services</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              From maid cleaning service to nanny care and cooking – our Tadbeer maids center provides trained domestic workers for every household need
+              From Tadbeer housemaid to Tadbeer nanny and cooking – our maid agency provides trained maids for hire for every household need
             </p>
           </div>
           
@@ -780,7 +780,7 @@ const HireAMaidServiceLanding = () => {
               </div>
               <h3 className="text-lg font-bold text-primary mb-2">Elderly Caregivers</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Compassionate caregivers trained in elderly care, medication reminders and mobility assistance.
+                Compassionate caregivers from our maid company trained in elderly care, medication reminders and mobility assistance.
               </p>
             </div>
 
@@ -789,9 +789,9 @@ const HireAMaidServiceLanding = () => {
               <div className="w-14 h-14 rounded-full bg-gray-500/10 flex items-center justify-center mb-4 group-hover:bg-gray-500/20 transition-colors">
                 <Building className="w-7 h-7 text-gray-600" />
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">Apartment Maid Service</h3>
+              <h3 className="text-lg font-bold text-primary mb-2">Apartment Maid Monthly</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Specialized cleaning and maid services for apartments – from studios to penthouses across Dubai.
+                Specialized maid monthly service for apartments – from studios to penthouses across Dubai and UAE.
               </p>
             </div>
 
@@ -800,9 +800,9 @@ const HireAMaidServiceLanding = () => {
               <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 group-hover:bg-amber-500/20 transition-colors">
                 <Award className="w-7 h-7 text-amber-600" />
               </div>
-              <h3 className="text-lg font-bold text-primary mb-2">All-Rounder Maids</h3>
+              <h3 className="text-lg font-bold text-primary mb-2">All-Rounder Maids for Hire</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Multi-skilled house maids who handle housekeeping, cooking and childcare together.
+                Multi-skilled Tadbeer maids who handle housekeeping, cooking and childcare together.
               </p>
             </div>
           </div>
@@ -822,10 +822,10 @@ const HireAMaidServiceLanding = () => {
               SIMPLE 4-STEP PROCESS
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-4">
-              How to Hire a Maid Near Me
+              How to Hire Maids from Our Maid Agency
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              From first contact to maid arrival at your home – our maid agency handles everything
+              From first contact to maid arrival – our maid company handles everything for you
             </p>
           </div>
 
@@ -849,7 +849,7 @@ const HireAMaidServiceLanding = () => {
                 
                 <h3 className="text-xl font-bold text-primary mb-3 text-center">Contact Our Maid Agency</h3>
                 <p className="text-gray-600 text-center leading-relaxed">
-                  WhatsApp us your <span className="font-semibold text-primary">maid service requirements</span> and preferred nationality.
+                  WhatsApp us your requirements for <span className="font-semibold text-primary">maids for hire</span> and preferred nationality.
                 </p>
                 
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium">
@@ -872,9 +872,9 @@ const HireAMaidServiceLanding = () => {
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-primary mb-3 text-center">View Maid Profiles</h3>
+                <h3 className="text-xl font-bold text-primary mb-3 text-center">View Tadbeer Maids Profiles</h3>
                 <p className="text-gray-600 text-center leading-relaxed">
-                  We share <span className="font-semibold text-primary">profiles with photos, experience & skills</span> of available house maids near you.
+                  We share <span className="font-semibold text-primary">profiles with photos, experience & skills</span> of pre-screened Tadbeer maids near you.
                 </p>
                 
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-blue-600 font-medium">
@@ -928,7 +928,7 @@ const HireAMaidServiceLanding = () => {
                 
                 <h3 className="text-xl font-bold text-primary mb-3 text-center">Maid Arrives Home! 🎉</h3>
                 <p className="text-gray-600 text-center leading-relaxed">
-                  We deliver your <span className="font-semibold text-amber-600">trained maid with MOHRE contract</span>. Done!
+                  We deliver your <span className="font-semibold text-amber-600">Tadbeer housemaid with MOHRE domestic worker contract</span>. Done!
                 </p>
                 
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-amber-600 font-medium">
@@ -941,7 +941,7 @@ const HireAMaidServiceLanding = () => {
 
           {/* CTA */}
           <div className="mt-16 text-center">
-            <p className="text-gray-600 mb-6 text-lg">Ready to find your perfect house maid service?</p>
+            <p className="text-gray-600 mb-6 text-lg">Ready to hire maids from our Tadbeer maids center?</p>
             <Button 
               onClick={scrollToForm} 
               size="lg" 
@@ -959,11 +959,11 @@ const HireAMaidServiceLanding = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold text-sm rounded-full mb-4">
-              MAID SERVICE PACKAGES
+              MAID AGENCY PACKAGES
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Affordable Maid Service Monthly Plans</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">Affordable Maid Monthly Plans</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              From cheap maid service options to full visa sponsorship – choose the house maid service package that fits your needs
+              From monthly maid options to full Tadbeer maids sponsorship – choose the package from our maid agency that fits your needs
             </p>
           </div>
 
@@ -1077,7 +1077,7 @@ const HireAMaidServiceLanding = () => {
                 Why Choose <span className="text-amber-400">TADMAIDS</span> Maid Agency?
               </h2>
               <p className="text-lg text-white/90 mb-10">
-                Dubai's Premier MOHRE Licensed Tadbeer Maids Center – The Maid Company You Can Trust
+                Dubai's Premier MOHRE Licensed Tadbeer Maids Center – The Maid Company Families Trust
               </p>
 
               {/* Benefits List */}
@@ -1121,7 +1121,7 @@ const HireAMaidServiceLanding = () => {
               {/* CTA Buttons */}
               <div className="space-y-3">
                 <p className="text-white/80 text-sm mb-4">
-                  <span className="font-semibold text-amber-300">Stop searching for "maid service near me".</span> Get matched with the right maid today!
+                  <span className="font-semibold text-amber-300">Stop searching for "maid agency near me".</span> Get matched with the right Tadbeer maids today!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
@@ -1186,7 +1186,7 @@ const HireAMaidServiceLanding = () => {
             {/* CTA Buttons - Mobile */}
             <div className="space-y-3">
               <p className="text-white/80 text-sm mb-3 text-center">
-                <span className="font-semibold text-amber-300">Stop searching endlessly.</span>
+                <span className="font-semibold text-amber-300">Stop searching for "maid agency near me".</span>
               </p>
               <div className="flex flex-col gap-3">
                 <Button 
@@ -1224,13 +1224,13 @@ const HireAMaidServiceLanding = () => {
           {/* Section Header */}
           <div className="text-center mb-14">
             <span className="inline-block px-4 py-2 bg-green-100 text-green-700 font-semibold text-sm rounded-full mb-4">
-              ⭐ 4.9/5 MAID SERVICE RATING
+              ⭐ 4.9/5 MAID AGENCY RATING
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-4">
-              Real Maid Service Reviews from UAE Families
+              Real Reviews from UAE Families Using Our Maid Agency
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join 1,700+ satisfied families who found their perfect house maid through our maid agency
+              Join 1,700+ satisfied families who found their perfect Tadbeer maids through our maid company
             </p>
           </div>
           
@@ -1289,13 +1289,13 @@ const HireAMaidServiceLanding = () => {
           {/* Section Header */}
           <div className="text-center mb-14">
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary font-semibold text-sm rounded-full mb-4">
-              MAID SERVICE FAQ
+              MAID AGENCY FAQ
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Everything About House Maid Services in UAE
+              Everything About Our Tadbeer Maids & Maid Agency
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Get answers about maid service, monthly maid, maid agency near me, and MOHRE domestic worker contracts
+              Get answers about monthly maid, Tadbeer housemaid, temporary maid for 1 month, and MOHRE domestic worker contracts
             </p>
           </div>
           
@@ -1349,10 +1349,10 @@ const HireAMaidServiceLanding = () => {
             <div className="absolute inset-0 bg-[url('/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png')] opacity-5 bg-cover bg-center" />
             <div className="relative z-10">
               <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Have More Questions About Maid Service?
+                Have More Questions About Our Maid Agency?
               </h3>
               <p className="text-white/90 mb-6 max-w-xl mx-auto">
-                Our maid agency experts are ready to help you find the perfect house maid service
+                Our Tadbeer maids experts are ready to help you find the perfect maids for hire
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -1443,37 +1443,37 @@ const HireAMaidServiceLanding = () => {
               
               {/* Main Headline */}
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 leading-tight">
-                Stop Searching "<span className="text-amber-400">Maid Service Near Me</span>"
+                Stop Searching "<span className="text-amber-400">Maid Agency Near Me</span>"
               </h2>
               
               {/* Subheadline */}
               <p className="text-xl md:text-2xl text-white/90 mb-6 font-medium">
-                Get a Pre-Screened Housemaid from TADMAIDS Maid Agency
+                Get Pre-Screened Tadbeer Maids from TADMAIDS Maid Company
               </p>
               
               {/* Pain Points */}
               <div className="space-y-3 mb-8">
                 <div className="flex items-center gap-3 text-white/80">
                   <X className="w-5 h-5 text-red-400 flex-shrink-0" />
-                  <span>Stop wasting time with unreliable maid agencies</span>
+                  <span>Stop wasting time with unreliable maid companies</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/80">
                   <X className="w-5 h-5 text-red-400 flex-shrink-0" />
-                  <span>No more untrained or inexperienced workers</span>
+                  <span>No more untrained maids for hire without contracts</span>
                 </div>
                 <div className="flex items-center gap-3 text-white/80">
                   <X className="w-5 h-5 text-red-400 flex-shrink-0" />
-                  <span>Avoid legal issues – we provide MOHRE contract</span>
+                  <span>Avoid legal issues – we provide MOHRE domestic worker contract</span>
                 </div>
               </div>
               
               {/* Benefits */}
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 mb-8 border border-white/20">
-                <p className="text-white font-semibold text-lg mb-3">With TADMAIDS Maid Company, You Get:</p>
+                <p className="text-white font-semibold text-lg mb-3">With TADMAIDS Maid Agency, You Get:</p>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2 text-green-300">
                     <CheckCircle className="w-4 h-4" />
-                    <span>Background Checked</span>
+                    <span>Tadbeer Maids</span>
                   </div>
                   <div className="flex items-center gap-2 text-green-300">
                     <CheckCircle className="w-4 h-4" />
@@ -1485,7 +1485,7 @@ const HireAMaidServiceLanding = () => {
                   </div>
                   <div className="flex items-center gap-2 text-green-300">
                     <CheckCircle className="w-4 h-4" />
-                    <span>19+ Years Experience</span>
+                    <span>MOHRE Contract</span>
                   </div>
                 </div>
               </div>
@@ -1497,8 +1497,8 @@ const HireAMaidServiceLanding = () => {
                   size="lg" 
                   className="w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 text-primary hover:from-amber-300 hover:to-amber-300 text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 font-bold rounded-xl shadow-2xl shadow-amber-500/30 transition-all duration-300 hover:scale-105 hover:-translate-y-1 group"
                 >
-                  <span className="hidden sm:inline">GET YOUR MAID SERVICE NOW</span>
-                  <span className="sm:hidden">GET MAID SERVICE NOW</span>
+                  <span className="hidden sm:inline">HIRE YOUR MAID FROM OUR AGENCY NOW</span>
+                  <span className="sm:hidden">HIRE MAID NOW</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform flex-shrink-0" />
                 </Button>
                 
@@ -1517,7 +1517,7 @@ const HireAMaidServiceLanding = () => {
                   <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                   <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                 </span>
-                <span>Trusted Maid Service by 1,700+ UAE Families</span>
+                <span>Trusted Maid Agency by 1,700+ UAE Families</span>
               </div>
             </div>
           </div>
@@ -1526,7 +1526,7 @@ const HireAMaidServiceLanding = () => {
 
       {/* Simple Footer */}
       <footer className="py-6 bg-gray-900 text-center">
-        <p className="text-gray-400 text-sm">All Rights Reserved 2026 @ TADMAIDS DOMESTIC WORKERS SERVICES CENTER L.L.C – UAE's Trusted Maid Agency & Maid Company</p>
+        <p className="text-gray-400 text-sm">All Rights Reserved 2026 @ TADMAIDS DOMESTIC WORKERS SERVICES CENTER L.L.C – UAE's Trusted Maid Agency & Tadbeer Maids Center</p>
       </footer>
     </div>
   );
