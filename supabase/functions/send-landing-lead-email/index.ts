@@ -31,13 +31,25 @@ interface LeadSubmission {
 // Detect which landing page the lead came from
 const getPageContext = (data: LeadSubmission) => {
   const source = (data.leadSource || '').toLowerCase();
-  const isP4 = source.includes('p4') || source.includes('hire a maid') || !!data.serviceType;
+  const isRedeem = source.includes('redeem') || (data as any).pageType === 'redeem';
+  const isP4 = !isRedeem && (source.includes('p4') || source.includes('hire a maid') || !!data.serviceType);
   
+  if (isRedeem) {
+    return {
+      isP4: false,
+      label: 'New Follower Claim',
+      emoji: '🎁',
+      headerColor: '#7c2d12',
+      headerGradient: 'linear-gradient(135deg, #b45309 0%, #d97706 100%)',
+      subjectPrefix: '🎁 NEW FOLLOWER CLAIM FORM',
+    };
+  }
+
   return {
     isP4,
     label: isP4 ? 'Hire a Maid (P4)' : 'Maid Visa (P3)',
     emoji: isP4 ? '🏠' : '📋',
-    headerColor: isP4 ? '#065f46' : '#1e3a5f',       // green for P4, blue for P3
+    headerColor: isP4 ? '#065f46' : '#1e3a5f',
     headerGradient: isP4 
       ? 'linear-gradient(135deg, #065f46 0%, #047857 100%)' 
       : 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)',
