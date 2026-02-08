@@ -31,7 +31,7 @@ const nationalities = [
 
 const religions = ["Christian", "Muslim", "Hindu", "Buddhist", "Other"];
 const maritalStatuses = ["Single", "Married", "Divorced", "Widowed"];
-const maidStatuses = ["New", "Ex-Abroad", "Transfer", "Freelance", "Runaway"];
+const maidStatuses = ["Ex-Abroad", "First Timer"];
 const jobOptions = ["Housemaid", "Nanny", "Cook", "Caregiver", "Driver", "Tutor", "Cleaner"];
 const educationTracks = ["Primary", "Secondary", "College", "University", "Vocational", "None"];
 const experienceCountries = ["UAE", "Saudi Arabia", "Kuwait", "Qatar", "Bahrain", "Oman", "Jordan", "Lebanon", "Hong Kong", "Singapore", "Malaysia", "None"];
