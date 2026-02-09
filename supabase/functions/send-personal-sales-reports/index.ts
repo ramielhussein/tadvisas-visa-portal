@@ -103,15 +103,25 @@ const handler = async (req: Request): Promise<Response> => {
 
         const totalLeadsAssigned = allAssignedLeads?.length || 0;
 
-        // Get all activity lead IDs for this person to determine if they've taken action
-        const { data: allActivities, error: allActError } = await supabase
-          .from("lead_activities")
-          .select("lead_id")
-          .eq("user_id", person.id);
-
-        if (allActError) throw allActError;
-
-        const engagedLeadIds = new Set(allActivities?.map(a => a.lead_id) || []);
+        // Get all DISTINCT activity lead IDs for this person to determine if they've taken action
+        // IMPORTANT: Fetch ALL pages to avoid Supabase's 1000-row default limit
+        const assignedLeadIds = (allAssignedLeads || []).map(l => l.id);
+        const engagedLeadIds = new Set<string>();
+        
+        // Batch check in chunks of 100 lead IDs to avoid query size limits
+        for (let i = 0; i < assignedLeadIds.length; i += 100) {
+          const chunk = assignedLeadIds.slice(i, i + 100);
+          const { data: chunkActivities, error: chunkError } = await supabase
+            .from("lead_activities")
+            .select("lead_id")
+            .eq("user_id", person.id)
+            .in("lead_id", chunk);
+          
+          if (chunkError) throw chunkError;
+          for (const a of chunkActivities || []) {
+            engagedLeadIds.add(a.lead_id);
+          }
+        }
         
         // Calculate leads with action vs no action
         const leadsWithAction = allAssignedLeads?.filter(lead => engagedLeadIds.has(lead.id)).length || 0;
