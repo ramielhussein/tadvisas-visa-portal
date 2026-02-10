@@ -586,6 +586,23 @@ const ContractDetail = () => {
               </Button>
             )}
             <Button
+              variant="outline"
+              onClick={() => {
+                const params = new URLSearchParams({
+                  deal_id: deal.id,
+                  contract_no: deal.deal_number,
+                  client_name: deal.client_name,
+                  client_phone: deal.client_phone,
+                  worker_name: deal.worker_name || '',
+                  amount: deal.total_amount.toString(),
+                });
+                navigate(`/quick-refund?${params.toString()}`);
+              }}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Record Refund
+            </Button>
+            <Button
               variant="destructive"
               onClick={() => setVoidDialogOpen(true)}
             >
