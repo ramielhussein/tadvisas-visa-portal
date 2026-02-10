@@ -49,7 +49,7 @@ const QuickRefund = () => {
       const { data } = await supabase
         .from("deals")
         .select("id, deal_number, client_name, client_phone, worker_name, assigned_to, total_amount")
-        .eq("status", "Active")
+        .in("status", ["Active", "Draft"])
         .order("created_at", { ascending: false });
       return data || [];
     },
