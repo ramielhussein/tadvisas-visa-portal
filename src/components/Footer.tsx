@@ -52,6 +52,7 @@ const Footer = () => {
               <li><Link to="/maid-agency-abu-dhabi" className="text-blue-100 hover:text-white transition-colors">Maid Agency Abu Dhabi</Link></li>
               <li><Link to="/maid-agency-sharjah" className="text-blue-100 hover:text-white transition-colors">Maid Agency Sharjah</Link></li>
               <li><Link to="/maid-agency-ajman" className="text-blue-100 hover:text-white transition-colors">Maid Agency Ajman</Link></li>
+              <li><Link to="/tadbeer" className="text-blue-100 hover:text-white transition-colors">Tadbeer Center Dubai</Link></li>
             </ul>
           </div>
 

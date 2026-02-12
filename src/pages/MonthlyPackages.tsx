@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -138,6 +139,20 @@ const WhyUs = () => {
           </Card>
         </div>
       </div>
+      <section className="sr-only" aria-hidden="true">
+        <div>
+          <Link to="/tadbeer">Tadbeer Center Dubai</Link>
+          <Link to="/tadbeer-arabian-ranches">Tadbeer Arabian Ranches</Link>
+          <Link to="/tadbeer-dubai-hills-estate">Tadbeer Dubai Hills</Link>
+          <Link to="/tadbeer-palm-jumeirah">Tadbeer Palm Jumeirah</Link>
+          <Link to="/tadbeer-mirdif">Tadbeer Mirdif</Link>
+          <Link to="/tadbeer-al-barsha">Tadbeer Al Barsha</Link>
+          <Link to="/tadbeer-khalifa-city">Tadbeer Khalifa City</Link>
+          <Link to="/tadbeer-mbz">Tadbeer MBZ</Link>
+          <Link to="/tadbeer-saadiyat-island">Tadbeer Saadiyat Island</Link>
+          <Link to="/tadbeer-yas-island">Tadbeer Yas Island</Link>
+        </div>
+      </section>
     </Layout>
   );
 };
