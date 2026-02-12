@@ -335,23 +335,12 @@ const TadbeerPage = () => {
       {/* ═══════════════════════════════════════════
           INTERNAL LINKS (SEO Cluster)
       ═══════════════════════════════════════════ */}
-      <section className="py-12 bg-background">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-xl font-semibold text-center mb-6">
-            Find a Tadbeer Center Near You
-          </h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            {locationLinks.map((link, i) => (
-              <Link
-                key={i}
-                to={link.path}
-                className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors inline-flex items-center gap-1.5"
-              >
-                <MapPin className="h-3.5 w-3.5" />
-                {link.label}
-              </Link>
-            ))}
-          </div>
+      <section className="sr-only" aria-hidden="true">
+        <div>
+          <h2>Find a Tadbeer Center Near You</h2>
+          {locationLinks.map((link, i) => (
+            <Link key={i} to={link.path}>{link.label}</Link>
+          ))}
         </div>
       </section>
 
