@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { FileText, ArrowDownToLine, Cog, FileCheck, Users, CheckCircle, Phone, ChevronRight, DollarSign, HelpCircle, MessageCircle } from "lucide-react";
@@ -232,6 +233,20 @@ const HowItWorks = () => {
           </div>
         </div>
       </div>
+      <section className="sr-only" aria-hidden="true">
+        <div>
+          <Link to="/tadbeer">Tadbeer Center Dubai</Link>
+          <Link to="/tadbeer-arabian-ranches">Tadbeer Arabian Ranches</Link>
+          <Link to="/tadbeer-dubai-hills-estate">Tadbeer Dubai Hills</Link>
+          <Link to="/tadbeer-palm-jumeirah">Tadbeer Palm Jumeirah</Link>
+          <Link to="/tadbeer-mirdif">Tadbeer Mirdif</Link>
+          <Link to="/tadbeer-al-barsha">Tadbeer Al Barsha</Link>
+          <Link to="/tadbeer-khalifa-city">Tadbeer Khalifa City</Link>
+          <Link to="/tadbeer-mbz">Tadbeer MBZ</Link>
+          <Link to="/tadbeer-saadiyat-island">Tadbeer Saadiyat Island</Link>
+          <Link to="/tadbeer-yas-island">Tadbeer Yas Island</Link>
+        </div>
+      </section>
     </Layout>
   );
 };
