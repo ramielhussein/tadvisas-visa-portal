@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <img 
@@ -41,6 +41,17 @@ const Footer = () => {
               <li>Hire a domestic worker</li>
               <li>Medical & Emirates ID</li>
               <li>All domestic worker services</li>
+            </ul>
+          </div>
+
+          {/* Locations */}
+          <div>
+            <h3 className="font-semibold text-lg mb-4">Locations</h3>
+            <ul className="space-y-2">
+              <li><Link to="/maid-agency-dubai" className="text-blue-100 hover:text-white transition-colors">Maid Agency Dubai</Link></li>
+              <li><Link to="/maid-agency-abu-dhabi" className="text-blue-100 hover:text-white transition-colors">Maid Agency Abu Dhabi</Link></li>
+              <li><Link to="/maid-agency-sharjah" className="text-blue-100 hover:text-white transition-colors">Maid Agency Sharjah</Link></li>
+              <li><Link to="/maid-agency-ajman" className="text-blue-100 hover:text-white transition-colors">Maid Agency Ajman</Link></li>
             </ul>
           </div>
 
