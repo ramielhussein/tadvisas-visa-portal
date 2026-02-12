@@ -139,6 +139,8 @@ import MaidAgencyAbuDhabi from "./pages/seo/MaidAgencyAbuDhabi";
 import MaidAgencySharjah from "./pages/seo/MaidAgencySharjah";
 import MaidAgencyAjman from "./pages/seo/MaidAgencyAjman";
 import TadbeerPage from "./pages/seo/TadbeerPage";
+import TadbeerLocationPageContent from "./pages/seo/TadbeerLocationPage";
+import { tadbeerLocations } from "./data/tadbeerLocations";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -334,6 +336,9 @@ const App = () => {
 
             {/* Tadbeer SEO Pages */}
             <Route path="/tadbeer" element={<TadbeerPage />} />
+            {tadbeerLocations.map((loc) => (
+              <Route key={loc.slug} path={`/${loc.slug}`} element={<TadbeerLocationPageContent location={loc} />} />
+            ))}
 
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
