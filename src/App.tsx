@@ -138,6 +138,7 @@ import MaidAgencyDubai from "./pages/seo/MaidAgencyDubai";
 import MaidAgencyAbuDhabi from "./pages/seo/MaidAgencyAbuDhabi";
 import MaidAgencySharjah from "./pages/seo/MaidAgencySharjah";
 import MaidAgencyAjman from "./pages/seo/MaidAgencyAjman";
+import TadbeerPage from "./pages/seo/TadbeerPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -330,6 +331,9 @@ const App = () => {
             <Route path="/maid-agency-abu-dhabi" element={<MaidAgencyAbuDhabi />} />
             <Route path="/maid-agency-sharjah" element={<MaidAgencySharjah />} />
             <Route path="/maid-agency-ajman" element={<MaidAgencyAjman />} />
+
+            {/* Tadbeer SEO Pages */}
+            <Route path="/tadbeer" element={<TadbeerPage />} />
 
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
