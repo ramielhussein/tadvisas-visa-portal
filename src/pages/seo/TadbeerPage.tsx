@@ -219,7 +219,10 @@ const TadbeerPage = () => {
             </p>
             <h3 className="text-xl font-semibold text-foreground">Can Expats Sponsor Directly?</h3>
             <p>
-              Expats in the UAE are <strong>required to use a Tadbeer center</strong> for domestic worker sponsorship. Direct sponsorship by expats is not permitted under current MOHRE regulations. This ensures proper worker protection, legal contracts, and regulatory compliance.
+              Expats in the UAE <strong>can sponsor on their own file</strong>, but the cost will be at least double what it would cost sponsoring via a Tadbeer center. The required documentation is also a burden — bank statements, salary certificates, Ejari, marriage certificates, proof of a 2-bedroom house, and more.
+            </p>
+            <p>
+              If you use a <strong>Tadbeer center</strong> for domestic worker sponsorship, it ensures proper worker protection, legal contracts, and regulatory compliance. And <strong>most importantly — you save money and time</strong>.
             </p>
             <h3 className="text-xl font-semibold text-foreground">Risks of DIY Sponsorship</h3>
             <ul className="space-y-2 list-none pl-0">
