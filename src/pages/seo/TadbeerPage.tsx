@@ -290,7 +290,7 @@ const TadbeerPage = () => {
                 <p><strong className="text-foreground">Location:</strong> Tadmaids Center, Dubai, UAE</p>
                 <p><strong className="text-foreground">Phone:</strong> +971 4 355 1186</p>
                 <p><strong className="text-foreground">WhatsApp:</strong> Available 7 days a week</p>
-                <p><strong className="text-foreground">Hours:</strong> Sunday – Saturday, 9:00 AM – 6:00 PM</p>
+                <p><strong className="text-foreground">Hours:</strong> Sunday – Saturday, 10:00 AM – 8:00 PM</p>
               </div>
               <div className="flex flex-col gap-3 mt-6">
                 <Button className="w-full" onClick={() => window.open(WHATSAPP_URL, "_blank")}>
