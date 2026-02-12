@@ -47,7 +47,7 @@ export const usePushNotifications = () => {
     try {
       console.log('Push: Checking existing subscription...');
       const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
+      const subscription = await (registration as any).pushManager.getSubscription();
       const hasSubscription = !!subscription;
       console.log('Push: Has existing subscription:', hasSubscription);
       setIsSubscribed(hasSubscription);
@@ -80,7 +80,7 @@ export const usePushNotifications = () => {
 
       // Subscribe to push
       console.log('Push: Subscribing to push manager...');
-      const subscription = await registration.pushManager.subscribe({
+      const subscription = await (registration as any).pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       });
@@ -123,7 +123,7 @@ export const usePushNotifications = () => {
   const unsubscribe = async () => {
     try {
       const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
+      const subscription = await (registration as any).pushManager.getSubscription();
       
       if (subscription) {
         await subscription.unsubscribe();
