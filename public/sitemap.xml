@@ -75,5 +75,14 @@
   <!-- Landing Pages -->
   <url><loc>https://tadmaids.com/maid-visa-service-uae-lp</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://tadmaids.com/hire-a-maid-service-uae-lp</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tadmaids.com/land</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://tadmaids.com/apply</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://tadmaids.com/start-application</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://tadmaids.com/redeem</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+
+  <!-- Other Public Pages -->
+  <url><loc>https://tadmaids.com/thank-you</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tadmaids.com/install</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://tadmaids.com/ALH</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://tadmaids.com/fcg</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>
