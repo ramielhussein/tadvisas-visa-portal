@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { tadbeerLocations } from "@/data/tadbeerLocations";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -338,8 +339,8 @@ const TadbeerPage = () => {
       <section className="sr-only" aria-hidden="true">
         <div>
           <h2>Find a Tadbeer Center Near You</h2>
-          {locationLinks.map((link, i) => (
-            <Link key={i} to={link.path}>{link.label}</Link>
+          {tadbeerLocations.map((loc, i) => (
+            <Link key={i} to={`/${loc.slug}`}>Tadbeer Near {loc.area}</Link>
           ))}
         </div>
       </section>
@@ -439,14 +440,5 @@ const faqs = [
   { question: "Is Tadbeer government-owned?", answer: "Tadbeer is a government-regulated framework, not a government-owned company. The system is overseen by MOHRE, and individual Tadbeer centers like TADMAIDS are privately operated but government-licensed and regularly audited." },
 ];
 
-const locationLinks = [
-  { label: "Tadbeer Near Me", path: "/tadbeer-near-me" },
-  { label: "Tadbeer Dubai", path: "/tadbeer-dubai" },
-  { label: "Tadbeer Abu Dhabi", path: "/tadbeer-abu-dhabi" },
-  { label: "Tadbeer Sharjah", path: "/tadbeer-sharjah" },
-  { label: "Tadbeer Majan", path: "/tadbeer-majan" },
-  { label: "Tadbeer Al Nahda", path: "/tadbeer-al-nahda" },
-  { label: "Tadbeer Al Tawwan", path: "/tadbeer-al-tawwan" },
-];
 
 export default TadbeerPage;
