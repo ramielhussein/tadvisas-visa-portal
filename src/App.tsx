@@ -133,6 +133,12 @@ import RedeemLanding from "./pages/RedeemLanding";
 // Start Application
 import StartApplication from "./pages/StartApplication";
 
+// SEO Location Pages
+import MaidAgencyDubai from "./pages/seo/MaidAgencyDubai";
+import MaidAgencyAbuDhabi from "./pages/seo/MaidAgencyAbuDhabi";
+import MaidAgencySharjah from "./pages/seo/MaidAgencySharjah";
+import MaidAgencyAjman from "./pages/seo/MaidAgencyAjman";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -318,6 +324,12 @@ const App = () => {
             {/* Landing Pages */}
             <Route path="/land" element={<Land />} />
             <Route path="/maid-visa-service-uae-lp" element={<MaidVisaServiceLanding />} />
+
+            {/* SEO Location Pages */}
+            <Route path="/maid-agency-dubai" element={<MaidAgencyDubai />} />
+            <Route path="/maid-agency-abu-dhabi" element={<MaidAgencyAbuDhabi />} />
+            <Route path="/maid-agency-sharjah" element={<MaidAgencySharjah />} />
+            <Route path="/maid-agency-ajman" element={<MaidAgencyAjman />} />
 
             {/* Legacy URL redirects */}
             <Route path="/chattest" element={<Navigate to="/" replace />} />
