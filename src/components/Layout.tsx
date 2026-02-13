@@ -9,6 +9,7 @@ import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import DriversFloatingIsland from "./tadgo/DriversFloatingIsland";
 import { supabase } from "@/integrations/supabase/client";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 interface LayoutProps {
   children: ReactNode;
@@ -18,9 +19,10 @@ const Layout = ({ children }: LayoutProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
-  // Enable activity tracker for authenticated users - auto check-in and auto break-back
-  // Must be called unconditionally to follow Rules of Hooks
+  // Enable activity tracker for authenticated users - auto break-back
   useActivityTracker(isAuthenticated);
+  // Auto logout at 8:30 PM UAE time
+  useAutoLogout(isAuthenticated);
 
   useEffect(() => {
     // Check initial auth state
