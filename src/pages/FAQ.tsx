@@ -115,7 +115,7 @@ const FAQ = () => {
       answer: "In the unlikely event a center closes down, any center, MOHRE would have a contingency plan to make sure workers do not get affected. Also every center have a bank guarantee to make sure no workers left stranded or unattended for. Always remember these centers operate under very strict guidance from MOHRE and are monitored and almost daily."
     },
     {
-      question: "How does my maid get paid her salary?",
+      question: "How is a domestic worker salary paid in UAE?",
       answer: "We setup a direct debit through directdebit.ae a central bank licensed provider. Every agreed day of the month you send us the salary, and we pay the worker on the agreed pay day. usually all are processed before end of month. She has an ATM card with link to her account she can withdraw funds FREE from a RAKBANK ATM machine. Other machines may charge her small fees."
     },
     {
