@@ -140,6 +140,10 @@ import MaidAgencySharjah from "./pages/seo/MaidAgencySharjah";
 import MaidAgencyAjman from "./pages/seo/MaidAgencyAjman";
 import TadbeerPage from "./pages/seo/TadbeerPage";
 import TadbeerLocationPageContent from "./pages/seo/TadbeerLocationPage";
+import MaidVisaCostDubai from "./pages/seo/MaidVisaCostDubai";
+import TwoYearMaidVisaUAE from "./pages/seo/TwoYearMaidVisaUAE";
+import HousemaidSalaryUAE from "./pages/seo/HousemaidSalaryUAE";
+import WhatIsTadbeer from "./pages/seo/WhatIsTadbeer";
 import { tadbeerLocations } from "./data/tadbeerLocations";
 
 const queryClient = new QueryClient({
@@ -336,6 +340,10 @@ const App = () => {
 
             {/* Tadbeer SEO Pages */}
             <Route path="/tadbeer" element={<TadbeerPage />} />
+            <Route path="/maid-visa-cost-dubai" element={<MaidVisaCostDubai />} />
+            <Route path="/2-year-maid-visa-uae" element={<TwoYearMaidVisaUAE />} />
+            <Route path="/housemaid-salary-uae" element={<HousemaidSalaryUAE />} />
+            <Route path="/what-is-tadbeer" element={<WhatIsTadbeer />} />
             {tadbeerLocations.map((loc) => (
               <Route key={loc.slug} path={`/${loc.slug}`} element={<TadbeerLocationPageContent location={loc} />} />
             ))}
