@@ -43,6 +43,22 @@ const FAQ = () => {
       answer: "If AED 3,000 refers to the total monthly package cost (including visa, insurance, and recruitment costs), this is considered normal within certain monthly systems.\n\nIf AED 3,000 refers to the worker's net salary only, then it is generally above the market average for most nationalities.\n\nUltimately, salary levels depend on:\n\n• Experience\n• Nationality\n• Market demand\n• Scope of responsibilities\n\nEvery case should be evaluated individually."
     },
     {
+      question: "What is Tadbeer and how does it work?",
+      answer: "Tadbeer is an initiative launched by the UAE Ministry of Human Resources and Emiratisation (MOHRE) to regulate the recruitment, sponsorship, and employment of domestic workers in the UAE.\n\nIt operates under strict government guidelines to ensure:\n\n• Protection of domestic workers\n• Protection of employers\n• Transparency in contracts and payments\n• Compliance with UAE labour regulations\n\nTadbeer itself is not a single shop or brand. It is a regulated activity licensed by MOHRE.\n\nThere are approximately 120+ licensed Tadbeer centers across the UAE. These centers are independently owned businesses that operate under MOHRE's system and regulatory framework.\n\nEach Tadbeer center may have its own brand name, but all licensed centers must follow the same government system for processing visas and domestic worker services."
+    },
+    {
+      question: "Is Tadbeer a government company?",
+      answer: "No. Tadbeer centers are privately owned companies.\n\nHowever, they operate under strict supervision and licensing by the UAE Ministry of Human Resources and Emiratisation (MOHRE).\n\nWhile the centers themselves are not government-owned, they are authorized to access official MOHRE systems to process domestic worker visas, contracts, and related services.\n\nThis ensures that all transactions are compliant with UAE law."
+    },
+    {
+      question: "What is the difference between Tadbeer and private agencies?",
+      answer: "In the UAE, domestic worker recruitment and sponsorship services must be conducted through licensed Tadbeer centers under MOHRE regulations.\n\nAny company offering recruitment or sponsorship services for domestic workers must be properly licensed and accredited under the Tadbeer framework.\n\nTadbeer centers operate under government oversight, standardized contracts, and regulated procedures — which protects both employers and workers.\n\nEmployers should always verify that the provider they deal with is officially licensed."
+    },
+    {
+      question: "Is Tadmaids an official Tadbeer center?",
+      answer: "Yes. TADMAIDS is an officially licensed and accredited Tadbeer center operating under the UAE Ministry of Human Resources and Emiratisation (MOHRE).\n\nClients can verify accredited Tadbeer centers through official MOHRE channels.\n\nAs a licensed center, we process domestic worker visas and services through the official MOHRE system in full compliance with UAE regulations."
+    },
+    {
       question: "What documents are required for the 2-year maid visa?",
       answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
