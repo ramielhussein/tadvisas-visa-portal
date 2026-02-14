@@ -15,16 +15,16 @@ const FAQ = () => {
       answer: "Typically, 7 to 12 working days from the time we receive all required documents. This includes medical tests, government processing, and Emirates ID. We keep you updated throughout the process. In some cases, if the system rejects the application for some requirements, you will be notified of the issue and the suggested remedies."
     },
     {
+      question: "Do you handle medical examinations and Emirates ID?",
+      answer: "We will take your worker to do the medical test and the Emirates ID biometric. There will always be a medical test, but if she has a recent Emirates ID, she may be exempted from biometric stamping. Either way, you can relax as we will take care of it."
+    },
+    {
       question: "Can we pay when you get approval?",
       answer: "Absolutely, we can allow you to make payment after we receive the initial approval for your visa. Ask your sales agent."
     },
     {
       question: "Can I transfer my current maid's visa through TADVISAS?",
       answer: "Yes you can, but it's not a transfer, you need to cancel whatever visa you have with another provider, and provide us the required documents as above."
-    },
-    {
-      question: "Do you handle medical examinations and Emirates ID?",
-      answer: "We will take your worker to do the medical test and the Emirates ID biometric. There will always be a medical test, but if she has a recent Emirates ID, she may be exempted from biometric stamping. Either way, you can relax as we will take care of it."
     },
     {
       question: "What makes TADVISAS different from other providers?",
