@@ -3,6 +3,7 @@ import Layout from "@/components/Layout";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const FAQ = () => {
   const sections = [
@@ -144,8 +145,29 @@ const FAQ = () => {
     }
   ];
 
+  // Build JSON-LD FAQPage schema from all sections
+  const allFaqs = sections.flatMap(s => s.faqs);
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": allFaqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <Layout>
+      <Helmet>
+        <title>Maid Visa FAQ Dubai | Cost, Salary & Process | TADMAIDS</title>
+        <meta name="description" content="Get answers about maid visa costs in Dubai, domestic worker salaries, Tadbeer centers, and the 2-year visa process. Official TADMAIDS FAQ." />
+        <link rel="canonical" href="https://tadmaids.com/faq" />
+        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+      </Helmet>
       <div className="py-20 relative">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
