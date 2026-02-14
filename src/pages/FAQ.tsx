@@ -103,7 +103,7 @@ const FAQ = () => {
       answer: "You can renew the visa for another 2 years through us. We'll contact you before expiry to start the renewal process. The renewal process is typically faster than the initial application. Or you can request us to cancel the maid visa and take her cancellation so she travel or change sponsorship."
     },
     {
-      question: "Can we pay when you get approval?",
+      question: "When do I need to pay for the maid visa?",
       answer: "Absolutely, we can allow you to make payment after we receive the initial approval for your visa. Ask your sales agent."
     },
     {
