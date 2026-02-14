@@ -7,6 +7,26 @@ import { Phone } from "lucide-react";
 const FAQ = () => {
   const faqs = [
     {
+      question: "How much does a maid visa cost in Dubai?",
+      answer: "The cost of sponsoring a maid in Dubai depends on the method you choose. There are generally two paths:\n\n• Personal sponsorship (do-it-yourself): Approximately AED 9,000 per year or around AED 15,500 for 2 years (government fees only, excluding optional services).\n\n• Through an accredited Tadbeer center like TADMAIDS: Approximately AED 9,000 for a 2-year visa, including multiple added services and benefits.\n\nUsing TADMAIDS not only reduces overall cost, but also ensures full compliance, faster processing, and added value services."
+    },
+    {
+      question: "How much is a 2-year maid visa in the UAE?",
+      answer: "A 2-year maid visa in the UAE typically costs around AED 15,000–16,000 if processed independently through government channels.\n\nHowever, through an accredited center like TADMAIDS, the total cost is approximately AED 9,000 for 2 years, including essential processing services and additional benefits.\n\nPrices may vary slightly depending on case specifics and nationality."
+    },
+    {
+      question: "What is included in the maid visa cost?",
+      answer: "Visa inclusions vary between service providers. At TADMAIDS, our 2-year maid visa package includes:\n\n• WPS salary processing setup\n• Bank account & salary card\n• ILOE insurance (Involuntary Loss of Employment coverage)\n• Emirates ID\n• Medical fitness test\n• Biometrics\n• Free chauffeur service for government procedures (exclusive to TADMAIDS)\n• Free NOC issuance for travel\n\nWe recommend comparing inclusions carefully, as some centers charge extra for services that we provide at no additional cost."
+    },
+    {
+      question: "How much does it cost to sponsor a maid in the UAE?",
+      answer: "If you sponsor a maid directly through government channels, the cost can reach approximately AED 15,500 for 2 years.\n\nWhen processed through TADMAIDS, the 2-year visa cost is approximately AED 9,000, with full documentation support and additional service benefits included.\n\nChoosing a licensed Tadbeer center ensures compliance and professional handling of the entire process."
+    },
+    {
+      question: "How much does a nanny visa cost in Dubai?",
+      answer: "A nanny visa falls under the domestic worker visa category and follows the same cost structure as a maid visa.\n\n• Personal sponsorship: approximately AED 15,000+ for 2 years\n• Through TADMAIDS: approximately AED 9,000 for 2 years including processing support and additional services\n\nFinal cost may vary based on the applicant's nationality and documentation requirements."
+    },
+    {
       question: "What documents are required for the 2-year maid visa?",
       answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
