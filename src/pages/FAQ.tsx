@@ -11,16 +11,16 @@ const FAQ = () => {
       answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
     {
+      question: "How long does the entire process take?",
+      answer: "Typically, 7 to 12 working days from the time we receive all required documents. This includes medical tests, government processing, and Emirates ID. We keep you updated throughout the process. In some cases, if the system rejects the application for some requirements, you will be notified of the issue and the suggested remedies."
+    },
+    {
       question: "Can we pay when you get approval?",
       answer: "Absolutely, we can allow you to make payment after we receive the initial approval for your visa. Ask your sales agent."
     },
     {
       question: "Can I transfer my current maid's visa through TADVISAS?",
       answer: "Yes you can, but it's not a transfer, you need to cancel whatever visa you have with another provider, and provide us the required documents as above."
-    },
-    {
-      question: "How long does the entire process take?",
-      answer: "Typically, 7 to 12 working days from the time we receive all required documents. This includes medical tests, government processing, and Emirates ID. We keep you updated throughout the process. In some cases, if the system rejects the application for some requirements, you will be notified of the issue and the suggested remedies."
     },
     {
       question: "Do you handle medical examinations and Emirates ID?",
