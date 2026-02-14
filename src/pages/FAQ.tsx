@@ -23,6 +23,10 @@ const FAQ = () => {
       answer: "Yes you can cancel your visa any time, and stop paying the monthly admin fees if any. You will not be charged exit fees. As the visa consist mainly of government fees, these are not refundable after processing the visa."
     },
     {
+      question: "Do you provide support after the visa is issued?",
+      answer: "Yes, we provide ongoing support for any visa-related queries, renewals, and administrative needs. Our customer service team is available to help even after your visa is processed."
+    },
+    {
       question: "Can we pay when you get approval?",
       answer: "Absolutely, we can allow you to make payment after we receive the initial approval for your visa. Ask your sales agent."
     },
@@ -49,10 +53,6 @@ const FAQ = () => {
     {
       question: "What happens after the 2-year visa expires?",
       answer: "You can renew the visa for another 2 years through us. We'll contact you before expiry to start the renewal process. The renewal process is typically faster than the initial application. Or you can request us to cancel the maid visa and take her cancellation so she travel or change sponsorship."
-    },
-    {
-      question: "Do you provide support after the visa is issued?",
-      answer: "Yes, we provide ongoing support for any visa-related queries, renewals, and administrative needs. Our customer service team is available to help even after your visa is processed."
     },
     {
       question: "How does my maid get paid her salary?",
