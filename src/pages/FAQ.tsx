@@ -27,6 +27,22 @@ const FAQ = () => {
       answer: "A nanny visa falls under the domestic worker visa category and follows the same cost structure as a maid visa.\n\n• Personal sponsorship: approximately AED 15,000+ for 2 years\n• Through TADMAIDS: approximately AED 9,000 for 2 years including processing support and additional services\n\nFinal cost may vary based on the applicant's nationality and documentation requirements."
     },
     {
+      question: "What is the salary of a housemaid in the UAE?",
+      answer: "There is no fixed government salary guideline for domestic workers in the UAE. Salaries are generally determined by mutual agreement between the employer and the worker.\n\nHowever, for certain nationalities such as the Philippines, official minimum salary guidelines may apply. For example, Filipino domestic workers typically require a minimum salary of around USD 400 (approximately AED 1,500), as per their embassy regulations.\n\nIt is important to understand the difference between:\n\n• Salary – The net amount the worker receives monthly.\n• Monthly package payment – The total amount paid to a service provider under a flexible or monthly system.\n\nFor example, in a monthly package system, an employer may pay AED 2,800 per month for a Ugandan worker. The worker may receive AED 1,500 as salary, while the remaining amount covers visa costs, insurance, recruitment expenses, and administrative services.\n\nIn this case, AED 2,800 is not the worker's salary — it is the total service package amount."
+    },
+    {
+      question: "What is the minimum salary required for a maid visa?",
+      answer: "There is no fixed UAE government minimum salary requirement for most domestic workers.\n\nHowever, certain nationalities may have embassy-imposed minimum salary requirements. For example, Filipino domestic workers generally require a minimum salary of approximately AED 1,500 (USD 400).\n\nFor other nationalities, salary is typically based on agreement between employer and worker and current market demand."
+    },
+    {
+      question: "How much should I pay my maid monthly?",
+      answer: "Domestic worker salaries in the UAE are primarily based on supply and demand, experience, and nationality.\n\nAs long as both the employer and worker agree to the salary terms and it complies with applicable embassy requirements (if any), there is flexibility in determining the amount.\n\n⚠️ Important note:\nSome individuals may claim to hold a \"freelance\" domestic worker visa and request unusually high salaries (e.g., AED 3,500–4,000). In many cases, domestic workers are not legally permitted to freelance independently.\n\nBefore hiring any worker outside a licensed Tadbeer or sponsorship system, it is important to verify:\n\n• Who their legal sponsor is\n• Whether they are officially allowed to work\n• That their visa status is compliant\n\nEmployers are responsible for ensuring legal compliance to avoid fines or liability."
+    },
+    {
+      question: "Is 3,000 AED a good salary for a maid in Dubai?",
+      answer: "If AED 3,000 refers to the total monthly package cost (including visa, insurance, and recruitment costs), this is considered normal within certain monthly systems.\n\nIf AED 3,000 refers to the worker's net salary only, then it is generally above the market average for most nationalities.\n\nUltimately, salary levels depend on:\n\n• Experience\n• Nationality\n• Market demand\n• Scope of responsibilities\n\nEvery case should be evaluated individually."
+    },
+    {
       question: "What documents are required for the 2-year maid visa?",
       answer: "From the worker, we need Passport Copy, Cancellation (or entry permit if on visit visa) or Outpass (if exited during the Amnesty), clear passport quality Photo, Police Clearance Certificate for African nationalities (Excluding Ethiopia). From the Employer, Emirates ID, Ejari, & Dewa Bill. If anything else required we will contact you."
     },
