@@ -119,7 +119,7 @@ const FAQ = () => {
       answer: "We setup a direct debit through directdebit.ae a central bank licensed provider. Every agreed day of the month you send us the salary, and we pay the worker on the agreed pay day. usually all are processed before end of month. She has an ATM card with link to her account she can withdraw funds FREE from a RAKBANK ATM machine. Other machines may charge her small fees."
     },
     {
-      question: "I do not have a maid, would you provide me a maid with the same cost of the visa?",
+      question: "Can Tadmaids provide a maid if I don't already have one?",
       answer: "We can provide a maid of course of any and most nationalities but this comes at an extra fee. The fees are capped by MOHRE, the governing authority of Domestic Workers Centers like ours in UAE."
     }
   ];
