@@ -107,7 +107,7 @@ const FAQ = () => {
       answer: "Absolutely, we can allow you to make payment after we receive the initial approval for your visa. Ask your sales agent."
     },
     {
-      question: "What makes TADVISAS different from other providers?",
+      question: "What makes TADVISAS different from other maid visa providers in Dubai?",
       answer: "The service itself is very standard as it is a governmental service with very small room for innovation, however, removing the extra cost, adding some value added service like chauffeuring the worker is something small but can differentiate the service. Please refer to a full list of comparison https://tadvisas.com/monthly-packages"
     },
     {
