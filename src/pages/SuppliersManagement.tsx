@@ -133,7 +133,7 @@ const SuppliersManagement = () => {
       const { error } = await supabase.from("suppliers").insert({
         ...validated,
         account_balance: formData.opening_balance || 0,
-      });
+      } as any);
 
       if (error) throw error;
 
