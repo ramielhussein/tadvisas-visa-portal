@@ -21,36 +21,48 @@ const Auth = () => {
   const from = (location.state as { from?: string })?.from;
 
   const redirectUser = async (userId: string) => {
-    // If there's a stored "from" path, go there instead of role-based redirect
-    if (from) {
-      navigate(from, { replace: true });
-      return;
-    }
+    try {
+      // If there's a stored "from" path, go there instead of role-based redirect
+      if (from) {
+        navigate(from, { replace: true });
+        return;
+      }
 
-    // Fall back to role-based redirect
-    const { data: roles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
+      // Fall back to role-based redirect
+      const { data: roles, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
 
-    if (roles && roles.length > 0) {
-      const userRoles = roles.map(r => r.role as UserRole);
-      
-      // Priority-based redirect
-      if (userRoles.includes('super_admin') || userRoles.includes('admin')) {
-        navigate("/admin", { replace: true });
-      } else if (userRoles.includes('finance')) {
-        navigate("/hub/finance", { replace: true });
-      } else if (userRoles.includes('sales')) {
-        navigate("/sales-dashboard", { replace: true });
-      } else if (userRoles.includes('product')) {
-        navigate("/product-dashboard", { replace: true });
-      } else if (userRoles.includes('client')) {
-        navigate("/hub/client", { replace: true });
+      console.log('[Auth] Roles query result:', { roles, error });
+
+      if (error) {
+        console.error('[Auth] Roles query failed:', error);
+        navigate("/hub", { replace: true });
+        return;
+      }
+
+      if (roles && roles.length > 0) {
+        const userRoles = roles.map(r => r.role as UserRole);
+        
+        if (userRoles.includes('super_admin') || userRoles.includes('admin')) {
+          navigate("/admin", { replace: true });
+        } else if (userRoles.includes('finance')) {
+          navigate("/hub/finance", { replace: true });
+        } else if (userRoles.includes('sales')) {
+          navigate("/sales-dashboard", { replace: true });
+        } else if (userRoles.includes('product')) {
+          navigate("/product-dashboard", { replace: true });
+        } else if (userRoles.includes('client')) {
+          navigate("/hub/client", { replace: true });
+        } else {
+          navigate("/hub", { replace: true });
+        }
       } else {
         navigate("/hub", { replace: true });
       }
-    } else {
+    } catch (err) {
+      console.error('[Auth] Redirect error:', err);
       navigate("/hub", { replace: true });
     }
   };
@@ -59,18 +71,21 @@ const Auth = () => {
     // Check if user is already logged in
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
+        console.log('[Auth] Already logged in, redirecting...');
         await redirectUser(session.user.id);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
+      console.log('[Auth] Auth event:', event);
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('[Auth] SIGNED_IN detected, redirecting...');
         await redirectUser(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, from]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
