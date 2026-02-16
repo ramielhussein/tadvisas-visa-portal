@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -11,31 +11,38 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
+  const resolved = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
 
-    // Set up listener BEFORE getSession to avoid missing events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!isMounted) return;
-      setIsAuthenticated(!!session);
-      // Also clear loading on auth state change in case getSession is slow
-      if (loading) setLoading(false);
-    });
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      setIsAuthenticated(!!session);
+    const resolve = (authenticated: boolean) => {
+      if (!isMounted || resolved.current) return;
+      resolved.current = true;
+      setIsAuthenticated(authenticated);
       setLoading(false);
+    };
+
+    // Primary: check session once
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      resolve(!!session);
+    }).catch(() => {
+      resolve(false);
     });
 
-    // Safety timeout - never stay loading forever
-    const timeout = setTimeout(() => {
-      if (isMounted && loading) {
-        console.warn('[ProtectedRoute] Safety timeout - forcing loading to false');
-        setLoading(false);
+    // Fallback: listen for auth state change (in case getSession is slow)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      // If already resolved, still update auth state for future changes (e.g. logout)
+      if (resolved.current) {
+        setIsAuthenticated(!!session);
+        return;
       }
-    }, 3000);
+      resolve(!!session);
+    });
+
+    // Safety: never stay loading forever
+    const timeout = setTimeout(() => resolve(false), 3000);
 
     return () => {
       isMounted = false;
@@ -53,7 +60,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   if (!isAuthenticated) {
-    // Store the attempted URL so we can redirect back after login
     return <Navigate to="/auth" state={{ from: location.pathname }} replace />;
   }
 

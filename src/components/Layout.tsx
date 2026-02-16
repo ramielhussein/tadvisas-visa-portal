@@ -25,9 +25,9 @@ const Layout = ({ children }: LayoutProps) => {
   useAutoLogout(isAuthenticated);
 
   useEffect(() => {
-    // Check initial auth state
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsAuthenticated(!!user);
+    // Check initial auth state using session (cheaper than getUser)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
     });
 
     // Listen for auth changes
