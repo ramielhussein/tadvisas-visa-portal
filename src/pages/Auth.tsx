@@ -37,7 +37,7 @@ const Auth = () => {
       const userRoles = roles.map(r => r.role as UserRole);
       
       // Priority-based redirect
-      if (userRoles.includes('admin')) {
+      if (userRoles.includes('super_admin') || userRoles.includes('admin')) {
         navigate("/admin", { replace: true });
       } else if (userRoles.includes('finance')) {
         navigate("/hub/finance", { replace: true });
@@ -77,7 +77,7 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -89,18 +89,16 @@ const Auth = () => {
         description: "Logged in successfully!",
       });
 
-      // Redirect to stored destination or role-based hub
-      if (data.user) {
-        await redirectUser(data.user.id);
-      }
+      // onAuthStateChange will handle the redirect
+      // Add a safety timeout in case redirect doesn't happen
+      setTimeout(() => setLoading(false), 5000);
     } catch (error: any) {
+      setLoading(false);
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
