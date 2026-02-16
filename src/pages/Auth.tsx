@@ -76,11 +76,12 @@ const Auth = () => {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Auth] Auth event:', event);
       if (event === 'SIGNED_IN' && session?.user) {
         console.log('[Auth] SIGNED_IN detected, redirecting...');
-        await redirectUser(session.user.id);
+        // Use setTimeout to avoid deadlock - never await Supabase calls inside onAuthStateChange
+        setTimeout(() => redirectUser(session.user.id), 0);
       }
     });
 
