@@ -13,16 +13,35 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
 
   useEffect(() => {
+    let isMounted = true;
+
+    // Set up listener BEFORE getSession to avoid missing events
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isMounted) return;
+      setIsAuthenticated(!!session);
+      // Also clear loading on auth state change in case getSession is slow
+      if (loading) setLoading(false);
+    });
+
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
       setIsAuthenticated(!!session);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
-    });
+    // Safety timeout - never stay loading forever
+    const timeout = setTimeout(() => {
+      if (isMounted && loading) {
+        console.warn('[ProtectedRoute] Safety timeout - forcing loading to false');
+        setLoading(false);
+      }
+    }, 3000);
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   if (loading) {
