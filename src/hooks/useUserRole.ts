@@ -10,64 +10,79 @@ export const useUserRole = () => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   useEffect(() => {
-    checkUserRole();
+    let isMounted = true;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkUserRole();
-    });
+    const loadRole = async (userId: string, userData: any) => {
+      try {
+        const { data: roles, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
 
-    return () => subscription.unsubscribe();
-  }, []);
+        if (!isMounted) return;
 
-  const checkUserRole = async () => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking user role:', error);
+          setRole('user');
+          return;
+        }
 
-      if (!user) {
+        if (roles && roles.length > 0) {
+          const userRoles = roles.map(r => r.role);
+          const hasSuperAdmin = userRoles.includes('super_admin');
+          setIsSuperAdmin(hasSuperAdmin);
+          
+          if (hasSuperAdmin) setRole('super_admin');
+          else if (userRoles.includes('admin')) setRole('admin');
+          else if (userRoles.includes('finance')) setRole('finance');
+          else if (userRoles.includes('sales_manager')) setRole('sales_manager');
+          else if (userRoles.includes('sales')) setRole('sales');
+          else if (userRoles.includes('product')) setRole('product');
+          else if (userRoles.includes('client')) setRole('client');
+          else setRole('user');
+        } else {
+          setRole('user');
+        }
+      } catch (error) {
+        console.error('Error in loadRole:', error);
+        if (isMounted) setRole('user');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    // Initial load using cached session (no network call)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        loadRole(u.id, u);
+      } else {
         setRole(null);
         setIsLoading(false);
-        return;
       }
+    });
 
-      // Check user's highest priority role
-      const { data: roles, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking user role:', error);
-        setRole('user');
-        setIsLoading(false);
-        return;
-      }
-
-      // Priority order: super_admin > admin > finance > sales_manager > sales > product > client > user
-      if (roles && roles.length > 0) {
-        const userRoles = roles.map(r => r.role);
-        const hasSuperAdmin = userRoles.includes('super_admin');
-        setIsSuperAdmin(hasSuperAdmin);
-        
-        if (hasSuperAdmin) setRole('super_admin');
-        else if (userRoles.includes('admin')) setRole('admin');
-        else if (userRoles.includes('finance')) setRole('finance');
-        else if (userRoles.includes('sales_manager')) setRole('sales_manager');
-        else if (userRoles.includes('sales')) setRole('sales');
-        else if (userRoles.includes('product')) setRole('product');
-        else if (userRoles.includes('client')) setRole('client');
-        else setRole('user');
+    // Listen for future changes (login/logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        setTimeout(() => loadRole(u.id, u), 0);
       } else {
-        setRole('user');
+        setRole(null);
+        setIsSuperAdmin(false);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error in checkUserRole:', error);
-      setRole('user');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const hasRole = (checkRole: UserRole) => {
     return role === checkRole;

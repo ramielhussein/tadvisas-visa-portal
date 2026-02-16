@@ -17,8 +17,8 @@ const TopHeader = () => {
   const { isAdmin, isSuperAdmin, isSales, user: roleUser } = useUserRole();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user || null);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
