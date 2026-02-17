@@ -28,15 +28,16 @@ const Navbar = () => {
   const { role, isAdmin, isSuperAdmin, isSales, isFinance, isProduct } = useUserRole();
 
   useEffect(() => {
-    // Get current user
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      if (user) {
+    // Get current user from cached session (no network call)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const u = session?.user || null;
+      setUser(u);
+      if (u) {
         // Get profile for full name
         supabase
           .from('profiles')
           .select('full_name')
-          .eq('id', user.id)
+          .eq('id', u.id)
           .single()
           .then(({ data }) => setProfile(data));
       }
