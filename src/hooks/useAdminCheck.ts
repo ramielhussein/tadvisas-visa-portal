@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useAdminCheck = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -40,23 +41,16 @@ export const useAdminCheck = () => {
       }
     };
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) { checkRoles(u.id); } else { setIsLoading(false); }
-    });
+    if (user) {
+      checkRoles(user.id);
+    } else {
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      setIsLoading(false);
+    }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isMounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) { setTimeout(() => checkRoles(u.id), 0); } 
-      else { setIsAdmin(false); setIsSuperAdmin(false); setIsLoading(false); }
-    });
-
-    return () => { isMounted = false; subscription.unsubscribe(); };
-  }, []);
+    return () => { isMounted = false; };
+  }, [user?.id]);
 
   return { isAdmin, isSuperAdmin, isLoading, user };
 };

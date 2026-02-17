@@ -1,6 +1,6 @@
 import { FileText, Users, MessageSquare, UserPlus, Clock, Coffee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -8,35 +8,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import TeamChat from "./TeamChat";
 import QuickLeadEntry from "./crm/QuickLeadEntry";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FloatingButtons = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, user } = useAuth();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatMinimized, setIsChatMinimized] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
   const [onBreak, setOnBreak] = useState(false);
   const [activeBreakId, setActiveBreakId] = useState<string | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsAuthenticated(!!user);
-      if (user) {
-        checkBreakStatus(user.id);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
-      if (session?.user) {
-        checkBreakStatus(session.user.id);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const checkBreakStatus = async (userId: string) => {
     const { data: employee } = await supabase

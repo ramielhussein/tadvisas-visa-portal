@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { useAutoAttendance } from "./hooks/useAutoAttendance";
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import HireAMaid from "./pages/HireAMaid";
 import GetAVisa from "./pages/GetAVisa";
@@ -170,6 +171,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <AuthProvider>
         <TooltipProvider>
           <AppContent />
           <Toaster />
@@ -354,6 +356,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

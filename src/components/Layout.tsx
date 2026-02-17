@@ -7,7 +7,7 @@ import Footer from "./Footer";
 import FloatingButtons from "./FloatingButtons";
 import KeyboardShortcutsHelp from "./KeyboardShortcutsHelp";
 import DriversFloatingIsland from "./tadgo/DriversFloatingIsland";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { useAutoLogout } from "@/hooks/useAutoLogout";
 
@@ -16,7 +16,7 @@ interface LayoutProps {
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated } = useAuth();
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
   // Enable activity tracker for authenticated users - auto break-back
@@ -24,31 +24,14 @@ const Layout = ({ children }: LayoutProps) => {
   // Auto logout at 8:30 PM UAE time
   useAutoLogout(isAuthenticated);
 
-  useEffect(() => {
-    // Check initial auth state using session (cheaper than getUser)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   // Global keyboard shortcuts listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Check for '?' key (Shift + /)
       if (e.key === '?' && !e.ctrlKey && !e.altKey && !e.metaKey) {
         e.preventDefault();
         setShowShortcutsHelp(true);
         return;
       }
-      
-      // Check for Ctrl + /
       if (e.ctrlKey && e.key === '/' && !e.altKey && !e.metaKey) {
         e.preventDefault();
         setShowShortcutsHelp(true);
