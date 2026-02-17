@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "./NotificationBell";
@@ -12,21 +13,9 @@ import { useToast } from "@/hooks/use-toast";
 const TopHeader = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
   const [showQuickEntry, setShowQuickEntry] = useState(false);
-  const { isAdmin, isSuperAdmin, isSales, user: roleUser } = useUserRole();
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user || null);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { isAdmin, isSuperAdmin, isSales } = useUserRole();
+  const { user } = useAuth();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -70,7 +59,6 @@ const TopHeader = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* WhatsApp for public users */}
           {!user && (
             <Button
               variant="default"
@@ -83,7 +71,6 @@ const TopHeader = () => {
             </Button>
           )}
 
-          {/* Add Lead button for sales/admin */}
           {user && (isSales || isAdmin || isSuperAdmin) && (
             <Button
               variant="outline"
@@ -96,10 +83,8 @@ const TopHeader = () => {
             </Button>
           )}
 
-          {/* Notification Bell */}
           {user && <NotificationBell />}
 
-          {/* Login/Logout */}
           {user ? (
             <Button
               variant="ghost"
@@ -122,7 +107,6 @@ const TopHeader = () => {
         </div>
       </header>
 
-      {/* Quick Lead Entry Dialog */}
       <QuickLeadEntry
         open={showQuickEntry}
         onClose={() => setShowQuickEntry(false)}

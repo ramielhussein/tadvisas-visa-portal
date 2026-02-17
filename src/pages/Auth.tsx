@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/hooks/useUserRole";
 
 const Auth = () => {
@@ -16,28 +17,23 @@ const Auth = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Get the intended destination from state, or fall back to role-based redirect
   const from = (location.state as { from?: string })?.from;
 
   const redirectUser = async (userId: string) => {
     try {
-      // If there's a stored "from" path, go there instead of role-based redirect
       if (from) {
         navigate(from, { replace: true });
         return;
       }
 
-      // Fall back to role-based redirect
       const { data: roles, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId);
 
-      console.log('[Auth] Roles query result:', { roles, error });
-
       if (error) {
-        console.error('[Auth] Roles query failed:', error);
         navigate("/hub", { replace: true });
         return;
       }
@@ -62,41 +58,16 @@ const Auth = () => {
         navigate("/hub", { replace: true });
       }
     } catch (err) {
-      console.error('[Auth] Redirect error:', err);
       navigate("/hub", { replace: true });
     }
   };
 
+  // If user is already logged in, redirect immediately
   useEffect(() => {
-    let redirected = false;
-
-    const doRedirect = (userId: string) => {
-      if (redirected) return;
-      redirected = true;
-      redirectUser(userId).catch(() => {
-        // If role-based redirect fails, just go to /hub
-        navigate("/hub", { replace: true });
-      });
-    };
-
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        console.log('[Auth] Already logged in, redirecting...');
-        doRedirect(session.user.id);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[Auth] Auth event:', event);
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
-        console.log('[Auth] Auth event detected, redirecting...');
-        setTimeout(() => doRedirect(session.user.id), 0);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (user) {
+      redirectUser(user.id);
+    }
+  }, [user?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,8 +86,7 @@ const Auth = () => {
         description: "Logged in successfully!",
       });
 
-      // onAuthStateChange will handle the redirect
-      // Add a safety timeout in case redirect doesn't happen
+      // Auth context will update, useEffect above will redirect
       setTimeout(() => setLoading(false), 5000);
     } catch (error: any) {
       setLoading(false);

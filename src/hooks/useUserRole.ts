@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export type UserRole = 'super_admin' | 'admin' | 'sales_manager' | 'sales' | 'finance' | 'product' | 'client' | 'user' | null;
 
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
 
-    const loadRole = async (userId: string, userData: any) => {
+    const loadRole = async (userId: string) => {
       try {
         const { data: roles, error } = await supabase
           .from('user_roles')
@@ -51,38 +52,16 @@ export const useUserRole = () => {
       }
     };
 
-    // Initial load using cached session (no network call)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) {
-        loadRole(u.id, u);
-      } else {
-        setRole(null);
-        setIsLoading(false);
-      }
-    });
+    if (user) {
+      loadRole(user.id);
+    } else {
+      setRole(null);
+      setIsSuperAdmin(false);
+      setIsLoading(false);
+    }
 
-    // Listen for future changes (login/logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!isMounted) return;
-      const u = session?.user ?? null;
-      setUser(u);
-      if (u) {
-        setTimeout(() => loadRole(u.id, u), 0);
-      } else {
-        setRole(null);
-        setIsSuperAdmin(false);
-        setIsLoading(false);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
+    return () => { isMounted = false; };
+  }, [user?.id]);
 
   const hasRole = (checkRole: UserRole) => {
     return role === checkRole;

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/NotificationBell";
 import QuickLeadEntry from "@/components/crm/QuickLeadEntry";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,44 +23,23 @@ interface NavItem {
 const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [showQuickEntry, setShowQuickEntry] = useState(false);
   const { role, isAdmin, isSuperAdmin, isSales, isFinance, isProduct } = useUserRole();
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Get current user from cached session (no network call)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const u = session?.user || null;
-      setUser(u);
-      if (u) {
-        // Get profile for full name
-        supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', u.id)
-          .single()
-          .then(({ data }) => setProfile(data));
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-      if (session?.user) {
-        supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => setProfile(data));
-      } else {
-        setProfile(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (user) {
+      supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+        .then(({ data }) => setProfile(data));
+    } else {
+      setProfile(null);
+    }
+  }, [user?.id]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 

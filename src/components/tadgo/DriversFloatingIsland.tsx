@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Car, ChevronUp, ChevronDown, MapPin, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Task {
   id: string;
@@ -20,24 +21,7 @@ interface Task {
 const DriversFloatingIsland = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-      setIsLoading(false);
-    };
-    
-    checkAuth();
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
