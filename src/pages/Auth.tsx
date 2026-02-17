@@ -68,20 +68,30 @@ const Auth = () => {
   };
 
   useEffect(() => {
+    let redirected = false;
+
+    const doRedirect = (userId: string) => {
+      if (redirected) return;
+      redirected = true;
+      redirectUser(userId).catch(() => {
+        // If role-based redirect fails, just go to /hub
+        navigate("/hub", { replace: true });
+      });
+    };
+
     // Check if user is already logged in
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         console.log('[Auth] Already logged in, redirecting...');
-        await redirectUser(session.user.id);
+        doRedirect(session.user.id);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Auth] Auth event:', event);
-      if (event === 'SIGNED_IN' && session?.user) {
-        console.log('[Auth] SIGNED_IN detected, redirecting...');
-        // Use setTimeout to avoid deadlock - never await Supabase calls inside onAuthStateChange
-        setTimeout(() => redirectUser(session.user.id), 0);
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+        console.log('[Auth] Auth event detected, redirecting...');
+        setTimeout(() => doRedirect(session.user.id), 0);
       }
     });
 
