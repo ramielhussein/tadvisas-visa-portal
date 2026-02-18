@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInquiryPackages } from "@/hooks/useCRMData";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 interface TableInfo {
   name: string;
@@ -168,16 +168,27 @@ export default function DataBackup() {
       const data = await fetchAllRows(tableName, filter);
 
       // Create Excel workbook
-      const worksheet = XLSX.utils.json_to_sheet(data || []);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, displayName.substring(0, 31)); // Sheet names max 31 chars
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet(displayName.substring(0, 31));
+      const rows = data || [];
+      if (rows.length > 0) {
+        worksheet.columns = Object.keys(rows[0]).map(key => ({ header: key, key }));
+        rows.forEach(row => worksheet.addRow(row));
+      }
       
       // Generate Excel file
       const timestamp = new Date().toISOString().split("T")[0];
       const filterSuffix = filter && filter.value !== "all" ? `_${filter.value}` : "";
       const filename = `${tableName}${filterSuffix}_backup_${timestamp}.xlsx`;
       
-      XLSX.writeFile(workbook, filename);
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
 
       toast({
         title: "Export Complete",
@@ -204,20 +215,19 @@ export default function DataBackup() {
     setExporting("all");
 
     try {
-      const workbook = XLSX.utils.book_new();
+      const workbook = new ExcelJS.Workbook();
       let totalRecordsExported = 0;
       let tablesExported = 0;
 
       for (const table of tables) {
         try {
-          // Use pagination to fetch ALL records for each table
           const data = await fetchAllRows(table.name);
 
           if (data && data.length > 0) {
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            // Sheet names max 31 chars
             const sheetName = table.displayName.substring(0, 31);
-            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+            const worksheet = workbook.addWorksheet(sheetName);
+            worksheet.columns = Object.keys(data[0]).map(key => ({ header: key, key }));
+            data.forEach(row => worksheet.addRow(row));
             totalRecordsExported += data.length;
             tablesExported++;
           }
@@ -227,11 +237,17 @@ export default function DataBackup() {
         }
       }
 
-      // Generate Excel file with all sheets
       const timestamp = new Date().toISOString().split("T")[0];
       const filename = `complete_database_backup_${timestamp}.xlsx`;
       
-      XLSX.writeFile(workbook, filename);
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
 
       toast({
         title: "Complete Backup Exported",

@@ -17,7 +17,7 @@ import Layout from "@/components/Layout";
 import { Search, Plus, FileText, DollarSign, TrendingUp, Clock, BarChart3, CalendarIcon, X, Download, Filter, Package, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 interface Contract {
   id: string;
@@ -409,11 +409,22 @@ const ContractsManagement = () => {
       "Created At": format(new Date(c.created_at), "dd MMM yyyy"),
     }));
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Contracts");
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Contracts");
+    if (exportData.length > 0) {
+      ws.columns = Object.keys(exportData[0]).map(key => ({ header: key, key }));
+      exportData.forEach(row => ws.addRow(row));
+    }
     const fileName = useFiltered ? "contracts_filtered.xlsx" : "contracts_all.xlsx";
-    XLSX.writeFile(wb, fileName);
+    wb.xlsx.writeBuffer().then(buffer => {
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
     toast({ title: "Success", description: `Exported ${dataToExport.length} contracts to ${fileName}` });
   };
 
