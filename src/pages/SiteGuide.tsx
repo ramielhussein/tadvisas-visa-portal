@@ -1,24 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download } from "lucide-react";
-import html2pdf from "html2pdf.js";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import sitemapImage from "@/assets/sitemap.png";
 
 const SiteGuide = () => {
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     const element = document.getElementById("site-guide-content");
-    
-    const opt = {
-      margin: 1,
-      filename: 'tadmaids-site-guide.pdf',
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const }
-    };
+    if (!element) return;
 
-    html2pdf().set(opt).from(element).save();
-    toast.success("Downloading site guide PDF...");
+    toast.success("Generating PDF...");
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+
+    const pdf = new jsPDF({ orientation: "portrait", unit: "in", format: "letter" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth - 2; // 1 inch margin each side
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let y = 1; // top margin
+    let remainingHeight = imgHeight;
+
+    while (remainingHeight > 0) {
+      pdf.addImage(imgData, "JPEG", 1, y - (imgHeight - remainingHeight), imgWidth, imgHeight);
+      remainingHeight -= (pageHeight - 2);
+      if (remainingHeight > 0) pdf.addPage();
+    }
+
+    pdf.save("tadmaids-site-guide.pdf");
   };
 
   return (
