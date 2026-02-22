@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/select";
 import { useUserRole } from "@/hooks/useUserRole";
 import { format, formatDistance, differenceInDays, startOfMonth, endOfMonth, eachDayOfInterval, parseISO } from "date-fns";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 import { useNavigate } from "react-router-dom";
 import {
   AlertDialog,
@@ -725,7 +725,7 @@ const HRAttendance = () => {
       jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "landscape" as const },
     };
 
-    html2pdf().set(opt).from(element).save();
+    await exportToPdf(element, opt);
     
     toast.success("PDF generated successfully");
   };

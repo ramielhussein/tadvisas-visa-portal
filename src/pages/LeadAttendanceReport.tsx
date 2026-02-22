@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Calendar, TrendingUp, Users, UserPlus, PieChart, Download, Mail } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PieChart as RechartsPieChart, Pie, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -252,7 +252,7 @@ const LeadAttendanceReport = () => {
     };
 
     try {
-      await html2pdf().set(opt).from(element).save();
+      await exportToPdf(element, opt);
       toast({
         title: "Success",
         description: "Report downloaded successfully",

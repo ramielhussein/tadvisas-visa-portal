@@ -12,7 +12,7 @@ import VoidContractDialog from "@/components/deals/VoidContractDialog";
 import DealCostsSection from "@/components/deals/DealCostsSection";
 import { ArrowLeft, User, Phone, Mail, Calendar, DollarSign, FileText, Briefcase, Paperclip, Download, CreditCard, Printer, Send, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface Deal {
@@ -378,7 +378,7 @@ const ContractDetail = () => {
     };
 
     try {
-      await html2pdf().set(opt).from(dealSheetHTML).save();
+      await exportToPdf(dealSheetHTML, opt);
       toast({
         title: "Success!",
         description: "Deal sheet PDF downloaded successfully",

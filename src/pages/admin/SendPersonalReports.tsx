@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Mail, Send, Clock, CheckCircle, FileDown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 
 const SendPersonalReports = () => {
   const navigate = useNavigate();
@@ -157,8 +157,7 @@ const SendPersonalReports = () => {
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
         };
 
-        await html2pdf().set(opt).from(element).save();
-        document.body.removeChild(element);
+        await exportToPdf(element, opt);
         
         // Small delay between PDFs
         await new Promise(resolve => setTimeout(resolve, 500));
