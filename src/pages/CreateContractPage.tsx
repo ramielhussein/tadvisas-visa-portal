@@ -16,7 +16,7 @@ import { ArrowLeft, Search, Paperclip, X, CalendarIcon, Plus, Trash2 } from "luc
 import { format } from "date-fns";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 
 const contractSchema = z.object({
   client_name: z.string().min(1, "Client name is required").max(200),
@@ -443,7 +443,7 @@ const [currentUserId, setCurrentUserId] = useState<string>("");
     };
 
     try {
-      await html2pdf().set(opt).from(dealSheetHTML).save();
+      await exportToPdf(dealSheetHTML, opt);
       toast({
         title: "Success!",
         description: "Deal sheet PDF downloaded successfully",

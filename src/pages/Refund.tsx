@@ -14,7 +14,7 @@ import { CalendarIcon, ChevronLeft, ChevronRight, FileText, Printer, Save } from
 import { useToast } from "@/hooks/use-toast";
 import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 
 type Emirate = 'Dubai'|'Sharjah'|'Ajman'|'Umm Al Quwain'|'Ras Al Khaimah'|'Fujairah'|'Abu Dhabi';
 type Nationality = 'Philippines'|'Indonesia'|'Ethiopia'|'Uganda'|'Kenya'|'Myanmar'|'India'|'Other';
@@ -542,7 +542,7 @@ const Refund = () => {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
     
-    html2pdf().set(opt).from(element).save();
+    exportToPdf(element!, opt);
   };
 
   const printCalculation = () => {

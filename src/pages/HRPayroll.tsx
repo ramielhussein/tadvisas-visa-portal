@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { FileText, Calendar, DollarSign } from "lucide-react";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 import { toast } from "sonner";
 
 interface PayrollData {
@@ -125,7 +125,7 @@ export default function HRPayroll() {
     };
   };
 
-  const generatePayslip = (emp: PayrollData) => {
+  const generatePayslip = async (emp: PayrollData) => {
     const salary = calculateSalary(emp);
     
     const element = document.createElement("div");
@@ -215,7 +215,7 @@ export default function HRPayroll() {
       jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
     };
 
-    html2pdf().set(opt).from(element).save();
+    await exportToPdf(element, opt);
     toast.success(`Payslip generated for ${emp.full_name}`);
   };
 

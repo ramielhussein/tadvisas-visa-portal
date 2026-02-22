@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, FileText, Calendar, User, DollarSign, TrendingUp, RotateCcw } from "lucide-react";
 import { format, startOfMonth, endOfMonth } from "date-fns";
-import html2pdf from "html2pdf.js";
+import { exportToPdf } from "@/utils/pdfExport";
 
 const SalespersonDealsReport = () => {
   const [selectedSalesperson, setSelectedSalesperson] = useState<string>("all");
@@ -236,7 +236,7 @@ const SalespersonDealsReport = () => {
       jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'landscape' as const }
     };
 
-    await html2pdf().set(opt).from(reportHTML).save();
+    await exportToPdf(reportHTML, opt);
   };
 
   return (
