@@ -12,7 +12,7 @@ const Footer = () => {
             <img 
               src="/lovable-uploads/4e5c7620-b6a4-438c-a61b-eaa4f96ea0c2.png" 
               alt="TADMAIDS" 
-              className="h-10 w-auto"
+              className="h-14 w-auto"
             />
             <p className="text-blue-100">
               Your trusted partner for domestic workers and 2-year domestic worker visa services in UAE. 
