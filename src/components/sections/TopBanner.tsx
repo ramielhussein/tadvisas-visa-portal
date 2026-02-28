@@ -71,8 +71,16 @@ const TopBanner = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             {/* Left side - Ramadan Calendar */}
             <div className="relative w-full lg:w-1/2 flex items-center justify-center">
-              <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 rounded-2xl p-8 shadow-2xl w-full max-w-md">
-                <div className="text-center">
+              <div className="relative rounded-2xl p-8 shadow-2xl w-full max-w-md overflow-hidden">
+                {/* UAE flag stripes background */}
+                <div className="absolute inset-0 flex">
+                  <div className="w-1/4 bg-[#00732F]" />
+                  <div className="w-1/4 bg-white" />
+                  <div className="w-1/4 bg-black" />
+                  <div className="w-1/4 bg-[#FF0000]" />
+                </div>
+                <div className="absolute inset-0 bg-black/55" />
+                <div className="relative z-10 text-center">
                   <Moon className="w-12 h-12 text-yellow-300 animate-pulse mx-auto mb-3" />
                   
                   {isRamadan && hijriDate ? (
