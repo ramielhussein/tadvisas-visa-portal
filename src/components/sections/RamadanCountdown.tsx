@@ -25,9 +25,17 @@ const RamadanCountdown = () => {
   if (daysToRamadan <= 0) return null;
 
   return (
-    <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full shadow-lg">
-      <Moon className="w-5 h-5 text-yellow-300 animate-pulse" />
-      <div className="flex items-center gap-2">
+    <div className="relative inline-flex items-center gap-3 text-white px-4 py-2 rounded-full shadow-lg overflow-hidden">
+      {/* UAE flag stripe background */}
+      <div className="absolute inset-0 flex">
+        <div className="w-1/4 bg-[#00732F]" />
+        <div className="w-1/4 bg-white" />
+        <div className="w-1/4 bg-black" />
+        <div className="w-1/4 bg-[#FF0000]" />
+      </div>
+      <div className="absolute inset-0 bg-black/45 rounded-full" />
+      <Moon className="relative z-10 w-5 h-5 text-yellow-300 animate-pulse" />
+      <div className="relative z-10 flex items-center gap-2">
         <span className="text-2xl font-bold text-yellow-300">{daysToRamadan}</span>
         <span className="text-sm opacity-90">days to Ramadan</span>
       </div>
