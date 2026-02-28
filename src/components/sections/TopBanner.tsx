@@ -72,14 +72,16 @@ const TopBanner = () => {
             {/* Left side - Ramadan Calendar */}
             <div className="relative w-full lg:w-1/2 flex items-center justify-center">
               <div className="relative rounded-2xl p-8 shadow-2xl w-full max-w-md overflow-hidden">
-                {/* UAE flag stripes background */}
+                {/* UAE flag layout: red vertical bar left, 3 horizontal stripes right */}
                 <div className="absolute inset-0 flex">
-                  <div className="w-1/4 bg-[#00732F]" />
-                  <div className="w-1/4 bg-white" />
-                  <div className="w-1/4 bg-black" />
-                  <div className="w-1/4 bg-[#FF0000]" />
+                  <div className="w-1/4 bg-[#EF3340]" />
+                  <div className="flex-1 flex flex-col">
+                    <div className="flex-1 bg-[#00732F]" />
+                    <div className="flex-1 bg-white" />
+                    <div className="flex-1 bg-[#000000]" />
+                  </div>
                 </div>
-                <div className="absolute inset-0 bg-black/55" />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/65" />
                 <div className="relative z-10 text-center">
                   <Moon className="w-12 h-12 text-yellow-300 animate-pulse mx-auto mb-3" />
                   
