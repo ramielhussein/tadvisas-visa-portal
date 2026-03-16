@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 
 const PrivacyPolicy = () => {
   return (
