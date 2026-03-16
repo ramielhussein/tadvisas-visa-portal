@@ -133,6 +133,7 @@ import RedeemLanding from "./pages/RedeemLanding";
 
 // Start Application
 import StartApplication from "./pages/StartApplication";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 // SEO Location Pages
 import MaidAgencyDubai from "./pages/seo/MaidAgencyDubai";
