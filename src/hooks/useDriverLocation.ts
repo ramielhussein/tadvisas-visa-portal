@@ -194,9 +194,9 @@ export const useDriversLocations = () => {
   const [error, setError] = useState<string | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const setupDoneRef = useRef(false);
-  const leaveTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const leaveTimeoutsRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const reconnectAttemptRef = useRef(0);
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const setup = async () => {
