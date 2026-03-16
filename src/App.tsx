@@ -133,6 +133,7 @@ import RedeemLanding from "./pages/RedeemLanding";
 
 // Start Application
 import StartApplication from "./pages/StartApplication";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 // SEO Location Pages
 import MaidAgencyDubai from "./pages/seo/MaidAgencyDubai";
@@ -186,6 +187,7 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/start-here" element={<StartHere />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ALH" element={<ALH />} />
             <Route path="/fcg" element={<FCG />} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
