@@ -20,7 +20,7 @@ const GymTimer = () => {
   }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (restActive && restTimer > 0) {
       interval = setInterval(() => {
         setRestTimer((prev) => {
