@@ -1,56 +1,7 @@
-import { useState, useEffect } from "react";
-import { Moon, Sunrise, Sunset } from "lucide-react";
+import { Star } from "lucide-react";
 import { trackContact } from "@/lib/metaTracking";
 
-interface PrayerTimings {
-  Fajr: string;
-  Maghrib: string;
-  Imsak: string;
-}
-
-interface HijriDate {
-  day: string;
-  month: { en: string; number: number };
-}
-
 const TopBanner = () => {
-  const [timings, setTimings] = useState<PrayerTimings | null>(null);
-  const [hijriDate, setHijriDate] = useState<HijriDate | null>(null);
-  const [isRamadan, setIsRamadan] = useState(false);
-  const [daysToRamadan, setDaysToRamadan] = useState(0);
-
-  useEffect(() => {
-    const fetchPrayerTimes = async () => {
-      try {
-        const today = new Date();
-        const dd = String(today.getDate()).padStart(2, '0');
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const yyyy = today.getFullYear();
-        const res = await fetch(
-          `https://api.aladhan.com/v1/timingsByCity/${dd}-${mm}-${yyyy}?city=Dubai&country=UAE&method=4`
-        );
-        const data = await res.json();
-        if (data.code === 200) {
-          setTimings(data.data.timings);
-          const hijri = data.data.date.hijri;
-          setHijriDate({ day: hijri.day, month: { en: hijri.month.en, number: hijri.month.number } });
-          setIsRamadan(hijri.month.number === 9);
-        }
-      } catch (e) {
-        console.error("Failed to fetch prayer times:", e);
-      }
-    };
-
-    // Calculate days to Ramadan as fallback
-    const ramadanStart = new Date("2026-02-17T00:00:00");
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const diffTime = ramadanStart.getTime() - today.getTime();
-    setDaysToRamadan(Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24))));
-
-    fetchPrayerTimes();
-  }, []);
-
   const handleWhatsAppClick = () => {
     if ((window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
@@ -69,7 +20,7 @@ const TopBanner = () => {
       <section className="relative w-full bg-white overflow-hidden">
         <div className="container mx-auto px-4 py-6 lg:py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            {/* Left side - Ramadan Calendar */}
+            {/* Left side - Eid Mubarak */}
             <div className="relative w-full lg:w-1/2 flex items-center justify-center">
               <div className="relative rounded-2xl p-8 shadow-2xl w-full max-w-md overflow-hidden">
                 {/* UAE flag layout: red vertical bar left, 3 horizontal stripes right */}
@@ -83,47 +34,27 @@ const TopBanner = () => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/65" />
                 <div className="relative z-10 text-center">
-                  <Moon className="w-12 h-12 text-yellow-300 animate-pulse mx-auto mb-3" />
+                  <div className="flex justify-center gap-2 mb-4">
+                    <Star className="w-8 h-8 text-yellow-300 fill-yellow-300 animate-pulse" />
+                    <Star className="w-10 h-10 text-yellow-400 fill-yellow-400 animate-pulse" />
+                    <Star className="w-8 h-8 text-yellow-300 fill-yellow-300 animate-pulse" />
+                  </div>
                   
-                  {isRamadan && hijriDate ? (
-                    <>
-                      <h3 className="text-yellow-300 text-2xl font-bold mb-1">
-                        Ramadan Kareem
-                      </h3>
-                      <div className="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-orange-400 mb-1">
-                        {hijriDate.day}
-                      </div>
-                      <div className="text-white/70 text-lg mb-4">Ramadan</div>
+                  <h3 className="text-yellow-300 text-3xl lg:text-4xl font-bold mb-2 tracking-wide">
+                    EID MUBARAK
+                  </h3>
+                  <div className="text-7xl lg:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-orange-400 mb-2">
+                    2026
+                  </div>
+                  <p className="text-white/70 text-lg">
+                    Wishing you joy, peace & blessings
+                  </p>
 
-                      {timings && (
-                        <div className="flex justify-center gap-6 mt-2">
-                          <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-                            <Sunrise className="w-5 h-5 text-amber-300 mx-auto mb-1" />
-                            <div className="text-white/50 text-xs uppercase tracking-wide">Imsak</div>
-                            <div className="text-yellow-300 text-xl font-bold">{timings.Imsak}</div>
-                          </div>
-                          <div className="bg-white/10 rounded-xl px-5 py-3 text-center">
-                            <Sunset className="w-5 h-5 text-orange-400 mx-auto mb-1" />
-                            <div className="text-white/50 text-xs uppercase tracking-wide">Iftar</div>
-                            <div className="text-yellow-300 text-xl font-bold">{timings.Maghrib}</div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="text-white/80 text-xl mb-2">
-                        Days to Ramadan 2026
-                      </h3>
-                      <div className="text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-orange-400 mb-2">
-                        {daysToRamadan}
-                      </div>
-                      <div className="text-white/60 text-lg">days remaining</div>
-                      <div className="mt-4 text-white/40 text-sm">
-                        Expected: February 17, 2026
-                      </div>
-                    </>
-                  )}
+                  <div className="flex justify-center gap-2 mt-4">
+                    <Star className="w-5 h-5 text-yellow-300/60 fill-yellow-300/60" />
+                    <Star className="w-5 h-5 text-yellow-300/60 fill-yellow-300/60" />
+                    <Star className="w-5 h-5 text-yellow-300/60 fill-yellow-300/60" />
+                  </div>
                 </div>
               </div>
             </div>
