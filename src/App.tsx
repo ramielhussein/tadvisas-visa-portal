@@ -134,6 +134,7 @@ import RedeemLanding from "./pages/RedeemLanding";
 // Start Application
 import StartApplication from "./pages/StartApplication";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
 
 // SEO Location Pages
 import MaidAgencyDubai from "./pages/seo/MaidAgencyDubai";
