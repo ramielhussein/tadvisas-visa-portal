@@ -82,8 +82,10 @@ const Footer = () => {
           <p className="text-blue-100">
             © <Link to="/admin" className="text-blue-100 hover:text-white transition-colors">2025</Link> <Link to="/cvwizard" className="text-blue-100 hover:text-white transition-colors">tadmaids.com</Link> - Tadmaids Domestic Worker Services Center. All <Link to="/hub" className="text-blue-100 hover:text-white transition-colors">rights</Link> <Link to="/refund" className="text-blue-100 hover:text-white transition-colors">reserved</Link>.
           </p>
-          <p>
+          <p className="space-x-3">
             <Link to="/privacy-policy" className="text-blue-100 hover:text-white transition-colors text-sm">Privacy Policy</Link>
+            <span className="text-blue-300">|</span>
+            <Link to="/refund-policy" className="text-blue-100 hover:text-white transition-colors text-sm">Refund Policy</Link>
           </p>
         </div>
       </div>
