@@ -191,6 +191,7 @@ const App = () => {
             <Route path="/start-here" element={<StartHere />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/ALH" element={<ALH />} />
             <Route path="/fcg" element={<FCG />} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
