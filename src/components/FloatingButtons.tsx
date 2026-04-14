@@ -255,6 +255,13 @@ const FloatingButtons = () => {
         <FileText className="w-4 h-4" />
         <span className="text-xs font-semibold">Apply for a Maid Visa</span>
       </button>
+      <button
+        onClick={() => window.open("https://tados.tadmaids.com", "_blank")}
+        className="group shrink-0 flex items-center gap-2 bg-primary text-primary-foreground px-3 py-2 md:px-5 md:py-3 rounded-none md:rounded-full shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all transform hover:scale-105 whitespace-nowrap"
+      >
+        <MessageSquare className="w-4 h-4" />
+        <span className="text-xs font-semibold">Chat with Us</span>
+      </button>
     </div>
   );
 };
