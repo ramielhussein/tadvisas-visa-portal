@@ -1,6 +1,7 @@
 
 import Layout from "@/components/Layout";
 import TopBanner from "@/components/sections/TopBanner";
+import FacilityBanner from "@/components/sections/FacilityBanner";
 import Hero from "@/components/sections/Hero";
 import ValueProposition from "@/components/sections/ValueProposition";
 import HowItWorksPreview from "@/components/sections/HowItWorksPreview";
