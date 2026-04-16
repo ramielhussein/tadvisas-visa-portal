@@ -1,9 +1,15 @@
+import mohreBanner from "@/assets/mohre-banner.jpg";
+
 const FacilityBanner = () => {
   return (
     <section className="w-full border-y border-border">
-      {/* Header Banner */}
-      <div className="bg-muted-foreground/80 py-6">
-        <h2 className="text-center text-3xl lg:text-4xl font-light text-white tracking-wide">
+      {/* Header Banner with background image */}
+      <div
+        className="relative bg-cover bg-center py-10 lg:py-14"
+        style={{ backgroundImage: `url(${mohreBanner})` }}
+      >
+        <div className="absolute inset-0 bg-black/50" />
+        <h2 className="relative z-10 text-center text-3xl lg:text-5xl font-light text-white tracking-wide">
           Approved Services Centers Details
         </h2>
       </div>
