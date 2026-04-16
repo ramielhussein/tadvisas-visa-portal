@@ -2,7 +2,7 @@ const FacilityBanner = () => {
   return (
     <section className="w-full border-y border-border">
       {/* Header Banner */}
-      <div className="bg-gray-700 py-6">
+      <div className="bg-muted-foreground/80 py-6">
         <h2 className="text-center text-3xl lg:text-4xl font-light text-white tracking-wide">
           Approved Services Centers Details
         </h2>
