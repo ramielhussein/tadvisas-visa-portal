@@ -12,6 +12,7 @@ const Index = () => {
   return (
     <Layout>
       <TopBanner />
+      <FacilityBanner />
       <Hero />
       <ValueProposition />
       <HowItWorksPreview />
